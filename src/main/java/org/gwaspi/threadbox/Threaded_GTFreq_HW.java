@@ -135,7 +135,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 							gwasParams.isDiscardGTMismatches(),
 							gwasParams.getDiscardSampleMisRatVal(),
 							gwasParams.getDiscardSampleHetzyRatVal(),
-							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(cNetCDF.Defaults.DEFAULT_AFFECTION).toString());
+							gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION);
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();

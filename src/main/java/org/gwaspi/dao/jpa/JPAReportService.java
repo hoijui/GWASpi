@@ -114,36 +114,46 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public List<Report> getReports(int parentOperationId, int parentMatrixId) throws IOException {
+	public List<Report> getReports(MatrixKey parentMatrixKey) throws IOException {
 
 		List<Report> reports = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query;
-			if (parentMatrixId == MatrixKey.NULL_ID) {
-				if (parentOperationId == OperationKey.NULL_ID) {
-					throw new IllegalArgumentException("You have to specify at least one of either parentOperationId or parentMatrixId");
-				}
-				query = em.createNamedQuery(
-						"report_fetchByParentOperationId");
-				query.setParameter("parentOperationId", parentOperationId);
-			} else if (parentOperationId == OperationKey.NULL_ID) {
-				query = em.createNamedQuery(
-						"report_fetchByParentMatrixId");
-				query.setParameter("parentMatrixId", parentMatrixId);
-			} else {
-				query = em.createNamedQuery(
-						"report_fetchByParentMatrixIdParentOperationId");
-				query.setParameter("parentMatrixId", parentMatrixId);
-				query.setParameter("parentOperationId", parentOperationId);
-			}
+			Query query = em.createNamedQuery(
+					"report_fetchByStudyIdParentMatrixId");
+			query.setParameter("studyId", parentMatrixKey.getStudyId());
+			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			reports = (List<Report>) query.getResultList();
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching a report by"
-					+ ": parent-operation-id: " + parentOperationId
-					+ ", parent-matrix-id: " + parentMatrixId
+					+ ": parent-matrix-key: " + parentMatrixKey.toRawIdString()
+					+ "; (not found)", ex);
+		} finally {
+			close(em);
+		}
+
+		return reports;
+	}
+
+	@Override
+	public List<Report> getReports(OperationKey parentOperationKey) throws IOException {
+
+		List<Report> reports = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query = em.createNamedQuery(
+					"report_fetchByStudyIdParentMatrixIdParentOperationId");
+			query.setParameter("studyId", parentOperationKey.getStudyId());
+			query.setParameter("parentMatrixId", parentOperationKey.getParentMatrixId());
+			query.setParameter("parentOperationId", parentOperationKey.getId());
+			reports = (List<Report>) query.getResultList();
+		} catch (Exception ex) {
+			throw new IOException("Failed fetching a report by"
+					+ ": parent-operation-key: " + parentOperationKey.toRawIdString()
 					+ "; (not found)", ex);
 		} finally {
 			close(em);
@@ -158,6 +168,7 @@ public class JPAReportService implements ReportService {
 	}
 
 	public static String extractReportNamePrefix(OperationMetadata op) {
+		
 		StringBuilder prefix = new StringBuilder();
 		prefix.append("mx-");
 		prefix.append(op.getParentMatrixId());
@@ -172,7 +183,7 @@ public class JPAReportService implements ReportService {
 					|| operationType.equals(OPType.GENOTYPICTEST)
 					|| operationType.equals(OPType.TRENDTEST))
 			{
-				OperationMetadata parentOp = OperationsList.getById(op.getParentOperationId());
+				OperationMetadata parentOp = OperationsList.getOperation(op.getParentOperationKey());
 				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
 				prefix.append("_");
@@ -208,13 +219,14 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public void deleteReportByMatrixId(MatrixKey parentMatrixKey) throws IOException {
+	public void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException {
 
 		EntityManager em = null;
 		try {
 			em = open();
 			begin(em);
-			Query query = em.createNamedQuery("report_deleteByParentMatrixId");
+			Query query = em.createNamedQuery("report_deleteByStudyIdParentMatrixId");
+			query.setParameter("studyId", parentMatrixKey.getStudyId());
 			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			query.executeUpdate();
 			commit(em);
@@ -229,18 +241,20 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public void deleteReportByOperationId(int parentOperationId) throws IOException {
+	public void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException {
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("report_deleteByParentOperationId");
-			query.setParameter("parentOperationId", parentOperationId);
+			Query query = em.createNamedQuery("report_deleteByStudyIdParentMatrixIdParentOperationId");
+			query.setParameter("studyId", parentOperationKey.getStudyId());
+			query.setParameter("parentMatrixId", parentOperationKey.getParentMatrixId());
+			query.setParameter("parentOperationId", parentOperationKey.getId());
 			query.executeUpdate();
 		} catch (Exception ex) {
 			rollback(em);
 			throw new IOException("Failed deleting reports by"
-					+ ": parent-operation-id: " + parentOperationId,
+					+ ": parent-operation-key: " + parentOperationKey.toRawIdString(),
 					ex);
 		} finally {
 			close(em);

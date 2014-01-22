@@ -56,8 +56,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.reports.GenericReportGenerator;
@@ -99,7 +97,6 @@ public final class ManhattanPlotZoom extends JPanel {
 	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 
 	private final OperationKey testOpKey;
-	private OperationMetadata op;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private MarkerKey origMarkerKey;
@@ -180,7 +177,6 @@ public final class ManhattanPlotZoom extends JPanel {
 	public void initChart(boolean usePhysicalPosition) {
 
 		try {
-			this.op = OperationsList.getOperation(testOpKey);
 			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(testOpKey.getParentMatrixKey());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyKey(), this.opId);
@@ -785,8 +781,8 @@ public final class ManhattanPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				List<Report> reportsList = ReportsList.getReportsList(op.getOPId(), op.getParentMatrixId());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(op.getParentMatrixKey(), OperationKey.valueOf(op), nRows));
+				List<Report> reportsList = ReportsList.getReportsList(testOpKey);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(testOpKey.getParentMatrixKey(), testOpKey, nRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -803,9 +799,10 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				parent.setFired(false);
-				List<Report> reportsList = ReportsList.getReportsList(op.getOPId(), op.getParentMatrixId());
+				List<Report> reportsList = ReportsList.getReportsList(testOpKey);
 				String reportFile = "";
 				for (int i = 0; i < reportsList.size(); i++) {
 					OPType reportType = reportsList.get(i).getReportType();
@@ -813,7 +810,7 @@ public final class ManhattanPlotZoom extends JPanel {
 						reportFile = reportsList.get(i).getFileName();
 					}
 				}
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(reportFile, OperationKey.valueOf(op)));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(reportFile, testOpKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

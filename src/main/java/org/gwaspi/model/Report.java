@@ -35,23 +35,17 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 @IdClass(ReportKey.class)
 @NamedQueries({
 	@NamedQuery(
-		name = "report_fetchById",
-		query = "SELECT r FROM Report r WHERE r.id = :id"),
+		name = "report_fetchByStudyIdParentMatrixId",
+		query = "SELECT r FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "report_fetchByParentOperationId",
-		query = "SELECT r FROM Report r WHERE r.parentOperationId = :parentOperationId"),
+		name = "report_fetchByStudyIdParentMatrixIdParentOperationId",
+		query = "SELECT r FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
 	@NamedQuery(
-		name = "report_fetchByParentMatrixId",
-		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
+		name = "report_deleteByStudyIdParentMatrixId",
+		query = "DELETE FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "report_fetchByParentMatrixIdParentOperationId",
-		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
-	@NamedQuery(
-		name = "report_deleteByParentMatrixId",
-		query = "DELETE FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
-	@NamedQuery(
-		name = "report_deleteByParentOperationId",
-		query = "DELETE FROM Report r WHERE r.parentOperationId = :parentOperationId"),
+		name = "report_deleteByStudyIdParentMatrixIdParentOperationId",
+		query = "DELETE FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
 })
 public class Report implements Serializable {
 

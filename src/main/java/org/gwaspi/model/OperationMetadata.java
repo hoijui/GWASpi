@@ -17,7 +17,6 @@
 
 package org.gwaspi.model;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -42,23 +41,23 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 @IdClass(OperationKey.class)
 @NamedQueries({
 	@NamedQuery(
-		name = "operationMetadata_fetchById",
-		query = "SELECT om FROM OperationMetadata om WHERE om.id = :id"),
+		name = "operationMetadata_listByStudyIdFriendlyName",
+		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.studyId = :studyId AND om.name = :name"),
 	@NamedQuery(
-		name = "operationMetadata_listByFriendlyName",
-		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.name = :name"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdOperationId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.id = :operationId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId"),
+		name = "operationMetadata_listByStudyIdParentMatrixId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdOperationId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.id = :operationId"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdOperationType",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.genotypeCode = :operationType"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdParentOperationId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdParentOperationId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdParentOperationIdOperationType",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdParentOperationIdOperationType",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
 })
 public class OperationMetadata implements DataSetMetadata, Serializable {
 

@@ -230,7 +230,7 @@ public class JPAMatrixService implements MatrixService {
 			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}
 
-		ReportsList.deleteReportByMatrixId(matrixKey);
+		ReportsList.deleteReportByMatrixKey(matrixKey);
 
 		// DELETE MATRIX NETCDF FILE
 		File matrixFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);

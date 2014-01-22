@@ -41,6 +41,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
@@ -134,9 +135,10 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationSubOperationsCombo(MatrixKey matrixKey, int parentOpId, OPType filterOpType, String title) throws IOException {
+	public static OperationMetadata showOperationSubOperationsCombo(OperationKey parentOpKey, OPType filterOpType, String title) throws IOException {
+
 		OperationMetadata selectedSubOp = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey.getMatrixId(), parentOpId);
+		List<OperationMetadata> operationsList = OperationsList.getOperations(parentOpKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();

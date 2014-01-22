@@ -34,32 +34,32 @@ public class OperationsList {
 	private OperationsList() {
 	}
 
-	public static OperationMetadata getById(int operationId) throws IOException {
-		return operationService.getOperation(operationId);
-	}
-
 	public static OperationMetadata getOperation(OperationKey operationKey) throws IOException {
 		return operationService.getOperation(operationKey);
 	}
 
-	public static List<OperationMetadata> getOperationsList(MatrixKey parentMatrixKey) throws IOException {
-		return operationService.getOperations(parentMatrixKey);
+	public static List<OperationMetadata> getOperationsList(MatrixKey origin) throws IOException {
+		return operationService.getOperations(origin);
 	}
 
-	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
-		return operationService.getOperations(parentMatrixId, parentOpId);
+	public static List<OperationMetadata> getOperationsList(MatrixKey origin, OPType opType) throws IOException {
+		return operationService.getOperations(origin, opType);
 	}
 
-	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
-		return operationService.getOperations(parentMatrixId, parentOpId, opType);
+	public static List<OperationMetadata> getOperations(OperationKey parent) throws IOException {
+		return operationService.getOperations(parent);
+	}
+
+	public static List<OperationMetadata> getOperationsList(OperationKey parent, OPType opType) throws IOException {
+		return operationService.getOperations(parent, opType);
 	}
 
 	public static List<OperationMetadata> getOperationsTable(MatrixKey parentMatrixKey) throws IOException {
 		return operationService.getOperations(parentMatrixKey);
 	}
 
-	public static List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException {
-		return operationService.getOperationAndSubOperations(operationKey);
+	public static List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException {
+		return operationService.getOperationAndSubOperations(rootOperationKey);
 	}
 
 	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
@@ -80,11 +80,7 @@ public class OperationsList {
 		operationService.deleteOperation(operationKey, deleteReports);
 	}
 
-	public static OperationMetadata getOperationMetadata(int opId) throws IOException {
-		return operationService.getOperation(opId);
-	}
-
-	public static List<OperationKey> getOperationKeysByName(String operationFriendlyName) throws IOException {
-		return operationService.getOperationKeysByName(operationFriendlyName);
+	public static List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException {
+		return operationService.getOperationKeysByName(studyKey, operationFriendlyName);
 	}
 }

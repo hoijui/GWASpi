@@ -262,12 +262,15 @@ public class OperationManager {
 		return nonoOPs;
 	}
 
-	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, int matrixId, int opId) {
+	/**
+	 * @deprected unused
+	 */
+	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, OperationKey operationKey) {
 
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId, opId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperations(operationKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();

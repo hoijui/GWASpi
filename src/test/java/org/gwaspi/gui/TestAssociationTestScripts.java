@@ -19,10 +19,14 @@ package org.gwaspi.gui;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
@@ -47,7 +51,14 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		String mapFileName = name + ".map";
 		String pedFileName = name + ".ped";
 
-		log.info("Run Hardy-Weinberg Test ({}, {}) ...", mapFileName, pedFileName);
+		final String dataSpecifier = mapFileName + ", " + pedFileName;
+
+		testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
+	}
+
+	private static List<OperationKey> testHardyWeinbergTest(Setup setup, MatrixKey matrixKey, String dataSpecifier) throws Exception {
+
+		log.info("Run Hardy-Weinberg Test ({}) ...", dataSpecifier);
 
 		String resBasePath = "/samples/";
 		String scriptFileName = "gwaspiScript_hardyWeinberg.txt";
@@ -64,33 +75,72 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		Map<String, String> substitutions = new HashMap<String, String>();
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
-		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
+		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixKey.getMatrixId()));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
-		File logFile = new File(setup.getTmpDir(), "log_test_hardyWeinberg_" + mapFileName + "_" + pedFileName + ".txt");
+		List<OperationMetadata> hwOpsBefore = OperationsList.getOperationsList(matrixKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsBefore = OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsBefore.addAll(OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+
+		File logFile = new File(setup.getTmpDir(), "log_test_hardyWeinberg_" + dataSpecifier.replaceAll("[, \t.]", "_") + ".txt");
 
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
 
-		log.info("Run Hardy-Weinberg Test ({}, {}) DONE.", mapFileName, pedFileName);
+		log.info("Run Hardy-Weinberg Test ({}) DONE.", dataSpecifier);
 
-		List<OperationMetadata> operationsTable = OperationsList.getOperationsTable(matrixKey);
-		log.info("available opeartions:");
-		for (OperationMetadata operationMetadata : operationsTable) {
-			log.info("\toperation id: {}, name: \"{}\"",
-					operationMetadata.getId(),
-					operationMetadata.getName());
+		if (log.isDebugEnabled()) {
+			List<OperationMetadata> operationsTable = OperationsList.getOperationsTable(matrixKey);
+			log.debug("available operations:");
+			for (OperationMetadata operationMetadata : operationsTable) {
+				log.debug("\toperation id: {}, name: \"{}\"",
+						operationMetadata.getId(),
+						operationMetadata.getName());
+			}
 		}
+
+		List<OperationMetadata> hwOpsAfter = OperationsList.getOperationsList(matrixKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsAfter = OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsAfter.addAll(OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+
+		OperationKey gtFreqOpKey = OperationKey.valueOf(extractElementsFromSecondNotInfirst(censusOpsBefore, censusOpsAfter).get(0)); // HACK
+		OperationKey hwOpKey = OperationKey.valueOf(extractElementsFromSecondNotInfirst(hwOpsBefore, hwOpsAfter).get(0)); // HACK
+
+		List<OperationKey> opKeys = new ArrayList<OperationKey>(2);
+		opKeys.add(gtFreqOpKey);
+		opKeys.add(hwOpKey);
+
+		return opKeys;
+	}
+
+	private static <T> List<T> extractElementsFromSecondNotInfirst(List<T> collectionSmall, List<T> collectionBig) throws Exception {
+
+		List<T> result = new LinkedList<T>();
+
+		for (T inBig : collectionBig) {
+			if (!collectionSmall.contains(inBig)) {
+				result.add(inBig);
+			}
+		}
+
+		return result;
 	}
 
 	private static void testCombiAssociationTest(Setup setup, String name) throws Exception {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
+		MatrixKey matrixKey = new MatrixKey(new StudyKey(setup.getStudyId()), matrixId);
 //		int gtFreqOpId = 3; // FIXME should not be hardcoded
 //		int hwOpId = 4; // FIXME should not be hardcoded
 
 		String mapFileName = name + ".map";
 		String pedFileName = name + ".ped";
+
+		final String dataSpecifier = mapFileName + ", " + pedFileName;
+
+		List<OperationKey> opKeys = testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
+		OperationKey gtFreqOpKey = opKeys.get(0);
+		OperationKey hwOpKey = opKeys.get(1);
 
 		log.info("Run Combi Association Test ({}, {}) ...", mapFileName, pedFileName);
 
@@ -110,8 +160,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
-//		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpId));
-//		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpId));
+		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpKey.getId()));
+		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpKey.getId()));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
@@ -126,7 +176,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	/**
 	 * Runs the Combi association Test on the "extra" dataset.
 	 */
-	@org.junit.Ignore
+//	@org.junit.Ignore
 	@Test
 	public void testCombiAssociationTest() throws Exception {
 

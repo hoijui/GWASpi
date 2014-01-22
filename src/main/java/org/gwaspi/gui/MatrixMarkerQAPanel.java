@@ -56,7 +56,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private final MatrixKey parentMatrixKey;
-	private final OperationMetadata currentOP;
+	private final OperationKey currentOPKey;
 	private final JButton btn_Back;
 	private final JButton btn_DeleteOperation;
 	private final JButton btn_Help;
@@ -72,9 +72,12 @@ public class MatrixMarkerQAPanel extends JPanel {
 		this.parentMatrixKey = parentMatrixKey;
 		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
+		final OperationMetadata currentOP;
 		if (opId != OperationKey.NULL_ID) {
-			currentOP = OperationsList.getById(opId);
+			this.currentOPKey = new OperationKey(parentMatrixKey, opId);
+			currentOP = OperationsList.getOperation(currentOPKey);
 		} else {
+			this.currentOPKey = null;
 			currentOP = null;
 		}
 
@@ -105,7 +108,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		if (opId != OperationKey.NULL_ID) {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
 					Text.Operation.operationId + ": "
-					+ ((currentOP == null) ? "<NONE>" : currentOP.getId()),
+					+ ((currentOPKey == null) ? "<NONE>" : currentOPKey.getId()),
 					TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION,
 					new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -121,7 +124,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
-		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrixKey));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOPKey, this));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
@@ -194,25 +197,23 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private final OperationMetadata currentOP;
+		private final OperationKey currentOPKey;
 		private final Component dialogParent;
-		private final MatrixKey parentMatrixKey;
 
-		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrix) {
+		DeleteOperationAction(OperationKey currentOPKey, Component dialogParent) {
 
-			this.currentOP = currentOP;
+			this.currentOPKey = currentOPKey;
 			this.dialogParent = dialogParent;
-			this.parentMatrixKey = parentMatrix;
-			setEnabled(currentOP != null);
+			setEnabled(currentOPKey != null);
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
-				OperationKey operationKey = OperationKey.valueOf(currentOP);
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
+				if (SwingWorkerItemList.permitsDeletionOf(currentOPKey)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -223,14 +224,12 @@ public class MatrixMarkerQAPanel extends JPanel {
 									deleteReport = true;
 								}
 								MultiOperations.deleteOperation(
-										operationKey,
+										currentOPKey,
 										deleteReport);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
 							}
-							if (OperationKey.valueOf(currentOP) == operationKey) { // XXX Is this not always true?
-								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-							}
+							GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 						}
 					}

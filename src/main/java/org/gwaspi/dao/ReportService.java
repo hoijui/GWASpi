@@ -20,6 +20,7 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportKey;
@@ -28,14 +29,15 @@ public interface ReportService {
 
 	Report getReport(ReportKey reportKey) throws IOException;
 
-	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (one has to be Integer.MIN_VALUE as it works now); ADDON: use DataSetKey?
-	List<Report> getReports(int parentOperationId, int parentMatrixId) throws IOException;
+	List<Report> getReports(MatrixKey parentMatrixKey) throws IOException;
+
+	List<Report> getReports(OperationKey parentOperationKey) throws IOException;
 
 	String getReportNamePrefix(OperationMetadata op); // TODO move somewhere else
 
 	void insertReport(Report report) throws IOException;
 
-	void deleteReportByMatrixId(MatrixKey parentMatrixKey) throws IOException;
+	void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException;
 
-	void deleteReportByOperationId(int parentOperationId) throws IOException;
+	void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException;
 }

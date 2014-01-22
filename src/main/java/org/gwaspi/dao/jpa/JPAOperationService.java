@@ -23,7 +23,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,30 +115,29 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public OperationMetadata getOperation(int operationId) throws IOException {
+	public List<OperationMetadata> getOperations(MatrixKey origin) throws IOException {
 
-		OperationMetadata operationMetadata = null;
+		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("operationMetadata_fetchById");
-			query.setParameter("id", operationId);
-			operationMetadata = (OperationMetadata) query.getSingleResult();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a operation-metadata by id: " + operationId
-					+ " (id not found)", ex);
+			Query query = em.createNamedQuery(
+					"operationMetadata_listByStudyIdParentMatrixId");
+			query.setParameter("studyId", origin.getStudyId());
+			query.setParameter("parentMatrixId", origin.getMatrixId());
+			operationsMetadata = query.getResultList();
 		} catch (Exception ex) {
-			LOG.error("Failed fetching a operation-metadata by id: " + operationId, ex);
+			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
 			close(em);
 		}
 
-		return operationMetadata;
+		return operationsMetadata;
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId) throws IOException {
+	public List<OperationMetadata> getOperations(MatrixKey origin, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -148,31 +145,9 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixIdParentOperationId");
-			query.setParameter("parentMatrixId", parentMatrixId);
-			query.setParameter("parentOperationId", parentOpId);
-			operations = query.getResultList();
-		} catch (Exception ex) {
-			LOG.error("Failed fetching operations", ex);
-		} finally {
-			close(em);
-		}
-
-		return operations;
-	}
-
-	@Override
-	public List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
-
-		List<OperationMetadata> operations = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixIdParentOperationIdOperationType");
-			query.setParameter("parentMatrixId", parentMatrixId);
-			query.setParameter("parentOperationId", parentOpId);
+					"operationMetadata_listByStudyIdParentMatrixIdOperationType");
+			query.setParameter("studyId", origin.getStudyId());
+			query.setParameter("parentMatrixId", origin.getMatrixId());
 			query.setParameter("operationType", opType);
 			operations = query.getResultList();
 		} catch (Exception ex) {
@@ -185,28 +160,54 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(MatrixKey parentMatrixKey) throws IOException {
+	public List<OperationMetadata> getOperations(OperationKey parent) throws IOException {
 
-		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
+		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixId");
-			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
-			operationsMetadata = query.getResultList();
+					"operationMetadata_listStudyIdByParentMatrixIdParentOperationId");
+			query.setParameter("studyId", parent.getStudyId());
+			query.setParameter("parentMatrixId", parent.getParentMatrixId());
+			query.setParameter("parentOperationId", parent.getId());
+			operations = query.getResultList();
 		} catch (Exception ex) {
-			LOG.error("Failed fetching operation-metadata", ex);
+			LOG.error("Failed fetching operations", ex);
 		} finally {
 			close(em);
 		}
 
-		return operationsMetadata;
+		return operations;
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException {
+	public List<OperationMetadata> getOperations(OperationKey parent, OPType opType) throws IOException {
+
+		List<OperationMetadata> operations = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query = em.createNamedQuery(
+					"operationMetadata_listByStudyIdParentMatrixIdParentOperationIdOperationType");
+			query.setParameter("studyId", parent.getStudyId());
+			query.setParameter("parentMatrixId", parent.getParentMatrixId());
+			query.setParameter("parentOperationId", parent.getId());
+			query.setParameter("operationType", opType);
+			operations = query.getResultList();
+		} catch (Exception ex) {
+			LOG.error("Failed fetching operations", ex);
+		} finally {
+			close(em);
+		}
+
+		return operations;
+	}
+
+	@Override
+	public List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -214,15 +215,17 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixIdOperationId");
-			query.setParameter("parentMatrixId", operationKey.getParentMatrixId());
-			query.setParameter("operationId", operationKey.getId());
+					"operationMetadata_listByStudyIdParentMatrixIdOperationId");
+			query.setParameter("studyId", rootOperationKey.getStudyId());
+			query.setParameter("parentMatrixId", rootOperationKey.getParentMatrixId());
+			query.setParameter("operationId", rootOperationKey.getId());
 			operationsMetadata = query.getResultList();
 
 			query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixIdParentOperationId");
-			query.setParameter("parentMatrixId", operationKey.getParentMatrixId());
-			query.setParameter("parentOperationId", operationKey.getId());
+					"operationMetadata_listByStudyIdParentMatrixIdParentOperationId");
+			query.setParameter("studyId", rootOperationKey.getStudyId());
+			query.setParameter("parentMatrixId", rootOperationKey.getParentMatrixId());
+			query.setParameter("parentOperationId", rootOperationKey.getId());
 			operationsMetadata.addAll(query.getResultList());
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
@@ -255,39 +258,36 @@ public class JPAOperationService implements OperationService {
 	@Override
 	public void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException {
 
-		final int opId = operationKey.getId();
 		final StudyKey studyKey = new StudyKey(operationKey.getStudyId());
 
 		try {
 			OperationMetadata op = getOperation(operationKey);
 
 			// delete child operations
-			List<OperationMetadata> operations = getOperations(op.getParentMatrixId(), opId);
-			if (!operations.isEmpty()) {
-				operations.add(op);
-				for (int i = 0; i < operations.size(); i++) {
-					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(operations.get(i)));
+			List<OperationMetadata> childOperations = getOperations(operationKey);
+			if (!childOperations.isEmpty()) {
+				childOperations.add(op);
+				for (int i = 0; i < childOperations.size(); i++) {
+					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(childOperations.get(i)));
+					final OperationKey childOperationKey = OperationKey.valueOf(childOperations.get(i));
 					if (deleteReports) {
-						ReportsList.deleteReportByOperationId(operations.get(i).getId());
+						ReportsList.deleteReportByOperationKey(childOperationKey);
 					}
 
 					EntityManager em = null;
-					int operationId = OperationKey.NULL_ID;
 					try {
 						em = open();
 						begin(em);
-						operationId = operations.get(i).getId();
-						OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
+						OperationMetadata operation = em.find(OperationMetadata.class, childOperationKey);
 						if (operation == null) {
-							throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
+							throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 						}
 						em.remove(operation);
 						commit(em);
 					} catch (Exception ex) {
 						rollback(em);
-						throw new IOException("Failed deleting operation by"
-								+ ": study-id: " + studyKey.getId()
-								+ ", operation-id: " + operationId,
+						throw new IOException("Failed deleting child operation by"
+								+ ": operation-key: " + childOperationKey.toRawIdString(),
 								ex);
 					} finally {
 						close(em);
@@ -296,7 +296,7 @@ public class JPAOperationService implements OperationService {
 			} else {
 				org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 				if (deleteReports) {
-					ReportsList.deleteReportByOperationId(opId);
+					ReportsList.deleteReportByOperationKey(operationKey);
 				}
 
 				EntityManager em = null;
@@ -305,14 +305,14 @@ public class JPAOperationService implements OperationService {
 					begin(em);
 					OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 					if (operation == null) {
-						throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
+						throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 					}
 					em.remove(operation);
 					commit(em);
 				} catch (Exception ex) {
 					rollback(em);
 					throw new IOException("Failed deleting operation by"
-							+ ": operation-id: " + opId,
+							+ ": operation-key: " + operationKey.toRawIdString(),
 							ex);
 				} finally {
 					close(em);
@@ -320,14 +320,13 @@ public class JPAOperationService implements OperationService {
 			}
 		} catch (Exception ex) {
 			// PURGE INEXISTING OPERATIONS FROM DB
-			OperationMetadata op = getOperation(opId);
 			EntityManager em = null;
 			try {
 				em = open();
 				begin(em);
 				OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 				if (operation == null) {
-					throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
+					throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 				}
 				em.remove(operation);
 				commit(em);
@@ -335,7 +334,7 @@ public class JPAOperationService implements OperationService {
 				rollback(em);
 				throw new IOException("Failed deleting operation by"
 						+ ": study-id: " + studyKey.getId()
-						+ ", operation-id: " + opId,
+						+ ": operation-key: " + operationKey.toRawIdString(),
 						exi);
 			} finally {
 				close(em);
@@ -360,7 +359,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationKey> getOperationKeysByName(String operationName) throws IOException {
+	public List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationName) throws IOException {
 
 		List<OperationKey> operations = Collections.EMPTY_LIST;
 
@@ -368,7 +367,8 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_listByFriendlyName");
+					"operationMetadata_listByStudyIdFriendlyName");
+			query.setParameter("studyId", studyKey.getId());
 			query.setParameter("name", operationName);
 			operations = convertFieldsToOperationKeys(query.getResultList());
 		} catch (NoResultException ex) {

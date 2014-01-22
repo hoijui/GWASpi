@@ -170,7 +170,7 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createOperationTreeNode(OperationKey operationKey) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			OperationMetadata op = OperationsList.getById(operationKey.getId());
+			OperationMetadata op = OperationsList.getOperation(operationKey);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentMatrixId(),
 					operationKey.getId(),
@@ -194,7 +194,7 @@ public class GWASpiExplorerNodes {
 //			studyNodeName
 //			nodeUniqueName
 
-			OperationMetadata op = OperationsList.getById(operationKey.getId());
+			OperationMetadata op = OperationsList.getOperation(operationKey);
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
@@ -373,7 +373,7 @@ public class GWASpiExplorerNodes {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 				// GET ALL REPORTS UNDER THIS OPERATION
-				List<Report> reportsList = ReportsList.getReportsList(parentOpKey.getId(), MatrixKey.NULL_ID);
+				List<Report> reportsList = ReportsList.getReportsList(parentOpKey);
 				for (int n = 0; n < reportsList.size(); n++) {
 					Report rp = reportsList.get(n);
 

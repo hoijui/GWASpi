@@ -112,7 +112,7 @@ public class Report_AnalysisPanel extends JPanel {
 				.addContainerGap(6, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		List<Report> reportsList = ReportsList.getReportsList(operationKey.getId(), parentMatrixKey.getMatrixId());
+		List<Report> reportsList = ReportsList.getReportsList(operationKey);
 		JPanel pnl_ReportTmp = null;
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();

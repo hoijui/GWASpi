@@ -406,7 +406,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 						OperationKey hwOPKey = null;
 						// GET HW OPERATION
-						List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
+						List<OperationMetadata> hwOperations = OperationsList.getOperationsList(censusOPKey, OPType.HARDY_WEINBERG);
 						for (OperationMetadata currentHWop : hwOperations) {
 							// REQUEST WHICH HW TO USE
 							// FIXME this looks strange.. just use the last one?
@@ -422,6 +422,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
 								combiTestParams = new CombiTestParams(
 										parentMatrixKey,
+										censusOPKey,
 										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);

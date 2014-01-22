@@ -24,7 +24,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -128,7 +127,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int operationId = Integer.parseInt(idValue);
 			return new OperationKey(parentMatrixKey, operationId);
 		} else {
-			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(nameValue);
+			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(parentMatrixKey.getStudyKey(), nameValue);
 			return operationKeysByName.isEmpty() ? null : operationKeysByName.get(0);
 		}
 	}
