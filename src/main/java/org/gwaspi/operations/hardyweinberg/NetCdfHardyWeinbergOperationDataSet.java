@@ -91,7 +91,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	private ArrayDouble.D1 netCdfExpHetzys;
 
 	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
-		super(true, operationKey.getParentMatrixKey(), parent, operationKey);
+		super(true, origin, parent, operationKey);
 
 		this.hardyWeinbergName = null;
 		this.markerCensusOperationKey = null;

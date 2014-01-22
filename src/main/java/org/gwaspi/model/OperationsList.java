@@ -63,12 +63,15 @@ public class OperationsList {
 	}
 
 	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
+
 		OperationKey result = null;
+
 		for (int i = 0; i < operations.size(); i++) {
-			if (operations.get(i).getOperationType().equals(OPType.MARKER_QA)) {
+			if (operations.get(i).getOperationType().equals(opType)) {
 				result = OperationKey.valueOf(operations.get(i));
 			}
 		}
+
 		return result;
 	}
 

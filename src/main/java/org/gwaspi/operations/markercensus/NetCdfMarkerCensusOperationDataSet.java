@@ -159,13 +159,17 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		allelesSpace.add(gtStrideDim);
 
 		// Define OP Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
 
 		// Define Genotype Variables
-		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.BYTE, allelesSpace);
 		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
 	}
 
@@ -270,6 +274,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		Collection<MarkerCensusOperationEntry> entries
 				= new ArrayList<MarkerCensusOperationEntry>(knownAlleles.size());
 		Iterator<byte[]> knownAllelesIt = knownAlleles.iterator();
+		Iterator<Census> censusesControlIt = censusesControl.values().iterator();
+		Iterator<Census> censusesAlternateIt = censusesAlternate.values().iterator();
 		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 			Integer origIndex = origIndicesAndKey.getKey();
 			entries.add(new DefaultMarkerCensusOperationEntry(
@@ -279,8 +285,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 					new CensusFull(
 							null, // XXX
 							null, // XXX
-							censusesControl.get(origIndex),
-							censusesAlternate.get(origIndex))));
+							censusesControlIt.next(),
+							censusesAlternateIt.next())));
 		}
 
 		return entries;
