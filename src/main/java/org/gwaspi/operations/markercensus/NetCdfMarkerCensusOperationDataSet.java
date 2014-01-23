@@ -42,7 +42,6 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -61,6 +60,28 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCASE: marker census - case [Collection<Census.case>]
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
+
+
+	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
+	static {
+		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
+		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
+		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
+		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
+	}
+
+	private static final Map<Category, String> categoryNetCdfVarNameWithoutAll = new EnumMap<Category, String>(Category.class);
+	static {
+		categoryNetCdfVarNameWithoutAll.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+		categoryNetCdfVarNameWithoutAll.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+		categoryNetCdfVarNameWithoutAll.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+	}
+
+	private static final Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
+	static {
+		categoryNetCdfVarName.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+		categoryNetCdfVarName.putAll(categoryNetCdfVarNameWithoutAll);
+	}
 
 	private String censusName;
 	private File phenoFile;
@@ -220,42 +241,45 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		return knownAlleles;
 	}
 
-	public Collection<Integer> getCensusMarkerIndices(Category category, int from, int to) throws IOException {
+	public List<Integer> getCensusMarkerIndices(Category category, int from, int to) throws IOException {
 
-		Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
-		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
-		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
-		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
-		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
-
-		Collection<Integer> categoryCensusOrigIndices = new ArrayList<Integer>(0);
+		List<Integer> categoryCensusOrigIndices = new ArrayList<Integer>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarIdx.get(category), from, to, categoryCensusOrigIndices, null);
 
 		return categoryCensusOrigIndices;
 	}
 
-	public Collection<Integer> getCensusMarkerIndices(Category category) throws IOException {
+	public List<Integer> getCensusMarkerIndices(Category category) throws IOException {
 		return getCensusMarkerIndices(category, -1, -1);
+	}
+
+	public List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
+
+		Collection<int[]> censusesRaw = new ArrayList<int[]>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarName.get(category), from, to, censusesRaw, null);
+
+		List<Census> censusesData = new ArrayList<Census>(censusesRaw.size());
+		for (int[] censusRaw : censusesRaw) {
+			censusesData.add(new Census(censusRaw));
+		}
+
+		return censusesData;
+	}
+
+	public List<Census> getCensusMarkerData(Category category) throws IOException {
+		return getCensusMarkerData(category, -1, -1);
 	}
 
 	@Override
 	public Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException {
 
-		Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
-		categoryNetCdfVarName.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-		categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-		categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-		categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+		List<Integer> categoryCensusOrigIndices = getCensusMarkerIndices(category, from, to);
+		List<Census> censusesData = getCensusMarkerData(category, from, to);
 
-		Collection<Integer> categoryCensusOrigIndices = getCensusMarkerIndices(category, from, to);
-
-		Collection<int[]> censusesRaw = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarName.get(category), from, to, censusesRaw, null);
-
-		Map<Integer, Census> censuses = new LinkedHashMap<Integer, Census>(censusesRaw.size());
+		Map<Integer, Census> censuses = new LinkedHashMap<Integer, Census>(censusesData.size());
 		Iterator<Integer> categoryCensusOrigIndicesIt = categoryCensusOrigIndices.iterator();
-		for (int[] censusRaw : censusesRaw) {
-			censuses.put(categoryCensusOrigIndicesIt.next(), new Census(censusRaw));
+		for (Census censusData : censusesData) {
+			censuses.put(categoryCensusOrigIndicesIt.next(), censusData);
 		}
 
 		return censuses;
@@ -335,11 +359,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				netCdfCensusAlls.setInt(indexObj.set(index, 3), censusAll.getMissingCount());
 				getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
 
-				Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
-				categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-				categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-				categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
-				for (Map.Entry<Category, String> censusEntry : categoryNetCdfVarName.entrySet()) {
+				for (Map.Entry<Category, String> censusEntry : categoryNetCdfVarNameWithoutAll.entrySet()) {
 					Census census = entry.getCensus().getCategoryCensus().get(censusEntry.getKey());
 					indexObj = netCdfCensusesRest.getIndex().set(index);
 					netCdfCensusesRest.setInt(indexObj.set(index, 0), census.getAA());

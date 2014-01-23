@@ -165,7 +165,6 @@ public class Report_SampleInfoPanel extends JPanel {
 		actionLoadReport();
 	}
 
-	//private void actionLoadReport(ActionEvent evt) {
 	private void actionLoadReport() throws IOException {
 
 		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
@@ -212,9 +211,6 @@ public class Report_SampleInfoPanel extends JPanel {
 		TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
 		tbl_ReportTable.setModel(model);
 
-		//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-//		if (!cGlobal.OSNAME.contains("Windows")) {
-//			RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 		TableRowSorter sorter = new TableRowSorter(model) {
 			Comparator<Object> comparator = new Comparator<Object>() {
 				public int compare(Object o1, Object o2) {
@@ -248,11 +244,10 @@ public class Report_SampleInfoPanel extends JPanel {
 		};
 
 		tbl_ReportTable.setRowSorter(sorter);
-//		}
-		//</editor-fold>
 	}
 
 	private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
+
 		try {
 			String reportPath = Study.constructReportsPath(studyKey);
 			File origFile = new File(reportPath + chartPath);

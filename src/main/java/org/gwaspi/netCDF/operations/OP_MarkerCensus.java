@@ -198,6 +198,8 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
 						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
+				List<Sex> samplesSex = ;
+				List<Affection> samplesAffection = ;
 
 				// Iterate through markerset, take it marker by marker
 //				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
@@ -276,11 +278,18 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 
 					// Get a sample-set full of GTs
 					Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
-					for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
+//					Iterator<Sex> samplesSexIt = samplesSex.iterator();
+					Iterator<Affection> samplesAffectionIt = samplesAffection.iterator();
+//					for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+					for (Sex sex : samplesSex) {
+//						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
+//						Sex sex = sampleInfo.getSex();
+//						Affection affection = sampleInfo.getAffection();
+//						Sex sex = samplesSexIt.next();
+						Affection affection = samplesAffectionIt.next();
 
 						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sampleInfo.getSex());
+						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sex);
 
 						float counter = 1;
 //						if (decision == CensusDecision.CountMalesNonAutosomally) {
@@ -295,7 +304,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 								decision,
 								knownAlleles,
 								allSamplesGTsTable,
-								sampleInfo.getAffection(),
+								affection,
 								caseSamplesGTsTable,
 								ctrlSamplesGTsTable,
 								hwSamplesGTsTable,

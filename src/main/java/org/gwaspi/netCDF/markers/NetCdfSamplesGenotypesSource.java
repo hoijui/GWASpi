@@ -49,7 +49,7 @@ import ucar.nc2.Variable;
  * The matrix netCDF file is opened at creation of the MarkerSet and closed
  * at finalization of the class. No need to pass a netCDF handler anymore.
  */
-public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesList> implements SamplesGenotypesSource {
+public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements SamplesGenotypesSource {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfSamplesGenotypesSource.class);

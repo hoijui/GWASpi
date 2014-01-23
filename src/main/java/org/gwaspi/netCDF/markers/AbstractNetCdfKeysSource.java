@@ -26,7 +26,7 @@ import java.util.Map;
 import org.gwaspi.model.KeyFactory;
 import ucar.nc2.NetcdfFile;
 
-public abstract class AbstractNetCdfKeysSource<KT> extends AbstractListSource<KT> {
+public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSource<KT> {
 
 	private final String varOriginalIndices;
 	private final String varKeys;

@@ -28,7 +28,7 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
 import ucar.nc2.NetcdfFile;
 
-public class NetCdfSamplesInfosSource extends AbstractListSource<SampleInfo> implements SamplesInfosSource {
+public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInfo> implements SamplesInfosSource {
 
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
@@ -97,6 +97,11 @@ public class NetCdfSamplesInfosSource extends AbstractListSource<SampleInfo> imp
 	}
 
 	@Override
+	public List<Integer> getSampleOrigIndices() throws IOException {
+		return getSampleOrigIndices(-1, -1);
+	}
+
+	@Override
 	public List<SampleKey> getSampleKeys() throws IOException {
 		return getSampleKeys(-1, -1);
 	}
@@ -159,6 +164,11 @@ public class NetCdfSamplesInfosSource extends AbstractListSource<SampleInfo> imp
 	@Override
 	public List<Integer> getStatuses() throws IOException {
 		return getStatuses(-1, -1);
+	}
+
+	@Override
+	public List<Integer> getSampleOrigIndices(int from, int to) throws IOException {
+		return new NoStorageSuccessiveIndicesList(from, to - from);
 	}
 
 	@Override

@@ -36,7 +36,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesList> implements MarkersGenotypesSource {
+public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements MarkersGenotypesSource {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);

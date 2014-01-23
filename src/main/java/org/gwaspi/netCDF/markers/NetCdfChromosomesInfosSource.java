@@ -25,7 +25,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomesInfosSource;
 import ucar.nc2.NetcdfFile;
 
-public class NetCdfChromosomesInfosSource extends AbstractListSource<ChromosomeInfo> implements ChromosomesInfosSource {
+public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<ChromosomeInfo> implements ChromosomesInfosSource {
 
 	/**
 	 * As we have max 23 chromosomes, in general,

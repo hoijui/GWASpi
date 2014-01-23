@@ -27,7 +27,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import ucar.nc2.NetcdfFile;
 
-public class NetCdfMarkersMetadataSource extends AbstractListSource<MarkerMetadata> implements MarkersMetadataSource {
+public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<MarkerMetadata> implements MarkersMetadataSource {
 
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
