@@ -42,7 +42,6 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -61,6 +60,23 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCASE: marker census - case [Collection<Census.case>]
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
+
+
+	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
+	static {
+		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
+		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
+		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
+		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
+	}
+
+	private static final Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
+	static {
+		categoryNetCdfVarName.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+		categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+		categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+		categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+	}
 
 	private String censusName;
 	private File phenoFile;
@@ -222,12 +238,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	public Collection<Integer> getCensusMarkerIndices(Category category, int from, int to) throws IOException {
 
-		Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
-		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
-		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
-		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
-		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
-
 		Collection<Integer> categoryCensusOrigIndices = new ArrayList<Integer>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarIdx.get(category), from, to, categoryCensusOrigIndices, null);
 
@@ -240,12 +250,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	@Override
 	public Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException {
-
-		Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
-		categoryNetCdfVarName.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-		categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-		categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-		categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 
 		Collection<Integer> categoryCensusOrigIndices = getCensusMarkerIndices(category, from, to);
 
