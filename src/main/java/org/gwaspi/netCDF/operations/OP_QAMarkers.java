@@ -30,16 +30,10 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.model.SampleInfoList;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
@@ -109,17 +103,19 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			// INIT MARKER AND SAMPLE INFO
 //			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
-			Map<SampleKey, Sex> samplesInfoMap = new LinkedHashMap<SampleKey, Sex>();
-			SamplesKeysSource rdSampleKeys = rdDataSetSource.getSamplesKeysSource();
-			for (SampleInfo sampleInfo : sampleInfos) {
-				SampleKey tempSampleId = sampleInfo.getKey();
-				if (rdSampleKeys.contains(tempSampleId)) {
-					Sex sex = sampleInfo.getSex();
-					samplesInfoMap.put(tempSampleId, sex);
-				}
-			}
-			sampleInfos.clear();
+//			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
+//			Map<SampleKey, Sex> samplesInfoMap = new LinkedHashMap<SampleKey, Sex>();
+//			SamplesKeysSource rdSampleKeys = rdDataSetSource.getSamplesKeysSource();
+//			for (SampleInfo sampleInfo : sampleInfos) {
+//				SampleKey tempSampleId = sampleInfo.getKey();
+//				if (rdSampleKeys.contains(tempSampleId)) {
+//					Sex sex = sampleInfo.getSex();
+//					samplesInfoMap.put(tempSampleId, sex);
+//				}
+//			}
+//			sampleInfos.clear();
+//			List<Sex> sampleSexes = samplesInfoMap.values();
+			List<Sex> sampleSexes = rdDataSetSource.getSamplesInfosSource().getSexes();
 
 			// Iterate through markerset, take it marker by marker
 			Iterator<GenotypesList> markersGenotypesSourceIt = rdDataSetSource.getMarkersGenotypesSource().iterator();
@@ -134,20 +130,20 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 				// Get a sampleset-full of GTs
 				byte[] tempGT = new byte[2];
-				Iterator<byte[]> markerGenotypesIt = markerGenotypes.iterator();
-				for (SampleKey sampleKey : rdDataSetSource.getSamplesKeysSource()) {
-					byte[] genotype = markerGenotypesIt.next();
+				Iterator<byte[]> markerSamplesGenotypesIt = markerGenotypes.iterator();
+				for (Sex sampleSex : sampleSexes) {
+					byte[] markerSampleGenotype = markerSamplesGenotypesIt.next();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(genotype), samplesInfoMap.get(sampleKey));
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(markerSampleGenotype), sampleSex);
 					//</editor-fold>
 
 					//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">
 					float counter = 1;
 //					byte[] tempGT = genotype;
 //					byte[] tempGT = genotype.clone();
-					tempGT[0] = genotype[0];
-					tempGT[1] = genotype[1];
+					tempGT[0] = markerSampleGenotype[0];
+					tempGT[1] = markerSampleGenotype[1];
 					// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 					// 48 is byte for 0
 					// 65 is byte for A

@@ -17,7 +17,6 @@
 
 package org.gwaspi.model;
 
-
 import java.io.IOException;
 
 /**

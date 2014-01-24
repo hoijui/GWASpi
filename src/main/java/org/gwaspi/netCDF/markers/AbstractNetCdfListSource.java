@@ -28,9 +28,7 @@ import ucar.nc2.NetcdfFile;
 /**
  * TODO
  */
-public abstract class AbstractListSource<VT> extends AbstractList<VT> {
-
-//	private static final int DEFAULT_CHUNK_SIZE = 100;
+public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 
 	private final int chunkSize;
 	private final String varNameDimension;
@@ -40,7 +38,7 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 	private int loadedChunkNumber;
 	private List<VT> loadedChunk;
 
-	private AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
+	private AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
 
 		this.chunkSize = chunkSize;
 		this.varNameDimension = varNameDimension;
@@ -51,11 +49,11 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 		this.loadedChunk = null;
 	}
 
-	AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
+	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
 		this(rdNetCdfFile, chunkSize, null, varNameDimension);
 	}
 
-	AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices) {
+	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices) {
 		this(rdNetCdfFile, chunkSize, originalIndices, null);
 	}
 

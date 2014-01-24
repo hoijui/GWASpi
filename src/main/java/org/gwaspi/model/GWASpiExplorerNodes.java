@@ -153,7 +153,9 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createSampleInfoTreeNode(StudyKey studyKey) throws IOException {
+
 		DefaultMutableTreeNode tn = null;
+
 		// CHECK IF STUDY EXISTS
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 		if (!sampleInfos.isEmpty()) {
@@ -164,6 +166,7 @@ public class GWASpiExplorerNodes {
 					Text.App.treeSampleInfo,
 					studyKey)); // nodeUniqueName
 		}
+
 		return tn;
 	}
 
