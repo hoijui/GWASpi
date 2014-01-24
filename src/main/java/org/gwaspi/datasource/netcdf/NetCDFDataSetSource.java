@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.markers;
+package org.gwaspi.datasource.netcdf;
 
 import java.io.File;
 import java.io.IOException;

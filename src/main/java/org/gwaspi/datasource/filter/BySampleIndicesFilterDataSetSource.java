@@ -60,8 +60,8 @@ public class BySampleIndicesFilterDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public MarkersMetadataSource getMarkersMetadatasSource() {
-		return markersMetadatasSource;
+	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
+		return parent.getMarkersMetadatasSource();
 	}
 
 	@Override

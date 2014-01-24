@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.markers;
+package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.markers.NoStorageSuccessiveIndicesList;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInfo> implements SamplesInfosSource {

@@ -39,13 +39,13 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
@@ -122,8 +122,9 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			// THERE IS DATA LEFT TO PROCESS AFTER PICKING
 
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
-			MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
+//			MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
 
+//			QASamplesOperationDataSet dataSetSource = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 			DataSetSource dataSetSource = getParentDataSetSource();
 
 //			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
@@ -133,10 +134,9 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
-			QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
-			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamplesKeysSource().getIndicesMap().entrySet()) {
-				if (!excludeSamplesOrigIndexAndKey.containsKey(qaSampleOrigIndexKey.getKey())) {
-					wrSampleKeys.put(qaSampleOrigIndexKey.getKey(), qaSampleOrigIndexKey.getValue());
+			for (Map.Entry<Integer, SampleKey> origIndexKey : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+				if (!excludeSamplesOrigIndexAndKey.containsKey(origIndexKey.getKey())) {
+					wrSampleKeys.put(origIndexKey.getKey(), origIndexKey.getValue());
 				}
 			}
 			//</editor-fold>
@@ -196,10 +196,10 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //				writeMetadata(dataSet, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
-						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
-				List<Sex> samplesSex = ;
-				List<Affection> samplesAffection = ;
+				List<Sex> samplesSex = new ArrayList<Sex>(wrSampleKeys.size());
+				List<Affection> samplesAffection = new ArrayList<Affection>(wrSampleKeys.size());
+				/*Map<SampleKey, SampleInfo> samplesInfoMap = */
+				fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleKeys.keySet(), samplesSex, samplesAffection);
 
 				// Iterate through markerset, take it marker by marker
 //				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
@@ -739,56 +739,111 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		return newMissingCount;
 	}
 
-	private Map<SampleKey, SampleInfo> fetchSampleInfo(
-			StudyKey studyKey,
-			MatrixMetadata rdMatrixMetadata,
-			Collection<SampleKey> wrSampleKeys)
+	private static Map<SampleKey, SampleInfo> readSampleInfosFromPhenoFile(StudyKey studyKey, File phenoFile) throws IOException {
+
+		Map<SampleKey, SampleInfo> samplesInfos = new LinkedHashMap<SampleKey, SampleInfo>();
+
+		FileReader phenotypeFR = new FileReader(phenoFile); // Pheno file has SampleInfo format!
+		BufferedReader phenotypeBR = new BufferedReader(phenotypeFR);
+
+		/*String header = */phenotypeBR.readLine(); // ignore header block
+		String l;
+		while ((l = phenotypeBR.readLine()) != null) {
+			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+			SampleInfo info = new SampleInfo(
+					studyKey,
+					cVals[GWASpi.sampleId],
+					cVals[GWASpi.familyId],
+					Sex.parse(cVals[GWASpi.sex]),
+					Affection.parse(cVals[GWASpi.affection]));
+			samplesInfos.put(info.getKey(), info);
+		}
+		phenotypeBR.close();
+
+		return samplesInfos;
+	}
+
+	private static void augment(
+			Collection<SampleKey> toKeepSampleKeys,
+			Map<SampleKey, SampleInfo> sampleInfosToComplete,
+			Map<SampleKey, SampleInfo> sampleInfosSource)
 			throws IOException
 	{
-		Map<SampleKey, SampleInfo> samplesInfoMap = new LinkedHashMap<SampleKey, SampleInfo>();
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey()); // XXX can probably be replaced by dataSetSource.getSampleInfosSource()
+		// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
+		for (SampleKey sampleKey : wrSampleKeys) {
+			if (!sampleInfosToComplete.containsKey(sampleKey)) {
+				SampleInfo info = new SampleInfo();
+				for (SampleInfo sampleInfo : sampleInfosSource) {
+					SampleKey tmpSampleKey = sampleInfo.getKey();
+					if (tmpSampleKey.equals(sampleKey)) {
+						info = sampleInfo;
+						break;
+					}
+				}
+				sampleInfosToComplete.put(sampleKey, info);
+			}
+		}
+	}
+
+	private Map<SampleKey, SampleInfo> fetchSampleInfo(
+			StudyKey studyKey,
+			DataSetSource dataSetSource,
+//			List<SampleKey> toKeepSampleKeys,
+			Collection<Integer> toKeepSampleOrigIndices,
+			List<Sex> samplesSex,
+			List<Affection> samplesAffection)
+			throws IOException
+	{
+		Map<SampleKey, SampleInfo> sampleInfos = new LinkedHashMap<SampleKey, SampleInfo>();
 		if (phenoFile == null) {
-			for (SampleInfo sampleInfo : sampleInfos) {
-				SampleKey tempSampleKey = sampleInfo.getKey();
-				if (wrSampleKeys.contains(tempSampleKey)) {
-					samplesInfoMap.put(tempSampleKey, sampleInfo);
+			SamplesInfosSource samplesInfosSource = dataSetSource.getSamplesInfosSource();
+			Iterator<Integer> allSampleOrigIndicesIt = dataSetSource.getSamplesKeysSource().getIndices().iterator();
+			Iterator<Sex> allSexesIt = samplesInfosSource.getSexes().iterator();
+			Iterator<Affection> allAffectionsIt = samplesInfosSource.getAffections().iterator();
+			for (Integer toKeepSampleOrigIndex : toKeepSampleOrigIndices) {
+				Integer curOrigIndex = allSampleOrigIndicesIt.next();
+				Sex curSex = allSexesIt.next();
+				Affection curAffection = allAffectionsIt.next();
+				if (curOrigIndex == toKeepSampleOrigIndex) {
+					samplesSex.add(curSex);
+					samplesAffection.add(curAffection);
 				}
 			}
+//			for (SampleInfo sampleInfo : sampleInfosFromDB) {
+//				SampleKey tempSampleKey = sampleInfo.getKey();
+//				if (wrSampleKeys.contains(tempSampleKey)) {
+//					sampleInfos.put(tempSampleKey, sampleInfo);
+//				}
+//			}
 		} else {
-			FileReader phenotypeFR = new FileReader(phenoFile); // Pheno file has SampleInfo format!
-			BufferedReader phenotypeBR = new BufferedReader(phenotypeFR);
+			XXX; // we need only the samples in toKeepSampleOrigIndices!
+//			List<SampleInfo> sampleInfosFromDB = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey); // XXX can probably be replaced by dataSetSource.getSampleInfosSource()
+			sampleInfos.putAll(sampleInfos);
+			sampleInfos.putAll(readSampleInfosFromPhenoFile(studyKey, phenoFile));
+			augment(wrSampleKeys, sampleInfos, sampleInfosFromDB);
 
-			/*String header = */phenotypeBR.readLine(); // ignore header block
-			String l;
-			while ((l = phenotypeBR.readLine()) != null) {
-				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				SampleInfo info = new SampleInfo(
-						studyKey,
-						cVals[GWASpi.sampleId],
-						cVals[GWASpi.familyId],
-						Sex.parse(cVals[GWASpi.sex]),
-						Affection.parse(cVals[GWASpi.affection]));
-				samplesInfoMap.put(info.getKey(), info);
+			dataSetSource.getSamplesInfosSource().getSampleOrigIndices()
+			for (Integer toKeepSampleOrigIndex : toKeepSampleOrigIndices) {
+
 			}
-			phenotypeBR.close();
+
 			// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
 			for (SampleKey sampleKey : wrSampleKeys) {
-				if (!samplesInfoMap.containsKey(sampleKey)) {
-					String sex = "0";
+				if (!sampleInfos.containsKey(sampleKey)) {
 					SampleInfo info = new SampleInfo();
-					for (SampleInfo sampleInfo : sampleInfos) {
+					for (SampleInfo sampleInfo : sampleInfosFromDB) {
 						SampleKey tmpSampleKey = sampleInfo.getKey();
 						if (tmpSampleKey.equals(sampleKey)) {
 							info = sampleInfo;
 							break;
 						}
 					}
-					samplesInfoMap.put(sampleKey, info);
+					sampleInfos.put(sampleKey, info);
 				}
 			}
 		}
 
-		return samplesInfoMap;
+		return sampleInfos;
 	}
 
 //	private void writeMetadata(
