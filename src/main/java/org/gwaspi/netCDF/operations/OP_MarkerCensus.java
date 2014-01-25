@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
@@ -43,7 +43,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
@@ -139,6 +138,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 					wrSampleKeys.put(origIndexKey.getKey(), origIndexKey.getValue());
 				}
 			}
+			List<Integer> wrSampleOrigIndices = new ArrayList<Integer>(wrSampleKeys.keySet());
 			//</editor-fold>
 
 //			NetcdfFileWriteable wrNcFile = null;
@@ -199,7 +199,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				List<Sex> samplesSex = new ArrayList<Sex>(wrSampleKeys.size());
 				List<Affection> samplesAffection = new ArrayList<Affection>(wrSampleKeys.size());
 				/*Map<SampleKey, SampleInfo> samplesInfoMap = */
-				fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleKeys.keySet(), samplesSex, samplesAffection);
+				fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, samplesSex, samplesAffection);
 
 				// Iterate through markerset, take it marker by marker
 //				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
@@ -763,38 +763,38 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		return samplesInfos;
 	}
 
-	private static void augment(
-			Collection<SampleKey> toKeepSampleKeys,
-			Map<SampleKey, SampleInfo> sampleInfosToComplete,
-			Map<SampleKey, SampleInfo> sampleInfosSource)
-			throws IOException
-	{
-		// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-		for (SampleKey sampleKey : wrSampleKeys) {
-			if (!sampleInfosToComplete.containsKey(sampleKey)) {
-				SampleInfo info = new SampleInfo();
-				for (SampleInfo sampleInfo : sampleInfosSource) {
-					SampleKey tmpSampleKey = sampleInfo.getKey();
-					if (tmpSampleKey.equals(sampleKey)) {
-						info = sampleInfo;
-						break;
-					}
-				}
-				sampleInfosToComplete.put(sampleKey, info);
-			}
-		}
-	}
+//	private static void augment(
+//			Collection<SampleKey> toKeepSampleKeys,
+//			Map<SampleKey, SampleInfo> sampleInfosToComplete,
+//			Map<SampleKey, SampleInfo> sampleInfosSource)
+//			throws IOException
+//	{
+//		// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
+//		for (SampleKey sampleKey : wrSampleKeys) {
+//			if (!sampleInfosToComplete.containsKey(sampleKey)) {
+//				SampleInfo info = new SampleInfo();
+//				for (SampleInfo sampleInfo : sampleInfosSource) {
+//					SampleKey tmpSampleKey = sampleInfo.getKey();
+//					if (tmpSampleKey.equals(sampleKey)) {
+//						info = sampleInfo;
+//						break;
+//					}
+//				}
+//				sampleInfosToComplete.put(sampleKey, info);
+//			}
+//		}
+//	}
 
-	private Map<SampleKey, SampleInfo> fetchSampleInfo(
+	private /*Map<SampleKey, SampleInfo>*/void fetchSampleInfo(
 			StudyKey studyKey,
 			DataSetSource dataSetSource,
 //			List<SampleKey> toKeepSampleKeys,
-			Collection<Integer> toKeepSampleOrigIndices,
+			List<Integer> toKeepSampleOrigIndices,
 			List<Sex> samplesSex,
 			List<Affection> samplesAffection)
 			throws IOException
 	{
-		Map<SampleKey, SampleInfo> sampleInfos = new LinkedHashMap<SampleKey, SampleInfo>();
+//		Map<SampleKey, SampleInfo> sampleInfos = new LinkedHashMap<SampleKey, SampleInfo>();
 		if (phenoFile == null) {
 			SamplesInfosSource samplesInfosSource = dataSetSource.getSamplesInfosSource();
 			Iterator<Integer> allSampleOrigIndicesIt = dataSetSource.getSamplesKeysSource().getIndices().iterator();
@@ -816,34 +816,40 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //				}
 //			}
 		} else {
-			XXX; // we need only the samples in toKeepSampleOrigIndices!
-//			List<SampleInfo> sampleInfosFromDB = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey); // XXX can probably be replaced by dataSetSource.getSampleInfosSource()
-			sampleInfos.putAll(sampleInfos);
-			sampleInfos.putAll(readSampleInfosFromPhenoFile(studyKey, phenoFile));
-			augment(wrSampleKeys, sampleInfos, sampleInfosFromDB);
-
-			dataSetSource.getSamplesInfosSource().getSampleOrigIndices()
-			for (Integer toKeepSampleOrigIndex : toKeepSampleOrigIndices) {
-
-			}
-
-			// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-			for (SampleKey sampleKey : wrSampleKeys) {
-				if (!sampleInfos.containsKey(sampleKey)) {
-					SampleInfo info = new SampleInfo();
-					for (SampleInfo sampleInfo : sampleInfosFromDB) {
-						SampleKey tmpSampleKey = sampleInfo.getKey();
-						if (tmpSampleKey.equals(sampleKey)) {
-							info = sampleInfo;
-							break;
-						}
-					}
-					sampleInfos.put(sampleKey, info);
+			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOrigin(), toKeepSampleOrigIndices);
+			SamplesInfosSource filteredStorageSamplesInfosSource = sampleIndicesFilteredData.getSamplesInfosSource();
+			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, phenoFile);
+			for (SampleInfo storageSampleInfo : filteredStorageSamplesInfosSource) {
+				final SampleKey sampleKey = SampleKey.valueOf(storageSampleInfo);
+				SampleInfo sampleInfoToUse = phenoFileSamplesInfos.get(sampleKey);
+				if (sampleInfoToUse == null) {
+					// this samples info is not in the pheno file,
+					// thus we use the info from our storage
+					sampleInfoToUse = storageSampleInfo;
 				}
+				samplesSex.add(sampleInfoToUse.getSex());
+				samplesAffection.add(sampleInfoToUse.getAffection());
 			}
+////			List<SampleInfo> sampleInfosFromDB = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey); // XXX can probably be replaced by dataSetSource.getSampleInfosSource()
+//			sampleInfos.putAll(readSampleInfosFromPhenoFile(studyKey, phenoFile));
+//
+//			// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
+//			for (SampleKey sampleKey : wrSampleKeys) {
+//				if (!sampleInfos.containsKey(sampleKey)) {
+//					SampleInfo info = new SampleInfo();
+//					for (SampleInfo sampleInfo : sampleInfosFromDB) {
+//						SampleKey tmpSampleKey = sampleInfo.getKey();
+//						if (tmpSampleKey.equals(sampleKey)) {
+//							info = sampleInfo;
+//							break;
+//						}
+//					}
+//					sampleInfos.put(sampleKey, info);
+//				}
+//			}
 		}
 
-		return sampleInfos;
+//		return sampleInfos;
 	}
 
 //	private void writeMetadata(
