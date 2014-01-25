@@ -161,7 +161,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	}
 
 	@Override
-	public DataSetSource getRootDataSetSource() throws IOException {
+	public DataSetSource getOriginDataSetSource() throws IOException {
 		return MatrixFactory.generateMatrixDataSetSource(getOrigin());
 	}
 

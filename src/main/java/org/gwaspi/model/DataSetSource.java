@@ -24,6 +24,13 @@ import java.io.IOException;
  */
 public interface DataSetSource {
 
+	/**
+	 * Returns the original/root data-source to this one.
+	 * @return the original/root data-source to this one (a matrix)
+	 * @throws IOException
+	 */
+	DataSetSource getOriginDataSetSource() throws IOException;
+
 	int getNumMarkers() throws IOException;
 
 	MatrixMetadata getMatrixMetadata() throws IOException;

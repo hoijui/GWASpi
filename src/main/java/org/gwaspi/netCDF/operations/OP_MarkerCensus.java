@@ -816,7 +816,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //				}
 //			}
 		} else {
-			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOrigin(), toKeepSampleOrigIndices);
+			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOriginDataSetSource(), toKeepSampleOrigIndices);
 			SamplesInfosSource filteredStorageSamplesInfosSource = sampleIndicesFilteredData.getSamplesInfosSource();
 			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, phenoFile);
 			for (SampleInfo storageSampleInfo : filteredStorageSamplesInfosSource) {

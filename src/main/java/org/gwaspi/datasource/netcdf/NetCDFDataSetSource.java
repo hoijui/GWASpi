@@ -113,6 +113,11 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
+	public DataSetSource getOriginDataSetSource() throws IOException {
+		return this;
+	}
+
+	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
 
 		ensureMatrixMetadata();

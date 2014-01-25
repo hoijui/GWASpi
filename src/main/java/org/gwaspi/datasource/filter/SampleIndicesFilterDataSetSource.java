@@ -45,6 +45,11 @@ public class SampleIndicesFilterDataSetSource implements DataSetSource {
 	}
 
 	@Override
+	public DataSetSource getOriginDataSetSource() throws IOException {
+		return parent.getOriginDataSetSource();
+	}
+
+	@Override
 	public int getNumMarkers() throws IOException {
 		return parent.getNumMarkers();
 	}

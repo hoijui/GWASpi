@@ -26,7 +26,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 
 public interface OperationDataSet<ET> extends DataSetSource {
-	
+
 	boolean isMarkersOperationSet();
 
 	void setNumSamples(int numSamples) throws IOException;
@@ -65,13 +65,6 @@ public interface OperationDataSet<ET> extends DataSetSource {
 	 * @throws IOException
 	 */
 	DataSetSource getParentDataSetSource() throws IOException;
-
-	/**
-	 * Returns the original data-source to this one.
-	 * @return the original data-source to this one (a matrix)
-	 * @throws IOException
-	 */
-	DataSetSource getRootDataSetSource() throws IOException;
 
 //	int getNumSamples() throws IOException;
 //	int getNumMarkers() throws IOException;
