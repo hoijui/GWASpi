@@ -368,7 +368,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 3), entry.getMissingCount());
 			index++;
 		}
-System.err.println("XXXXXX NetCdfQAMarkersOperationDataSet: getNumMarkers(): " + getNumMarkers() + " / alreadyWritten: " + alreadyWritten + " / index: " + index + " / writeBuffer.size(): " + writeBuffer.size());
 		try {
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);

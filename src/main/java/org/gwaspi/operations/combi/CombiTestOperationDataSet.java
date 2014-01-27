@@ -23,8 +23,6 @@ import org.gwaspi.operations.OperationDataSet;
 
 public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOperationEntry> {
 
-	// - {@link Combi.VAR_OP_MARKERS_WEIGHT}: Combi test result weights (importance of the individual markers)
-
 	void addEntry(CombiTestOperationEntry entry) throws IOException;
 
 //	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
