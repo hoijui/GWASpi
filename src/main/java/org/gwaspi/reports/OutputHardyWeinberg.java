@@ -86,7 +86,7 @@ public class OutputHardyWeinberg {
 //		Map<MarkerKey, Double> sortedByHWPval = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerKeyHWPval);
 //		unsortedMarkerKeyHWPval.clear(); // "garbage collection"
 //		Collection<MarkerKey> sortedMarkerKeys = sortedByHWPval.keySet();
-		List<HardyWeinbergOperationEntry> hardyWeinbergEntries = (List<HardyWeinbergOperationEntry>) hardyWeinbergOperationDataSet.getEntries();
+		List<HardyWeinbergOperationEntry> hardyWeinbergEntries = hardyWeinbergOperationDataSet.getEntriesAlternate();
 		Collections.sort(hardyWeinbergEntries, HardyWeinbergOperationEntry.P_VALUE_COMPARATOR);
 		Collection<MarkerKey> sortedMarkerKeys = new ArrayList<MarkerKey>(hardyWeinbergEntries.size()); // XXX create an Extractor in AbstractOperationDataSet instead
 		for (HardyWeinbergOperationEntry hardyWeinbergOperationEntry : hardyWeinbergEntries) {

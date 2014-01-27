@@ -20,6 +20,7 @@ package org.gwaspi.operations.markercensus;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
@@ -51,10 +52,15 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCen
 	void setMarkerMissingRatio(double markerMissingRatio);
 	void setDiscardMismatches(boolean discardMismatches);
 
-	Collection<Integer> getCensusMarkerIndices(Category category) throws IOException;
+	List<byte[]> getKnownAlleles() throws IOException;
 
-	Collection<byte[]> getKnownAlleles(int from, int to) throws IOException;
-	Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException;
+	List<Census> getCensus(Category category) throws IOException;
+
+//	Collection<Integer> getCensusMarkerIndices(Category category) throws IOException;
+
+	List<byte[]> getKnownAlleles(int from, int to) throws IOException;
+//	Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException;
+	List<Census> getCensus(Category category, int from, int to) throws IOException;
 
 	void addEntry(MarkerCensusOperationEntry entry) throws IOException;
 }

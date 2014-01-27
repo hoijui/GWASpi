@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.hardyweinberg;
+package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
+public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationDataSet<CombiTestOperationEntry> implements CombiTestOperationDataSet {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -90,7 +90,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	private ArrayDouble.D1 netCdfObsHetzys;
 	private ArrayDouble.D1 netCdfExpHetzys;
 
-	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+	public NetCdfCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
 
 		this.hardyWeinbergName = null;
@@ -101,7 +101,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		}
 	}
 
-	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent) {
+	public NetCdfCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
 	}
 
@@ -192,7 +192,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public void addEntry(HardyWeinbergOperationEntry entry) throws IOException {
+	public void addEntry(CombiTestOperationEntry entry) throws IOException {
 
 		EntryBuffer<HardyWeinbergOperationEntry> buffer = writeBuffers.get(entry.getCategory());
 
@@ -220,7 +220,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	protected void writeEntries(int alreadyWritten, Queue<HardyWeinbergOperationEntry> writeBuffer) throws IOException {
+	protected void writeEntries(int alreadyWritten, Queue<CombiTestOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
 		if (netCdfPs == null) {

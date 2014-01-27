@@ -18,9 +18,12 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
@@ -166,18 +169,33 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 //				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
+				Map<Integer, MarkerKey> wrMarkerKeysFiltered = filterByValues(censusOpMarkers, toBeExcluded);
+//				DataSetSource markerFilteredSource = new MarkerIndicesFilterDataSetSource(rdMarkerCensusOperationDataSet.getOriginDataSetSource(), wrMarkerKeysFiltered.keySet());
 
-				Collection<Integer> censusMarkerIndicesCase = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CASE);
-				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);
-				Map<Integer, MarkerKey> wrCaseMarkerKeysFiltered = filterByValues(rdCaseMarkerKeys, toBeExcluded);
-				Map<Integer, Census> rdCaseMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CASE, -1, -1);
-				Map<Integer, Census> wrCaseMarkerCensusesFiltered = filter(rdCaseMarkerCensuses, wrCaseMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the lie, but can not remember why :/
+//				Collection<Integer> censusMarkerIndicesCase = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CASE);
+//				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);
+//				Map<Integer, MarkerKey> wrCaseMarkerKeysFiltered = filterByValues(rdCaseMarkerKeys, toBeExcluded);
+//				Map<Integer, Census> rdCaseMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CASE);
+//				Map<Integer, Census> wrCaseMarkerCensusesFiltered = filter(rdCaseMarkerCensuses, wrCaseMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the like, but can not remember why :/
+//
+//				Collection<Integer> censusMarkerIndicesCtrl = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CONTROL);
+//				Map<Integer, MarkerKey> rdCtrlMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCtrl);
+//				Map<Integer, MarkerKey> wrCtrlMarkerKeysFiltered = filterByValues(rdCtrlMarkerKeys, toBeExcluded);
+//				Map<Integer, Census> rdCtrlMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL);
+//				Map<Integer, Census> wrCtrlMarkerCensusesFiltered = filter(rdCtrlMarkerCensuses, wrCtrlMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the like, but can not remember why :/
 
-				Collection<Integer> censusMarkerIndicesCtrl = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CONTROL);
-				Map<Integer, MarkerKey> rdCtrlMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCtrl);
-				Map<Integer, MarkerKey> wrCtrlMarkerKeysFiltered = filterByValues(rdCtrlMarkerKeys, toBeExcluded);
-				Map<Integer, Census> rdCtrlMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL, -1, -1);
-				Map<Integer, Census> wrCtrlMarkerCensusesFiltered = filter(rdCtrlMarkerCensuses, wrCtrlMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the lie, but can not remember why :/
+				Iterator<Census> wrCaseMarkerCensusesIt = rdMarkerCensusOperationDataSet.getCensus(Category.CASE).iterator();
+				Iterator<Census> wrCtrlMarkerCensusesIt = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL).iterator();
+				List<Census> wrCaseMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
+				List<Census> wrCtrlMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
+				for (Integer allOrigIndex : censusOpMarkers.keySet()) {
+					final Census markerCensusCase = wrCaseMarkerCensusesIt.next();
+					final Census markerCensusCtrl = wrCtrlMarkerCensusesIt.next();
+					if (wrMarkerKeysFiltered.containsKey(allOrigIndex)) {
+						wrCaseMarkerCensusesFiltered.add(markerCensusCase);
+						wrCtrlMarkerCensusesFiltered.add(markerCensusCtrl);
+					}
+				}
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES
 //				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
@@ -202,10 +220,11 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 //				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
 				org.gwaspi.global.Utils.sysoutStart(testName);
-				performTest(dataSet,
-						wrCaseMarkerKeysFiltered, wrCaseMarkerCensusesFiltered,
-						wrCtrlMarkerKeysFiltered, wrCtrlMarkerCensusesFiltered
-				);
+				performTest(
+						dataSet,
+						wrMarkerKeysFiltered,
+						wrCaseMarkerCensusesFiltered,
+						wrCtrlMarkerCensusesFiltered);
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 
@@ -299,8 +318,8 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 	 */
 	protected abstract void performTest(
 			OperationDataSet dataSet,
-			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
-			Map<Integer, Census> caseMarkersOrigIndexCensus,
-			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
-			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException;
+			Map<Integer, MarkerKey> markerOrigIndicesKeys,
+			List<Census> caseMarkersCensus,
+			List<Census> ctrlMarkersCensus)
+			throws IOException;
 }

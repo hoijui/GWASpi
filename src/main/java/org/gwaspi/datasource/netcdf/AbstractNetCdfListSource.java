@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -65,6 +66,19 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 
 		List<LVT> values = new ArrayList<LVT>(0);
 		NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
+		return values;
+	}
+
+	protected <ST, LVT> List<LVT> readVar(String varName, Extractor<ST, LVT> storageToFinalValueExtractor, int from, int to) throws IOException {
+
+		List<ST> storageValues = new ArrayList<ST>(0);
+		NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, storageValues, null);
+
+		List<LVT> values = new ArrayList<LVT>(storageValues.size());
+		for (ST st : storageValues) {
+			values.add(storageToFinalValueExtractor.extract(st));
+		}
+
 		return values;
 	}
 

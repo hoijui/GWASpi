@@ -80,12 +80,30 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		}
 	};
 
-	public static final Extractor<SampleInfo, Affection> TO_AFFECTION
-			= new Extractor<SampleInfo, Affection>()
+	public static final Extractor<SampleInfo, Integer> TO_ORDER_ID
+			= new Extractor<SampleInfo, Integer>()
 	{
 		@Override
-		public Affection extract(SampleInfo from) {
-			return from.getAffection();
+		public Integer extract(SampleInfo from) {
+			return from.getOrderId();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_FATHER_ID
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getFatherId();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_MOTHER_ID
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getMotherId();
 		}
 	};
 
@@ -95,6 +113,78 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		@Override
 		public Sex extract(SampleInfo from) {
 			return from.getSex();
+		}
+	};
+
+	public static final Extractor<SampleInfo, Affection> TO_AFFECTION
+			= new Extractor<SampleInfo, Affection>()
+	{
+		@Override
+		public Affection extract(SampleInfo from) {
+			return from.getAffection();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_CATEGORY
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getCategory();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_DISEASE
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getDisease();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_POPULATION
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getPopulation();
+		}
+	};
+
+	public static final Extractor<SampleInfo, Integer> TO_AGE
+			= new Extractor<SampleInfo, Integer>()
+	{
+		@Override
+		public Integer extract(SampleInfo from) {
+			return from.getAge();
+		}
+	};
+
+	public static final Extractor<SampleInfo, String> TO_FILTER
+			= new Extractor<SampleInfo, String>()
+	{
+		@Override
+		public String extract(SampleInfo from) {
+			return from.getFilter();
+		}
+	};
+
+	public static final Extractor<SampleInfo, Integer> TO_APPROVED
+			= new Extractor<SampleInfo, Integer>()
+	{
+		@Override
+		public Integer extract(SampleInfo from) {
+			return from.getApproved();
+		}
+	};
+
+	public static final Extractor<SampleInfo, Integer> TO_STATUS
+			= new Extractor<SampleInfo, Integer>()
+	{
+		@Override
+		public Integer extract(SampleInfo from) {
+			return from.getStatus();
 		}
 	};
 

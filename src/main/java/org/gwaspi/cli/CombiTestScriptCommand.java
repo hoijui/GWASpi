@@ -81,7 +81,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 //			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
 			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "gtfreq-id", "gtfreq-name");
 
-			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-operation-id", "hw-operation-name");
+			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-id", "hw-name");
 			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -195,13 +196,13 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 	}
 
 	@Override
-	public List<SampleInfo.Sex> getSexes(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, from, to);
+	public List<Sex> getSexes(int from, int to) throws IOException {
+		return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, new Extractor.IntToEnumExtractor(Sex.values()), from, to);
 	}
 
 	@Override
-	public List<SampleInfo.Affection> getAffections(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, from, to);
+	public List<Affection> getAffections(int from, int to) throws IOException {
+		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
 	}
 
 	@Override
