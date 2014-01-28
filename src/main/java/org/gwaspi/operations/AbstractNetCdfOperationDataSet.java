@@ -504,27 +504,27 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSourceRaw().getIndices());
+	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
+		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
 	}
 
 	@Override
-	public MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
+	protected MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
 		return NetCdfMarkersKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
-	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSourceRaw().getIndices());
+	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
+		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSource().getIndices());
 	}
 
 	@Override
-	public ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
+	protected ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
 		return NetCdfChromosomesKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
-	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
-		return NetCdfChromosomesInfosSource.createForOperation(getNetCdfReadFile(), getChromosomesKeysSourceRaw().getIndices());
+	protected ChromosomesInfosSource getChromosomesInfosSourceRaw() throws IOException {
+		return NetCdfChromosomesInfosSource.createForOperation(getNetCdfReadFile(), getChromosomesKeysSource().getIndices());
 	}
 }

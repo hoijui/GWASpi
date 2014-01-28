@@ -111,7 +111,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //				excluder);
 
 		if (dataLeft) {
-			DataSetSource parentMatrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(params.getMatrixKey());
+			DataSetSource parentDataSetSource = getParentDataSetSource();
 
 //			try {
 				CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
@@ -121,9 +121,11 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(params.getMarkersToKeep()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(params.getMarkersToKeep()); // HACK
+				dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(parentMatrixDataSetSource.getNumSamples()); // NOTE is set later // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(-1); // <- unknonw // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(-1); // <- unknonw // HACK
+				dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
 //				dataSet.setHardyWeinbergOperationKey(params.getHardyWeinbergOperationKey()); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
@@ -133,17 +135,14 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 ////				dataSet.setChromosomes(chromosomeInfo);
 //				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(false);
 
-
-
-			Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentMatrixDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
+			Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
 			ArrayList<MarkerKey> markerKeys = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
-			dataSet.setMarkers(wrMarkersFiltered);
 
-			SamplesKeysSource samplesKeysSource = parentMatrixDataSetSource.getSamplesKeysSource();
-			List<Affection> sampleAffections = parentMatrixDataSetSource.getSamplesInfosSource().getAffections();
+			SamplesKeysSource samplesKeysSource = parentDataSetSource.getSamplesKeysSource();
+			List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 //			Map<SampleKey, SampleInfo> sampleInfos = markersIterable.getSampleInfos();
 
-			MarkersGenotypesSource markersGenotypesSource = parentMatrixDataSetSource.getMarkersGenotypesSource();
+			MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
 			// dimensions of the samples(-space) == #markers (== #SNPs)
 //			int dSamples = markersIterable.getMarkerKeys().size() - excluder.getTotalExcluded();
@@ -160,8 +159,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //			}
 			int nSamplesToKeep = 0;
 			// only count samples with a valid affection
-			Map<Integer, SampleKey> validSamplesOrigIndicesAndKey = new LinkedHashMap<Integer, SampleKey>(parentMatrixDataSetSource.getNumSamples());
-			List<Affection> validSampleAffections = new ArrayList<Affection>(parentMatrixDataSetSource.getNumSamples());
+			Map<Integer, SampleKey> validSamplesOrigIndicesAndKey = new LinkedHashMap<Integer, SampleKey>(parentDataSetSource.getNumSamples());
+			List<Affection> validSampleAffections = new ArrayList<Affection>(parentDataSetSource.getNumSamples());
 			Iterator<Map.Entry<Integer, SampleKey>> samplesIt = samplesKeysSource.getIndicesMap().entrySet().iterator();
 //			List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
 			for (Affection sampleAffection : sampleAffections) {
@@ -186,6 +185,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //			final boolean useAllSamplesFromParent = (n == parentMatrixDataSetSource.getNumSamples());
 
 			dataSet.setNumSamples(n);
+
+			dataSet.setMarkers(wrMarkersFiltered);
+
 //			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(useAllSamplesFromParent); // HACK
 //			if (!useAllSamplesFromParent) {
 				dataSet.setSamples(validSamplesOrigIndicesAndKey);
@@ -662,10 +664,11 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		for (int ci = 0; ci < numChunks; ci++) {
 			final int firstMarkerIndex = ci * maxChunkSize;
+			final int firstMarkerFeatureIndex = ci * maxFeaturesChunkSize;
 			final int numMarkersInChunk = Math.min(dSamples - firstMarkerIndex, maxChunkSize);
 //			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
 
-			SamplesMarkersStorage<Float> encodedSamplesPart = new PartialMarkersInMemorySamplesMarkersStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), numMarkersInChunk, encodedSamplesRawStorage);
+			SamplesMarkersStorage<Float> encodedSamplesPart = new PartialMarkersInMemorySamplesMarkersStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), firstMarkerFeatureIndex, encodedSamplesRawStorage);
 
 			// encode only a chunk/part of the markers at a time
 			// which gives us a part of the feature matrix

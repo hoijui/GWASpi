@@ -17,6 +17,10 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -32,7 +36,7 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 /**
  * A memory efficient implementation of GenotypesList.
  */
-public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList {
+public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList, Serializable {
 
 	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
 		@Override
@@ -101,7 +105,7 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 	 * The main, compact storage.
 	 */
 //	private final byte[] compactGenotypes;
-	private final ByteBuffer compactGenotypes;
+	private transient ByteBuffer compactGenotypes;
 //	private final Collection<Byte> compactGenotypes;
 
 	private CompactGenotypesList(
@@ -183,6 +187,48 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 			compactGenotypes.put(curByte);
 			unstoredData = false;
 		}
+	}
+
+	/**
+	 * We need to override this for Java serialization to work,
+	 * because ByteBuffer (the type used for {@link #compactGenotypes})
+	 * is not serializable.
+	 * @param out
+	 * @throws IOException
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+
+		out.defaultWriteObject();
+		final int numStorageBytes = compactGenotypes.capacity();
+		out.write(numStorageBytes);
+		if (compactGenotypes.hasArray()) {
+			out.write(compactGenotypes.array());
+		} else {
+			final byte[] compactGenotypesRaw = new byte[numStorageBytes];
+			final int currentPosition = compactGenotypes.position();
+			compactGenotypes.rewind();
+			compactGenotypes.get(compactGenotypesRaw);
+			compactGenotypes.position(currentPosition);
+			out.write(compactGenotypesRaw);
+		}
+	}
+
+	/**
+	 * We need to override this for Java serialization to work,
+	 * because ByteBuffer (the type used for {@link #compactGenotypes})
+	 * is not serializable.
+	 * @param in
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+
+		in.defaultReadObject();
+		// now we are a "live" object again, so let's run rebuild and start
+		final int numStorageBytes = in.readInt();
+		final byte[] compactGenotypesRaw = (byte[]) in.readObject();
+		compactGenotypes = ByteBuffer.allocateDirect(numStorageBytes);
+		compactGenotypes.put(compactGenotypesRaw);
 	}
 
 	public static byte calcByteBitMask(byte numBits) {
