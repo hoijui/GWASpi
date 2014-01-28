@@ -19,14 +19,15 @@ package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -50,15 +51,15 @@ public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationData
 	 */
 	private static final String VAR_OP_MARKERS_WEIGHT = "OP_markers_weight";
 
-	private String hardyWeinbergName;
-	private OperationKey markerCensusOperationKey;
+//	private String hardyWeinbergName;
+//	private OperationKey markerCensusOperationKey;
 	private ArrayDouble.D1 netCdfWeights;
 
 	public NetCdfCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
 
-		this.hardyWeinbergName = null;
-		this.markerCensusOperationKey = null;
+//		this.hardyWeinbergName = null;
+//		this.markerCensusOperationKey = null;
 	}
 
 	public NetCdfCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
@@ -80,27 +81,46 @@ public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
+		DataSetKey parentDataSetKey = getParent();
+		DataSetMetadata parentDataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
 		return new OperationMetadata(
-				new DataSetKey(markerCensusOperationKey), // parent data set
-				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
-				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
-					+ "\nMarkers: " + getNumMarkers() + ""
-					+ "\nSamples: " + getNumSamples(), // description
-				OPType.HARDY_WEINBERG, // operationType
+				parentDataSetKey, // parent data set
+				"COMBI_Test"/* + myFriendlyName*/, // friendly name
+				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
+				OPType.COMBI_ASSOC_TEST, // operationType
 				getNumMarkers(),
 				getNumSamples(),
 				getNumChromosomes(),
-				isMarkersOperationSet());XXX;
+				isMarkersOperationSet());
 	}
 
-	@Override
-	public void setHardyWeinbergName(String hardyWeinbergName) {
-		this.hardyWeinbergName = hardyWeinbergName;
-	}
+//	@Override
+//	public void setHardyWeinbergName(String hardyWeinbergName) {
+//		this.hardyWeinbergName = hardyWeinbergName;
+//	}
+
+//	@Override
+//	public void setMarkerCensusOperationKey(OperationKey markerCensusOperationKey) {
+//		this.markerCensusOperationKey = markerCensusOperationKey;
+//	}
 
 	@Override
-	public void setMarkerCensusOperationKey(OperationKey markerCensusOperationKey) {
-		this.markerCensusOperationKey = markerCensusOperationKey;
+	public void setWeights(List<Double> weights) throws IOException {
+
+		ArrayDouble.D1 netCdfWeightsLocal;
+		int[] origin = new int[] {0};
+		netCdfWeightsLocal = new ArrayDouble.D1(weights.size());
+
+		int index = 0;
+		for (Double weight : weights) {
+			netCdfWeightsLocal.setDouble(netCdfWeightsLocal.getIndex().set(index), weight);
+			index++;
+		}
+		try {
+			getNetCdfWriteFile().write(VAR_OP_MARKERS_WEIGHT, origin, netCdfWeightsLocal);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 
 	@Override
