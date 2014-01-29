@@ -103,7 +103,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		encodedSamplesMarkers.startStoringMarker(mi);
 		if (possibleGenotypes.size() - (
-				possibleGenotypes.contains(Genotype.INVALID.hashCode())
+				possibleGenotypes.contains(Genotype.INVALID.hashCode()) // FIXME
 				? 1 : 0) == 1)
 		{
 			// only one valid GT type was found
