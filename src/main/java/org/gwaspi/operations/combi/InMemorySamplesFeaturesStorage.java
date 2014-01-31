@@ -17,26 +17,28 @@
 
 package org.gwaspi.operations.combi;
 
+import java.lang.reflect.Array;
 import java.util.Map;
 
-class InMemorySamplesMarkersStorage<ST> extends AbstractSamplesMarkersStorage<ST> {
+class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
 
 	private static final int NO_INDEX = -1;
 
 	private final ST[][] storage;
 	private int curSampleIndex;
-	private int curMarkerIndex;
+	private int curFeatureIndex;
 
-	InMemorySamplesMarkersStorage(int numSamples, int numMarkers, Map<String, Object> cache) {
-		super(numSamples, numMarkers, cache);
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures, Map<String, Object> cache) {
+		super(numSamples, numFeatures, cache);
 
-		this.storage = (ST[][]) new Object[numSamples][numMarkers];
+//		this.storage = (ST[][]) new Object[numSamples][numFeatures]; // NOTE This would be (partly) fail, because the actual arrays type is still Object[][], not really ST[][]
+        this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
 		this.curSampleIndex = NO_INDEX;
-		this.curMarkerIndex = NO_INDEX;
+		this.curFeatureIndex = NO_INDEX;
 	}
 
-	InMemorySamplesMarkersStorage(int numSamples, int numMarkers) {
-		this(numSamples, numMarkers, null);
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures) {
+		this(storageTypeClass, numSamples, numFeatures, null);
 	}
 
 	public ST[][] getStorage() {
@@ -49,8 +51,8 @@ class InMemorySamplesMarkersStorage<ST> extends AbstractSamplesMarkersStorage<ST
 	}
 
 	@Override
-	public void setMarkerValue(int markerIndex, ST value) {
-		storage[curSampleIndex][markerIndex] = value;
+	public void setFeatureValue(int featuresIndex, ST value) {
+		storage[curSampleIndex][featuresIndex] = value;
 	}
 
 	@Override
@@ -59,17 +61,17 @@ class InMemorySamplesMarkersStorage<ST> extends AbstractSamplesMarkersStorage<ST
 	}
 
 	@Override
-	public void startStoringMarker(int markerIndex) {
-		curMarkerIndex = markerIndex;
+	public void startStoringFeature(int featuresIndex) {
+		curFeatureIndex = featuresIndex;
 	}
 
 	@Override
 	public void setSampleValue(int sampleIndex, ST value) {
-		storage[sampleIndex][curMarkerIndex] = value;
+		storage[sampleIndex][curFeatureIndex] = value;
 	}
 
 	@Override
-	public void endStoringMarker() {
-		curMarkerIndex = NO_INDEX;
+	public void endStoringFeature() {
+		curFeatureIndex = NO_INDEX;
 	}
 }

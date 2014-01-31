@@ -23,15 +23,15 @@ import java.util.List;
 /**
  * TODO
  */
-class EncodingSamplesMarkersStorage extends AbstractSamplesMarkersStorage<byte[]> {
+class EncodingSamplesFeaturesStorage extends AbstractSamplesFeaturesStorage<byte[]> {
 
 	private final GenotypeEncoder encoder;
-	private final SamplesMarkersStorage<Float> receiver;
+	private final SamplesFeaturesStorage<Float> receiver;
 	private int currentMarkerIndex;
 	private final List<byte[]> currentValues;
 
-	public EncodingSamplesMarkersStorage(int numSamples, int numMarkers, SamplesMarkersStorage<Float> receiver, GenotypeEncoder encoder) {
-		super(numSamples, numMarkers);
+	public EncodingSamplesFeaturesStorage(int numSamples, int numFeatures, SamplesFeaturesStorage<Float> receiver, GenotypeEncoder encoder) {
+		super(numSamples, numFeatures);
 
 		this.encoder = encoder;
 		this.receiver = receiver;
@@ -48,7 +48,7 @@ class EncodingSamplesMarkersStorage extends AbstractSamplesMarkersStorage<byte[]
 	}
 
 	@Override
-	public void setMarkerValue(int markerIndex, byte[] value) {
+	public void setFeatureValue(int markerIndex, byte[] value) {
 		throwSampleStorageNotSupported();
 	}
 
@@ -58,7 +58,7 @@ class EncodingSamplesMarkersStorage extends AbstractSamplesMarkersStorage<byte[]
 	}
 
 	@Override
-	public void startStoringMarker(int markerIndex) {
+	public void startStoringFeature(int markerIndex) {
 
 		currentMarkerIndex = markerIndex;
 		currentValues.clear();
@@ -70,7 +70,7 @@ class EncodingSamplesMarkersStorage extends AbstractSamplesMarkersStorage<byte[]
 	}
 
 	@Override
-	public void endStoringMarker() {
-		encoder.encodeGenotypes(currentValues, null, receiver, currentMarkerIndex);
+	public void endStoringFeature() {
+		encoder.encodeGenotypes(currentValues, receiver, currentMarkerIndex);
 	}
 }

@@ -23,13 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.ProgressMonitor;
 import libsvm.svm;
 import libsvm.svm_model;
@@ -37,39 +34,48 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.Genotype;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.AbstractOperation;
-import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
-import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO
+ * - n / nSamples : #samples == #data-points in the SVM feature space == rows & columns in the SVM kernel matrix
+ * - dSamples : #markers == #SNPs
+ * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
+ */
 public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
-	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
+	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
 
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
 	private final CombiTestParams params;
+	private Boolean valid;
+	private String problemDescription;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
-		super(params.getHardyWeinbergOperationKey());
+		super(params.getCensusOperationKey());
 
 		this.params = params;
+		this.valid = null;
+		this.problemDescription = null;
 	}
 
 	@Override
@@ -78,154 +84,121 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	}
 
 	@Override
-	public boolean isValid() {
-		return true;
+	public boolean isValid() throws IOException {
+
+		if (valid != null) {
+			return valid;
+		}
+
+		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(getParentKey().getOperationParent());
+
+		if (ancestorOperationTypes.isEmpty()
+				|| (ancestorOperationTypes.get(0) != OPType.MARKER_CENSUS_BY_AFFECTION))
+		{
+			problemDescription = "the direct parent has to be a marker-census (by affection) operation";
+			valid = false;
+			return valid;
+		}
+
+		// We also require that somewhere in our ancestry,
+		// all the samples with invalid affection info have been excluded.
+		boolean hasOnlyValidAffections = false;
+		for (OPType ancestorOpType : ancestorOperationTypes) {
+			if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
+				hasOnlyValidAffections = true;
+				break;
+			}
+		}
+		valid = hasOnlyValidAffections;
+		if (!hasOnlyValidAffections) {
+			problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+		}
+
+		return valid;
 	}
 
 	@Override
 	public String getProblemDescription() {
-		return null;
+		return problemDescription;
 	}
 
 	@Override
 	public int processMatrix() throws IOException {
 
+		LOG.info("Combi Association Test: init");
+
+		DataSetSource parentDataSetSource = getParentDataSetSource();
+		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
+//				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
+				= (MarkerCensusOperationDataSet) parentDataSetSource;
+
+		CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
+
+		dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
+		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
+		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
+
+		final int dSamples = parentDataSetSource.getNumMarkers();
+		final int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
+		final int n = parentDataSetSource.getNumSamples();
+
+		final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
+		final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
+		final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+
+//		dataSet.setMarkers(wrMarkersFiltered);
+////		dataSet.setChromosomes(...); // NOTE This is not required, because if it is not set, it gets automatically extracted from the markers
+//		dataSet.setSamples(validSamplesOrigIndicesAndKey);
+
+		LOG.debug("Combi Association Test: #samples: " + n);
+		LOG.debug("Combi Association Test: #markers: " + dSamples);
+		LOG.debug("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
+		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
+
+		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
+		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
+
 		LOG.info("Combi Association Test: start");
 
-		LOG.info("Combi Association Test: init");
-		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
-		boolean dataLeft = AbstractTestMatrixOperation.excludeMarkersByHW(
-				params.getHardyWeinbergOperationKey(),
-				params.getHardyWeinbergThreshold(),
-				toBeExcluded);
-//		MarkersIterable.Excluder<MarkerKey> excluder;
-//		if (params.getHardyWeinbergOperationKey() != null) {
-//			excluder = new MarkersIterable.HWExcluder(
-//					params.getHardyWeinbergOperationKey(),
-//					params.getHardyWeinbergThreshold());
-//		} else {
-//			excluder = new MarkersIterable.NoneExcluder();
-//		}
-//		MarkersIterable markersIterable = new MarkersIterable(
-//				params.getMatrixKey(),
-//				excluder);
+		List<Double> weights = runEncodingAndSVM(markerKeys, allMarkersCensus, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
 
-		if (dataLeft) {
-			DataSetSource parentDataSetSource = getParentDataSetSource();
+		// TODO sort the weights (should already be absolute?)
+		// TODO write stuff to a matrix (maybe the list of important markers?)
 
-//			try {
-				CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
-//				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(params.getHardyWeinbergOperationKey()); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(params.getMarkersToKeep()); // HACK
-				dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(parentMatrixDataSetSource.getNumSamples()); // NOTE is set later // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(-1); // <- unknonw // HACK
-				dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
-//				dataSet.setHardyWeinbergOperationKey(params.getHardyWeinbergOperationKey()); // HACK
+		dataSet.setWeights(weights);
 
-//				dataSet.setMarkers(wrMarkerMetadata.keySet());
+		LOG.info("Combi Association Test: finished");
 
-//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(false);
-//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(false);
-////				dataSet.setChromosomes(chromosomeInfo);
-//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(false);
+		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+	}
 
-			Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
-			ArrayList<MarkerKey> markerKeys = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
+	/**
+	 * Only add samples with a valid affection.
+	 */
+	private static void extractSamplesWithValidAffection(DataSetSource parentDataSetSource, Map<Integer, SampleKey> validSamplesOrigIndicesAndKey, List<Affection> validSampleAffections) throws IOException {
 
-			SamplesKeysSource samplesKeysSource = parentDataSetSource.getSamplesKeysSource();
-			List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
-//			Map<SampleKey, SampleInfo> sampleInfos = markersIterable.getSampleInfos();
+		SamplesKeysSource samplesKeysSource = parentDataSetSource.getSamplesKeysSource();
+		List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 
-			MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
-
-			// dimensions of the samples(-space) == #markers (== #SNPs)
-//			int dSamples = markersIterable.getMarkerKeys().size() - excluder.getTotalExcluded();
-			int dSamples = markerKeys.size() - toBeExcluded.size();
-			// dimensions of the encoded samples(-space) == #markers * encoding-factor
-			int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
-	//		int n = sampleInfos.size();
-//			int n = 0;
-//			// only count samples with a valid affection
-//			for (Affection sampleAffection : sampleAffections) {
-//				if (Affection.isValid(sampleAffection)) {
-//					n++;
-//				}
-//			}
-			int nSamplesToKeep = 0;
-			// only count samples with a valid affection
-			Map<Integer, SampleKey> validSamplesOrigIndicesAndKey = new LinkedHashMap<Integer, SampleKey>(parentDataSetSource.getNumSamples());
-			List<Affection> validSampleAffections = new ArrayList<Affection>(parentDataSetSource.getNumSamples());
-			Iterator<Map.Entry<Integer, SampleKey>> samplesIt = samplesKeysSource.getIndicesMap().entrySet().iterator();
-//			List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
-			for (Affection sampleAffection : sampleAffections) {
-				Map.Entry<Integer, SampleKey> sample = samplesIt.next();
-				if (Affection.isValid(sampleAffection)) {
-					nSamplesToKeep++;
-					validSamplesOrigIndicesAndKey.put(sample.getKey(), sample.getValue());
-				}
-//				if (sampleAffection == Affection.UNKNOWN) {
-//					samplesToKeep.add(Boolean.FALSE);
-//				} else  {
-//					nSamplesToKeep++;
-//					samplesToKeep.add(Boolean.TRUE);
-//				}
+		// We use LinkedHashMap to preserve iteration order.
+		Iterator<Map.Entry<Integer, SampleKey>> samplesIt = samplesKeysSource.getIndicesMap().entrySet().iterator();
+		for (Affection sampleAffection : sampleAffections) {
+			Map.Entry<Integer, SampleKey> sample = samplesIt.next();
+			if (Affection.isValid(sampleAffection)) {
+				validSamplesOrigIndicesAndKey.put(sample.getKey(), sample.getValue());
+				validSampleAffections.add(sampleAffection);
 			}
-			final int n = nSamplesToKeep;
-			if (validSampleAffections instanceof ArrayList) {
-				((ArrayList) validSampleAffections).trimToSize();
-			}
-			ArrayList<SampleKey> samplesKeys = new ArrayList<SampleKey>(validSamplesOrigIndicesAndKey.values());
-
-//			final boolean useAllSamplesFromParent = (n == parentMatrixDataSetSource.getNumSamples());
-
-			dataSet.setNumSamples(n);
-
-			dataSet.setMarkers(wrMarkersFiltered);
-
-//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(useAllSamplesFromParent); // HACK
-//			if (!useAllSamplesFromParent) {
-				dataSet.setSamples(validSamplesOrigIndicesAndKey);
-//			}
-
-
-			LOG.info("Combi Association Test: #samples: " + n);
-			LOG.info("Combi Association Test: #markers: " + dSamples);
-			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
-
-			Util.storeForEncoding(markerKeys, samplesKeys, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
-			List<Double> weights = runEncodingAndSVM(markerKeys, samplesKeys, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
-
-			// TODO sort the weights (should already be absolute?)
-			// TODO write stuff to a matrix (maybe the list of important markers?)
-
-//			Iterator<Integer> markerOrigIndicesIt = markerOrigIndices.iterator();
-//			Iterator<MarkerKey> markerKeysIt = markerKeys.iterator();
-//			for (Double weight : weights) {
-//				dataSet.addEntry(new DefaultCombiTestOperationEntry(
-//						markerKeysIt.next(),
-//						markerOrigIndicesIt.next(),
-//						weight));
-//			}
-			dataSet.setWeights(weights);
-
-			return ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
-		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
-			return Integer.MIN_VALUE;
+		}
+		if (validSampleAffections instanceof ArrayList) {
+			((ArrayList) validSampleAffections).trimToSize();
 		}
 	}
 
-	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections, int n) {
+	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections) {
 
 		// we use LinkedHashMap to preserve the input order
 		Map<SampleKey, Double> affectionStates
-				= new LinkedHashMap<SampleKey, Double>(n);
+				= new LinkedHashMap<SampleKey, Double>(sampleKeys.size());
 		// we iterate over sampleKeys now, to get the correct order
 		Iterator<SampleKey> sampleKeysIt = sampleKeys.iterator();
 		for (Affection sampleAffection : sampleAffections) {
@@ -242,133 +215,44 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	}
 
 	/**
-	 * Encodes the SVM samples, one marker at a time.
-	 * So first all sample values for the first marker,
-	 * then all sample values for the second marker, ...
+	 * Encodes the SVM samples, but just a few (one chunk of) markers at a time.
+	 * So first all sample values for marker markerIndexFrom,
+	 * then all sample values for marker markerIndexFrom + 1, ...
+	 * until markerIndexFrom + markersChunkSize - 1.
 	 * @param markerGTs
 	 * @param sampleAffections
 	 * @param encoder
 	 * @param dSamples
-	 * @param dEncoded
 	 * @param n
 	 * @param usedSamples
 	 * @param encodedSamples
 	 * @throws IOException
 	 */
-	private static void encodeSamples(
+	static void encodeSamples(
 			List<GenotypesList> markerGTs,
-//			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
-//			List<Affection> sampleAffections, // NOTE needs to be well ordered!
 			GenotypeEncoder encoder,
 			final int markerIndexFrom,
 			final int markersChunkSize,
 			int dSamples,
-			int dEncoded,
 			int n,
-//			List<SampleKey> usedSamples,
-			final SamplesMarkersStorage<Float> encodedSamples)
+			final SamplesFeaturesStorage<Float> encodedSamples)
 			throws IOException
 	{
-//		LOG.debug("samples:");
-//		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
+		final int dEncoded = dSamples * encoder.getEncodingFactor();
 
-//		// evaluate which samples to keep
-//		// HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
-//		int nSamplesToKeep = 0;
-//		List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
-//		for (Affection sampleAffection : sampleAffections) {
-//			if (sampleAffection == Affection.UNKNOWN) {
-//				samplesToKeep.add(Boolean.FALSE);
-//			} else  {
-//				nSamplesToKeep++;
-//				samplesToKeep.add(Boolean.TRUE);
-//			}
-//		}
-		final int nSamplesToKeep = n;
-
-		// we use LinkedHashMap to preserve the inut order
-//		Map<SampleKey, List<Double>> encodedSamples
-//				= new LinkedHashMap<SampleKey, List<Double>>(n);
-//		for (SampleKey sampleKey : sampleKeys) {
-//			encodedSamples.put(sampleKey, new ArrayList<Double>(dEncoded));
-//		}
 		final byte numSingleValueStorageBytes = 4; // float
-		final int featureBytes = Util.calcFeatureBytes(nSamplesToKeep, dEncoded, numSingleValueStorageBytes);
+		final int featureBytes = Util.calcFeatureBytes(n, dEncoded, numSingleValueStorageBytes);
 		final String humanReadableFeaturesMemorySize = Util.bytes2humanReadable(featureBytes);
 		LOG.info("Combi Association Test: allocate memory for features: {}",
 				humanReadableFeaturesMemorySize);
 
-//		float[][] encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
-//		try {
-//			// NOTE This allocates a LOT of memory!
-//			//   We use float instead of double to half the memory,
-//			//   because we have no more then 4 or 5 distinct values anyway,
-//			//   so we do not need high precission.
-//			encodedSamples = new float[nSamplesToKeep][dEncoded];
-//		} catch (OutOfMemoryError er) {
-//			throw new IOException(er);
-//		}
-
-//		Map<MarkerKey, Set<Genotype>> uniqueGts
-//				= new LinkedHashMap<MarkerKey, Set<Genotype>>(markerKeys.size());
-		// collect unique GTs per marker
-//		List<Genotype> all = new ArrayList<Genotype>(n);
-//		Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
-//		List<Genotype> uniqueList = new ArrayList<Genotype>(4);
-		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", 0, dSamples);
-//		int mi = 0;
-//		for (List<byte[]> gtsForOneMarker : markerGTs) {
+		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", markerIndexFrom, markerIndexFrom + markersChunkSize);
 		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
 			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
-//			LOG.debug("");
-//			StringBuilder debugOut = new StringBuilder();
-//			debugOut.append("marker ").append(mi).append("\n");
-//			for (byte[] gt : samples.values()) {
-//				debugOut.append(" ").append(new String(gt));
-//			}
-//			LOG.debug(debugOut.toString());
-//			log.debug("Combi-test");
+			encoder.encodeGenotypes(gtsForOneMarker, encodedSamples, mi);
 
-//			// convert & collect unique GTs (unique per marker)
-//			all.clear();
-//			unique.clear();
-//			Iterator<SampleInfo> sampleInfoIt = sampleInfos.values().iterator();
-//			for (Map.Entry<SampleKey, byte[]> sample : samples.entrySet()) {
-//				SampleInfo curSampleInfo = sampleInfoIt.next();
-//				if (curSampleInfo.getAffection() == Affection.UNKNOWN) {
-//					continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
-//				}
-//				usedSamples.add(sample.getKey());
-//				Genotype genotype = new Genotype(sample.getValue());
-//				all.add(genotype);
-//				unique.add(genotype);
-////				log.debug("\t" + sample.getKey() + ": " + new String(sample.getValue()));
-//			}
-//			uniqueList.clear();
-//			uniqueList.addAll(unique);
-//			Collections.sort(uniqueList);
-////			log.debug("\tunique GT list:");
-////			for (Genotype genotype : uniqueList) {
-////				log.debug("\t\t\t\t" + genotype);
-////			}
-
-			// test output
-//			uniqueGts.put(markerKey, curUniqueGts);
-//			log.debug("\t" + markerKey + ": " + curUniqueGts.size());
-//			for (Genotype genotype : curUniqueGts) {
-//				log.debug("\t\t" + genotype);
-//			}
-
-			// encode all samples for this marker
-//			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
-			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi);
-
-//			mi++;
-
+			encodingMarkersPM.setProgress(mi);
 			if ((mi % 50) == 0) {
-				encodingMarkersPM.setProgress(mi);
-			}
-			if ((mi % 250) == 0) {
 				encodingMarkersPM.setNote(String.format(
 						"%d / %d ~= %f%%",
 						mi,
@@ -377,235 +261,118 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				LOG.info("Combi Association Test: encoded markers {} / {}", mi, dSamples);
 			}
 		}
-
-//		return encodedSamples;
 	}
 
-	private static List<Double> runEncodingAndSVM_LINEAR_KERNEL(
-//			CombiTestOperationDataSet dataSet,
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-//			List<Integer> markerOrigIndices,
+	static List<Double> runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
-//			Map<SampleKey, SampleInfo> sampleInfos,
+			final List<Census> allMarkersCensus,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
-			int dSamples,
-			int dEncoded,
-			int n,
 			GenotypeEncoder genotypeEncoder)
+			throws IOException
 	{
-		try {
-			LOG.info("Combi Association Test: create SVM parameters");
-			svm_parameter libSvmParameters = createLibSvmParameters();
+		final int dSamples = markerKeys.size();
+		final int n = sampleKeys.size();
 
-			LOG.info("Combi Association Test: init the SVM model");
-			int libSvmProblemBytes32bit = (n * 12) + ((n * dEncoded) * 16);
-			int libSvmProblemBytes64bit = (n * 16) + ((n * dEncoded) * 20);
-			int libSvmProblemMBytes32bit = (int) (libSvmProblemBytes32bit / 1024.0 / 1024.0);
-			int libSvmProblemMBytes64bit = (int) (libSvmProblemBytes64bit / 1024.0 / 1024.0);
-			LOG.info("Combi Association Test: required memory: ~ {}MB (32bit)  ~ {}MB (64bit)",
-					libSvmProblemMBytes32bit, libSvmProblemMBytes64bit);
-			LOG.info("Combi Association Test: allocate container memory");
-			svm_problem libSvmProblem = new svm_problem();
-			libSvmProblem.x = new svm_node[n][dEncoded];
-			libSvmProblem.y = new double[n];
-			libSvmProblem.l = n;
-			LOG.info("Combi Association Test: allocate nodes memory ");
+		LOG.info("Combi Association Test: create SVM parameters");
+		svm_parameter libSvmParameters = createLibSvmParameters();
+
+		LOG.info("Combi Association Test: encode affection states");
+		Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
+				sampleKeys,
+				sampleAffections);
+
+		String encoderString = null;
+		if (Util.EXAMPLE_TEST) { // HACK
+			if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
+				encoderString = "allelic";
+			} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
+				encoderString = "genotypic";
+			} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
+				encoderString = "nominal";
+			} else {
+				throw new RuntimeException();
+			}
+
+			// HACK This next line is for debugging purposes only
+			Util.storeForEncoding(markerKeys, allMarkersCensus, sampleKeys, sampleAffections, markerGTs);
+		}
+
+		final float[][] kernelMatrix;
+		try {
+			// NOTE This allocates quite some memory!
+			//   We use float instead of double to half the memory,
+			//   this might be subject to change, as in,
+			//   change to use double.
+			kernelMatrix = new float[n][n];
+		} catch (OutOfMemoryError er) {
+			throw new IOException(er);
+		}
+		MarkerGenotypesEncoder markerGenotypesEncoder = createMarkerGenotypesEncoder(
+				markerGTs, genotypeEncoder, dSamples, n);
+
+		// check if feature matrix is equivalent to the one calculated with matlab
+		if (Util.EXAMPLE_TEST) {
+			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
+			List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
+			// load all features into memory
+			List<List<Double>> X = new ArrayList<List<Double>>(n);
+			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
 			for (int si = 0; si < n; si++) {
-				for (int mi = 0; mi < dEncoded; mi++) {
-					svm_node curNode = new svm_node();
-					curNode.index = mi; // XXX correct?
-	//				curNode.index = si; // XXX correct? pretty sure that yes
-					libSvmProblem.x[si][mi] = curNode;
-				}
-				if ((si % 100) == 0) {
-					LOG.info("Combi Association Test: allocated samples {} / {}", si+1, n);
+				X.add(new ArrayList<Double>(dEncoded));
+			}
+			for (int ci = 0; ci < markerGenotypesEncoder.size(); ci++) {
+				final Float[][] featuresChunk = markerGenotypesEncoder.get(ci);
+				final int chunkSize = markerGenotypesEncoder.getChunkSize(ci);
+				for (int si = 0; si < n; si++) {
+					List<Double> xRow = X.get(si);
+					for (int lfi = 0; lfi < chunkSize; lfi++) {
+						xRow.add(Double.valueOf(featuresChunk[si][lfi]));
+					}
 				}
 			}
-
-//			svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
-			populateLibSvmProblem(markerKeys, sampleKeys, sampleAffections, markerGTs, libSvmParameters, genotypeEncoder, libSvmProblem, dSamples, dEncoded, n);
-
-			String encoderString = null;
-//			if (EXAMPLE_TEST) { // HACK
-//				LOG.info("Combi Association Test: encode samples");
-//				Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
-//						matrixSamples,
-//	//					sampleInfos.keySet(),
-//						sampleInfos,
-//						genotypeEncoder,
-//						dSamples,
-//						dEncoded,
-//						n);
-//				LOG.info("Combi Association Test: encode affection states");
-//				Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
-//						sampleInfos,
-//						n);
-//
-//				// do the SVM magic!
-//				Map<SampleKey, List<Double>> X = encodedSamples;
-//				Map<SampleKey, Double> Y = encodedAffectionStates;
-//
-//				storeForSVM(X, Y);
-//
-//				if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
-//					encoderString = "allelic";
-//				} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
-//					encoderString = "genotypic";
-//				} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
-//					encoderString = "nominal";
-//				} else {
-//					throw new RuntimeException();
-//				}
-//			}
-
-			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
+			List<List<Double>> xValuesTrans = Util.transpose(X);
+			LOG.debug("\ncompare feature matrices ...");
+			Util.compareMatrices(correctFeatures, xValuesTrans);
+			LOG.debug("done. they are equal! good!\n");
 		}
+
+		encodeFeaturesAndCreateKernelMatrix(
+				markerGenotypesEncoder,
+				kernelMatrix);
+
+		svm_problem libSvmProblem = createLibSvmProblem(
+				kernelMatrix,
+				encodedAffectionStates.values(),
+				libSvmParameters,
+				encoderString);
+
+		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, encoderString);
 	}
 
-	private static List<Double> runEncodingAndSVM_PRECOMPUTED(
-//			CombiTestOperationDataSet dataSet,
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-//			List<Integer> markerOrigIndices,
-			List<MarkerKey> markerKeys,
-//			Map<SampleKey, SampleInfo> sampleInfos,
-			List<SampleKey> sampleKeys,
-			List<Affection> sampleAffections,
-			List<GenotypesList> markerGTs,
+	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
+			List<GenotypesList> markersGenotypesSource,
+			GenotypeEncoder genotypeEncoder,
 			int dSamples,
-			int dEncoded,
-			int n,
-			GenotypeEncoder genotypeEncoder)
+			int n)
+			throws IOException
 	{
-		try {
-			LOG.info("Combi Association Test: create SVM parameters");
-			svm_parameter libSvmParameters = createLibSvmParameters();
+		// max memory usage of this function [bytes]
+		final int maxChunkMemoryUsage = 1024 * 1024;
+		// how much memory does one sample per marker use [bytes]
+		final int singleEntryMemoryUsage = 2 * 8; // HACK FIXME two doubles.. arbitrary.. investigate
+		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
+		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage));
 
-			LOG.info("Combi Association Test: init the SVM model");
-//if (1 == 1) return Integer.MIN_VALUE;
-//			LOG.info("Combi Association Test: allocate container memory");
-//			svm_problem libSvmProblem = new svm_problem();
-//			libSvmProblem.x = new svm_node[n][n];
-//			libSvmProblem.y = new double[n];
-//			libSvmProblem.l = n;
-//			LOG.info("Combi Association Test: allocate nodes memory ");
-//			for (int si = 0; si < n; si++) {
-//				for (int mi = 0; mi < dEncoded; mi++) {
-//					svm_node curNode = new svm_node();
-//					curNode.index = mi; // XXX correct?
-//	//				curNode.index = si; // XXX correct? pretty sure that yes
-//					libSvmProblem.x[si][mi] = curNode;
-//				}
-//				if ((si % 100) == 0) {
-//					LOG.info("Combi Association Test: allocated samples {} / {}", si+1, n);
-//				}
-//			}
-
-//			svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
-//			populateLibSvmProblem(matrixSamples, sampleInfos, libSvmParameters, genotypeEncoder, libSvmProblem, dSamples, dEncoded, n);
-
-			LOG.info("Combi Association Test: encode samples");
-			// XXX unused (next lines var)!
-//
-//			SamplesMarkersStorage<Float> encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
-//			try {
-//				// NOTE This allocates a LOT of memory!
-//				//   We use float instead of double to half the memory,
-//				//   because we have no more then 4 or 5 distinct values anyway,
-//				//   so we do not need high precission.
-//				encodedSamples = new InMemorySamplesMarkersStorage<Float>(n, dEncoded);
-//			} catch (OutOfMemoryError er) {
-//				throw new IOException(er);
-//			}
-//			List<SampleKey> usedSamples = new ArrayList<SampleKey>(sampleKeys.size());
-//			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
-//			/*float[][] encodedSamples = */encodeSamples(
-//					markerGTs,
-////					sampleInfos.keySet(),
-//					sampleAffections,
-//					genotypeEncoder,
-//					dSamples,
-//					dEncoded,
-//					n,
-//					usedSamples,
-//					encodedSamples);
-			LOG.info("Combi Association Test: encode affection states");
-			Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
-					sampleKeys,
-					sampleAffections,
-					n);
-
-			// do the SVM magic!
-//			Map<SampleKey, List<Double>> X = encodedSamples;
-//			Map<SampleKey, Double> Y = encodedAffectionStates;
-
-			String encoderString = null;
-//			if (EXAMPLE_TEST) { // HACK
-//
-//				storeForSVM(X, Y);
-//
-//				if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
-//					encoderString = "allelic";
-//				} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
-//					encoderString = "genotypic";
-//				} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
-//					encoderString = "nominal";
-//				} else {
-//					throw new RuntimeException();
-//				}
-//			}
-
-			final float[][] kernelMatrix;
-			try {
-				// NOTE This allocates quite some memory!
-				//   We use float instead of double to half the memory,
-				//   this might be subject to change, as in,
-				//   change to use double.
-				kernelMatrix = new float[n][n];
-			} catch (OutOfMemoryError er) {
-				throw new IOException(er);
-			}
-			encodeFeaturesAndCreateKernelMatrix(
-					markerGTs,
-//					sampleInfos.keySet(),
-//					sampleAffections,
-					genotypeEncoder,
-					dSamples,
-					dEncoded,
-					n,
-					kernelMatrix);
-//			whiten(encodedSamples);
-
-//			svm_problem libSvmProblem = createLibSvmProblem(
-//					kernelMatrix,
-//					encodedAffectionStates.values(),
-//					libSvmParameters,
-//					null);
-			svm_problem libSvmProblem = createLibSvmProblem(
-					kernelMatrix, // NOTE the method expects the feature matrix, but this is now already the kernel matrix
-					encodedAffectionStates.values(),
-					libSvmParameters,
-					null);
-
-			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
-//			return Integer.MIN_VALUE; // FIXME
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
+		return new MarkerGenotypesEncoder(markersGenotypesSource, genotypeEncoder, dSamples, n, maxChunkSize);
 	}
 
 	/**
 	 * Doing all of this in one method, allows us to balance max memory usage
-	 * vs. back-end storage (usually the hard-disc) reads
+	 * vs back-end storage (usually the hard-disc) reads.
+	 * NOTE XXX We could save more memory by storing only half of the kernel matrix,
+	 * as it is symmetric.
 	 * @param markerGTs
 	 * @param sampleAffections
 	 * @param encoder
@@ -617,16 +384,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * @return
 	 * @throws IOException
 	 */
-//	private static List<List<Double>> encodeFeaturesAndCreateKernelMatrix(
 	private static void encodeFeaturesAndCreateKernelMatrix(
-			List<GenotypesList> markerGTs,
-//			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
-//			List<Affection> sampleAffections, // NOTE needs to be well ordered!
-			GenotypeEncoder genotypeEncoder,
-			int dSamples,
-			int dEncoded,
-			int n,
-//			List<SampleKey> usedSamples,
+			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			final float[][] kernelMatrix)
 			throws IOException
 	{
@@ -639,61 +398,18 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			}
 		}
 
-		// max memory usage of this function [bytes]
-		final int maxChunkMemoryUsage = 1024 * 1024;
-		// how much memory does one sample per marker use [bytes]
-		final int singleEntryMemoryUsage = 2 * 8; // FIXME two doubles.. arbitrary.. investigate
-		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
-		final int maxChunkSize = (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage);
-		final int maxFeaturesChunkSize = maxChunkSize * genotypeEncoder.getEncodingFactor();
-		// ... which results in this many chunks for the whole data-set
-		final int numChunks = (int) Math.ceil((double) dSamples / maxChunkSize);
+		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
+			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
+			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
+			final int n = featuresChunk.length;
 
-		// This is basically a part of the (encoded) feature-map,
-		// that will be used to calculate the kernel matrix
-		InMemorySamplesMarkersStorage<Float> encodedSamplesRawStorage;
-		try {
-			// NOTE This allocates a LOT of memory!
-			//   We use float instead of double to half the memory,
-			//   because we have no more then 4 or 5 distinct values anyway,
-			//   so we do not need high precission.
-			encodedSamplesRawStorage = new InMemorySamplesMarkersStorage<Float>(n, maxFeaturesChunkSize);
-		} catch (OutOfMemoryError er) {
-			throw new IOException(er);
-		}
-
-		for (int ci = 0; ci < numChunks; ci++) {
-			final int firstMarkerIndex = ci * maxChunkSize;
-			final int firstMarkerFeatureIndex = ci * maxFeaturesChunkSize;
-			final int numMarkersInChunk = Math.min(dSamples - firstMarkerIndex, maxChunkSize);
-//			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
-
-			SamplesMarkersStorage<Float> encodedSamplesPart = new PartialMarkersInMemorySamplesMarkersStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), firstMarkerFeatureIndex, encodedSamplesRawStorage);
-
-			// encode only a chunk/part of the markers at a time
-			// which gives us a part of the feature matrix
-			encodeSamples(
-					markerGTs,
-	//				sampleInfos.keySet(),
-	//				sampleAffections,
-					genotypeEncoder,
-					firstMarkerIndex,
-					numMarkersInChunk,
-					dSamples,
-					dEncoded,
-					n,
-					encodedSamplesPart);
-
-			Float[][] rawStorage = encodedSamplesRawStorage.getStorage();
 			// calculate the part of the kernel matrix defined by
 			// the current chunk of the feature matrix
-//			for (int smi = 0; smi < numMarkersInChunk; smi++) {
-			for (int smi = 0; smi < rawStorage[0].length; smi++) {
-//				final int curMarkerIndex = firstMarkerIndex + smi;
-				for (int krsi = 0; krsi < rawStorage.length; krsi++) { // kernel row sample index
-					final float curRowValue = rawStorage[krsi][smi];
-					for (int krci = 0; krci < rawStorage.length; krci++) { // kernel column sample index
-						final float curColValue = rawStorage[krci][smi];
+			for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+				for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+					final float curRowValue = (Float) featuresChunk[krsi][smi];
+					for (int krci = 0; krci < n; krci++) { // kernel column sample index
+						final float curColValue = (Float) featuresChunk[krci][smi];
 						kernelMatrix[krsi][krci] += curRowValue * curColValue;
 					}
 				}
@@ -701,145 +417,33 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		}
 	}
 
-	static List<Double> runEncodingAndSVM(
-//			CombiTestOperationDataSet dataSet,
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-//			List<Integer> markerOrigIndices,
-			List<MarkerKey> markerKeys,
-//			Map<SampleKey, SampleInfo> sampleInfos,
-			List<SampleKey> sampleKeys,
-			List<Affection> sampleAffections,
-			List<GenotypesList> markerGTs,
-			int dSamples,
-			int dEncoded,
-			int n,
-			GenotypeEncoder genotypeEncoder)
-	{
-		if (1 == 0) {
-			return runEncodingAndSVM_LINEAR_KERNEL(markerKeys, sampleKeys, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
-		} else {
-			return runEncodingAndSVM_PRECOMPUTED(markerKeys, sampleKeys, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
-		}
-	}
-
-	/**
-	 * Sets the means to 0, and the variances to 1.
-	 * We need the complete set of samples for this to work,
-	 * but it may be only a subset of the markers, and still work properly.
-	 * @param x [samples][markers]; each marker is a data-point for the SVM
-	 */
-	private static void whiten(float[][] x) {
-
-		LOG.info("Combi Association Test: whiten the feature matrix (make center = 0 and variance = 1)");
-		int dEncoded = x[0].length;
-		int n = x.length;
-
-		// center the data
-		// ... using Double to calculate the mean, to prevent nummerical inaccuracies
-		double[] sums = new double[dEncoded];
-		double[] varianceSums = new double[dEncoded];
-		for (int di = 0; di < dEncoded; di++) {
-			sums[di] = 0.0;
-			varianceSums[di] = 0.0;
-		}
-		for (int si = 0; si < n; si++) {
-			for (int di = 0; di < dEncoded; di++) {
-				sums[di] += x[si][di];
-			}
-		}
-//		log.debug("sums: " + sums);
-		List<Double> mean = new ArrayList<Double>(dEncoded);
-		for (int di = 0; di < dEncoded; di++) {
-//			Double divide = sums.get(di).setScale(4).divide(new Double(nSamples), Double.ROUND_HALF_UP);
-//			log.debug("mean part: " + sums.get(di) + " / " + nSamples + " = " + divide);
-//			mean.add(sums.get(di).divide(new Double(nSamples), Double.ROUND_HALF_UP).doubleValue());
-			final double curSum = sums[di];
-			final double curMean = (curSum == 0.0) ? 0.0 : (curSum / n);
-			mean.add(curMean);
-		}
-//		log.debug("mean: " + mean);
-
-		// subtract the mean & calculate the variance sums
-		for (int si = 0; si < n; si++) {
-			for (int di = 0; di < dEncoded; di++) {
-				final float newValue = x[si][di] - mean.get(di).floatValue();
-				x[si][di] = newValue;
-				//varianceSums.set(di, varianceSums.get(di).add(new Double(newValue * newValue)))); // faster
-//				varianceSums.set(di, varianceSums.get(di).add(new Double(newValue.pow(2))); // XXX more precise
-				varianceSums[di] += (newValue * newValue);
-			}
-		}
-
-//		// calculate the variance sums separately?
-//		for (List<Double> x : X.values()) {
-//			for (int di = 0; di < dEncoded; di++) {
-//				x.set(di, x.get(di) - mean.get(di));
-//			}
-//		}
-
-		// calculate the variance
-//		List<Double> variance = new ArrayList<Double>(dEncoded);
-		List<Double> stdDev = new ArrayList<Double>(dEncoded);
-		for (int di = 0; di < dEncoded; di++) {
-			double curVariance = varianceSums[di] / n * dEncoded;
-//			variance.add(curVariance);
-			stdDev.add(Math.sqrt(curVariance));
-		}
-
-		// set the variance to 1
-		for (int si = 0; si < n; si++) {
-			for (int di = 0; di < dEncoded; di++) {
-				final float curStdDev = stdDev.get(di).floatValue();
-				final float oldValue = x[si][di];
-				final float newValue = (curStdDev == 0.0) ? oldValue : (oldValue / curStdDev);
-				x[si][di] = newValue;
-			}
-		}
-	}
-
 	private static svm_problem createLibSvmProblem(
-//			List<List<Double>> X,
-//			float[][] X,
 			float[][] K,
 			Collection<Double> Y,
 			svm_parameter libSvmParameters,
 			String encoderString)
 			throws IOException
 	{
-		LOG.info("Combi Association Test: libSVM problem: create");
 		svm_problem prob = new svm_problem();
 
-//		int dEncoded = X.iterator().next().size();
-//		int n = X.size();
-//		int dEncoded = X[0].length;
-		int n = Y.size();
+		final int n = Y.size();
 
 		// prepare the features
-//		List<List<Double>> problemInput;
 		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-			// precomute the kernel: K = X' * X
-//			prob.x = new svm_node[n][n];
-//			List<List<Double>> XT = transpose(X);
-//			problemInput = matrixMult(X, XT);
-
-			// FEATURES
-//			int libSvmProblemBytes = (n * 8) + ((n * (dSamples + dEncoded)) * 8) + (n * n * (8 + 4 + 8));
 			// KERNEL
 			final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
 			final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
-			LOG.info("Combi Association Test: libSVM problem: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
+			LOG.info("Combi Association Test: libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
-			LOG.info("Combi Association Test: libSVM problem: allocate kernel memory");
+			LOG.info("Combi Association Test: libSVM preparation: allocate kernel memory");
 			try {
 				prob.x = new svm_node[n][1 + n];
 			} catch (OutOfMemoryError er) {
 				throw new IOException(er);
 			}
 
-			LOG.info("Combi Association Test: libSVM problem: calculate the kernel");
-			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "calculate kernel matrix elements", "", 0, n*n);
+			LOG.info("Combi Association Test: libSVM preparation: store the kernel elements");
+			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "store kernel matrix elements", "", 0, n*n);
 			int calculatedKernelElements = 0;
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
@@ -849,10 +453,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				prob.x[si][0] = sampleIndexNode;
 
 				for (int s2i = si; s2i < n; s2i++) {
-//					double kernelValue = 0.0;
-//					for (int di = 0; di < dEncoded; di++) {
-//						kernelValue += X[si][di] * X[s2i][di];
-//					}
 					final double kernelValue = K[s2i][si]; // XXX or indices other way around?
 
 					svm_node curNode = new svm_node();
@@ -870,423 +470,43 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					}
 				}
 
-				if ((si % 10) == 0) { // FIXME nearly never true, cause we are in the outer loop
+				if ((si % 10) == 0) {
 					calculatingKernelPM.setProgress(calculatedKernelElements);
-				}
-				if ((si % 100) == 0) { // FIXME nearly never true, cause we are in the outer loop
-					calculatingKernelPM.setNote(String.format(
-							"%d / %d ~= %f%%",
-							calculatedKernelElements,
-							n*n,
-							(double) calculatedKernelElements / (n*n) * 100.0));
-					LOG.info("Combi Association Test: calculated kernel rows: {} / {}", si, n);
+					if ((si % 100) == 0) {
+						calculatingKernelPM.setNote(String.format(
+								"%d / %d ~= %f%%",
+								calculatedKernelElements,
+								n*n,
+								(double) calculatedKernelElements / (n*n) * 100.0));
+						LOG.info("Combi Association Test: libSVM preparation: stored kernel rows: {} / {}", si, n);
+					}
 				}
 			}
 
-//			if (encoderString != null) {
-//				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
-//				List<List<Double>> correctKernel = parsePlainTextMatrix(correctKernelFile, false);
-//
-//				LOG.debug("\ncompare kernel matrices ...");
-//				compareMatrices(correctKernel, problemInput);
-//				LOG.debug("done. they are equal! good!\n");
-//			}
+			if (Util.EXAMPLE_TEST) {
+				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
+				List<List<Double>> correctKernel = Util.parsePlainTextMatrix(correctKernelFile, false);
 
-//			// This is required by the libSVM standard for a PRECOMPUTED kernel
-//			int sampleIndex = 1;
-//			for (List<Double> problemInputRow : problemInput) {
-//				// XXX NOTE This is bad, because it will double the underlaying arrays size!
-//				problemInputRow.add(0, (double) sampleIndex++);
-//			}
-//			// TESTING output to libSVM input format for a precomputed kernel, to test it externally
-//			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
-////			log.debug("\nX: " + X);
-////			log.debug("\nXT: " + XT);
-////			log.debug("\nX * XT: " + problemInput);
-//			LOG.debug("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
-//			try {
-//				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
-//				Iterator<Double> Yit = Y.iterator();
-//				for (List<Double> problemInputRow : problemInput) {
-//					final double y = Yit.next();
-//					kernOut.write(String.valueOf(y));
-//					int ci = 0;
-//					for (Double value : problemInputRow) {
-//						kernOut.write(' ');
-//						kernOut.write(String.valueOf(ci));
-//						kernOut.write(':');
-//						kernOut.write(String.valueOf(value));
-//						ci++;
-//					}
-//					kernOut.write('\n');
-//				}
-//				kernOut.close();
-//			} catch (FileNotFoundException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//			LOG.debug("done writing kernel file.");
-
-			// XXX NOTE Do not delete this code! as it will be able to save us memory!
-////			// TODO
-////			throw new RuntimeException();
-//			Iterator<List<Double>> itX = X.values().iterator();
-//			for (int si1 = 0; si1 < n; si1++) {
-//				List<Double> sampleGTs1 = itX.next();
-//				for (int si2 = 0; si2 <= si1; si2++) { // calculate only half of the matrix, caus it is symmetric
-//					List<Double> sampleGTs2 = matX.get(si2);
-//					double res = 0.0;
-//					for (int mi = 0; mi < dEncoded; mi++) {
-//						res += sampleGTs1.get(mi) * sampleGTs2.get(mi);
-//					}
-//
-//					// save two times, cause the matrix is symmetric
-//					svm_node curNodeL = new svm_node();
-//					curNodeL.index = si1;
-//					curNodeL.value = res;
-//					prob.x[si1][si2] = curNodeL;
-//
-//					svm_node curNodeU = new svm_node();
-//					curNodeU.index = si2;
-//					curNodeU.value = res;
-//					prob.x[si2][si1] = curNodeU;
-//				}
-//			}
+				LOG.debug("\ncompare kernel matrices ...");
+				Util.compareMatrices(correctKernel, new Util.DoubleMatrixWrapperFloatArray2D(K));
+				LOG.debug("done. they are equal! good!\n");
+			}
 		} else {
-//			problemInput = X;
-
-//			prob.x = new svm_node[n][dEncoded];
-//			Iterator<List<Double>> itX = X.values().iterator();
-//			for (int si = 0; si < n; si++) {
-//				List<Double> sampleGTs = itX.next();
-//				for (int mi = 0; mi < dEncoded; mi++) {
-//					svm_node curNode = new svm_node();
-//	//				curNode.index = mi;
-//					curNode.index = si; /// XXX correct?
-//					curNode.value = sampleGTs.get(mi);
-//					prob.x[si][mi] = curNode;
-//				}
-//			}
-			throw new RuntimeException();
+			throw new IllegalStateException("unsupported libSVM kernel type: " + libSvmParameters.kernel_type);
 		}
-//		prob.x = new svm_node[problemInput.size()][problemInput.get(0).size()];
-//		LOG.debug("\nproblemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
-//		Iterator<List<Double>> itX = problemInput.iterator();
-//		for (int si = 0; si < problemInput.size(); si++) {
-//			List<Double> sampleGTs = itX.next();
-//			for (int mi = 0; mi < problemInput.get(0).size(); mi++) {
-//				svm_node curNode = new svm_node();
-//				curNode.index = mi; // XXX correct?
-////				curNode.index = si; // XXX correct? pretty sure that yes
-//				curNode.value = sampleGTs.get(mi);
-//				prob.x[si][mi] = curNode;
-//			}
-//		}
-
 
 		// prepare the labels
-		LOG.info("Combi Association Test: libSVM problem: store the label");
+		LOG.info("Combi Association Test: libSVM preparation: store the label");
 		prob.l = n;
 		prob.y = new double[prob.l];
-//		StringBuilder debugOut = new StringBuilder();
-//		debugOut.append("\ty:");
 		Iterator<Double> itY = Y.iterator();
 		for (int si = 0; si < n; si++) {
 			double y = itY.next();
 //			y = (y + 1.0) / 2.0;
 			prob.y[si] = y;
-//			debugOut.append(" " + y);
 		}
-//		LOG.debug(debugOut.toString());
-
-//		{
-//			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + "_after.txt");
-////			log.debug("\nX: " + X);
-////			log.debug("\nXT: " + XT);
-////			log.debug("\nX * XT: " + problemInput);
-//			LOG.debug("\nAGAIN writing generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
-//			try {
-//				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
-//				for (int si = 0; si < prob.x.length; si++) {
-//					kernOut.write(String.valueOf(prob.y[si]));
-//					for (int mi = 0; mi < prob.x[si].length; mi++) {
-//						kernOut.write(' ');
-//						kernOut.write(String.valueOf(prob.x[si][mi].index));
-//						kernOut.write(':');
-//						kernOut.write(String.valueOf(prob.x[si][mi].value));
-//					}
-//					kernOut.write('\n');
-//				}
-//				kernOut.close();
-//			} catch (FileNotFoundException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//			LOG.debug("done writing kernel file.");
-//		}
 
 		return prob;
-	}
-
-	private static void populateLibSvmProblem(
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			List<MarkerKey> markers,
-//			Map<SampleKey, SampleInfo> sampleInfos,
-			List<SampleKey> sampleKeys,
-			List<Affection> sampleAffections,
-			List<GenotypesList> markerGTs,
-			svm_parameter libSvmParameters,
-			GenotypeEncoder genotypeEncoder,
-			svm_problem libSvmProblem,
-			int dSamples,
-			int dEncoded,
-			int n)
-	{
-		LOG.info("Combi Association Test: encode samples");
-
-		// we use LinkedHashMap to preserve the inut order
-//		Map<SampleKey, List<Double>> encodedSamples
-//				= new LinkedHashMap<SampleKey, List<Double>>(n);
-//		for (SampleKey sampleKey : sampleKeys) {
-//			encodedSamples.put(sampleKey, new ArrayList<Double>(dEncoded));
-//		}
-
-//		Map<MarkerKey, Set<Genotype>> uniqueGts
-//				= new LinkedHashMap<MarkerKey, Set<Genotype>>(markerKeys.size());
-		// collect unique GTs per marker
-		int mi = 0;
-		for (GenotypesList gtsOfOneMarker : markerGTs) {
-//			Map<SampleKey, byte[]> samples = gtsOfOneMarker.getValue();
-//			LOG.debug("");
-//			StringBuilder debugOut = new StringBuilder();
-//			debugOut.append("marker ").append(mi).append("\n");
-//			for (byte[] gt : samples.values()) {
-//				debugOut.append(" ").append(new String(gt));
-//			}
-//			LOG.debug(debugOut.toString());
-//			log.debug("Combi-test");
-
-			// convert & collect unique GTs (unique per marker)
-//			List<Genotype> all = new ArrayList<Genotype>(n);
-			Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
-			Iterator<Affection> sampleAffectionsIt = sampleAffections.iterator();
-			for (byte[] sampleGt : gtsOfOneMarker) {
-				Affection curSampleAffection = sampleAffectionsIt.next();
-				if (curSampleAffection == Affection.UNKNOWN) {
-					continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
-				}
-				Genotype genotype = new Genotype(sampleGt);
-//				all.add(genotype);
-				unique.add(genotype);
-//				log.debug("\t" + sample.getKey() + ": " + new String(sample.getValue()));
-			}
-			List<Genotype> uniqueList = new ArrayList<Genotype>(unique);
-			Collections.sort(uniqueList);
-//			log.debug("\tunique GT list:");
-//			for (Genotype genotype : uniqueList) {
-//				log.debug("\t\t\t\t" + genotype);
-//			}
-
-			// test output
-//			uniqueGts.put(markerKey, curUniqueGts);
-//			log.debug("\t" + markerKey + ": " + curUniqueGts.size());
-//			for (Genotype genotype : curUniqueGts) {
-//				log.debug("\t\t" + genotype);
-//			}
-
-			// encode all samples for this marker
-//			genotypeEncoder.encodeGenotypes(uniqueList, all, libSvmProblem, mi); // FIXME
-
-			mi++;
-			if ((mi % 1000) == 0) {
-				LOG.info("Combi Association Test: encoded markers {} / {}", mi, dSamples);
-			}
-		}
-
-
-
-
-
-		LOG.info("Combi Association Test: encode affection states");
-		// we use LinkedHashMap to preserve the inut order
-//		Map<SampleKey, Double> affectionStates
-//				= new LinkedHashMap<SampleKey, Double>(n);
-		// we iterate over sampleKeys now, to get the correct order
-		int si = 0;
-		for (Affection sampleAffection : sampleAffections) {
-			Affection affection = sampleAffection;
-			if (affection == Affection.UNKNOWN) {
-//				throw new RuntimeException("Should we filter this out beforehand?");
-				continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) currently think it is ok here)
-			}
-			double encodedDisease = affection.equals(Affection.AFFECTED) ? 1.0 : -1.0; // XXX or should it be 0.0 instead of -1.0?
-//			affectionStates.put(sampleInfo.getKey(), encodedDisease);
-			libSvmProblem.y[si] = encodedDisease;
-			si++;
-		}
-
-
-
-
-
-//		int dEncoded = X.iterator().next().size();
-//		int n = X.size();
-		dEncoded = libSvmProblem.x[0].length;
-		n = libSvmProblem.x.length;
-
-		// prepare the features
-		List<List<Double>> problemInput;
-//		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-//			// precomute the kernel: K = X' * X
-////			prob.x = new svm_node[n][n];
-//			List<List<Double>> XT = transpose(X);
-//			problemInput = matrixMult(X, XT);
-//
-//			if (encoderString != null) {
-//				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
-//				List<List<Double>> correctKernel = parsePlainTextMatrix(correctKernelFile, false);
-//
-//				LOG.debug("\ncompare kernel matrices ...");
-//				compareMatrices(correctKernel, problemInput);
-//				LOG.debug("done. they are equal! good!\n");
-//			}
-//
-//			// This is required by the libSVM standard for a PRECOMPUTED kernel
-//			int sampleIndex = 1;
-//			for (List<Double> problemInputRow : problemInput) {
-//				// XXX NOTE This is bad, because it will double the underlaying arrays size!
-//				problemInputRow.add(0, (double) sampleIndex++);
-//			}
-//			// TESTING output to libSVM input format for a precomputed kernel, to test it externally
-//			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
-////			log.debug("\nX: " + X);
-////			log.debug("\nXT: " + XT);
-////			log.debug("\nX * XT: " + problemInput);
-//			LOG.debug("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
-//			try {
-//				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
-//				Iterator<Double> Yit = Y.iterator();
-//				for (List<Double> problemInputRow : problemInput) {
-//					final double y = Yit.next();
-//					kernOut.write(String.valueOf(y));
-//					int ci = 0;
-//					for (Double value : problemInputRow) {
-//						kernOut.write(' ');
-//						kernOut.write(String.valueOf(ci));
-//						kernOut.write(':');
-//						kernOut.write(String.valueOf(value));
-//						ci++;
-//					}
-//					kernOut.write('\n');
-//				}
-//				kernOut.close();
-//			} catch (FileNotFoundException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//			LOG.debug("done writing kernel file.");
-//
-//			// XXX NOTE Do not delete this code! as it will be able to save us memory!
-//////			// TODO
-//////			throw new RuntimeException();
-////			Iterator<List<Double>> itX = X.values().iterator();
-////			for (int si1 = 0; si1 < n; si1++) {
-////				List<Double> sampleGTs1 = itX.next();
-////				for (int si2 = 0; si2 <= si1; si2++) { // calculate only half of the matrix, caus it is symmetric
-////					List<Double> sampleGTs2 = matX.get(si2);
-////					double res = 0.0;
-////					for (int mi = 0; mi < dEncoded; mi++) {
-////						res += sampleGTs1.get(mi) * sampleGTs2.get(mi);
-////					}
-////
-////					// save two times, cause the matrix is symmetric
-////					svm_node curNodeL = new svm_node();
-////					curNodeL.index = si1;
-////					curNodeL.value = res;
-////					prob.x[si1][si2] = curNodeL;
-////
-////					svm_node curNodeU = new svm_node();
-////					curNodeU.index = si2;
-////					curNodeU.value = res;
-////					prob.x[si2][si1] = curNodeU;
-////				}
-////			}
-//		} else {
-//			problemInput = X;
-
-//			prob.x = new svm_node[n][dEncoded];
-//			Iterator<List<Double>> itX = X.values().iterator();
-//			for (int si = 0; si < n; si++) {
-//				List<Double> sampleGTs = itX.next();
-//				for (int mi = 0; mi < dEncoded; mi++) {
-//					svm_node curNode = new svm_node();
-//	//				curNode.index = mi;
-//					curNode.index = si; /// XXX correct?
-//					curNode.value = sampleGTs.get(mi);
-//					prob.x[si][mi] = curNode;
-//				}
-//			}
-//		}
-//		prob.x = new svm_node[problemInput.size()][problemInput.get(0).size()];
-//		LOG.debug("\nproblemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
-//		Iterator<List<Double>> itX = problemInput.iterator();
-//		for (int si = 0; si < problemInput.size(); si++) {
-//			List<Double> sampleGTs = itX.next();
-//			for (int mi = 0; mi < problemInput.get(0).size(); mi++) {
-//				svm_node curNode = new svm_node();
-//				curNode.index = mi; // XXX correct?
-////				curNode.index = si; // XXX correct? pretty sure that yes
-//				curNode.value = sampleGTs.get(mi);
-//				prob.x[si][mi] = curNode;
-//			}
-//		}
-
-
-//		// prepare the labels
-//		prob.l = n;
-//		prob.y = new double[prob.l];
-//		StringBuilder debugOut = new StringBuilder();
-//		debugOut.append("\ty:");
-//		Iterator<Double> itY = Y.iterator();
-//		for (int si = 0; si < n; si++) {
-//			double y = itY.next();
-////			y = (y + 1.0) / 2.0;
-//			prob.y[si] = y;
-//			debugOut.append(" " + y);
-//		}
-//		LOG.debug(debugOut.toString());
-
-//		{
-//			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + "_after.txt");
-////			log.debug("\nX: " + X);
-////			log.debug("\nXT: " + XT);
-////			log.debug("\nX * XT: " + problemInput);
-//			LOG.debug("\nAGAIN writing generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
-//			try {
-//				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
-//				for (int si = 0; si < prob.x.length; si++) {
-//					kernOut.write(String.valueOf(prob.y[si]));
-//					for (int mi = 0; mi < prob.x[si].length; mi++) {
-//						kernOut.write(' ');
-//						kernOut.write(String.valueOf(prob.x[si][mi].index));
-//						kernOut.write(':');
-//						kernOut.write(String.valueOf(prob.x[si][mi].value));
-//					}
-//					kernOut.write('\n');
-//				}
-//				kernOut.close();
-//			} catch (FileNotFoundException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//			LOG.debug("done writing kernel file.");
-//		}
 	}
 
 	private static svm_parameter createLibSvmParameters() {
@@ -1331,136 +551,84 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	}
 
 	/**
-	 * Calculate the weights 'w' in the original space (as in, the orignal space as known to the SVM, not the genotype space),
+	 * Calculate the weights 'w' in the original/feature space,
 	 * using the weights 'alpha' from the kernel-space.
-	 * <math>\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i.</math>
-	 * @param alphas the SVM problem weights in kernel-space
-	 * @param xs the support-vector coordinates in the original space
-	 * @param ys the labels of the data (-1, or 1)
-	 * @return the SVM problem weights 'w' in the original space
+	 * In our case, the original space as known to the SVM
+	 * is the encoded genotypes space, not the actual genotype space yet.
+	 * <math>\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i \quad \forall i = 1 ... nSamples</math>
+	 * with <math>\mathbf{w}, \mathbf{x}_i</math> having dimension <math>dEncoded</math>.
+	 * @param alphas the SVM problem weights in kernel-space [nSamples]
+	 * @param xs the support-vector coordinates in the feature space [nSamples * dEncoded]
+	 * @param ys the labels of the data (-1, or 1) [nSamples]
+	 * @return the SVM problem weights 'w' in the feature space [dEncoded]
 	 */
 	private static List<Double> calculateOriginalSpaceWeights(
-			final double[][] alphas,
-			final svm_node[][] xs,
-//			final List<List<Double>> X,
-			final double[] ys,
-			svm_parameter libSvmParameters)
+			Map<Integer, Double> nonZeroAlphas,
+			final MarkerGenotypesEncoder xs,
+			final double[] ys)
 	{
-//		final int d = xs[0].length;
-//		final int d = X.get(0).size();
-		final int d = xs[0].length;
+		// number of data-points/samples
+		final int n = ys.length;
+		// number of dimensions/features/markers*encodingFactor
+		final int d = xs.getNumFeatures();
 
-//		List<Double> weights
-//				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
 		double[] weights = new double[d];
-		Arrays.fill(weights, 0.0); // probably not required, but it does not hurt to make things clear
-LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
-		for (int svi = 0; svi < xs.length; svi++) {
-			final svm_node[] xsi = xs[svi];
-//			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
-//			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works with PRECOMPUTED!
-//			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
-//			int svIndex = (int) xsi[0].value;
-//			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-//				svIndex -= 1;
-//			}
-//			log.debug("svIndex: " + svIndex);
-//			final List<Double> Xsi = X.get(svIndex);
-//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works with PRECOMPUTED!
-//			for (int i = 1; i < xsi.length; i++) {
-//				svm_node elem = xsi[i];
-//				Xsi.add(elem.value);
-//			}
-			final double alpha = alphas[0][svi];
-//			final double y = ys[svIndex];
-			for (int di = 0; di < d; di++) {
-				final double x = xsi[di].value;
-//				final double x = Xsi.get(di);
-//				final double x = Math.abs(Xsi.get(di));
-//				final double alphaYXi = alpha * y * x;
-				// NOTE We dismiss the y, which would be part of normal SVM,
-				// because we want the absolute sum (i forgot again why so :/ )
-//				final double alphaYXi = alpha * x;
-				final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
-//				weights.set(di, weights.get(di) + alphaYXi);
-				weights[di] += alphaYXi;
+		// This is probably not required, as Java initialized to zero anyway,
+		// but it does not hurt to make things clear.
+		Arrays.fill(weights, 0.0);
+
+		for (int ci = 0; ci < xs.size(); ci++) {
+			final Float[][] featuresChunk = xs.get(ci);
+			final int chunkSize = xs.getChunkSize(ci);
+			final int firstFeatureIndex = ci * xs.getMaxChunkSize();
+
+			for (Map.Entry<Integer, Double> nonZeroAlpha : nonZeroAlphas.entrySet()) {
+				final int svi = nonZeroAlpha.getKey();
+				final double alpha = nonZeroAlpha.getValue();
+				for (int cldi = 0; cldi < chunkSize; cldi++) {
+					final int di = firstFeatureIndex + cldi;
+					final double x = featuresChunk[svi][cldi];
+					// NOTE We dismiss the y, which would be part of normal SVM,
+					// because we want the absolute sum (i forgot again why so :/ )
+//					final double y = ...;
+//					final double alphaYXi = - alpha * y * x; // FIXME why here change sign again?!?!
+					final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
+					weights[di] += alphaYXi;
+				}
 			}
-//			log.debug();
 		}
 
+		// convert array to list
 		List<Double> weightsList = new ArrayList<Double>(weights.length);
 		for (int wi = 0; wi < weights.length; wi++) {
 			weightsList.add(weights[wi]);
 		}
 
-//		return weights;
 		return weightsList;
 	}
 
-
-//	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
-//	private static int runSVM(List<List<Double>> X, List<Double> Y, GenotypeEncoder genotypeEncoder, String encoderString) {
 	private static List<Double> runSVM(
-//			CombiTestOperationDataSet dataSet,
-//			List<Integer> markerOrigIndices,
-//			List<MarkerKey> markerKeys,
+			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
 			GenotypeEncoder genotypeEncoder,
 			String encoderString)
 	{
-//		int dEncoded = X.iterator().next().size();
-//		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
-//		int n = X.size();
-		int dEncoded = libSvmProblem.x[0].length;
-		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
-		int n = libSvmProblem.x.length;
-
-//		LOG.info("Combi Association Test: whiten");
-//		whiten(libSvmProblem);
-
-//		// check if feature matrix is equivalent to the one calculated with matlab
-//		if (encoderString != null) {
-//			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
-//			List<List<Double>> correctFeatures = parsePlainTextMatrix(correctFeaturesFile, false);
-//			List<List<Double>> xValuesTrans = transpose(X);
-////			log.debug("\nXXX correctFeatures[2]: " + correctFeatures.get(2));
-////			log.debug("\nXXX xValues[2]: " + xValuesTrans.get(2));
-//			LOG.debug("\ncompare feature matrices ...");
-//			compareMatrices(correctFeatures, xValuesTrans);
-//			LOG.debug("done. they are equal! good!\n");
-//		}
+		final int dEncoded = libSvmProblem.x[0].length; // NOTE This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers with precomputed
+		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
+		final int n = libSvmProblem.x.length;
 
 		LOG.info("Combi Association Test: create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
-//		LOG.info("Combi Association Test: init the SVM model");
-//		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
-
 		LOG.info("Combi Association Test: train the SVM model");
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
-
 		// check if the alphas are equivalent to the ones calculated with matlab
-		if (encoderString != null) {
+		if (Util.EXAMPLE_TEST) {
 			List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-			int curSVIndex = 0;
 			for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
 				final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-				int index;
-				if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-					index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-				} else { // LINEAR
-	//				while (libSvmProblem.x[curSVIndex][0] != svmModel.SV[i][0]) {
-	//					curSVIndex++;
-	//				}
-	//				index = curSVIndex;
-					index = (int) svmModel.sv_indices[0][i]; // XXX testing
-				}
-	//			final int index = svmModel.SV[i][0].index;
-	//			final int index = (int) svmModel.SV[i][0].index; // XXX NOTE does NOT work with PRECOMPUTED!
-	//			final int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-	//			final int index = (int) svmModel.sv_indices[i][0]; // XXX testing
-	//			final int index = (int) svmModel.sv_indices[0][i]; // XXX testing
+				int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
 				myAlphas.set(index, value);
 			}
 
@@ -1468,16 +636,6 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 			svm_node[][] SVs = svmModel.SV;
 			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
 			LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
-
-//			List<List<Double>> alphasLM = new ArrayList<List<Double>>(alphas.length);
-//			for (int i = 0; i < alphas.length; i++) {
-//				List<Double> curRow = new ArrayList<Double>(alphas[i].length);
-//				for (int j = 0; j < alphas[i].length; j++) {
-//LOG.debug("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
-//					curRow.add(alphas[i][j]);
-//				}
-//				alphasLM.add(curRow);
-//			}
 
 			File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
 			List<List<Double>> correctAlphasSparse = Util.parsePlainTextMatrix(correctAlphasFile, false);
@@ -1488,44 +646,27 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 				correctAlphas.set(index, value);
 			}
 
-//			{
-//				List<List<Double>> matrixA = new ArrayList<List<Double>>(3);
-//				matrixA.add(Arrays.asList(new Double[] {1.0, 2.0}));
-//				matrixA.add(Arrays.asList(new Double[] {3.0, 4.0}));
-//				matrixA.add(Arrays.asList(new Double[] {5.0, 6.0}));
-//
-//				List<List<Double>> matrixB = new ArrayList<List<Double>>(2);
-//				matrixB.add(Arrays.asList(new Double[] {1.0, -1.0, 1.0}));
-//				matrixB.add(Arrays.asList(new Double[] {2.0, 1.0, 0.0}));
-//
-//				List<List<Double>> res = matrixMult(matrixA, matrixB);
-//				log.debug("\nmatrixA: " + matrixA);
-//				log.debug("\nmatrixB: " + matrixB);
-//				log.debug("\nres: " + res);
-//			}
-
-//			Collections.sort(correctAlphas);
-//			Collections.sort(myAlphas);
 			LOG.debug("\nmatlab alphas: ("+correctAlphas.size()+")\n" + correctAlphas);
 			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 			LOG.debug("\ncompare alpha vectors ...");
-			try {
-				Util.compareVectors(correctAlphas, myAlphas);
-			} catch (RuntimeException ex) {
-				// XXX make unequal alphas non-fatal; DANGER!
-				ex.printStackTrace();
-			}
+			Util.compareVectors(correctAlphas, myAlphas);
 			LOG.debug("done. they are equal! good!\n");
-//		} else {
-//			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
+		}
+
+		// sample index and value of non-zero alphas
+		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
+		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
+			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index = (int) svmModel.SV[i][0].value/* - 1*/; // XXX NOTE only works with PRECOMPUTED!
+			nonZeroAlphas.put(index, value);
 		}
 
 		LOG.info("Combi Association Test: calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				svmModel.sv_coef, svmModel.SV/*, X*/, libSvmProblem.y, libSvmParameters);
+				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y);
 
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
-		if (encoderString != null) {
+		if (Util.EXAMPLE_TEST) {
 			File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
 			List<Double> mlWeightsRaw = Util.parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
 
@@ -1549,26 +690,31 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		List<Double> weights = new ArrayList<Double>(dSamples);
 		genotypeEncoder.decodeWeights(weightsEncoded, weights);
 
-		if (encoderString != null) {
+		if (Util.EXAMPLE_TEST) {
 			// check if the decoded weights are equivalent to the ones calculated with matlab
-			{
-				File mlWeightsFinalFile = new File(BASE_DIR, "w_" + encoderString + "_final");
-				List<Double> mlWeightsFinal = Util.parsePlainTextMatrix(mlWeightsFinalFile, false).get(0);
+			File mlWeightsFinalFile = new File(BASE_DIR, "w_" + encoderString + "_final");
+			List<Double> mlWeightsFinal = Util.parsePlainTextMatrix(mlWeightsFinalFile, false).get(0);
 
-				LOG.debug("\nXXX correct weights final: (" + mlWeightsFinal.size() + ") " + mlWeightsFinal);
-				LOG.debug("weights final: (" + weights.size() + ") " + weights);
-				LOG.debug("compare final, decoded weights vectors ...");
-				Util.compareVectors(mlWeightsFinal, weights);
-				LOG.debug("done. they are equal! good!\n");
-			}
+			LOG.debug("\nXXX correct weights final: (" + mlWeightsFinal.size() + ") " + mlWeightsFinal);
+			LOG.debug("weights final: (" + weights.size() + ") " + weights);
+			LOG.debug("compare final, decoded weights vectors ...");
+			Util.compareVectors(mlWeightsFinal, weights);
+			LOG.debug("done. they are equal! good!\n");
 		}
 
 		// apply moving average filter (p-norm filter)
 		LOG.info("Combi Association Test: apply moving average filter (p-norm filter) on the weights");
 		List<Double> weightsFiltered = new ArrayList(weights);
-		Util.pNormFilter(weightsFiltered, 3, 2); // FIXME change to 35, 2 for bigger stuff
+		final int filterWidth;
+		final int norm = 2;
+		if (weights.size() < 200) { // HACK A bit arbitrary, talk to marius for a better strategy
+			filterWidth = 3;
+		} else {
+			filterWidth = 35; // this is the default value used by marius
+		}
+		Util.pNormFilter(weightsFiltered, filterWidth, norm);
 
-		if (encoderString != null) {
+		if (Util.EXAMPLE_TEST) {
 			// check if the filtered weights are equivalent to the ones calculated with matlab
 			File mlWeightsFinalFilteredFile = new File(BASE_DIR, "w_" + encoderString + "_final_filtered");
 			List<Double> mlWeightsFinalFiltered = Util.parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);

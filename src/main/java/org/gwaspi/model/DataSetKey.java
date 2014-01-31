@@ -46,6 +46,15 @@ public final class DataSetKey {
 		return (operationParent != null);
 	}
 
+	public MatrixKey getOrigin() {
+
+		if (isMatrix()) {
+			return getMatrixParent();
+		} else {
+			return getOperationParent().getParentMatrixKey();
+		}
+	}
+
 	public MatrixKey getMatrixParent() {
 		return matrixParent;
 	}

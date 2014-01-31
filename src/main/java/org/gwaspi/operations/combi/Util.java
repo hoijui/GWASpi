@@ -25,8 +25,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -127,6 +129,46 @@ public class Util {
 		}
 
 		return res;
+	}
+
+	public static class DoubleVectorWrapperFloatArray1D extends AbstractList<Double> {
+
+		private final float[] innerVector;
+
+		public DoubleVectorWrapperFloatArray1D(final float[] innerVector) {
+
+			this.innerVector = innerVector;
+		}
+
+		@Override
+		public Double get(int index) {
+			return Double.valueOf(innerVector[index]);
+		}
+
+		@Override
+		public int size() {
+			return innerVector.length;
+		}
+	}
+
+	public static class DoubleMatrixWrapperFloatArray2D extends AbstractList<List<Double>> {
+
+		private final float[][] innerMatrix;
+
+		public DoubleMatrixWrapperFloatArray2D(final float[][] innerMatrix) {
+
+			this.innerMatrix = innerMatrix;
+		}
+
+		@Override
+		public List<Double> get(int index) {
+			return new DoubleVectorWrapperFloatArray1D(innerMatrix[index]);
+		}
+
+		@Override
+		public int size() {
+			return innerMatrix.length;
+		}
 	}
 
 	public static void compareMatrices(
@@ -272,11 +314,11 @@ public class Util {
 
 	/**
 	 * Filters the weights with a p-norm moving average filter.
+	 * The input is overwritten by the result in the weights list.
 	 * See {@link http://www.mathworks.com/matlabcentral/fileexchange/12276-movingaverage-v3-1-mar-2008}.
 	 * @param weights the weights to be filtered
 	 * @param filterWidth the kernel size k (has to be an odd number)
 	 * @param norm the value p for the p-norm to use
-	 * @return filtered version of weights (same length)
 	 */
 	public static void pNormFilter(List<Double> weights, int filterWidth, int norm) {
 
@@ -327,17 +369,11 @@ public class Util {
 	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
 
 	static void storeForEncoding(
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
 			List<MarkerKey> markers,
-//			Map<SampleKey, SampleInfo> sampleInfos,
+			final List<Census> allMarkersCensus,
 			List<SampleKey> samples,
 			List<Affection> sampleAffecs,
-			List<GenotypesList> markerGTs,
-			int dSamples,
-			int dEncoded,
-			int n)
+			List<GenotypesList> markerGTs)
 			throws IOException
 	{
 		if (!EXAMPLE_TEST) {
@@ -365,11 +401,6 @@ public class Util {
 			FileOutputStream fout = new FileOutputStream(TMP_RAW_DATA_FILE);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 
-			oos.writeObject((Integer) dSamples);
-			oos.writeObject((Integer) dEncoded);
-			oos.writeObject((Integer) n);
-
-//			oos.writeObject(loadedMatrixSamples);
 			oos.writeObject(markerKeys);
 			oos.writeObject(sampleKeys);
 			oos.writeObject(sampleAffections);
@@ -383,10 +414,6 @@ public class Util {
 
 	private static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
 
-		int dSamples;
-		int dEncoded;
-		int n;
-
 		List<MarkerKey> markerKeys;
 		List<SampleKey> sampleKeys;
 		List<Affection> sampleAffections;
@@ -395,10 +422,6 @@ public class Util {
 			FileInputStream fin = new FileInputStream(TMP_RAW_DATA_FILE);
 			ObjectInputStream ois = new ObjectInputStream(fin);
 
-			dSamples = (Integer) ois.readObject();
-			dEncoded = (Integer) ois.readObject();
-			n = (Integer) ois.readObject();
-
 			markerKeys = (List<MarkerKey>) ois.readObject();
 			sampleKeys = (List<SampleKey>) ois.readObject();
 			sampleAffections = (List<Affection>) ois.readObject();
@@ -406,7 +429,7 @@ public class Util {
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, dSamples, dEncoded, n, genotypeEncoder);
+			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

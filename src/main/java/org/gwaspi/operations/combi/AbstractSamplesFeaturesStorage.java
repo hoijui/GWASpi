@@ -23,21 +23,21 @@ import java.util.Map;
 /**
  * TODO
  */
-abstract class AbstractSamplesMarkersStorage<ST> implements SamplesMarkersStorage<ST> {
+abstract class AbstractSamplesFeaturesStorage<ST> implements SamplesFeaturesStorage<ST> {
 
 	private final Map<String, Object> cache;
 	private final int numSamples;
-	private final int numMarkers;
+	private final int numFeatures;
 
-	protected AbstractSamplesMarkersStorage(int numSamples, int numMarkers, Map<String, Object> cache) {
+	protected AbstractSamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache) {
 
 		this.cache = (cache == null) ? new HashMap<String, Object>() : cache;
 		this.numSamples = numSamples;
-		this.numMarkers = numMarkers;
+		this.numFeatures = numFeatures;
 	}
 
-	protected AbstractSamplesMarkersStorage(int numSamples, int numMarkers) {
-		this(numSamples, numMarkers, null);
+	protected AbstractSamplesFeaturesStorage(int numSamples, int numFeatures) {
+		this(numSamples, numFeatures, null);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ abstract class AbstractSamplesMarkersStorage<ST> implements SamplesMarkersStorag
 	}
 
 	@Override
-	public int getNumMarkers() {
-		return numMarkers;
+	public int getNumFeatures() {
+		return numFeatures;
 	}
 }

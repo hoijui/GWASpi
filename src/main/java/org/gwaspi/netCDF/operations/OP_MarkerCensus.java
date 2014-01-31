@@ -291,9 +291,11 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
 						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sex);
 
-						float counter = 1;
+						final float counter;
 //						if (decision == CensusDecision.CountMalesNonAutosomally) {
 //							counter = 0.5f;
+//						} else {
+							counter = 1.0f;
 //						}
 						//</editor-fold>
 
@@ -481,8 +483,8 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			int countB = Math.round(knownAlleles.get(key));
 			int intAllele2 = (int) key;
 
+			// Finding out what allele is major and minor
 			if (countA >= countB) {
-				// Finding out what allele is major and minor
 				AAnumVals.add(intAllele1);
 				AAnumVals.add(intAllele1 * 2);
 
@@ -677,28 +679,32 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 	{
 		int newMissingCount = missingCount;
 
+		final byte allele1 = tempGT[0];
+		final byte allele2 = tempGT[1];
+
 		// Gather alleles different from 0 into a list of known alleles
 		// and count the number of appearences
-		if (tempGT[0] != AlleleBytes._0) {
+		// XXX This following stuff could be made faster by using an array
+		if (allele1 != AlleleBytes._0) {
 			float tempCount = 0;
-			if (knownAlleles.containsKey(tempGT[0])) {
-				tempCount = knownAlleles.get(tempGT[0]);
+			if (knownAlleles.containsKey(allele1)) {
+				tempCount = knownAlleles.get(allele1);
 			}
-			knownAlleles.put(tempGT[0], tempCount + counter);
+			knownAlleles.put(allele1, tempCount + counter);
 		}
-		if (tempGT[1] != AlleleBytes._0) {
+		if (allele2 != AlleleBytes._0) {
 			float tempCount = 0;
-			if (knownAlleles.containsKey(tempGT[1])) {
-				tempCount = knownAlleles.get(tempGT[1]);
+			if (knownAlleles.containsKey(allele2)) {
+				tempCount = knownAlleles.get(allele2);
 			}
-			knownAlleles.put(tempGT[1], tempCount + counter);
+			knownAlleles.put(allele2, tempCount + counter);
 		}
-		if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
+		if (allele1 == AlleleBytes._0 && allele2 == AlleleBytes._0) {
 			newMissingCount++;
 		}
 
-		int intAllele1 = tempGT[0];
-		int intAllele2 = tempGT[1];
+		final int intAllele1 = allele1;
+		final int intAllele2 = allele2;
 		Integer intAlleleSum = intAllele1 + intAllele2; // 2 alleles per GT
 
 		// CASE/CONTROL CENSUS

@@ -102,8 +102,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		List<OperationMetadata> censusOpsAfter = OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
 		censusOpsAfter.addAll(OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
 
-		OperationKey gtFreqOpKey = OperationKey.valueOf(extractElementsFromSecondNotInfirst(censusOpsBefore, censusOpsAfter).get(0)); // HACK
-		OperationKey hwOpKey = OperationKey.valueOf(extractElementsFromSecondNotInfirst(hwOpsBefore, hwOpsAfter).get(0)); // HACK
+		OperationKey gtFreqOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(censusOpsBefore, censusOpsAfter).get(0)); // HACK
+		OperationKey hwOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(hwOpsBefore, hwOpsAfter).get(0)); // HACK
 
 		List<OperationKey> opKeys = new ArrayList<OperationKey>(2);
 		opKeys.add(gtFreqOpKey);
@@ -112,7 +112,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		return opKeys;
 	}
 
-	private static <T> List<T> extractElementsFromSecondNotInfirst(List<T> collectionSmall, List<T> collectionBig) throws Exception {
+	private static <T> List<T> extractElementsFromSecondNotInFirst(List<T> collectionSmall, List<T> collectionBig) throws Exception {
 
 		List<T> result = new LinkedList<T>();
 

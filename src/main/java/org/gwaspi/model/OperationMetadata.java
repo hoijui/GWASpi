@@ -58,6 +58,9 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 	@NamedQuery(
 		name = "operationMetadata_listByStudyIdParentMatrixIdParentOperationIdOperationType",
 		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
+	@NamedQuery(
+		name = "operationMetadata_getTypeByStudyIdParentMatrixIdOperationId",
+		query = "SELECT om.genotypeCode, om.parentOperationId FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.id = :id")
 })
 public class OperationMetadata implements DataSetMetadata, Serializable {
 
