@@ -64,7 +64,7 @@ public interface GenotypeEncoder {
 			final Collection<byte[]> rawGenotypes,
 			final List<Boolean> samplesToKeep,
 //			float[][] encodedSamplesMarkers,
-			SamplesMarkersStorage<Float> encodedSamplesMarkers,
+			SamplesFeaturesStorage<Float> encodedSamplesMarkers,
 			int markerIndex);
 
 

@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * TODO
  */
-public interface SamplesMarkersStorage<ST> {
+public interface SamplesFeaturesStorage<ST> {
 
 	/**
 	 * This can be used to store data associated with the data-set.
@@ -34,13 +34,13 @@ public interface SamplesMarkersStorage<ST> {
 	Map<String, Object> getCache();
 
 	int getNumSamples();
-	int getNumMarkers();
+	int getNumFeatures();
 
 	void startStoringSample(int sampleIndex);
-	void setMarkerValue(int markerIndex, ST value);
+	void setFeatureValue(int featureIndex, ST value);
 	void endStoringSample();
 
-	void startStoringMarker(int markerIndex);
+	void startStoringFeature(int featureIndex);
 	void setSampleValue(int sampleIndex, ST value);
-	void endStoringMarker();
+	void endStoringFeature();
 }

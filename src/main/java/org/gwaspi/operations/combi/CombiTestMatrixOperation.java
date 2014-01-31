@@ -193,9 +193,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				dataSet.setSamples(validSamplesOrigIndicesAndKey);
 //			}
 
-
 			LOG.info("Combi Association Test: #samples: " + n);
 			LOG.info("Combi Association Test: #markers: " + dSamples);
+			LOG.info("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
 			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
 			Util.storeForEncoding(markerKeys, samplesKeys, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
@@ -266,7 +266,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			int dEncoded,
 			int n,
 //			List<SampleKey> usedSamples,
-			final SamplesMarkersStorage<Float> encodedSamples)
+			final SamplesFeaturesStorage<Float> encodedSamples)
 			throws IOException
 	{
 //		LOG.debug("samples:");
@@ -361,7 +361,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 			// encode all samples for this marker
 //			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
+try {
 			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi);
+} catch (Exception ex) {
+	ex.printStackTrace(); // HACK to have a clickable stack trace in netbeans
+	throw new RuntimeException(ex);
+}
 
 //			mi++;
 
@@ -515,13 +520,13 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			LOG.info("Combi Association Test: encode samples");
 			// XXX unused (next lines var)!
 //
-//			SamplesMarkersStorage<Float> encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
+//			SamplesFeaturesStorage<Float> encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
 //			try {
 //				// NOTE This allocates a LOT of memory!
 //				//   We use float instead of double to half the memory,
 //				//   because we have no more then 4 or 5 distinct values anyway,
 //				//   so we do not need high precission.
-//				encodedSamples = new InMemorySamplesMarkersStorage<Float>(n, dEncoded);
+//				encodedSamples = new InMemorySamplesFeaturesStorage<Float>(n, dEncoded);
 //			} catch (OutOfMemoryError er) {
 //				throw new IOException(er);
 //			}
@@ -585,12 +590,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //			whiten(encodedSamples);
 
 //			svm_problem libSvmProblem = createLibSvmProblem(
-//					kernelMatrix,
+//					featureMatrix, // NOTE the method expects the feature matrix, but this is now already the kernel matrix
 //					encodedAffectionStates.values(),
 //					libSvmParameters,
 //					null);
 			svm_problem libSvmProblem = createLibSvmProblem(
-					kernelMatrix, // NOTE the method expects the feature matrix, but this is now already the kernel matrix
+					kernelMatrix,
 					encodedAffectionStates.values(),
 					libSvmParameters,
 					null);
@@ -644,20 +649,20 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// how much memory does one sample per marker use [bytes]
 		final int singleEntryMemoryUsage = 2 * 8; // FIXME two doubles.. arbitrary.. investigate
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
-		final int maxChunkSize = (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage);
+		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage));
 		final int maxFeaturesChunkSize = maxChunkSize * genotypeEncoder.getEncodingFactor();
 		// ... which results in this many chunks for the whole data-set
 		final int numChunks = (int) Math.ceil((double) dSamples / maxChunkSize);
 
 		// This is basically a part of the (encoded) feature-map,
 		// that will be used to calculate the kernel matrix
-		InMemorySamplesMarkersStorage<Float> encodedSamplesRawStorage;
+		InMemorySamplesFeaturesStorage<Float> encodedSamplesRawStorage;
 		try {
 			// NOTE This allocates a LOT of memory!
 			//   We use float instead of double to half the memory,
 			//   because we have no more then 4 or 5 distinct values anyway,
 			//   so we do not need high precission.
-			encodedSamplesRawStorage = new InMemorySamplesMarkersStorage<Float>(n, maxFeaturesChunkSize);
+			encodedSamplesRawStorage = new InMemorySamplesFeaturesStorage<Float>(n, maxFeaturesChunkSize);
 		} catch (OutOfMemoryError er) {
 			throw new IOException(er);
 		}
@@ -668,7 +673,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			final int numMarkersInChunk = Math.min(dSamples - firstMarkerIndex, maxChunkSize);
 //			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
 
-			SamplesMarkersStorage<Float> encodedSamplesPart = new PartialMarkersInMemorySamplesMarkersStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), firstMarkerFeatureIndex, encodedSamplesRawStorage);
+			SamplesFeaturesStorage<Float> encodedSamplesPart = new PartialFeaturesInMemorySamplesFeaturesStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), firstMarkerFeatureIndex, encodedSamplesRawStorage);
 
 			// encode only a chunk/part of the markers at a time
 			// which gives us a part of the feature matrix
@@ -684,16 +689,16 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					n,
 					encodedSamplesPart);
 
-			Float[][] rawStorage = encodedSamplesRawStorage.getStorage();
+			Object[][] rawStorage = encodedSamplesRawStorage.getStorage();
 			// calculate the part of the kernel matrix defined by
 			// the current chunk of the feature matrix
 //			for (int smi = 0; smi < numMarkersInChunk; smi++) {
 			for (int smi = 0; smi < rawStorage[0].length; smi++) {
 //				final int curMarkerIndex = firstMarkerIndex + smi;
 				for (int krsi = 0; krsi < rawStorage.length; krsi++) { // kernel row sample index
-					final float curRowValue = rawStorage[krsi][smi];
+					final float curRowValue = (Float) rawStorage[krsi][smi];
 					for (int krci = 0; krci < rawStorage.length; krci++) { // kernel column sample index
-						final float curColValue = rawStorage[krci][smi];
+						final float curColValue = (Float) rawStorage[krci][smi];
 						kernelMatrix[krsi][krci] += curRowValue * curColValue;
 					}
 				}

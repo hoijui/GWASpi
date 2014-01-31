@@ -19,29 +19,29 @@ package org.gwaspi.operations.combi;
 
 import java.util.Map;
 
-class PartialMarkersInMemorySamplesMarkersStorage<ST> extends AbstractSamplesMarkersStorage<ST> {
+class PartialFeaturesInMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
 
-	private final int firstMarker;
-//	private final int maxMarkers;
-	private final SamplesMarkersStorage<ST> backEndStorage;
+	private final int firstFeature;
+//	private final int maxFeatures;
+	private final SamplesFeaturesStorage<ST> backEndStorage;
 
-	PartialMarkersInMemorySamplesMarkersStorage(int numSamples, int numMarkers, Map<String, Object> cache, int firstMarker, SamplesMarkersStorage<ST> backEndStorage) {
-		super(numSamples, numMarkers, cache);
+	PartialFeaturesInMemorySamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache, int firstFeature, SamplesFeaturesStorage<ST> backEndStorage) {
+		super(numSamples, numFeatures, cache);
 
-		this.firstMarker = firstMarker;
-//		this.maxMarkers = backEndStorage.getNumMarkers();
+		this.firstFeature = firstFeature;
+//		this.maxFeatures = backEndStorage.getNumFeatures();
 		this.backEndStorage = backEndStorage;
 	}
 
 	public int getFirstMarker() {
-		return firstMarker;
+		return firstFeature;
 	}
 
-//	public int getMaxMarkers() {
-//		return maxMarkers;
+//	public int getMaxFeatures() {
+//		return maxFeatures;
 //	}
 
-	public SamplesMarkersStorage<ST> getBackEndStorage() {
+	public SamplesFeaturesStorage<ST> getBackEndStorage() {
 		return backEndStorage;
 	}
 
@@ -51,15 +51,15 @@ class PartialMarkersInMemorySamplesMarkersStorage<ST> extends AbstractSamplesMar
 	}
 
 	@Override
-	public void setMarkerValue(int markerIndex, ST value) {
+	public void setFeatureValue(int featureIndex, ST value) {
 
-		final int backEndMarkerIndex = markerIndex - firstMarker;
+		final int backEndFeatureIndex = featureIndex - firstFeature;
 		// no need to check this here, as in case of bad parameters,
 		// the backend will (or at least should) choke anyway
-//		if ((backEndMarkerIndex < 0) || (backEndMarkerIndex >= maxMarkers)) {
-//			throw new IllegalArgumentException("Given markerIndex " + markerIndex + " is out of bounds [" + firstMarker + ", " + maxMarkers + ")");
+//		if ((backEndFeatureIndex < 0) || (backEndFeatureIndex >= maxFeatures)) {
+//			throw new IllegalArgumentException("Given featureIndex " + featureIndex + " is out of bounds [" + firstFeature + ", " + maxMarkers + ")");
 //		}
-		backEndStorage.setMarkerValue(backEndMarkerIndex, value);
+		backEndStorage.setFeatureValue(backEndFeatureIndex, value);
 	}
 
 	@Override
@@ -68,10 +68,10 @@ class PartialMarkersInMemorySamplesMarkersStorage<ST> extends AbstractSamplesMar
 	}
 
 	@Override
-	public void startStoringMarker(int markerIndex) {
+	public void startStoringFeature(int featureIndex) {
 
-		final int backEndMarkerIndex = markerIndex - firstMarker;
-		backEndStorage.startStoringMarker(backEndMarkerIndex);
+		final int backEndFeatureIndex = featureIndex - firstFeature;
+		backEndStorage.startStoringFeature(backEndFeatureIndex);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ class PartialMarkersInMemorySamplesMarkersStorage<ST> extends AbstractSamplesMar
 	}
 
 	@Override
-	public void endStoringMarker() {
-		backEndStorage.endStoringMarker();
+	public void endStoringFeature() {
+		backEndStorage.endStoringFeature();
 	}
 }
