@@ -1346,7 +1346,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	{
 //		final int d = xs[0].length;
 //		final int d = X.get(0).size();
-		final int d = xs[0].length;
+		final int d = xs[0].length - 1;
 
 //		List<Double> weights
 //				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
@@ -1372,7 +1372,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 			final double alpha = alphas[0][svi];
 //			final double y = ys[svIndex];
 			for (int di = 0; di < d; di++) {
-				final double x = xsi[di].value;
+				final double x = xsi[1 + di].value;
 //				final double x = Xsi.get(di);
 //				final double x = Math.abs(Xsi.get(di));
 //				final double alphaYXi = alpha * y * x;
@@ -1406,12 +1406,13 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 			GenotypeEncoder genotypeEncoder,
 			String encoderString)
 	{
-//		int dEncoded = X.iterator().next().size();
-//		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
-//		int n = X.size();
-		int dEncoded = libSvmProblem.x[0].length;
-		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
-		int n = libSvmProblem.x.length;
+//		final int dEncoded = X.iterator().next().size();
+//		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
+//		final int n = X.size();
+		final int dEncoded = libSvmProblem.x[0].length; // NOTE This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers with precomputed
+//		final int dEncoded = ???;
+		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
+		final int n = libSvmProblem.x.length;
 
 //		LOG.info("Combi Association Test: whiten");
 //		whiten(libSvmProblem);
