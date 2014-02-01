@@ -46,10 +46,8 @@ import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -361,12 +359,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 			// encode all samples for this marker
 //			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
-try {
 			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi);
-} catch (Exception ex) {
-	ex.printStackTrace(); // HACK to have a clickable stack trace in netbeans
-	throw new RuntimeException(ex);
-}
 
 //			mi++;
 
@@ -875,16 +868,16 @@ try {
 					}
 				}
 
-				if ((si % 10) == 0) { // FIXME nearly never true, cause we are in the outer loop
+				if ((si % 10) == 0) {
 					calculatingKernelPM.setProgress(calculatedKernelElements);
-				}
-				if ((si % 100) == 0) { // FIXME nearly never true, cause we are in the outer loop
-					calculatingKernelPM.setNote(String.format(
-							"%d / %d ~= %f%%",
-							calculatedKernelElements,
-							n*n,
-							(double) calculatedKernelElements / (n*n) * 100.0));
-					LOG.info("Combi Association Test: calculated kernel rows: {} / {}", si, n);
+					if ((si % 100) == 0) {
+						calculatingKernelPM.setNote(String.format(
+								"%d / %d ~= %f%%",
+								calculatedKernelElements,
+								n*n,
+								(double) calculatedKernelElements / (n*n) * 100.0));
+						LOG.info("Combi Association Test: calculated kernel rows: {} / {}", si, n);
+					}
 				}
 			}
 
@@ -1144,7 +1137,7 @@ try {
 		n = libSvmProblem.x.length;
 
 		// prepare the features
-		List<List<Double>> problemInput;
+//		List<List<Double>> problemInput;
 //		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
 //			// precomute the kernel: K = X' * X
 ////			prob.x = new svm_node[n][n];
