@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.combi;
 
+import java.lang.reflect.Array;
 import java.util.Map;
 
 class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
@@ -27,16 +28,17 @@ class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<
 	private int curSampleIndex;
 	private int curFeatureIndex;
 
-	InMemorySamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache) {
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures, Map<String, Object> cache) {
 		super(numSamples, numFeatures, cache);
 
-		this.storage = (ST[][]) new Object[numSamples][numFeatures];
+//		this.storage = (ST[][]) new Object[numSamples][numFeatures]; // NOTE This would be (partly) fail, because the actual arrays type is still Object[][], not really ST[][]
+        this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
 		this.curSampleIndex = NO_INDEX;
 		this.curFeatureIndex = NO_INDEX;
 	}
 
-	InMemorySamplesFeaturesStorage(int numSamples, int numFeatures) {
-		this(numSamples, numFeatures, null);
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures) {
+		this(storageTypeClass, numSamples, numFeatures, null);
 	}
 
 	public ST[][] getStorage() {
