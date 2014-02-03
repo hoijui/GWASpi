@@ -466,7 +466,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //				}
 //			}
 
-			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
+			MarkerGenotypesEncoder markerGenotypesEncoder = null; // HACK just so it compiles! this code is currently unused
+			return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, encoderString);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
@@ -601,8 +602,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					libSvmParameters,
 					null);
 
-			List<List<Float>> markerGenotypesEncoderWrapper = new MarkerGenotypesEncoderWrapper(markerGenotypesEncoder);
-			return runSVM(markerGenotypesEncoderWrapper, libSvmProblem, genotypeEncoder, encoderString);
+//			List<List<Float>> markerGenotypesEncoderWrapper = new MarkerGenotypesEncoderWrapper(markerGenotypesEncoder);
+			return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, encoderString);
 //			return Integer.MIN_VALUE; // FIXME
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -1474,53 +1475,71 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * @return the SVM problem weights 'w' in the feature space [dEncoded]
 	 */
 	private static List<Double> calculateOriginalSpaceWeights(
-			final double[][] alphas,
+//			final double[] alphas,
+			Map<Integer, Double> nonZeroAlphas,
 //			final svm_node[][] xs,
 //			final List<List<Double>> X,
-			final List<List<Float>> xs,
-			final double[] ys,
-			svm_parameter libSvmParameters)
+//			final List<List<Float>> xs,
+			final MarkerGenotypesEncoder xs,
+			final double[] ys)
 	{
+		// number of data-points/samples
+		final int n = ys.length;
 //		final int d = xs[0].length;
 //		final int d = X.get(0).size();
-		final int d = xs[0].length - 1;
+//		final int d = xs[0].length - 1;
+		// number of dimensions/features/markers*encodingFactor
+		final int d = xs.getNumFeatures();
 
 //		List<Double> weights
 //				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
 		double[] weights = new double[d];
 		Arrays.fill(weights, 0.0); // probably not required, but it does not hurt to make things clear
-LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
-		for (int svi = 0; svi < xs.length; svi++) {
-			final svm_node[] xsi = xs[svi];
-//			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
-//			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works with PRECOMPUTED!
-//			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
-//			int svIndex = (int) xsi[0].value;
-//			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-//				svIndex -= 1;
-//			}
-//			log.debug("svIndex: " + svIndex);
-//			final List<Double> Xsi = X.get(svIndex);
-//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works with PRECOMPUTED!
-//			for (int i = 1; i < xsi.length; i++) {
-//				svm_node elem = xsi[i];
-//				Xsi.add(elem.value);
-//			}
-			final double alpha = alphas[0][svi];
-//			final double y = ys[svIndex];
-			for (int di = 0; di < d; di++) {
-				final double x = xsi[1 + di].value;
-//				final double x = Xsi.get(di);
-//				final double x = Math.abs(Xsi.get(di));
-//				final double alphaYXi = alpha * y * x;
-				// NOTE We dismiss the y, which would be part of normal SVM,
-				// because we want the absolute sum (i forgot again why so :/ )
-//				final double alphaYXi = alpha * x;
-				final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
-//				weights.set(di, weights.get(di) + alphaYXi);
-				weights[di] += alphaYXi;
+//LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
+		for (int ci = 0; ci < xs.size(); ci++) {
+			final Float[][] featuresChunk = xs.get(ci);
+			final int chunkSize = xs.getChunkSize(ci);
+			final int firstFeatureIndex = ci * xs.getMaxChunkSize();
+			final int lastFeatureIndexPlusOne = firstFeatureIndex + chunkSize;
+//		}
+//
+//		}
+			for (Map.Entry<Integer, Double> nonZeroAlpha : nonZeroAlphas.entrySet()) {
+//			for (int svi = 0; svi < n; svi++) {
+	//			final svm_node[] xsi = xs[svi];
+	//			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
+	//			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works with PRECOMPUTED!
+	//			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
+	//			int svIndex = (int) xsi[0].value;
+	//			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+	//				svIndex -= 1;
+	//			}
+	//			log.debug("svIndex: " + svIndex);
+	//			final List<Double> Xsi = X.get(svIndex);
+	//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works with PRECOMPUTED!
+	//			for (int i = 1; i < xsi.length; i++) {
+	//				svm_node elem = xsi[i];
+	//				Xsi.add(elem.value);
+	//			}
+				final int svi = nonZeroAlpha.getKey();
+//				final double alpha = alphas[svi];
+				final double alpha = nonZeroAlpha.getValue();
+	//			final double y = ys[svIndex];
+				for (int cldi = 0; cldi < chunkSize; cldi++) {
+					final int di = firstFeatureIndex + cldi;
+					final double x = featuresChunk[svi][cldi];
+	//				final double x = Xsi.get(di);
+	//				final double x = Math.abs(Xsi.get(di));
+	//				final double alphaYXi = alpha * y * x;
+					// NOTE We dismiss the y, which would be part of normal SVM,
+					// because we want the absolute sum (i forgot again why so :/ )
+	//				final double alphaYXi = alpha * x;
+					final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
+	//				weights.set(di, weights.get(di) + alphaYXi);
+					weights[di] += alphaYXi;
+				}
+	//			log.debug();
 			}
-//			log.debug();
 		}
 
 		List<Double> weightsList = new ArrayList<Double>(weights.length);
@@ -1531,6 +1550,66 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 //		return weights;
 		return weightsList;
 	}
+//	private static List<Double> calculateOriginalSpaceWeights(
+//			final double[][] alphas,
+////			final svm_node[][] xs,
+////			final List<List<Double>> X,
+//			final List<List<Float>> xs,
+//			final double[] ys,
+//			svm_parameter libSvmParameters)
+//	{
+//		final int n = ys.length;
+////		final int d = xs[0].length;
+////		final int d = X.get(0).size();
+////		final int d = xs[0].length - 1;
+//		final int d = xs.getNumFeatures();
+//
+////		List<Double> weights
+////				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
+//		double[] weights = new double[d];
+//		Arrays.fill(weights, 0.0); // probably not required, but it does not hurt to make things clear
+////LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
+//		for (int svi = 0; svi < n; svi++) {
+//			final svm_node[] xsi = xs[svi];
+////			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
+////			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works with PRECOMPUTED!
+////			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
+////			int svIndex = (int) xsi[0].value;
+////			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+////				svIndex -= 1;
+////			}
+////			log.debug("svIndex: " + svIndex);
+////			final List<Double> Xsi = X.get(svIndex);
+////			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works with PRECOMPUTED!
+////			for (int i = 1; i < xsi.length; i++) {
+////				svm_node elem = xsi[i];
+////				Xsi.add(elem.value);
+////			}
+//			final double alpha = alphas[0][svi];
+////			final double y = ys[svIndex];
+//			for (int di = 0; di < d; di++) {
+//				final double x = xsi[1 + di].value;
+////				final double x = Xsi.get(di);
+////				final double x = Math.abs(Xsi.get(di));
+////				final double alphaYXi = alpha * y * x;
+//				// NOTE We dismiss the y, which would be part of normal SVM,
+//				// because we want the absolute sum (i forgot again why so :/ )
+////				final double alphaYXi = alpha * x;
+//				final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
+////				weights.set(di, weights.get(di) + alphaYXi);
+//				weights[di] += alphaYXi;
+//			}
+////			log.debug();
+//		}
+//
+//		List<Double> weightsList = new ArrayList<Double>(weights.length);
+//		for (int wi = 0; wi < weights.length; wi++) {
+//			weightsList.add(weights[wi]);
+//		}
+//
+////		return weights;
+//		return weightsList;
+//	}
 
 
 //	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
@@ -1539,7 +1618,8 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 //			CombiTestOperationDataSet dataSet,
 //			List<Integer> markerOrigIndices,
 //			List<MarkerKey> markerKeys,
-			final List<List<Float>> xs,
+//			final List<List<Float>> xs,
+			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
 			GenotypeEncoder genotypeEncoder,
 			String encoderString)
@@ -1580,7 +1660,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		// check if the alphas are equivalent to the ones calculated with matlab
 		if (encoderString != null) {
 			List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-			int curSVIndex = 0;
+//			int curSVIndex = 0;
 			for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
 				final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
 				int index;
@@ -1657,9 +1737,18 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 //			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 		}
 
+		// sample index andvalue of non-zero alphas
+		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
+		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
+			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index = (int) svmModel.SV[i][0].value/* - 1*/; // XXX NOTE only works with PRECOMPUTED!
+			nonZeroAlphas.put(index, value);
+		}
+
 		LOG.info("Combi Association Test: calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				svmModel.sv_coef, svmModel.SV/*, X*/, libSvmProblem.y, libSvmParameters);
+//				svmModel.sv_coef[0], svmModel.SV/*, X*/, libSvmProblem.y, libSvmParameters);
+				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y);
 
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
 		if (encoderString != null) {
