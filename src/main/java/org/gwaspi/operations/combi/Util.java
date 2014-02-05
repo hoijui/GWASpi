@@ -368,17 +368,10 @@ public class Util {
 	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
 
 	static void storeForEncoding(
-//			MarkersIterable markersIterable,
-//			DataSetSource dataSetSource,
-//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
 			List<MarkerKey> markers,
-//			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> samples,
 			List<Affection> sampleAffecs,
-			List<GenotypesList> markerGTs,
-			int dSamples,
-//			int dEncoded,
-			int n)
+			List<GenotypesList> markerGTs)
 			throws IOException
 	{
 		if (!EXAMPLE_TEST) {
@@ -406,11 +399,6 @@ public class Util {
 			FileOutputStream fout = new FileOutputStream(TMP_RAW_DATA_FILE);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 
-			oos.writeObject((Integer) dSamples);
-//			oos.writeObject((Integer) dEncoded);
-			oos.writeObject((Integer) n);
-
-//			oos.writeObject(loadedMatrixSamples);
 			oos.writeObject(markerKeys);
 			oos.writeObject(sampleKeys);
 			oos.writeObject(sampleAffections);
@@ -424,10 +412,6 @@ public class Util {
 
 	private static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
 
-		int dSamples;
-//		int dEncoded;
-		int n;
-
 		List<MarkerKey> markerKeys;
 		List<SampleKey> sampleKeys;
 		List<Affection> sampleAffections;
@@ -436,10 +420,6 @@ public class Util {
 			FileInputStream fin = new FileInputStream(TMP_RAW_DATA_FILE);
 			ObjectInputStream ois = new ObjectInputStream(fin);
 
-			dSamples = (Integer) ois.readObject();
-//			dEncoded = (Integer) ois.readObject();
-			n = (Integer) ois.readObject();
-
 			markerKeys = (List<MarkerKey>) ois.readObject();
 			sampleKeys = (List<SampleKey>) ois.readObject();
 			sampleAffections = (List<Affection>) ois.readObject();
@@ -447,7 +427,7 @@ public class Util {
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, dSamples, n, genotypeEncoder);
+			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

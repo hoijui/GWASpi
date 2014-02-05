@@ -132,7 +132,6 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 					firstMarkerIndex,
 					numMarkersInChunk,
 					dSamples,
-					dEncoded,
 					n,
 					encodedSamplesPart);
 
