@@ -19,7 +19,6 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,20 +74,19 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 	@Override
 	public void encodeGenotypes(
-			final Collection<byte[]> rawGenotypes,
-			final List<Boolean> samplesToKeep,
-//			float[][] encodedSamplesMarkers,
+			final List<byte[]> rawGenotypes,
 			SamplesFeaturesStorage<Float> encodedSamplesFeatures,
-			int mi)
+			int markerIndex)
 	{
-		Set<byte[]> possibleGenotypes;
-		if (samplesToKeep == null) {
-			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
-				rawGenotypes);
-		} else {
-			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
-				rawGenotypes, samplesToKeep);
-		}
+		final Set<byte[]> possibleGenotypes
+				= NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
+//		if (samplesToKeep == null) {
+//			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
+//				rawGenotypes);
+//		} else {
+//			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
+//				rawGenotypes, samplesToKeep);
+//		}
 
 		final int numSamples = rawGenotypes.size();
 
@@ -106,8 +104,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		// In here, we store the features 1+ for the given marker,
 		// in case the exist.
-		// Each marker corresponds to encoding-factor many features.
-		// We generate all fo them, but store only the first oen (index 0)
+		// Each marker coresponds to encoding-factor many features.
+		// We generate all of them, but store only the first one (index 0)
 		// directly to the back-end storage, while buffering the later
 		final int numHigherFeatures = getEncodingFactor() - 1;
 		List<List<Float>> tempHigherFeaturesEncodedGTs = new ArrayList<List<Float>>(numHigherFeatures);
@@ -139,7 +137,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //				encodedSamplesMarker[mi] = 0.0f;
 //			}
 			for (int lfi = 0; lfi < getEncodingFactor(); lfi++) {
-				final int fi = mi + lfi;
+				final int fi = markerIndex + lfi;
 				encodedSamplesFeatures.startStoringFeature(fi);
 				for (int si = 0; si < encodedSamplesFeatures.getNumSamples(); si++) {
 					encodedSamplesFeatures.setSampleValue(si, 0.0f);
@@ -148,10 +146,10 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			}
 		} else {
 			// encode
-			int fi = mi * getEncodingFactor();
+			int fi = markerIndex * getEncodingFactor();
 			encodedSamplesFeatures.startStoringFeature(fi);
 			int si = 0;
-			if (samplesToKeep == null) {
+//			if (samplesToKeep == null) {
 				// include all samples
 				for (byte[] genotype : rawGenotypes) {
 					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
@@ -164,23 +162,23 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //						encodedSamplesFeatures.setSampleValue(si++, encVal.floatValue());
 //					}
 				}
-			} else {
-				// include only samples in samplesToKeep
-				Iterator<Boolean> keep = samplesToKeep.iterator();
-				for (byte[] genotype : rawGenotypes) {
-					if (keep.next().booleanValue()) {
-						List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
-						encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0).floatValue());
-						for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
-							tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));
-						}
-//						for (Float encVal : encodedGT) {
-////							encodedSamplesMarkers[si++][mi] = encVal.floatValue();
-//							encodedSamplesFeatures.setSampleValue(si++, encVal.floatValue());
+//			} else {
+//				// include only samples in samplesToKeep
+//				Iterator<Boolean> keep = samplesToKeep.iterator();
+//				for (byte[] genotype : rawGenotypes) {
+//					if (keep.next().booleanValue()) {
+//						List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
+//						encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0).floatValue());
+//						for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
+//							tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));
 //						}
-					}
-				}
-			}
+////						for (Float encVal : encodedGT) {
+//////							encodedSamplesMarkers[si++][mi] = encVal.floatValue();
+////							encodedSamplesFeatures.setSampleValue(si++, encVal.floatValue());
+////						}
+//					}
+//				}
+//			}
 			encodedSamplesFeatures.endStoringFeature();
 
 			for (int hfi = 0; hfi < numHigherFeatures; hfi++) {

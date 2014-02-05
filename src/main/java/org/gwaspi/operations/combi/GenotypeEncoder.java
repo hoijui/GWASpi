@@ -50,7 +50,7 @@ public interface GenotypeEncoder {
 	 *     {{'G', 'G'}, {'T', 'T'}, {'T', 'T'}, ...}, // samples for marker 2
 	 *   }
 	 *   </code>
-	 * @param encodedGenotypes output, possibly multiple values per marker,
+	 * @param encodedSamplesMarkers output, possibly multiple values per marker,
 	 *   for example (Nominal encoding):
 	 *   <code>
 	 *   {
@@ -59,11 +59,10 @@ public interface GenotypeEncoder {
 	 *     {1, 3, 3, ...}, // encoded samples for marker 2
 	 *   }
 	 *   </code>
+	 * @param markerIndex which marker the rawGenotypes belong to
 	 */
 	void encodeGenotypes(
-			final Collection<byte[]> rawGenotypes,
-			final List<Boolean> samplesToKeep,
-//			float[][] encodedSamplesMarkers,
+			final List<byte[]> rawGenotypes,
 			SamplesFeaturesStorage<Float> encodedSamplesMarkers,
 			int markerIndex);
 

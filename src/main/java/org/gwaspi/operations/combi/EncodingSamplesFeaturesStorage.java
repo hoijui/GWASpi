@@ -71,6 +71,6 @@ class EncodingSamplesFeaturesStorage extends AbstractSamplesFeaturesStorage<byte
 
 	@Override
 	public void endStoringFeature() {
-		encoder.encodeGenotypes(currentValues, null, receiver, currentMarkerIndex);
+		encoder.encodeGenotypes(currentValues, receiver, currentMarkerIndex);
 	}
 }

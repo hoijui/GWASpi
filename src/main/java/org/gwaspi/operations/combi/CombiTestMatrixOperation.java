@@ -233,7 +233,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", markerIndexFrom, markerIndexFrom + markersChunkSize);
 		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
 			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
-			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi);
+			encoder.encodeGenotypes(gtsForOneMarker, encodedSamples, mi);
 
 			encodingMarkersPM.setProgress(mi);
 			if ((mi % 50) == 0) {
@@ -294,6 +294,33 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		}
 		MarkerGenotypesEncoder markerGenotypesEncoder = createMarkerGenotypesEncoder(
 				markerGTs, genotypeEncoder, dSamples, n);
+
+		// check if feature matrix is equivalent to the one calculated with matlab
+		if (Util.EXAMPLE_TEST) {
+			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
+			List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
+			// load all features into memory
+			List<List<Double>> X = new ArrayList<List<Double>>(n);
+			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
+			for (int si = 0; si < n; si++) {
+				X.add(new ArrayList<Double>(dEncoded));
+			}
+			for (int ci = 0; ci < markerGenotypesEncoder.size(); ci++) {
+				final Float[][] featuresChunk = markerGenotypesEncoder.get(ci);
+				final int chunkSize = markerGenotypesEncoder.getChunkSize(ci);
+				for (int si = 0; si < n; si++) {
+					List<Double> xRow = X.get(si);
+					for (int lfi = 0; lfi < chunkSize; lfi++) {
+						xRow.add(Double.valueOf(featuresChunk[si][lfi]));
+					}
+				}
+			}
+			List<List<Double>> xValuesTrans = Util.transpose(X);
+			LOG.debug("\ncompare feature matrices ...");
+			Util.compareMatrices(correctFeatures, xValuesTrans);
+			LOG.debug("done. they are equal! good!\n");
+		}
+
 		encodeFeaturesAndCreateKernelMatrix(
 				markerGenotypesEncoder,
 				kernelMatrix);
@@ -572,31 +599,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		final int dEncoded = libSvmProblem.x[0].length; // NOTE This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers with precomputed
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		final int n = libSvmProblem.x.length;
-
-		// check if feature matrix is equivalent to the one calculated with matlab
-		if (Util.EXAMPLE_TEST) {
-			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
-			List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
-			// load all features into memory
-			List<List<Double>> X = new ArrayList<List<Double>>(n);
-			for (int si = 0; si < n; si++) {
-				X.add(new ArrayList<Double>(dEncoded));
-			}
-			for (int ci = 0; ci < markerGenotypesEncoder.size(); ci++) {
-				final Float[][] featuresChunk = markerGenotypesEncoder.get(ci);
-				final int chunkSize = markerGenotypesEncoder.getChunkSize(ci);
-				for (int si = 0; si < n; si++) {
-					List<Double> xRow = X.get(si);
-					for (int lfi = 0; lfi < chunkSize; lfi++) {
-						xRow.add(Double.valueOf(featuresChunk[si][lfi]));
-					}
-				}
-			}
-			List<List<Double>> xValuesTrans = Util.transpose(X);
-			LOG.debug("\ncompare feature matrices ...");
-			Util.compareMatrices(correctFeatures, xValuesTrans);
-			LOG.debug("done. they are equal! good!\n");
-		}
 
 		LOG.info("Combi Association Test: create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
