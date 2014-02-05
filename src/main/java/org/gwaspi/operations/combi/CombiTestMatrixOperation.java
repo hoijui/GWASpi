@@ -69,7 +69,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	private final CombiTestParams params;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
-		super(params.getHardyWeinbergOperationKey());
+		super(params.getCensusOperationKey());
 
 		this.params = params;
 	}
@@ -126,6 +126,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		dataSet.setNumSamples(n);
 
 		dataSet.setMarkers(wrMarkersFiltered);
+//		dataSet.setChromosomes(...); // NOTE This is not required, because if it is not set, it gets automatically extracted from the markers
 		dataSet.setSamples(validSamplesOrigIndicesAndKey);
 
 		LOG.debug("Combi Association Test: #samples: " + n);

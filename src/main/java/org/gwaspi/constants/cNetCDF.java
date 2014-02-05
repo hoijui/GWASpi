@@ -315,7 +315,9 @@ public class cNetCDF {
 			COMBI_ASSOC_TEST,
 			TRENDTEST,
 			MANHATTANPLOT,
-			QQPLOT;
+			QQPLOT,
+			FILTER_BY_VALID_AFFECTION,
+			FILTER_BY_HW_THREASHOLD;
 
 			public static OPType compareTo(String str) {
 				try {
