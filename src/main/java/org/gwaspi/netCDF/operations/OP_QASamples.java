@@ -73,32 +73,12 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 		MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
 
 		QASamplesOperationDataSet dataSet = generateFreshOperationDataSet();
-		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
-		((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMatrixMetadata.getNumChromosomes()); // HACK
-//		((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
-		((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMatrixMetadata.getNumSamples()); // HACK
-
-//		dataSet.setSamples(rdSampleSet.getSampleKeys());
-//		dataSet.setMarkers(rdMarkersKeysSource);
-//		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
-//		dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-//
-//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
-
-//		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+		dataSet.setNumMarkers(rdMatrixMetadata.getNumMarkers());
+		dataSet.setNumChromosomes(rdMatrixMetadata.getNumChromosomes());
+		dataSet.setNumSamples(rdMatrixMetadata.getNumSamples());
 
 		SamplesGenotypesSource samplesGenotypes = dataSetSource.getSamplesGenotypesSource();
-//		MarkersKeysSource rdMarkersKeysSource = dataSetSource.getMarkersKeysSource();
-//		rdMarkerSet.initFullMarkerIdSetMap();
-
-//		MarkersChromosomeInfosSource markersChrInfSrc = rdMarkerSet.getChrInfoSetMap();
 		MarkersMetadataSource markersInfSrc = dataSetSource.getMarkersMetadatasSource();
-
-		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
-
-//int numMarkers = dataSetSource.getNumMarkers();
 
 		// Iterate through samples
 		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
@@ -111,7 +91,6 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 
 			// Iterate through markerset
 			GenotypesList sampleGenotypes = samplesGenotypesIt.next();
-//			int markerIndex = 0;
 			Iterator<MarkerMetadata> markersInfSrcIt = markersInfSrc.iterator();
 			for (byte[] tempGT : sampleGenotypes) {
 				if ((tempGT[0] == AlleleByte._0_VALUE) && (tempGT[1] == AlleleByte._0_VALUE)) {
@@ -128,7 +107,6 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 				{
 					heterozygCount++;
 				}
-//				markerIndex++;
 			}
 
 			final double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();

@@ -38,12 +38,8 @@ import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
 import org.gwaspi.operations.qamarkers.OrderedAlleles;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
-
-	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers.class);
 
 	public OP_QAMarkers(MatrixKey parent) {
 		super(parent);

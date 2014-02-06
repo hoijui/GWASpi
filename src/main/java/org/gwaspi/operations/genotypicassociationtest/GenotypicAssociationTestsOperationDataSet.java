@@ -19,7 +19,6 @@ package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 
 public interface GenotypicAssociationTestsOperationDataSet extends CommonTestOperationDataSet<GenotypicAssociationTestOperationEntry> {

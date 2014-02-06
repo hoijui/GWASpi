@@ -29,12 +29,11 @@ import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Performs the Cochran-Armitage Trend Test.
+ */
 public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet> {
-
-	private final Logger log = LoggerFactory.getLogger(OP_TrendTests.class);
 
 	public OP_TrendTests(
 			OperationKey markerCensusOPKey,
@@ -53,9 +52,6 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 		return OPType.TRENDTEST;
 	}
 
-	/**
-	 * Performs the Cochran-Armitage Trend Test.
-	 */
 	@Override
 	protected void performTest(
 			OperationDataSet dataSet,
@@ -67,8 +63,6 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
 		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(markerOrigIndicesKeys.size()); // HACK
 
-		// Iterate through markerset
-		int markerNb = 0;
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
 		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
@@ -89,11 +83,6 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 					origIndex,
 					armitageT,
 					armitagePval));
-
-			markerNb++;
-			if (markerNb % 100000 == 0) {
-				log.info("Processed {} markers", markerNb);
-			}
 		}
 	}
 }
