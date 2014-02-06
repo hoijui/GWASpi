@@ -154,6 +154,9 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 
 			log.info("Start Census testing markers");
 
+			final int[] alleleValueToOrdinal = AlleleByte.createByteValueToOrdinalTable();
+			final int alleleByte0Ordinal = AlleleByte._0.ordinal();
+
 			Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
 			Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
 			for (final Map.Entry<Integer, MarkerKey> markerEntry : dataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
@@ -165,7 +168,14 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				// even though it is a counter,
 				// because under certain circumstances,
 				// we want to count some things only half (+ 0.5).
-				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
+
+				// counts which allele appears how many times per marker,
+				// whether in the father or in the mother position
+				final float[] knownAllelesOrdinalTable = new float[AlleleByte.values().length];
+				// counts which allele combinations (genotypes, father & mother allele)
+				// appears how many times per marker
+				final float[][] knownGTsOrdinalTable = new float[knownAllelesOrdinalTable.length][knownAllelesOrdinalTable.length];
+//				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
 				Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
 				Map<Integer, Float> caseSamplesGTsTable = new LinkedHashMap<Integer, Float>();
 				Map<Integer, Float> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Float>();
@@ -174,7 +184,6 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				Map<String, Integer> caseSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Map<String, Integer> ctrlSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Map<String, Integer> hwSamplesContingencyTable = new LinkedHashMap<String, Integer>();
-				Integer missingCount = 0;
 
 				// Get a sample-set full of GTs
 				Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
@@ -195,25 +204,26 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 
 					// SUMMING SAMPLESET GENOTYPES
 					byte[] tempGT = markerGTsIt.next();
-					missingCount = summingSampleSetGenotypes(
+					summingSampleSetGenotypes(
 							tempGT,
 							decision,
-							knownAlleles,
+							alleleValueToOrdinal,
+							knownAllelesOrdinalTable,
+							knownGTsOrdinalTable,
 							allSamplesGTsTable,
 							affection,
 							caseSamplesGTsTable,
 							ctrlSamplesGTsTable,
 							hwSamplesGTsTable,
-							counter,
-							missingCount);
+							counter);
 				}
+				final int missingCount = Math.round(knownGTsOrdinalTable[alleleByte0Ordinal][alleleByte0Ordinal]);
 
 				byte[] alleles;
 				CensusFull censusFull;
 				// AFFECTION ALLELE CENSUS + MISMATCH STATE + MISSINGNESS
+				// Check if there are mismatches in alleles
 				if (knownAlleles.size() <= 2) {
-					// Check if there are mismatches in alleles
-
 					List<Integer> AAnumVals = new ArrayList<Integer>();
 					List<Integer> AanumVals = new ArrayList<Integer>();
 					List<Integer> aanumVals = new ArrayList<Integer>();
@@ -354,8 +364,8 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			// Homozygote (AA or aa)
 			byte key = itKnAll.next();
 			int intAllele1 = (int) key;
-			AAnumVals.add(intAllele1); // Single A
-			AAnumVals.add(intAllele1 * 2); // Double AA
+			AAnumVals.add(intAllele1); // A0 or 0A
+			AAnumVals.add(intAllele1 * 2); // AA
 		}
 		if (knownAlleles.size() == 2) {
 			// Heterezygote (AA, Aa or aa)
@@ -523,43 +533,30 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				&& (excludedMarkerNb < totalMarkerNb));
 	}
 
-	static int summingSampleSetGenotypes(
+	static void summingSampleSetGenotypes(
 			byte[] tempGT,
 			CensusDecision decision,
-			Map<Byte, Float> knownAlleles,
+			final int[] alleleValueToOrdinal,
+//			Map<Byte, Float> knownAlleles,
+			final float[] knownAllelesOrdinalTable,
+			final float[][] knownGTsOrdinalTable,
 			Map<Integer, Float> allSamplesGTsTable,
 			Affection affection,
 			Map<Integer, Float> caseSamplesGTsTable,
 			Map<Integer, Float> ctrlSamplesGTsTable,
 			Map<Integer, Float> hwSamplesGTsTable,
-			float counter,
-			int missingCount)
+			float counter)
 	{
-		int newMissingCount = missingCount;
-
 		final byte allele1 = tempGT[0];
 		final byte allele2 = tempGT[1];
+		final int allele1Ordinal = alleleValueToOrdinal[allele1];
+		final int allele2Ordinal = alleleValueToOrdinal[allele2];
 
 		// Gather alleles different from 0 into a list of known alleles
 		// and count the number of appearences
-		// XXX This following stuff could be made faster by using an array
-		if (allele1 != AlleleByte._0_VALUE) {
-			float tempCount = 0;
-			if (knownAlleles.containsKey(allele1)) {
-				tempCount = knownAlleles.get(allele1);
-			}
-			knownAlleles.put(allele1, tempCount + counter);
-		}
-		if (allele2 != AlleleByte._0_VALUE) {
-			float tempCount = 0;
-			if (knownAlleles.containsKey(allele2)) {
-				tempCount = knownAlleles.get(allele2);
-			}
-			knownAlleles.put(allele2, tempCount + counter);
-		}
-		if ((allele1 == AlleleByte._0_VALUE) && (allele2 == AlleleByte._0_VALUE)) {
-			newMissingCount++;
-		}
+		knownAllelesOrdinalTable[allele1Ordinal] += counter;
+		knownAllelesOrdinalTable[allele2Ordinal] += counter;
+		knownGTsOrdinalTable[allele1Ordinal][allele2Ordinal]++;
 
 		final int intAllele1 = allele1;
 		final int intAllele2 = allele2;
@@ -599,8 +596,6 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				hwSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 			}
 		}
-
-		return newMissingCount;
 	}
 
 	private static Map<SampleKey, SampleInfo> readSampleInfosFromPhenoFile(StudyKey studyKey, File phenoFile) throws IOException {
