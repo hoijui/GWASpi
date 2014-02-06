@@ -421,9 +421,9 @@ public class MatrixAnalysePanel extends JPanel {
 						if (reProceed) {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
 								combiTestParams = new CombiTestParams(
-										parentMatrixKey,
-										censusOPKey,
-										hwOPKey
+//										parentMatrixKey,
+										censusOPKey//,
+//										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
 								if (combiTestParams != null) {

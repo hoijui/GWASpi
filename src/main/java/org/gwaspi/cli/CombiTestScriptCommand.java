@@ -98,10 +98,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			String resultOperationName = args.get("result-operation-name");
 
 			CombiTestParams params = new CombiTestParams(
-					matrixKey,
+//					matrixKey,
 					censusOperationKey,
-					hwOperationKey,
-					hwThreshold,
+//					hwOperationKey,
+//					hwThreshold,
 					genotypeEncoder,
 					markersToKeep,
 					useThresholdCalibration,

@@ -206,7 +206,7 @@ public class cNetCDF {
 
 	public static class Defaults {
 
-		public static final byte[] DEFAULT_GT = new byte[] {48, 48};
+		public static final byte[] DEFAULT_GT = new byte[] {AlleleByte._0_VALUE, AlleleByte._0_VALUE};
 		public static final String TMP_SEPARATOR = ";";
 		public static final String DEFAULT_AFFECTION = "Affection";
 		public static final String DEFAULT_EXTPHENOTYPE = "External_Phenotype";
@@ -231,6 +231,7 @@ public class cNetCDF {
 			dash((byte) 45);
 
 			public static final byte _0_VALUE = _0.getValue();
+			public static final int _0_ORDINAL = _0.ordinal();
 
 			private final byte value;
 
@@ -243,7 +244,7 @@ public class cNetCDF {
 				return value;
 			}
 
-			public static int[] createByteValueToOrdinalTable() {
+			public static int[] createAlleleValueToOrdinalLookupTable() {
 
 				byte maxValue = 0;
 				for (AlleleByte alleleByte : values()) {
@@ -252,13 +253,13 @@ public class cNetCDF {
 					}
 				}
 
-				int[] byteValueToOrdinalTable = new int[maxValue + 1];
-				Arrays.fill(byteValueToOrdinalTable, -1);
+				int[] alleleValueToOrdinalLookupTable = new int[maxValue + 1];
+				Arrays.fill(alleleValueToOrdinalLookupTable, -1);
 				for (AlleleByte alleleByte : values()) {
-					byteValueToOrdinalTable[alleleByte.getValue()] = alleleByte.ordinal();
+					alleleValueToOrdinalLookupTable[alleleByte.getValue()] = alleleByte.ordinal();
 				}
 
-				return byteValueToOrdinalTable;
+				return alleleValueToOrdinalLookupTable;
 			}
 		}
 

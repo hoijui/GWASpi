@@ -28,7 +28,7 @@ public enum CensusDecision {
 
 	static CensusDecision getDecisionByChrAndSex(final String chr, final Sex sex) {
 
-		CensusDecision decision = CensusDecision.CountAutosomally;
+		final CensusDecision decision;
 
 		if (chr.equals("X") && (sex == Sex.MALE)) {
 			// Do not count to census when Chromosome is X and Sex is male
@@ -36,6 +36,8 @@ public enum CensusDecision {
 		} else if (chr.equals("Y") && (sex == Sex.FEMALE)) {
 			// Do not count to census when Chromosome is Y and Sex is female
 			decision = CensusDecision.CountFemalesNonAutosomally;
+		} else {
+			decision = CensusDecision.CountAutosomally;
 		}
 
 		return decision;

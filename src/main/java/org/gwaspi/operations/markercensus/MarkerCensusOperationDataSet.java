@@ -19,9 +19,7 @@ package org.gwaspi.operations.markercensus;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;

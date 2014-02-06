@@ -171,8 +171,11 @@ public class MultiOperations {
 //		if (params.getMatrixKey().isSpecifiedByName()) {
 //			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
 //		}
-		lockProperties.getStudyIds().add(params.getMatrixKey().getStudyId());
-		lockProperties.getMatricesIds().add(params.getMatrixKey().getMatrixId());
+		Set<MatrixKey> participatingMatrices = params.getParticipatingMatrices();
+		for (MatrixKey participatingMatrix : participatingMatrices) {
+			lockProperties.getStudyIds().add(participatingMatrix.getStudyId());
+			lockProperties.getMatricesIds().add(participatingMatrix.getMatrixId());
+		}
 
 		queueTask(task, lockProperties);
 	}
