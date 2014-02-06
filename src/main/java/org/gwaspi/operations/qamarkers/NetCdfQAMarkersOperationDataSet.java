@@ -164,10 +164,10 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 		NetcdfFileWriteable netCdfWriteFile = getNetCdfWriteFile();
 		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_MAJOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MAJOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_MINOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MINOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 	}
 
 	@Override

@@ -17,92 +17,101 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.global.Extractor;
 
 public class OrderedAlleles {
 
-	public static final Extractor<OrderedAlleles, Byte> TO_ALLELE_1
+	public static final Extractor<OrderedAlleles, Byte> TO_MAJOR_ALLELE
 			= new Extractor<OrderedAlleles, Byte>()
 	{
 		@Override
 		public Byte extract(OrderedAlleles from) {
-			return from.getAllele1();
+			return from.getMajorAllele();
 		}
 	};
 
-	public static final Extractor<OrderedAlleles, Double> TO_ALLELE_1_FREQ
+	public static final Extractor<OrderedAlleles, Double> TO_MAJOR_ALLELE_FREQ
 			= new Extractor<OrderedAlleles, Double>()
 	{
 		@Override
 		public Double extract(OrderedAlleles from) {
-			return from.getAllele1Freq();
+			return from.getMajorAlleleFreq();
 		}
 	};
 
-	public static final Extractor<OrderedAlleles, Byte> TO_ALLELE_2
+	public static final Extractor<OrderedAlleles, Byte> TO_MINOR_ALLELE
 			= new Extractor<OrderedAlleles, Byte>()
 	{
 		@Override
 		public Byte extract(OrderedAlleles from) {
-			return from.getAllele2();
+			return from.getMinorAllele();
 		}
 	};
 
-	public static final Extractor<OrderedAlleles, Double> TO_ALLELE_2_FREQ
+	public static final Extractor<OrderedAlleles, Double> TO_MINOR_ALLELE_FREQ
 			= new Extractor<OrderedAlleles, Double>()
 	{
 		@Override
 		public Double extract(OrderedAlleles from) {
-			return from.getAllele2Freq();
+			return from.setMinorAlleleFreq();
 		}
 	};
 
-	private byte allele1;
-	private final double allele1Freq;
-	private byte allele2;
+	private byte majorAllele;
+	private final double majorAlleleFreq;
+	private byte minorAllele;
 
 	public OrderedAlleles(
-			byte allele1,
-			double allele1Freq,
-			byte allele2
+			byte majorAllele,
+			double majorAlleleFreq,
+			byte minorAllele
 			)
 	{
-		this.allele1 = allele1;
-		this.allele1Freq = allele1Freq;
-		this.allele2 = allele2;
+		this.majorAllele = majorAllele;
+		this.majorAlleleFreq = majorAlleleFreq;
+		this.minorAllele = minorAllele;
 	}
 
 	public OrderedAlleles() {
-		this((byte) '0', 0.0, (byte) '0');
+		this(AlleleByte._0_VALUE, 0.0, AlleleByte._0_VALUE); // XXX maybe make this value 1.0? should not matter too much though
 	}
 
 	/**
-	 * @return the mayor allele
+	 * @return the major allele (A, the one that appears more often)
 	 */
-	public byte getAllele1() {
-		return allele1;
+	public byte getMajorAllele() {
+		return majorAllele;
 	}
 
-	public void setAllele1(byte allele1) {
-		this.allele1 = allele1;
-	}
-
-	public double getAllele1Freq() {
-		return allele1Freq;
+	public void setMajorAllele(byte majorAllele) {
+		this.majorAllele = majorAllele;
 	}
 
 	/**
-	 * @return the minor allele
+	 * How frequently the major allele appears.
+	 * @return a value in [0.5, 1.0]
 	 */
-	public byte getAllele2() {
-		return allele2;
+	public double getMajorAlleleFreq() {
+		return majorAlleleFreq;
 	}
 
-	public void setAllele2(byte allele2) {
-		this.allele2 = allele2;
+	/**
+	 * @return the minor allele (a, the one that appears less often)
+	 */
+	public byte getMinorAllele() {
+		return minorAllele;
 	}
 
-	public double getAllele2Freq() {
-		return 1.0 - allele1Freq;
+	public void setMinorAllele(byte minorAllele) {
+		this.minorAllele = minorAllele;
+	}
+
+	/**
+	 * How frequently the minor allele appears.
+	 * @return a value in [0.0, 0.5)
+	 */
+	public double setMinorAlleleFreq() {
+		return 1.0 - majorAlleleFreq;
 	}
 }

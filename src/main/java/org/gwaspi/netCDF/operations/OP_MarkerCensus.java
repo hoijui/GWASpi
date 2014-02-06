@@ -29,7 +29,7 @@ import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
@@ -689,21 +689,21 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		// Gather alleles different from 0 into a list of known alleles
 		// and count the number of appearences
 		// XXX This following stuff could be made faster by using an array
-		if (allele1 != AlleleBytes._0) {
+		if (allele1 != AlleleByte._0_VALUE) {
 			float tempCount = 0;
 			if (knownAlleles.containsKey(allele1)) {
 				tempCount = knownAlleles.get(allele1);
 			}
 			knownAlleles.put(allele1, tempCount + counter);
 		}
-		if (allele2 != AlleleBytes._0) {
+		if (allele2 != AlleleByte._0_VALUE) {
 			float tempCount = 0;
 			if (knownAlleles.containsKey(allele2)) {
 				tempCount = knownAlleles.get(allele2);
 			}
 			knownAlleles.put(allele2, tempCount + counter);
 		}
-		if (allele1 == AlleleBytes._0 && allele2 == AlleleBytes._0) {
+		if ((allele1 == AlleleByte._0_VALUE) && (allele2 == AlleleByte._0_VALUE)) {
 			newMissingCount++;
 		}
 

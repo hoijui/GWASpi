@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
@@ -134,12 +134,12 @@ public class MatrixTranslator implements MatrixOperation {
 			GenotypeEncoding sourceGenotypeEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
 			switch (sourceGenotypeEncoding) {
 				case AB0:
-					this.alleleA = AlleleBytes.A;
-					this.alleleB = AlleleBytes.B;
+					this.alleleA = AlleleByte.A.getValue();
+					this.alleleB = AlleleByte.B.getValue();
 					break;
 				case O12:
-					this.alleleA = AlleleBytes._1;
-					this.alleleB = AlleleBytes._2;
+					this.alleleA = AlleleByte._1.getValue();
+					this.alleleB = AlleleByte._2.getValue();
 					break;
 				default:
 					throw new IllegalStateException("Unsupported source genotype encoding " + sourceGenotypeEncoding.toString());
@@ -161,6 +161,7 @@ public class MatrixTranslator implements MatrixOperation {
 
 		@Override
 		public Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
+
 			// Iterate through all markers
 			Iterator<byte[]> sampleGenotypesIt = sampleGenotypes.iterator();
 			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
@@ -177,7 +178,7 @@ public class MatrixTranslator implements MatrixOperation {
 					} else if (codedAlleles[ai] == alleleB) {
 						transAlleles[ai] = basesDict[1];
 					} else {
-						transAlleles[ai] = AlleleBytes._0;
+						transAlleles[ai] = AlleleByte._0_VALUE;
 					}
 				}
 
@@ -192,6 +193,7 @@ public class MatrixTranslator implements MatrixOperation {
 
 		@Override
 		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
+
 			final byte[] basesDict = dictionnaries.get(markerKey);
 
 			int mi = 0;
@@ -204,7 +206,7 @@ public class MatrixTranslator implements MatrixOperation {
 					} else if (codedAlleles[ai] == alleleB) {
 						transAlleles[ai] = basesDict[1];
 					} else {
-						transAlleles[ai] = AlleleBytes._0;
+						transAlleles[ai] = AlleleByte._0_VALUE;
 					}
 				}
 
@@ -224,11 +226,11 @@ public class MatrixTranslator implements MatrixOperation {
 		private static final Map<Byte, Byte> dictionary;
 		static {
 			dictionary = new HashMap<Byte, Byte>();
-			dictionary.put(AlleleBytes._0, AlleleBytes._0);
-			dictionary.put(AlleleBytes._1, AlleleBytes.A);
-			dictionary.put(AlleleBytes._2, AlleleBytes.C);
-			dictionary.put(AlleleBytes._3, AlleleBytes.G);
-			dictionary.put(AlleleBytes._4, AlleleBytes.T);
+			dictionary.put(AlleleByte._0.getValue(), AlleleByte._0.getValue());
+			dictionary.put(AlleleByte._1.getValue(), AlleleByte.A.getValue());
+			dictionary.put(AlleleByte._2.getValue(), AlleleByte.C.getValue());
+			dictionary.put(AlleleByte._3.getValue(), AlleleByte.G.getValue());
+			dictionary.put(AlleleByte._4.getValue(), AlleleByte.T.getValue());
 		}
 
 		private final DataSetSource dataSetSource;
