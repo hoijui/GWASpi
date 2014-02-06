@@ -68,6 +68,16 @@ public interface OperationService {
 
 	List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException;
 
+	/**
+	 * Returns all the ancestor operations types,
+	 * starting with the operation its self, then the direct parent,
+	 * then the grand-parent, etc.
+	 * @param operationKey
+	 * @return
+	 * @throws IOException
+	 */
+	List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException;
+
 	OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException;
 
 	void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException;

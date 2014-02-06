@@ -154,16 +154,44 @@ public class OperationManager {
 		return operationKey;
 	}
 
-	public static OperationKey performCleanCombiTest(CombiTestParams params)
+	public static OperationKey performCombiTestPackage(CombiTestParams params)
+			throws IOException
+	{
+		// TODO
+		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(getParentKey().getOperationParent());
+		// - run hardy weinberg, if none is in the ancestry
+		// - run filter by valid affection, if none is in the ancestry
+		// - run marker-census, and use it as the direct parent, if the given parent is not already a marker-census operation
+
+		MatrixOperation operation = new CombiTestMatrixOperation(params);
+
+		final int resultOpId;
+		if (operation.isValid()) {
+			resultOpId = operation.processMatrix();
+		} else {
+			resultOpId = Integer.MIN_VALUE;
+		}
+
+		final OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
+
+		return operationKey;
+	}
+
+	public static OperationKey performRawCombiTest(CombiTestParams params)
 			throws IOException
 	{
 		org.gwaspi.global.Utils.sysoutStart(" Combi Association Test");
 
 		MatrixOperation operation = new CombiTestMatrixOperation(params);
 
-		int resultOpId = operation.processMatrix();
+		final int resultOpId;
+		if (operation.isValid()) {
+			resultOpId = operation.processMatrix();
+		} else {
+			resultOpId = Integer.MIN_VALUE;
+		}
 
-		OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
+		final OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
 
 		return operationKey;
 	}

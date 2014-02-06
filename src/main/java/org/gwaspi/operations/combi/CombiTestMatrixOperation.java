@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,18 +34,19 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
-import org.gwaspi.global.Text;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.operations.AbstractOperation;
-import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +67,15 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
 	private final CombiTestParams params;
+	private Boolean valid;
+	private String problemDescription;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
 		super(params.getCensusOperationKey());
 
 		this.params = params;
+		this.valid = null;
+		this.problemDescription = null;
 	}
 
 	@Override
@@ -80,72 +84,83 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	}
 
 	@Override
-	public boolean isValid() {
-		return true;
+	public boolean isValid() throws IOException {
+
+		if (valid != null) {
+			return valid;
+		}
+
+		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(getParentKey().getOperationParent());
+
+		if (ancestorOperationTypes.isEmpty()
+				|| (ancestorOperationTypes.get(0) != OPType.MARKER_CENSUS_BY_AFFECTION))
+		{
+			problemDescription = "the direct parent has to be a marker-census (by affection) operation";
+			valid = false;
+			return valid;
+		}
+
+		// We also require that somewhere in our ancestry,
+		// all the samples with invalid affection info have been excluded.
+		boolean hasOnlyValidAffections = false;
+		for (OPType ancestorOpType : ancestorOperationTypes) {
+			if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
+				hasOnlyValidAffections = true;
+				break;
+			}
+		}
+		valid = hasOnlyValidAffections;
+		if (!hasOnlyValidAffections) {
+			problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+		}
+
+		return valid;
 	}
 
 	@Override
 	public String getProblemDescription() {
-		return null;
+		return problemDescription;
 	}
 
 	@Override
 	public int processMatrix() throws IOException {
 
 		LOG.info("Combi Association Test: init");
-		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
-		final boolean dataLeft = AbstractTestMatrixOperation.excludeMarkersByHW(
-				params.getHardyWeinbergOperationKey(),
-				params.getHardyWeinbergThreshold(),
-				toBeExcluded);
-
-		if (!dataLeft) {
-			// NO DATA LEFT AFTER THRESHOLD FILTER PICKING
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
-			return Integer.MIN_VALUE;
-		}
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
+		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
+//				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
+				= (MarkerCensusOperationDataSet) parentDataSetSource;
 
 		CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
+
 		dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
+		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
 
-		Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
-		ArrayList<MarkerKey> markerKeys = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
-
-		final int dSamples = markerKeys.size() - toBeExcluded.size();
+		final int dSamples = parentDataSetSource.getNumMarkers();
 		final int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
+		final int n = parentDataSetSource.getNumSamples();
 
-		Map<Integer, SampleKey> validSamplesOrigIndicesAndKey = new LinkedHashMap<Integer, SampleKey>(parentDataSetSource.getNumSamples());
-		List<Affection> validSampleAffections = new ArrayList<Affection>(parentDataSetSource.getNumSamples());
-		extractSamplesWithValidAffection(parentDataSetSource, validSamplesOrigIndicesAndKey, validSampleAffections);
-		List<SampleKey> validSamplesKeys = new ArrayList<SampleKey>(validSamplesOrigIndicesAndKey.values());
-		final int n = validSamplesOrigIndicesAndKey.size();
+		final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
+		final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
+		final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 
-		dataSet.setNumSamples(n);
-
-		dataSet.setMarkers(wrMarkersFiltered);
-//		dataSet.setChromosomes(...); // NOTE This is not required, because if it is not set, it gets automatically extracted from the markers
-		dataSet.setSamples(validSamplesOrigIndicesAndKey);
+//		dataSet.setMarkers(wrMarkersFiltered);
+////		dataSet.setChromosomes(...); // NOTE This is not required, because if it is not set, it gets automatically extracted from the markers
+//		dataSet.setSamples(validSamplesOrigIndicesAndKey);
 
 		LOG.debug("Combi Association Test: #samples: " + n);
 		LOG.debug("Combi Association Test: #markers: " + dSamples);
 		LOG.debug("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
 		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-		final MarkersGenotypesSource markersGenotypesSource;
-		final boolean usingAllParentSamples = (n == parentDataSetSource.getNumSamples());
-		if (usingAllParentSamples) {
-			markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
-		} else {
-			List<Integer> validSamplesOrigIndices = new ArrayList<Integer>(validSamplesOrigIndicesAndKey.keySet());
-			markersGenotypesSource = new SampleIndicesFilterDataSetSource(parentDataSetSource, validSamplesOrigIndices).getMarkersGenotypesSource();
-		}
+		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
+		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
 		LOG.info("Combi Association Test: start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
+		List<Double> weights = runEncodingAndSVM(markerKeys, allMarkersCensus, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
 
 		// TODO sort the weights (should already be absolute?)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -250,6 +265,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 	static List<Double> runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
+			final List<Census> allMarkersCensus,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
@@ -280,7 +296,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			}
 
 			// HACK This next line is for debugging purposes only
-			Util.storeForEncoding(markerKeys, sampleKeys, sampleAffections, markerGTs);
+			Util.storeForEncoding(markerKeys, allMarkersCensus, sampleKeys, sampleAffections, markerGTs);
 		}
 
 		final float[][] kernelMatrix;

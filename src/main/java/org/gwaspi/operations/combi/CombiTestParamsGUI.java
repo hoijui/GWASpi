@@ -20,22 +20,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -43,17 +35,12 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
@@ -250,19 +237,19 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.originalCombiTestParams = combiTestParams;
 
-		this.parentMatrixValue.setText(combiTestParams.getMatrixKey().toString());
-
-		this.hwOperationValue.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
-		this.hwOperationValue.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
-
-		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
-		this.hwThresholdDefault.setAction(new TextDefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
-		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
-				combiTestParams.getHardyWeinbergThreshold() * combiTestParams.getTotalMarkers() / 100.0, // initial value
-				0.1, // min
-				100.0, // max
-				0.5); // step
-		this.hwThresholdPercentage.setModel(hwThresholdPercentageModel);
+//		this.parentMatrixValue.setText(combiTestParams.getMatrixKey().toString());
+//
+//		this.hwOperationValue.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
+//		this.hwOperationValue.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
+//
+//		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
+//		this.hwThresholdDefault.setAction(new TextDefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
+//		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
+//				combiTestParams.getHardyWeinbergThreshold() * combiTestParams.getTotalMarkers() / 100.0, // initial value
+//				0.1, // min
+//				100.0, // max
+//				0.5); // step
+//		this.hwThresholdPercentage.setModel(hwThresholdPercentageModel);
 		this.hwThresholdComponentRelation
 				= new AbsolutePercentageComponentRelation(
 				new ValueContainer<Number>(hwThresholdValue),
@@ -273,7 +260,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
-		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, combiTestParams.getEncoderDefault()));
+		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestParams.getEncoderDefault()));
 
 		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
 				combiTestParams.getMarkersToKeep(), // initial value
@@ -296,8 +283,8 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
-		this.resultMatrixValue.setText(combiTestParams.getResultMatrixName());
-		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getResultMatrixNameDefault()));
+		this.resultMatrixValue.setText(combiTestParams.getResultOperationName());
+		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getResultOperationNameDefault()));
 
 		this.validate();
 	}
@@ -364,10 +351,10 @@ public class CombiTestParamsGUI extends JPanel {
 	public CombiTestParams getCombiTestParams() {
 
 		CombiTestParams combiTestParams = new CombiTestParams(
-				originalCombiTestParams.getMatrixKey(), // cause it is not editable
+//				originalCombiTestParams.getMatrixKey(), // cause it is not editable
 				(OperationKey) censusOperationValue.getSelectedItem(),
-				(OperationKey) hwOperationValue.getSelectedItem(),
-				(Double) hwThresholdValue.getValue(),
+//				(OperationKey) hwOperationValue.getSelectedItem(),
+//				(Double) hwThresholdValue.getValue(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
 				(Integer) markersToKeepValue.getValue(),
 				useThresholdCalibrationValue.isSelected(),

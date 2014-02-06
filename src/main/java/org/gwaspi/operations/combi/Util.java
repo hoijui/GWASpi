@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -369,6 +370,7 @@ public class Util {
 
 	static void storeForEncoding(
 			List<MarkerKey> markers,
+			final List<Census> allMarkersCensus,
 			List<SampleKey> samples,
 			List<Affection> sampleAffecs,
 			List<GenotypesList> markerGTs)

@@ -38,6 +38,10 @@ public class OperationsList {
 		return operationService.getOperation(operationKey);
 	}
 
+	public static List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException {
+		return operationService.getOperationKeysByName(studyKey, operationFriendlyName);
+	}
+
 	public static List<OperationMetadata> getOperationsList(MatrixKey origin) throws IOException {
 		return operationService.getOperations(origin);
 	}
@@ -75,15 +79,15 @@ public class OperationsList {
 		return result;
 	}
 
+	public static List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException {
+		return operationService.getAncestorOperationTypes(operationKey);
+	}
+
 	public static OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
 		return operationService.insertOperation(operationMetadata);
 	}
 
 	public static void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
 		operationService.deleteOperation(operationKey, deleteReports);
-	}
-
-	public static List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException {
-		return operationService.getOperationKeysByName(studyKey, operationFriendlyName);
 	}
 }

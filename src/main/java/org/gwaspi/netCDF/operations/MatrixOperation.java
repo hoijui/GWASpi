@@ -25,8 +25,9 @@ public interface MatrixOperation {
 	 * Whether the operation is valid, given its parameters.
 	 * @return true, if the operation seems to be valid,
 	 *   and may be able to execute properly; false otherwise
+	 * @throws IOException
 	 */
-	boolean isValid();
+	boolean isValid() throws IOException;
 
 	/**
 	 * Returns true, if the operation looks to be valid,

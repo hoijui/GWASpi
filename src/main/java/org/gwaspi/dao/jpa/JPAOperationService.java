@@ -25,6 +25,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
@@ -236,6 +237,40 @@ public class JPAOperationService implements OperationService {
 		return operationsMetadata;
 	}
 
+	public List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException {
+
+		List<OPType> operationTypes = new LinkedList<OPType>();
+
+		OperationKey curOperationKey = operationKey;
+		while (curOperationKey != null) {
+			EntityManager em = null;
+			try {
+				em = open();
+				Query query = em.createNamedQuery(
+						"operationMetadata_getTypeByStudyIdParentMatrixIdOperationId");
+				query.setParameter("studyId", curOperationKey.getStudyId());
+				query.setParameter("parentMatrixId", curOperationKey.getParentMatrixId());
+				query.setParameter("id", curOperationKey.getId());
+				Object[] operationTypeAndParentOperationId = (Object[]) query.getResultList().get(0);
+				OPType type = (OPType) operationTypeAndParentOperationId[0];
+				Integer parentOperationId = (Integer) operationTypeAndParentOperationId[1];
+				operationTypes.add(type);
+				if (parentOperationId == null) {
+					curOperationKey = null;
+				} else {
+					curOperationKey = new OperationKey(curOperationKey.getParentMatrixKey(), parentOperationId);
+				}
+			} catch (Exception ex) {
+				LOG.error("Failed fetching operation type", ex);
+				return Collections.EMPTY_LIST;
+			} finally {
+				close(em);
+			}
+		}
+
+		return operationTypes;
+	}
+
 	@Override
 	public OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException {
 
@@ -347,12 +382,13 @@ public class JPAOperationService implements OperationService {
 
 		List<OperationKey> operations = new ArrayList<OperationKey>(studyIdMatrixIdOperationIds.size());
 		for (Object[] operationKeyParts : studyIdMatrixIdOperationIds) {
-			operations.add(
-					new OperationKey(
-							new MatrixKey(
-									new StudyKey((Integer) operationKeyParts[0]),
-									(Integer) operationKeyParts[1]),
-							(Integer) operationKeyParts[2]));
+			final int studyId = (Integer) operationKeyParts[0];
+			final int originMatrixId = (Integer) operationKeyParts[1];
+			final int operationId = (Integer) operationKeyParts[2];
+			final StudyKey studyKey = new StudyKey(studyId);
+			final MatrixKey originMatrixKey = new MatrixKey(studyKey, originMatrixId);
+			final OperationKey operationKey = new OperationKey(originMatrixKey, operationId);
+			operations.add(operationKey);
 		}
 
 		return operations;

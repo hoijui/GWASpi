@@ -54,6 +54,10 @@ public abstract class AbstractOperation<DST extends OperationDataSet> implements
 
 	public abstract OPType getType();
 
+	protected DataSetKey getParentKey() {
+		return parent;
+	}
+
 	protected DataSetSource getParentDataSetSource() throws IOException {
 
 		final DataSetSource parentDataSetSource;
