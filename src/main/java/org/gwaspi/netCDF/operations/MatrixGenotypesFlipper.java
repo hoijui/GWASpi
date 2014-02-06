@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
@@ -220,32 +220,33 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	}
 
 	private static void flipGenotypes(byte[] gt, GenotypeEncoding gtEncoding) {
+
 		byte[] result = gt;
 
 		if (gtEncoding.equals(GenotypeEncoding.ACGT0)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == AlleleBytes.A) {
-					result[i] = AlleleBytes.T;
-				} else if (gt[i] == AlleleBytes.C) {
-					result[i] = AlleleBytes.G;
-				} else if (gt[i] == AlleleBytes.G) {
-					result[i] = AlleleBytes.C;
-				} else if (gt[i] == AlleleBytes.T) {
-					result[i] = AlleleBytes.A;
+				if (gt[i] == AlleleByte.A.getValue()) {
+					result[i] = AlleleByte.T.getValue();
+				} else if (gt[i] == AlleleByte.C.getValue()) {
+					result[i] = AlleleByte.G.getValue();
+				} else if (gt[i] == AlleleByte.G.getValue()) {
+					result[i] = AlleleByte.C.getValue();
+				} else if (gt[i] == AlleleByte.T.getValue()) {
+					result[i] = AlleleByte.A.getValue();
 				}
 			}
 		}
 
 		if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == AlleleBytes._1) {
-					result[i] = AlleleBytes._4;
-				} else if (gt[i] == AlleleBytes._2) {
-					result[i] = AlleleBytes._3;
-				} else if (gt[i] == AlleleBytes._3) {
-					result[i] = AlleleBytes._2;
-				} else if (gt[i] == AlleleBytes._4) {
-					result[i] = AlleleBytes._1;
+				if (gt[i] == AlleleByte._1.getValue()) {
+					result[i] = AlleleByte._4.getValue();
+				} else if (gt[i] == AlleleByte._2.getValue()) {
+					result[i] = AlleleByte._3.getValue();
+				} else if (gt[i] == AlleleByte._3.getValue()) {
+					result[i] = AlleleByte._2.getValue();
+				} else if (gt[i] == AlleleByte._4.getValue()) {
+					result[i] = AlleleByte._1.getValue();
 				}
 			}
 		}

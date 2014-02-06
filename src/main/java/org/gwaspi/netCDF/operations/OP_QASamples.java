@@ -20,7 +20,7 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -114,7 +114,7 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 //			int markerIndex = 0;
 			Iterator<MarkerMetadata> markersInfSrcIt = markersInfSrc.iterator();
 			for (byte[] tempGT : sampleGenotypes) {
-				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
+				if ((tempGT[0] == AlleleByte._0_VALUE) && (tempGT[1] == AlleleByte._0_VALUE)) {
 					missingCount++;
 				}
 

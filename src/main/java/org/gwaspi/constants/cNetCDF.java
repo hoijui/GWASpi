@@ -17,6 +17,7 @@
 
 package org.gwaspi.constants;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -215,21 +216,49 @@ public class cNetCDF {
 		public static final boolean MISMATCH_YES = true;
 		public static final boolean MISMATCH_NO = false;
 
-		public static class AlleleBytes {
+		public static enum AlleleByte {
 
-			public static final byte A = 65;
-			public static final byte C = 67;
-			public static final byte G = 71;
-			public static final byte T = 84;
-			public static final byte B = 66;
-			public static final byte _1 = 49;
-			public static final byte _2 = 50;
-			public static final byte _3 = 51;
-			public static final byte _4 = 52;
-			public static final byte dash = 45;
-			public static final byte _0 = 48;
+			A((byte) 65),
+			C((byte) 67),
+			G((byte) 71),
+			T((byte) 84),
+			B((byte) 66),
+			_0((byte) 48),
+			_1((byte) 49),
+			_2((byte) 50),
+			_3((byte) 51),
+			_4((byte) 52),
+			dash((byte) 45);
 
-			private AlleleBytes() {
+			public static final byte _0_VALUE = _0.getValue();
+
+			private final byte value;
+
+			private AlleleByte(byte value) {
+
+				this.value = value;
+			}
+
+			public byte getValue() {
+				return value;
+			}
+
+			public static int[] createByteValueToOrdinalTable() {
+
+				byte maxValue = 0;
+				for (AlleleByte alleleByte : values()) {
+					if (alleleByte.getValue() > maxValue) {
+						maxValue = alleleByte.getValue();
+					}
+				}
+
+				int[] byteValueToOrdinalTable = new int[maxValue + 1];
+				Arrays.fill(byteValueToOrdinalTable, -1);
+				for (AlleleByte alleleByte : values()) {
+					byteValueToOrdinalTable[alleleByte.getValue()] = alleleByte.ordinal();
+				}
+
+				return byteValueToOrdinalTable;
 			}
 		}
 

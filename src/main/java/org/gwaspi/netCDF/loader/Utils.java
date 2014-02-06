@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
@@ -107,15 +107,15 @@ public class Utils {
 			allAlleles.add(values[1]);
 		}
 
-		if (allAlleles.contains(AlleleBytes.B)) {
+		if (allAlleles.contains(AlleleByte.B.getValue())) {
 			gtEcoding = GenotypeEncoding.AB0;
-		} else if (allAlleles.contains(AlleleBytes.C)
-				|| allAlleles.contains(AlleleBytes.G)
-				|| allAlleles.contains(AlleleBytes.T))
+		} else if (allAlleles.contains(AlleleByte.C.getValue())
+				|| allAlleles.contains(AlleleByte.G.getValue())
+				|| allAlleles.contains(AlleleByte.T.getValue()))
 		{
 			gtEcoding = GenotypeEncoding.ACGT0;
-		} else if (allAlleles.contains(AlleleBytes._3)
-				|| allAlleles.contains(AlleleBytes._4))
+		} else if (allAlleles.contains(AlleleByte._3.getValue())
+				|| allAlleles.contains(AlleleByte._4.getValue()))
 		{
 			gtEcoding = GenotypeEncoding.O1234;
 		} else { // ONLY CONTAINS 1, 2
