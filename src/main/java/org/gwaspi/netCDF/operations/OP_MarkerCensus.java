@@ -265,6 +265,10 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //					wrChunkedMarkerCensusMap.put(markerKey, new CensusFull()); // XXX This might be unrequired (would only, possibly make sense in case of an exception, but even then still only marginally, and with code modifications)
 //					countMarkers++;
 
+					// We use float instead of int here,
+					// even though it is a counter,
+					// because under certain circumstances,
+					// we want to count some things only half (+ 0.5).
 					Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
 					Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
 					Map<Integer, Float> caseSamplesGTsTable = new LinkedHashMap<Integer, Float>();
