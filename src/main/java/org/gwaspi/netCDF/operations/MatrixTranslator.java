@@ -164,7 +164,7 @@ public class MatrixTranslator implements MatrixOperation {
 
 			// Iterate through all markers
 			Iterator<byte[]> sampleGenotypesIt = sampleGenotypes.iterator();
-			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+//			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
 			int si = 0;
 			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
 				byte[] codedAlleles = sampleGenotypesIt.next();

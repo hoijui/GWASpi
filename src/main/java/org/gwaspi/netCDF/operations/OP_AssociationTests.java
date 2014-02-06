@@ -34,13 +34,8 @@ import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.reports.OutputTest;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestOperationDataSet> {
-
-	private final Logger log
-			= LoggerFactory.getLogger(OP_AssociationTests.class);
 
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
@@ -74,8 +69,10 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 	/**
 	 * Performs the Allelic or Genotypic Association Tests.
 	 * @param dataSet
-	 * @param wrCaseMarkerIdSetMap
-	 * @param wrCtrlMarkerSet
+	 * @param markerOrigIndicesKeys
+	 * @param caseMarkersCensus
+	 * @param ctrlMarkersCensus
+	 * @throws IOException
 	 */
 	@Override
 	protected void performTest(
@@ -85,10 +82,6 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 			List<Census> ctrlMarkersCensus)
 			throws IOException
 	{
-//		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
-
-		// Iterate through markerset
-		int markerNb = 0;
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
 		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
@@ -167,11 +160,6 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 						gntypPval,
 						gntypOR[0],
 						gntypOR[1]));
-			}
-
-			markerNb++;
-			if (markerNb % 100000 == 0) {
-				log.info("Processed {} markers", markerNb);
 			}
 		}
 	}
