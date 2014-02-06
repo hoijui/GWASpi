@@ -88,10 +88,10 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 		final float counter = 1.0f;
 		// counts which allele appears how many times per marker,
 		// whether in the father or in the mother position
-		final float[] knownAllelesTable = new float[AlleleByte.values().length];
+		final float[] knownAllelesOrdinalTable = new float[AlleleByte.values().length];
 		// counts which allele combinations (genotypes, father & mother allele)
 		// appears how many times per marker
-		final float[][] knownGTsOrdinalTable = new float[knownAllelesTable.length][knownAllelesTable.length];
+		final float[][] knownGTsOrdinalTable = new float[knownAllelesOrdinalTable.length][knownAllelesOrdinalTable.length];
 
 		// Iterate through markerset, take it marker by marker
 		Iterator<GenotypesList> markersGenotypesSourceIt = parentDataSetSource.getMarkersGenotypesSource().iterator();
@@ -99,7 +99,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
 			GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
-			Arrays.fill(knownAllelesTable, 0.0f);
+			Arrays.fill(knownAllelesOrdinalTable, 0.0f);
 			for (float[] knownGTsTableRow : knownGTsOrdinalTable) {
 				Arrays.fill(knownGTsTableRow, 0.0f);
 			}
@@ -116,8 +116,8 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 				final int allele1Ordinal = alleleValueToOrdinal[allele1];
 				final int allele2Ordinal = alleleValueToOrdinal[allele2];
 
-				knownAllelesTable[allele1Ordinal] += counter;
-				knownAllelesTable[allele2Ordinal] += counter;
+				knownAllelesOrdinalTable[allele1Ordinal] += counter;
+				knownAllelesOrdinalTable[allele2Ordinal] += counter;
 				if ((allele1 == AlleleByte._0_VALUE) && (allele2 == AlleleByte._0_VALUE)) {
 					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(markerSampleGenotype), sampleSex);
 					if (decision != CensusDecision.CountFemalesNonAutosomally) {
@@ -131,9 +131,9 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 			// transcribe ordinal tables into value maps
 			final Map<Byte, Float> knownAllelesOrdinalMap = new LinkedHashMap<Byte, Float>(3);
-			for (int ao = 0; ao < knownAllelesTable.length; ao++) {
-				if (knownAllelesTable[ao] != 0.0f) {
-					knownAllelesOrdinalMap.put(AlleleByte.values()[ao].getValue(), knownAllelesTable[ao]);
+			for (int ao = 0; ao < knownAllelesOrdinalTable.length; ao++) {
+				if (knownAllelesOrdinalTable[ao] != 0.0f) {
+					knownAllelesOrdinalMap.put(AlleleByte.values()[ao].getValue(), knownAllelesOrdinalTable[ao]);
 				}
 			}
 			knownAllelesOrdinalMap.remove(AlleleByte._0_VALUE);
