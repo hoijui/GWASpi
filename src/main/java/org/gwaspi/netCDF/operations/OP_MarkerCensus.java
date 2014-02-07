@@ -229,7 +229,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 					List<Integer> aanumVals = new ArrayList<Integer>();
 
 					knowYourAlleles(
-							knownAlleles,
+							knownAllelesOrdinalTable,
 							AAnumVals,
 							AanumVals,
 							aanumVals);
@@ -354,7 +354,8 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 	}
 
 	private static void knowYourAlleles(
-			Map<Byte, Float> knownAlleles,
+//			Map<Byte, Float> knownAlleles,
+			final float[] knownAllelesOrdinalTable,
 			List<Integer> AAnumVals,
 			List<Integer> AanumVals,
 			List<Integer> aanumVals)
