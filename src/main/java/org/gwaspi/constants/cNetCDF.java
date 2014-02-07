@@ -231,6 +231,7 @@ public class cNetCDF {
 			dash((byte) 45);
 
 			public static final byte _0_VALUE = _0.getValue();
+			public static final int _0_ORDINAL = _0.ordinal();
 
 			private final byte value;
 
