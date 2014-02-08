@@ -231,10 +231,12 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				// AFFECTION ALLELE CENSUS + MISMATCH STATE + MISSINGNESS
 				// Check if there are mismatches in alleles
 				if (knownAlleles.size() <= 2) {
-					List<Integer> AAnumVals = new ArrayList<Integer>();
-					List<Integer> AanumVals = new ArrayList<Integer>();
-					List<Integer> aanumVals = new ArrayList<Integer>();
+					// these 3 lists contain allele-sums (~= genotype-hash) that stand for the different gt-types (AA. Aa, aa)
+					List<Integer> AAnumVals = new ArrayList<Integer>(); // AA, A0, 0A
+					List<Integer> AanumVals = new ArrayList<Integer>(); // Aa, aA
+					List<Integer> aanumVals = new ArrayList<Integer>(); // aa, a0, 0a
 
+					// fill the above 3 lists
 					knowYourAlleles(
 							knownAllelesOrdinalTable,
 							AAnumVals,
@@ -374,8 +376,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			int intAllele1 = (int) key;
 			AAnumVals.add(intAllele1); // A0 or 0A
 			AAnumVals.add(intAllele1 * 2); // AA
-		}
-		if (knownAlleles.size() == 2) {
+		} else if (knownAlleles.size() == 2) {
 			// Heterezygote (AA, Aa or aa)
 			byte key = itKnAll.next();
 			int countA = Math.round(knownAlleles.get(key));

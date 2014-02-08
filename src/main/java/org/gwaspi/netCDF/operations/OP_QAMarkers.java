@@ -189,67 +189,48 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 		rawMarkerAlleleAndGTStatistics.setMissingCount(missingCount);
 	}
 
-	/**
-	 * This calculates secondary statistics about the alleles and genotypes
-	 * of a single marker.
-	 * The values we gather here are all derived from the raw statistics.
-	 *
-	 * @param rawMarkerAlleleAndGTStatistics
-	 * @return
-	 * @throws IOException
-	 */
-	public static MarkerAlleleAndGTStatistics calculateMarkerAlleleAndGTStatistics(
-			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics)
-			throws IOException
+	public static void extractMajorAndMinorAllele(
+			final Map<Byte, Float> alleleCounts,
+			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
 	{
-		MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics = new MarkerAlleleAndGTStatistics();
+		Iterator<Byte> itKnAll = alleleCounts.keySet().iterator();
+		if (alleleCounts.isEmpty()) {
+			// Completely missing (00)
+			markerAlleleAndGTStatistics.setMajorAllele(AlleleByte._0_VALUE);
+			markerAlleleAndGTStatistics.setMinorAllele(AlleleByte._0_VALUE);
+			markerAlleleAndGTStatistics.setMajorAlleleFreq(0.0); // NOTE Maybe 1.0 would be better?
+		} else if (alleleCounts.size() == 1) {
+			// Homozygote (AA or aa)
+			final byte majorAllele = itKnAll.next();
+			markerAlleleAndGTStatistics.setMajorAllele(majorAllele);
+			markerAlleleAndGTStatistics.setMinorAllele(AlleleByte._0_VALUE);
+			markerAlleleAndGTStatistics.setMajorAlleleFreq(1.0);
+		} else if (alleleCounts.size() == 2) {
+			// Heterezygote (contains mix of AA, Aa/aA or aa)
+			final byte allele1 = itKnAll.next();
+			final int allele1Count = Math.round(alleleCounts.get(allele1));
+			final byte allele2 = itKnAll.next();
+			final int allele2Count = Math.round(alleleCounts.get(allele2));
+			final int totAlleles = allele1Count + allele2Count;
 
-		// transcribe ordinal tables into value maps
-		final Map<Byte, Float> alleleCounts = rawMarkerAlleleAndGTStatistics.extractAllelesCounts();
-		alleleCounts.remove(AlleleByte._0_VALUE);
-
-		// Check if there are mismatches in alleles
-		if (alleleCounts.size() > 2) {
-			markerAlleleAndGTStatistics.setMismatch();
-		} else {
-			//<editor-fold defaultstate="expanded" desc="KNOW YOUR ALLELES">
-			Iterator<Byte> itKnAll = alleleCounts.keySet().iterator();
-			if (alleleCounts.isEmpty()) {
-				// Completely missing (00)
-				markerAlleleAndGTStatistics.setMajorAllele(AlleleByte._0_VALUE);
-				markerAlleleAndGTStatistics.setMinorAllele(AlleleByte._0_VALUE);
-				markerAlleleAndGTStatistics.setMajorAlleleFreq(0.0); // NOTE Maybe 1.0 would be better?
-			} else if (alleleCounts.size() == 1) {
-				// Homozygote (AA or aa)
-				final byte majorAllele = itKnAll.next();
-				markerAlleleAndGTStatistics.setMajorAllele(majorAllele);
-				markerAlleleAndGTStatistics.setMinorAllele(AlleleByte._0_VALUE);
-				markerAlleleAndGTStatistics.setMajorAlleleFreq(1.0);
-			} else if (alleleCounts.size() == 2) {
-				// Heterezygote (contains mix of AA, Aa/aA or aa)
-				final byte allele1 = itKnAll.next();
-				final int allele1Count = Math.round(alleleCounts.get(allele1));
-				final byte allele2 = itKnAll.next();
-				final int allele2Count = Math.round(alleleCounts.get(allele2));
-				final int totAlleles = allele1Count + allele2Count;
-
-				// Finding out what allele is major and minor
-				if (allele1Count >= allele2Count) {
-					markerAlleleAndGTStatistics.setMajorAllele(allele1);
-					markerAlleleAndGTStatistics.setMinorAllele(allele2);
-					markerAlleleAndGTStatistics.setMajorAlleleFreq((double) allele1Count / totAlleles);
-				} else {
-					markerAlleleAndGTStatistics.setMajorAllele(allele2);
-					markerAlleleAndGTStatistics.setMinorAllele(allele1);
-					markerAlleleAndGTStatistics.setMajorAlleleFreq((double) allele2Count / totAlleles);
-				}
+			// Finding out what allele is major and minor
+			if (allele1Count >= allele2Count) {
+				markerAlleleAndGTStatistics.setMajorAllele(allele1);
+				markerAlleleAndGTStatistics.setMinorAllele(allele2);
+				markerAlleleAndGTStatistics.setMajorAlleleFreq((double) allele1Count / totAlleles);
 			} else {
-				throw new IOException("More then 2 known alleles ("
-						+ alleleCounts.size() + ")");
+				markerAlleleAndGTStatistics.setMajorAllele(allele2);
+				markerAlleleAndGTStatistics.setMinorAllele(allele1);
+				markerAlleleAndGTStatistics.setMajorAlleleFreq((double) allele2Count / totAlleles);
 			}
-			//</editor-fold>
+		}
+	}
 
-			//<editor-fold defaultstate="expanded" desc="CONTINGENCY ALL SAMPLES">
+	private static void extractContingency(
+			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
+			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
+	{
+
 			if (markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE) {
 				final int[] alleleValueToOrdinal = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
 				final float[][] knownGTsOrdinalTable = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
@@ -275,17 +256,50 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			} else {
 				markerAlleleAndGTStatistics.setNumAA(0);
 			}
-			//</editor-fold>
+	}
 
-			if (markerAlleleAndGTStatistics.getMajorAllele() == AlleleByte._0_VALUE
-					&& markerAlleleAndGTStatistics.getMinorAllele() != AlleleByte._0_VALUE)
-			{
-				markerAlleleAndGTStatistics.setMajorAllele(markerAlleleAndGTStatistics.getMinorAllele());
-			} else if (markerAlleleAndGTStatistics.getMinorAllele() == AlleleByte._0_VALUE
-					&& markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE)
-			{
-				markerAlleleAndGTStatistics.setMinorAllele(markerAlleleAndGTStatistics.getMajorAllele());
-			}
+	private static void leaveNoSingleZeroAlleleBehind(
+			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
+	{
+		if (markerAlleleAndGTStatistics.getMajorAllele() == AlleleByte._0_VALUE
+				&& markerAlleleAndGTStatistics.getMinorAllele() != AlleleByte._0_VALUE)
+		{
+			markerAlleleAndGTStatistics.setMajorAllele(markerAlleleAndGTStatistics.getMinorAllele());
+		} else if (markerAlleleAndGTStatistics.getMinorAllele() == AlleleByte._0_VALUE
+				&& markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE)
+		{
+			markerAlleleAndGTStatistics.setMinorAllele(markerAlleleAndGTStatistics.getMajorAllele());
+		}
+	}
+
+	/**
+	 * This calculates secondary statistics about the alleles and genotypes
+	 * of a single marker.
+	 * The values we gather here are all derived from the raw statistics.
+	 *
+	 * @param rawMarkerAlleleAndGTStatistics
+	 * @return
+	 * @throws IOException
+	 */
+	public static MarkerAlleleAndGTStatistics calculateMarkerAlleleAndGTStatistics(
+			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics)
+			throws IOException
+	{
+		MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics = new MarkerAlleleAndGTStatistics();
+
+		// transcribe ordinal tables into value maps
+		final Map<Byte, Float> alleleCounts = rawMarkerAlleleAndGTStatistics.extractAllelesCounts();
+		alleleCounts.remove(AlleleByte._0_VALUE);
+
+		// Check if there are mismatches in alleles
+		if (alleleCounts.size() > 2) {
+			markerAlleleAndGTStatistics.setMismatch();
+//			throw new IOException("More then 2 known alleles ("
+//					+ alleleCounts.size() + ")");
+		} else {
+			extractMajorAndMinorAllele(alleleCounts, markerAlleleAndGTStatistics);
+			extractContingency(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics);
+			leaveNoSingleZeroAlleleBehind(markerAlleleAndGTStatistics);
 		}
 
 		return markerAlleleAndGTStatistics;
