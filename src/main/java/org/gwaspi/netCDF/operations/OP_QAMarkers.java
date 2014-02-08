@@ -25,11 +25,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
-import org.gwaspi.model.MarkerAlleleAndGTStatistics;
+import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.RawMarkerAlleleAndGTStatistics;
+import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
@@ -80,22 +80,23 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 		// a is the minor allele (the 'letter' (!= '0') which appears less often)
 		// There is always a major allele, but sometimes no minor allele
 
-		final int[] alleleValueToOrdinal = AlleleByte.createByteValueToOrdinalTable();
+		final int[] alleleValueToOrdinalLookupTable = AlleleByte.createAlleleValueToOrdinalLookupTable();
 		final float counter = 1.0f;
 
-		RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics = new RawMarkerAlleleAndGTStatistics(alleleValueToOrdinal);
+		RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics = new RawMarkerAlleleAndGTStatistics(alleleValueToOrdinalLookupTable);
 
 		Iterator<GenotypesList> markersGenotypesSourceIt = parentDataSetSource.getMarkersGenotypesSource().iterator();
+		Iterator<String> markersChromosomesIt = parentDataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
 		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : parentDataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
-			GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
+			final GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
+			final String chromosome = markersChromosomesIt.next();
 
-			rawMarkerAlleleAndGTStatistics.clear();
 			gatherRawMarkerAlleleAndGTStatistics(
 					rawMarkerAlleleAndGTStatistics,
+					chromosome,
 					sampleSexes,
-					alleleValueToOrdinal,
 					counter,
 					markerGenotypes);
 
@@ -138,22 +139,26 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 	 * (fatherAllele_motherAllele).
 	 *
 	 * @param rawMarkerAlleleAndGTStatistics
+	 * @param chromosome
 	 * @param sampleSexes
-	 * @param alleleValueToOrdinal
 	 * @param counter
 	 * @param markerGenotypes
 	 * @throws IOException
 	 */
 	public static void gatherRawMarkerAlleleAndGTStatistics(
 			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
+			final String chromosome,
 			final List<Sex> sampleSexes,
-			final int[] alleleValueToOrdinal,
 			final float counter,
 			final GenotypesList markerGenotypes)
 			throws IOException
 	{
-		final float[] knownAllelesOrdinalTable = rawMarkerAlleleAndGTStatistics.getAlleleOrdinalCounts();
-		final float[][] knownGTsOrdinalTable = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
+		rawMarkerAlleleAndGTStatistics.clear();
+
+		final int[] alleleValueToOrdinalLookupTable = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
+
+		final float[] alleleOrdinalCounts = rawMarkerAlleleAndGTStatistics.getAlleleOrdinalCounts();
+		final float[][] gtOrdinalCounts = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
 
 		// number of observed GTs of type 00; depending on decision
 		int missingCount = 0;
@@ -166,19 +171,19 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">
 			final byte allele1 = markerSampleGenotype[0];
 			final byte allele2 = markerSampleGenotype[1];
-			final int allele1Ordinal = alleleValueToOrdinal[allele1];
-			final int allele2Ordinal = alleleValueToOrdinal[allele2];
+			final int allele1Ordinal = alleleValueToOrdinalLookupTable[allele1];
+			final int allele2Ordinal = alleleValueToOrdinalLookupTable[allele2];
 
-			knownAllelesOrdinalTable[allele1Ordinal] += counter;
-			knownAllelesOrdinalTable[allele2Ordinal] += counter;
+			alleleOrdinalCounts[allele1Ordinal] += counter;
+			alleleOrdinalCounts[allele2Ordinal] += counter;
 			if ((allele1 == AlleleByte._0_VALUE) && (allele2 == AlleleByte._0_VALUE)) {
-				CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(markerSampleGenotype), sampleSex);
+				CensusDecision decision = CensusDecision.getDecisionByChrAndSex(chromosome, sampleSex);
 				if (decision != CensusDecision.CountFemalesNonAutosomally) {
 					missingCount++;
 				}
 			}
 
-			knownGTsOrdinalTable[allele1Ordinal][allele2Ordinal] += counter;
+			gtOrdinalCounts[allele1Ordinal][allele2Ordinal] += counter;
 			//</editor-fold>
 		}
 		rawMarkerAlleleAndGTStatistics.setMissingCount(missingCount);
@@ -198,10 +203,6 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			throws IOException
 	{
 		MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics = new MarkerAlleleAndGTStatistics();
-
-		final int[] alleleValueToOrdinal = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
-		final float[] knownAllelesOrdinalTable = rawMarkerAlleleAndGTStatistics.getAlleleOrdinalCounts();
-		final float[][] knownGTsOrdinalTable = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
 
 		// transcribe ordinal tables into value maps
 		final Map<Byte, Float> alleleCounts = rawMarkerAlleleAndGTStatistics.extractAllelesCounts();
@@ -250,6 +251,9 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 			//<editor-fold defaultstate="expanded" desc="CONTINGENCY ALL SAMPLES">
 			if (markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE) {
+				final int[] alleleValueToOrdinal = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
+				final float[][] knownGTsOrdinalTable = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
+
 				final int majorAlleleOrdinal = alleleValueToOrdinal[markerAlleleAndGTStatistics.getMajorAllele()];
 				markerAlleleAndGTStatistics.setNumAA(
 						Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][majorAlleleOrdinal])  // #AA
@@ -273,11 +277,6 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			}
 			//</editor-fold>
 
-			// NOTE This was checking for <code>== null</code>
-			//   (which was never the case)
-			//   instead of <code>== '0'</code> before.
-			//   Therefore, some '0' were left in the end
-			//   (when there was only one known allele).
 			if (markerAlleleAndGTStatistics.getMajorAllele() == AlleleByte._0_VALUE
 					&& markerAlleleAndGTStatistics.getMinorAllele() != AlleleByte._0_VALUE)
 			{

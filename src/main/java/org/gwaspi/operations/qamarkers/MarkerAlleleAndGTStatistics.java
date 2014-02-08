@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.operations.qamarkers;
 
 import java.util.Arrays;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;

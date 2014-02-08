@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.operations.qamarkers;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 
+/**
+ * Raw statistics (counts) of single allele and genotype
+ * (the two allele in combination) within a single marker.
+ */
 public class RawMarkerAlleleAndGTStatistics {
 
-	private static final int NUM_GLOBALLY_POSSIBLE_ALLELE = AlleleByte.values().length;
+	protected static final int NUM_GLOBALLY_POSSIBLE_ALLELE = AlleleByte.values().length;
 
-	private final int[] alleleValueToOrdinal;
+	private final int[] alleleValueToOrdinalLookupTable;
 	/**
 	 * Counts which allele appears how many times per marker,
 	 * whether in the father or in the mother position.
@@ -39,17 +43,17 @@ public class RawMarkerAlleleAndGTStatistics {
 	private final float[][] gtOrdinalCounts;
 	private int missingCount;
 
-	public RawMarkerAlleleAndGTStatistics(final int[] alleleValueToOrdinal) {
+	public RawMarkerAlleleAndGTStatistics(final int[] alleleValueToOrdinalLookupTable) {
 
-		this.alleleValueToOrdinal = alleleValueToOrdinal;
+		this.alleleValueToOrdinalLookupTable = alleleValueToOrdinalLookupTable;
 		this.alleleOrdinalCounts = new float[NUM_GLOBALLY_POSSIBLE_ALLELE];
 		this.gtOrdinalCounts = new float[NUM_GLOBALLY_POSSIBLE_ALLELE][NUM_GLOBALLY_POSSIBLE_ALLELE];
 
-		clear();
+		internalClear();
 	}
 
 	public int[] getAlleleValueToOrdinalLookupTable() {
-		return alleleValueToOrdinal;
+		return alleleValueToOrdinalLookupTable;
 	}
 
 	public float[] getAlleleOrdinalCounts() {
@@ -86,12 +90,16 @@ public class RawMarkerAlleleAndGTStatistics {
 		return alleleCounts;
 	}
 
-	public final void clear() {
+	private void internalClear() {
 
 		Arrays.fill(alleleOrdinalCounts, 0.0f);
 		for (float[] gtOrdinalCountsRow : gtOrdinalCounts) {
 			Arrays.fill(gtOrdinalCountsRow, 0.0f);
 		}
 		missingCount = -1;
+	}
+
+	public void clear() {
+		internalClear();
 	}
 }

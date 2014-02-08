@@ -49,6 +49,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
+import org.gwaspi.operations.markercensus.RawMarkerCensusStatistics;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
@@ -148,14 +149,15 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			dataSet.setSamples(wrSampleKeys);
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-			List<Sex> samplesSex = new ArrayList<Sex>(wrSampleKeys.size());
-			List<Affection> samplesAffection = new ArrayList<Affection>(wrSampleKeys.size());
+			final List<Sex> samplesSex = new ArrayList<Sex>(wrSampleKeys.size());
+			final List<Affection> samplesAffection = new ArrayList<Affection>(wrSampleKeys.size());
 			fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, samplesSex, samplesAffection);
 
 			log.info("Start Census testing markers");
 
-			final int[] alleleValueToOrdinal = AlleleByte.createByteValueToOrdinalTable();
-			final int alleleByte0Ordinal = AlleleByte._0.ordinal();
+			final int[] alleleValueToOrdinalLookupTable = AlleleByte.createAlleleValueToOrdinalLookupTable();
+
+			RawMarkerCensusStatistics rawMarkerCensusStatistics = new RawMarkerCensusStatistics(alleleValueToOrdinalLookupTable);
 
 			Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
 			Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
@@ -163,61 +165,66 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				final int markerOrigIndex = markerEntry.getKey();
 				final MarkerKey markerKey = markerEntry.getValue();
 				final String markerChr = markerChromosomesIt.next();
+				GenotypesList markerGTs = markersGTsIt.next();
 
 				// We use float instead of int here,
 				// even though it is a counter,
 				// because under certain circumstances,
 				// we want to count some things only half (+ 0.5).
 
-				// counts which allele appears how many times per marker,
-				// whether in the father or in the mother position
-				final float[] knownAllelesOrdinalTable = new float[AlleleByte.values().length];
-				// counts which allele combinations (genotypes, father & mother allele)
-				// appears how many times per marker
-				final float[][] knownGTsOrdinalTable = new float[knownAllelesOrdinalTable.length][knownAllelesOrdinalTable.length];
+//				// counts which allele appears how many times per marker,
+//				// whether in the father or in the mother position
+//				final float[] knownAllelesOrdinalTable = new float[AlleleByte.values().length];
+//				// counts which allele combinations (genotypes, father & mother allele)
+//				// appears how many times per marker
+//				final float[][] knownGTsOrdinalTable = new float[knownAllelesOrdinalTable.length][knownAllelesOrdinalTable.length];
 //				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
-				Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
-				Map<Integer, Float> caseSamplesGTsTable = new LinkedHashMap<Integer, Float>();
-				Map<Integer, Float> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Float>();
-				Map<Integer, Float> hwSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+
+//				Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+//				Map<Integer, Float> caseSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+//				Map<Integer, Float> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+//				Map<Integer, Float> hwSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+
+				gatherRawMarkerAlleleAndGTStatistics(rawMarkerCensusStatistics, markerChr, samplesSex, samplesAffection, markerGTs);
+
 				Map<String, Integer> allSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Map<String, Integer> caseSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Map<String, Integer> ctrlSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Map<String, Integer> hwSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 
-				// Get a sample-set full of GTs
-				Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
-				Iterator<Affection> samplesAffectionIt = samplesAffection.iterator();
-				for (Sex sex : samplesSex) {
-					Affection affection = samplesAffectionIt.next();
-
-					final float counter;
-					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					final CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sex);
-
-//						if (decision == CensusDecision.CountMalesNonAutosomally) {
-//							counter = 0.5f;
-//						} else {
-						counter = 1.0f;
-//						}
-					//</editor-fold>
-
-					// SUMMING SAMPLESET GENOTYPES
-					byte[] tempGT = markerGTsIt.next();
-					summingSampleSetGenotypes(
-							tempGT,
-							decision,
-							alleleValueToOrdinal,
-							knownAllelesOrdinalTable,
-							knownGTsOrdinalTable,
-							allSamplesGTsTable,
-							affection,
-							caseSamplesGTsTable,
-							ctrlSamplesGTsTable,
-							hwSamplesGTsTable,
-							counter);
-				}
-				final int missingCount = Math.round(knownGTsOrdinalTable[alleleByte0Ordinal][alleleByte0Ordinal]);
+//				// Get a sample-set full of GTs
+//				Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
+//				Iterator<Affection> samplesAffectionIt = samplesAffection.iterator();
+//				for (Sex sex : samplesSex) {
+//					Affection affection = samplesAffectionIt.next();
+//
+//					final float counter;
+//					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
+//					final CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sex);
+//
+////					if (decision == CensusDecision.CountMalesNonAutosomally) {
+////						counter = 0.5f;
+////					} else {
+//						counter = 1.0f;
+////					}
+//					//</editor-fold>
+//
+//					// SUMMING SAMPLESET GENOTYPES
+//					byte[] tempGT = markerGTsIt.next();
+//					summingSampleSetGenotypes(
+//							tempGT,
+//							decision,
+//							affection,
+//							alleleValueToOrdinal,
+//							knownAllelesOrdinalTable,
+//							knownGTsOrdinalTable,
+//							allSamplesGTsTable,
+//							caseSamplesGTsTable,
+//							ctrlSamplesGTsTable,
+//							hwSamplesGTsTable,
+//							counter);
+//				}
+//				final int missingCount = Math.round(knownGTsOrdinalTable[alleleByte0Ordinal][alleleByte0Ordinal]);
 
 				byte[] alleles;
 				CensusFull censusFull;
@@ -534,69 +541,78 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				&& (excludedMarkerNb < totalMarkerNb));
 	}
 
-	static void summingSampleSetGenotypes(
-			byte[] tempGT,
-			CensusDecision decision,
-			final int[] alleleValueToOrdinal,
-//			Map<Byte, Float> knownAlleles,
-			final float[] knownAllelesOrdinalTable,
-			final float[][] knownGTsOrdinalTable,
-			Map<Integer, Float> allSamplesGTsTable,
-			Affection affection,
-			Map<Integer, Float> caseSamplesGTsTable,
-			Map<Integer, Float> ctrlSamplesGTsTable,
-			Map<Integer, Float> hwSamplesGTsTable,
-			float counter)
+	/**
+	 * This gathers all possible raw statistics about the alleles and genotypes
+	 * of a single marker.
+	 * With allele statistics, we throw away the info of whether an allele
+	 * is from the father or the mother.
+	 * With genotype statistics, we look at the two allele as an ordered pair
+	 * (fatherAllele_motherAllele).
+	 *
+	 * @param rawMarkerCensusStatistics
+	 * @param chromosome
+	 * @param samplesSexes
+	 * @param samplesAffections
+	 * @param markerGenotypes
+	 * @throws IOException
+	 */
+	public static void gatherRawMarkerAlleleAndGTStatistics(
+			final RawMarkerCensusStatistics rawMarkerCensusStatistics,
+			final String chromosome,
+			final List<Sex> samplesSexes,
+			final List<Affection> samplesAffections,
+			final GenotypesList markerGenotypes)
+			throws IOException
 	{
-		final byte allele1 = tempGT[0];
-		final byte allele2 = tempGT[1];
-		final int allele1Ordinal = alleleValueToOrdinal[allele1];
-		final int allele2Ordinal = alleleValueToOrdinal[allele2];
+		rawMarkerCensusStatistics.clear();
 
-		// Gather alleles different from 0 into a list of known alleles
-		// and count the number of appearences
-		knownAllelesOrdinalTable[allele1Ordinal] += counter;
-		knownAllelesOrdinalTable[allele2Ordinal] += counter;
-		knownGTsOrdinalTable[allele1Ordinal][allele2Ordinal]++;
+		final int[] alleleValueToOrdinalLookupTable = rawMarkerCensusStatistics.getAlleleValueToOrdinalLookupTable();
 
-		final int intAllele1 = allele1;
-		final int intAllele2 = allele2;
-		Integer intAlleleSum = intAllele1 + intAllele2; // 2 alleles per GT
+		final float[] alleleOrdinalCounts = rawMarkerCensusStatistics.getAlleleOrdinalCounts();
+//		final float[][] gtOrdinalCounts = rawMarkerCensusStatistics.getGtOrdinalCounts();
+		final float[][] allSamplesGtOrdinalCounts = rawMarkerCensusStatistics.getGtOrdinalCounts();
+		final float[][] caseSamplesGtOrdinalCounts = rawMarkerCensusStatistics.getCaseGtOrdinalCounts();
+		final float[][] ctrlSamplesGtOrdinalCounts = rawMarkerCensusStatistics.getControlGtOrdinalCounts();
+		final float[][] hwSamplesGtOrdinalCounts = rawMarkerCensusStatistics.getHardyWeinbergGtOrdinalCounts();
 
-		// CASE/CONTROL CENSUS
-		float tempCount = 0;
-		if (allSamplesGTsTable.containsKey(intAlleleSum)) {
-			tempCount = allSamplesGTsTable.get(intAlleleSum);
-		}
-		allSamplesGTsTable.put(intAlleleSum, tempCount + counter);
+		Iterator<byte[]> markerGenotypesIt = markerGenotypes.iterator();
+		Iterator<Affection> samplesAffectionIt = samplesAffections.iterator();
+		for (Sex sex : samplesSexes) {
+			Affection affection = samplesAffectionIt.next();
+			byte[] genotype = markerGenotypesIt.next();
 
-		if (affection == Affection.AFFECTED) {
-			tempCount = 0;
-			if (caseSamplesGTsTable.containsKey(intAlleleSum)) {
-				tempCount = caseSamplesGTsTable.get(intAlleleSum);
-			}
-			caseSamplesGTsTable.put(intAlleleSum, tempCount + counter);
-		} else if (affection == Affection.UNAFFECTED) {
-			tempCount = 0;
-			if (ctrlSamplesGTsTable.containsKey(intAlleleSum)) {
-				tempCount = ctrlSamplesGTsTable.get(intAlleleSum);
-			}
-			ctrlSamplesGTsTable.put(intAlleleSum, tempCount + counter);
+			final float counter;
+			//<editor-fold defaultstate="expanded" desc="THE DECIDER">
+			final CensusDecision decision = CensusDecision.getDecisionByChrAndSex(chromosome, sex);
 
-			// HARDY WEINBERG COUNTER
-			if (hwSamplesGTsTable.containsKey(intAlleleSum)) {
-				tempCount = hwSamplesGTsTable.get(intAlleleSum);
-			}
-			if (decision == CensusDecision.CountMalesNonAutosomally) {
-				hwSamplesGTsTable.put(intAlleleSum, tempCount);
-			}
-			if (decision == CensusDecision.CountFemalesNonAutosomally) {
-				hwSamplesGTsTable.put(intAlleleSum, tempCount);
-			}
-			if (decision == CensusDecision.CountAutosomally) {
-				hwSamplesGTsTable.put(intAlleleSum, tempCount + counter);
+//			if (decision == CensusDecision.CountMalesNonAutosomally) {
+//				counter = 0.5f;
+//			} else {
+				counter = 1.0f;
+//			}
+			//</editor-fold>
+
+			final int allele1Ordinal = alleleValueToOrdinalLookupTable[genotype[0]];
+			final int allele2Ordinal = alleleValueToOrdinalLookupTable[genotype[1]];
+
+			alleleOrdinalCounts[allele1Ordinal] += counter;
+			alleleOrdinalCounts[allele2Ordinal] += counter;
+
+			allSamplesGtOrdinalCounts[allele1Ordinal][allele2Ordinal] += counter;
+
+			if (affection == Affection.AFFECTED) {
+				caseSamplesGtOrdinalCounts[allele1Ordinal][allele2Ordinal] += counter;
+			} else if (affection == Affection.UNAFFECTED) {
+				ctrlSamplesGtOrdinalCounts[allele1Ordinal][allele2Ordinal] += counter;
+
+				// HARDY WEINBERG COUNTER
+				if (decision == CensusDecision.CountAutosomally) {
+					hwSamplesGtOrdinalCounts[allele1Ordinal][allele2Ordinal] += counter;
+				}
 			}
 		}
+		final int missingCount = Math.round(allSamplesGtOrdinalCounts[AlleleByte._0_ORDINAL][AlleleByte._0_ORDINAL]);
+		rawMarkerCensusStatistics.setMissingCount(missingCount);
 	}
 
 	private static Map<SampleKey, SampleInfo> readSampleInfosFromPhenoFile(StudyKey studyKey, File phenoFile) throws IOException {

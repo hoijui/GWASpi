@@ -244,7 +244,7 @@ public class cNetCDF {
 				return value;
 			}
 
-			public static int[] createByteValueToOrdinalTable() {
+			public static int[] createAlleleValueToOrdinalLookupTable() {
 
 				byte maxValue = 0;
 				for (AlleleByte alleleByte : values()) {
@@ -253,13 +253,13 @@ public class cNetCDF {
 					}
 				}
 
-				int[] byteValueToOrdinalTable = new int[maxValue + 1];
-				Arrays.fill(byteValueToOrdinalTable, -1);
+				int[] alleleValueToOrdinalLookupTable = new int[maxValue + 1];
+				Arrays.fill(alleleValueToOrdinalLookupTable, -1);
 				for (AlleleByte alleleByte : values()) {
-					byteValueToOrdinalTable[alleleByte.getValue()] = alleleByte.ordinal();
+					alleleValueToOrdinalLookupTable[alleleByte.getValue()] = alleleByte.ordinal();
 				}
 
-				return byteValueToOrdinalTable;
+				return alleleValueToOrdinalLookupTable;
 			}
 		}
 
