@@ -206,7 +206,7 @@ public class cNetCDF {
 
 	public static class Defaults {
 
-		public static final byte[] DEFAULT_GT = new byte[] {48, 48};
+		public static final byte[] DEFAULT_GT = new byte[] {AlleleByte._0_VALUE, AlleleByte._0_VALUE};
 		public static final String TMP_SEPARATOR = ";";
 		public static final String DEFAULT_AFFECTION = "Affection";
 		public static final String DEFAULT_EXTPHENOTYPE = "External_Phenotype";

@@ -17,10 +17,9 @@
 
 package org.gwaspi.operations.qamarkers;
 
-import java.util.Arrays;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 
-public class MarkerAlleleAndGTStatistics {
+public class MarkerAlleleAndGTStatistics implements Cloneable {
 
 //	private int numSamples; // can be calculated from the sum over alleleOrdinalCounts, and can be fetched through other means anyway
 	private boolean mismatch;
@@ -40,6 +39,17 @@ public class MarkerAlleleAndGTStatistics {
 
 	public byte getMajorAllele() {
 		return majorAllele;
+	}
+
+	@Override
+    public MarkerAlleleAndGTStatistics clone() {
+
+		try {
+			return (MarkerAlleleAndGTStatistics) super.clone();
+		} catch (CloneNotSupportedException ex) {
+			// This should never happen, as we do implement Cloneable.
+			return null;
+		}
 	}
 
 //	public byte getMajorAlleleNonZero() {

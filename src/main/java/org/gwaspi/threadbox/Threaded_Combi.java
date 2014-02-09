@@ -32,7 +32,7 @@ public class Threaded_Combi extends CommonRunnable {
 		super(
 				"Combi Association Test",
 				"Combi Association Study",
-				"Combi Association Test on Matrix: " + params.getMatrixKey().toString(),
+				"Combi Association Test on: " + params.getParentKey().toString(),
 				"Combi Association Test");
 
 		this.params = params;

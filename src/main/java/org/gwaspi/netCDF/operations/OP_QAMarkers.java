@@ -230,35 +230,43 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
 	{
-
-			if (markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE) {
-				final int[] alleleValueToOrdinal = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
-				final float[][] knownGTsOrdinalTable = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
-
-				final int majorAlleleOrdinal = alleleValueToOrdinal[markerAlleleAndGTStatistics.getMajorAllele()];
-				markerAlleleAndGTStatistics.setNumAA(
-						Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][majorAlleleOrdinal])  // #AA
-						+ Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][AlleleByte._0_ORDINAL])  // #A0
-						+ Math.round(knownGTsOrdinalTable[AlleleByte._0_ORDINAL][majorAlleleOrdinal])); // #0A
-				if (markerAlleleAndGTStatistics.getMinorAllele() != AlleleByte._0_VALUE) {
-					final int minorAlleleOrdinal = alleleValueToOrdinal[markerAlleleAndGTStatistics.getMinorAllele()];
-					markerAlleleAndGTStatistics.setNumAa(
-							Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][minorAlleleOrdinal])  // #Aa
-							+ Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][majorAlleleOrdinal])); // #aA
-					markerAlleleAndGTStatistics.setNumaa(
-							Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][minorAlleleOrdinal])  // #aa
-							+ Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][AlleleByte._0_ORDINAL])  // #a0
-							+ Math.round(knownGTsOrdinalTable[AlleleByte._0_ORDINAL][minorAlleleOrdinal])); // #0a
-				} else {
-					markerAlleleAndGTStatistics.setNumAa(0);
-					markerAlleleAndGTStatistics.setNumaa(0);
-				}
-			} else {
-				markerAlleleAndGTStatistics.setNumAA(0);
-			}
+		extractContingency(
+				rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable(),
+				rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts(),
+				markerAlleleAndGTStatistics);
 	}
 
-	private static void leaveNoSingleZeroAlleleBehind(
+	static void extractContingency(
+			final int[] alleleValueToOrdinal,
+			final float[][] knownGTsOrdinalTable,
+			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
+	{
+		if (markerAlleleAndGTStatistics.getMajorAllele() != AlleleByte._0_VALUE) {
+
+			final int majorAlleleOrdinal = alleleValueToOrdinal[markerAlleleAndGTStatistics.getMajorAllele()];
+			markerAlleleAndGTStatistics.setNumAA(
+					Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][majorAlleleOrdinal])  // #AA
+					+ Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][AlleleByte._0_ORDINAL])  // #A0
+					+ Math.round(knownGTsOrdinalTable[AlleleByte._0_ORDINAL][majorAlleleOrdinal])); // #0A
+			if (markerAlleleAndGTStatistics.getMinorAllele() != AlleleByte._0_VALUE) {
+				final int minorAlleleOrdinal = alleleValueToOrdinal[markerAlleleAndGTStatistics.getMinorAllele()];
+				markerAlleleAndGTStatistics.setNumAa(
+						Math.round(knownGTsOrdinalTable[majorAlleleOrdinal][minorAlleleOrdinal])  // #Aa
+						+ Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][majorAlleleOrdinal])); // #aA
+				markerAlleleAndGTStatistics.setNumaa(
+						Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][minorAlleleOrdinal])  // #aa
+						+ Math.round(knownGTsOrdinalTable[minorAlleleOrdinal][AlleleByte._0_ORDINAL])  // #a0
+						+ Math.round(knownGTsOrdinalTable[AlleleByte._0_ORDINAL][minorAlleleOrdinal])); // #0a
+			} else {
+				markerAlleleAndGTStatistics.setNumAa(0);
+				markerAlleleAndGTStatistics.setNumaa(0);
+			}
+		} else {
+			markerAlleleAndGTStatistics.setNumAA(0);
+		}
+	}
+
+	static void leaveNoSingleZeroAlleleBehind(
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
 	{
 		if (markerAlleleAndGTStatistics.getMajorAllele() == AlleleByte._0_VALUE

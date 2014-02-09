@@ -17,9 +17,12 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,6 +145,16 @@ public class CombiTestParams {
 		}
 
 		return total;
+	}
+
+	/**
+	 * Returns a set of all matrices (excluding the newly created one, if any)
+	 * that are participating the the process of this operation.
+	 * This is mainly used for locking.
+	 * @return
+	 */
+	public Set<MatrixKey> getParticipatingMatrices() {
+		return Collections.singleton(censusOperationKey.getParentMatrixKey());
 	}
 
 	public DataSetKey getParentKey() {
