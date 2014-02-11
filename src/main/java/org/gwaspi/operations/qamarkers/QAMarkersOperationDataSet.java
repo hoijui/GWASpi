@@ -19,6 +19,8 @@ package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
@@ -85,14 +87,23 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 //	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
 	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
 
-	Collection<Boolean> getMismatchStates() throws IOException;
-	Collection<Double> getMissingRatio() throws IOException;
+	List<Boolean> getMismatchStates() throws IOException;
+	List<Double> getMissingRatio() throws IOException;
+	List<Byte> getKnownMajorAllele() throws IOException;
+	List<Double> getKnownMajorAlleleFrequencies() throws IOException;
+	List<Byte> getKnownMinorAllele() throws IOException;
+	List<Double> getKnownMinorAlleleFrequencies() throws IOException;
+//	List<int[]> getCensusAll() throws IOException;
+	List<int[]> getAlleleOrdinalCounts() throws IOException;
+	List<Map<Byte, Map<Byte, Integer>>> getGenotypeOrdinalCounts() throws IOException;
 
-	Collection<Boolean> getMismatchStates(int from, int to) throws IOException;
-	Collection<Double> getMissingRatio(int from, int to) throws IOException;
-	Collection<Byte> getKnownMajorAllele(int from, int to) throws IOException;
-	Collection<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException;
-	Collection<Byte> getKnownMinorAllele(int from, int to) throws IOException;
-	Collection<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException;
-	Collection<int[]> getCensusAll(int from, int to) throws IOException;
+	List<Boolean> getMismatchStates(int from, int to) throws IOException;
+	List<Double> getMissingRatio(int from, int to) throws IOException;
+	List<Byte> getKnownMajorAllele(int from, int to) throws IOException;
+	List<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException;
+	List<Byte> getKnownMinorAllele(int from, int to) throws IOException;
+	List<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException;
+//	List<int[]> getCensusAll(int from, int to) throws IOException;
+	List<int[]> getAlleleOrdinalCounts(int from, int to) throws IOException;
+	List<int[][]> getGenotypeOrdinalCounts(int from, int to) throws IOException;
 }

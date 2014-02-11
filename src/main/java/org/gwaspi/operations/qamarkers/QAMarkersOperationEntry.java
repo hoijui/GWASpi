@@ -17,6 +17,10 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
@@ -88,4 +92,30 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL [3]
 	 */
 	int getMissingCount();
+
+//	/**
+//	 * @return how many times each allele appears in this marker,
+//	 *   indexed by ordinal (index) of the allele in
+//	 *   {@link cNetCDF.Defaults.AlleleByte}.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_ALLELE_COUNTS
+//	 */
+//	int[] getAlleleOrdinalCounts();
+	/**
+	 * @return how many times each allele appears in this marker.
+	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_ALLELE_COUNTS
+	 */
+	Map<Byte, Integer> getAlleleOrdinalCounts();
+
+//	/**
+//	 * @return how many times each genotype/allele-pair appears in this marker,
+//	 *   indexed by the major and minor allele ordinals (indices) in
+//	 *   {@link cNetCDF.Defaults.AlleleByte}.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_GENOTYPE_COUNTS
+//	 */
+//	int[][] getGenotypeOrdinalCounts();
+	/**
+	 * @return how many times each genotype/allele-pair appears in this marker.
+	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_GENOTYPE_COUNTS
+	 */
+	Map<Byte, Map<Byte, Integer>> getGenotypeOrdinalCounts();
 }
