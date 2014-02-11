@@ -50,7 +50,11 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 	}
 
 	public static int hashCode(byte[] rawGt) {
-		return (256 * rawGt[0]) + rawGt[1];
+		return hashCode(rawGt[0], rawGt[1]);
+	}
+
+	public static int hashCode(final byte fatherAllele, final byte motherAllele) {
+		return (256 * fatherAllele) + motherAllele;
 	}
 
 	@Override

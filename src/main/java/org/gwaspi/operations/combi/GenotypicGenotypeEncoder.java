@@ -18,12 +18,14 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
+import org.gwaspi.model.Genotype;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.GenotypeCounts;
 
 /**
  * Uses this encoding scheme:<br/>
@@ -51,51 +53,51 @@ public class GenotypicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder 
 //		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
 //				Arrays.asList(0.0, 0.0, 1.0)))); // "TT"
 //	}
-	private static final Map<Integer, List<Float>> ENCODED_VALUES;
+//	private static final Map<Integer, List<Float>> ENCODED_VALUES_MAP;
+	private static final List<List<Float>> ENCODED_VALUES;
 	static {
-		ENCODED_VALUES = new HashMap<Integer, List<Float>>(5);
+//		ENCODED_VALUES_MAP = new LinkedHashMap<Integer, List<Float>>(5);
+//
+//		ENCODED_VALUES_MAP.put(
+//				GenotypeCounts._00.ordinal(),
+//				makeHard(Arrays.asList(0.0f, 0.0f, 0.0f)));
+//		ENCODED_VALUES_MAP.put(
+//				GenotypeCounts._AA.ordinal(),
+//				makeHard(Arrays.asList(1.0f, 0.0f, 0.0f)));
+//		ENCODED_VALUES_MAP.put(
+//				GenotypeCounts._Aa.ordinal(),
+//				makeHard(Arrays.asList(0.0f, 1.0f, 0.0f)));
+//		ENCODED_VALUES_MAP.put(
+//				GenotypeCounts._aA.ordinal(),
+//				makeHard(Arrays.asList(0.0f, 1.0f, 0.0f)));
+//		ENCODED_VALUES_MAP.put(
+//				GenotypeCounts._aa.ordinal(),
+//				makeHard(Arrays.asList(0.0f, 0.0f, 1.0f)));
 
-		ENCODED_VALUES.put(0, Collections.unmodifiableList(new ArrayList<Float>(
-				Arrays.asList(0.0f, 0.0f, 0.0f)))); // "00"
-		ENCODED_VALUES.put(4, Collections.unmodifiableList(new ArrayList<Float>(
-				Arrays.asList(1.0f, 0.0f, 0.0f)))); // "AA"
-		ENCODED_VALUES.put(5, Collections.unmodifiableList(new ArrayList<Float>(
-				Arrays.asList(0.0f, 1.0f, 0.0f)))); // "AT"
-		ENCODED_VALUES.put(7, Collections.unmodifiableList(new ArrayList<Float>(
-				Arrays.asList(0.0f, 1.0f, 0.0f)))); // "TA"
-		ENCODED_VALUES.put(8, Collections.unmodifiableList(new ArrayList<Float>(
-				Arrays.asList(0.0f, 0.0f, 1.0f)))); // "TT"
+		ENCODED_VALUES = new ArrayList<List<Float>>(5);
+
+		ENCODED_VALUES.add(makeHard(Arrays.asList(1.0f, 0.0f, 0.0f))); // "AA"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 1.0f, 0.0f))); // "Aa"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 1.0f, 0.0f))); // "aA"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 0.0f, 1.0f))); // "aa"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 0.0f, 0.0f))); // "--"
 	}
 
 	private GenotypicGenotypeEncoder() {
 	}
 
+//	private Map<Integer, List<Float>> getGenotypeOrdinalToEncodedLookupTable() {
+//		return ENCODED_VALUES_MAP;
+//	}
+
 	@Override
-	public Map<Integer, List<Float>> generateEncodingTable(
-			Set<byte[]> possibleGenotypes,
-			Collection<byte[]> rawGenotypes)
-	{
-		Map<Integer, List<Float>> encodingTable
-				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
-
-//		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
-//
-//		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
-//		for (Genotype genotype : sortedGenotypes) {
-//			encodingTable.put(genotype, encodedValues.next());
-//		}
-		Map<Integer, Integer> baseEncodingTable
-				= generateBaseEncodingTable(possibleGenotypes);
-		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
-//System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
-			encodingTable.put(baseEncoding.getKey(), ENCODED_VALUES.get(baseEncoding.getValue()));
-		}
-
-		return encodingTable;
+	protected List<List<Float>> getEncodedValuesLists() {
+		return ENCODED_VALUES;
 	}
 
 	@Override
 	public int getEncodingFactor() {
 		return 3;
+//		return getEncodedValuesLists().get(0).size();
 	}
 }

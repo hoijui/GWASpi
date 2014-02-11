@@ -18,12 +18,10 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Uses this encoding scheme:<br/>
@@ -38,6 +36,16 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 	public static final AllelicGenotypeEncoder SINGLETON = new AllelicGenotypeEncoder();
 
+	private static final List<List<Float>> ENCODED_VALUES;
+	static {
+		ENCODED_VALUES = new ArrayList<List<Float>>(5);
+
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 1.0f, 0.0f, 1.0f))); // "AA"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 1.0f, 1.0f, 0.0f))); // "Aa"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(1.0f, 0.0f, 0.0f, 1.0f))); // "aA"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(1.0f, 0.0f, 1.0f, 0.0f))); // "aa"
+		ENCODED_VALUES.add(makeHard(Arrays.asList(0.0f, 0.0f, 0.0f, 0.0f))); // "--"
+	}
 //	private static final List<List<Double>> ENCODED_VALUES;
 //	static {
 //		ENCODED_VALUES = new ArrayList<List<Double>>(4);
@@ -88,84 +96,89 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 	}
 
 	@Override
-	public Map<Integer, List<Float>> generateEncodingTable(
-			Set<byte[]> possibleGenotypes,
-			Collection<byte[]> rawGenotypes)
-	{
-		Map<Integer, List<Float>> encodingTable
-				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
-
-		Map<Integer, Integer> baseEncodingTable
-				= generateBaseEncodingTable(possibleGenotypes);
-
-//		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
-//
-//		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
-//		for (Genotype genotype : sortedGenotypes) {
-//			encodingTable.put(genotype, encodedValues.next());
-//		}
-
-
-
-//		Genotype lastNonZeroGt = rawGenotypes.get(0);
-////		for (Genotype rawGenotype : rawGenotypes) {
-//		for (int rgi = rawGenotypes.size() - 1; rgi >= 0; rgi--) {
-//			Genotype rawGenotype = rawGenotypes.get(rgi);
-//			if (rawGenotype.getFather() != '0' && rawGenotype.getMother() != '0') {
-//				lastNonZeroGt = rawGenotype;
-//				break;
-//			}
-//		}
-//		// true if the alphabetically lower letter appears first in the gt samples,
-//		// eg. the first value is "AA" or "AT", false is "TA" or "TT"
-//		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
-//		Genotype firstNonZeroBaseGt = baseEncodingKeyIterator.next();
-//		if (firstNonZeroBaseGt.getFather() == '0') {
-//			firstNonZeroBaseGt = baseEncodingKeyIterator.next();
-//		}
-////		final byte lowestCharFirst = (byte) Math.min(firstNonZeroGt.getFather(), firstNonZeroGt.getMother());
-//		final byte charLast = lastNonZeroGt.getMother();
-//		final byte lowestCharFirstBase = (byte) Math.min(firstNonZeroBaseGt.getFather(), firstNonZeroBaseGt.getMother());
-////		final boolean isLowerFirst = (firstNonZeroGt.getFather() == firstNonZeroBaseGt.getFather());
-////		final boolean isLowerFirst = (firstNonZeroGt.getMother() == firstNonZeroBaseGt.getMother());
-//		// true if the alphabetically lower letter appears in the first non-"00" GT.
-//		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
-//		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
-
-
-
-//		Map<Integer, List<Double>> encodedValues
-//				= lowerInFirst
-//				? ENCODED_VALUES_LOWER
-//				: ENCODED_VALUES_UPPER;
-		Map<Integer, List<Float>> encodedValues
-				= ENCODED_VALUES_UPPER;
-
-		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
-System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
-//			double curValue;
-//			switch (baseEncoding.getValue()) {
-//				case 4: // "AA"
-//					curValue = 3.0;
-//					break;
-//				case 5: // "AG"
-//					curValue = 2.0;
-//					break;
-//				case 7: // "GA"
-//					curValue = 1.0;
-//					break;
-//				case 8: // "GG"
-//					curValue = 0.0;
-//					break;
-//				default: // "00"
-//					curValue = 4.0;
-//					break;
-//			}
-			encodingTable.put(baseEncoding.getKey(), encodedValues.get(baseEncoding.getValue()));
-		}
-
-		return encodingTable;
+	protected List<List<Float>> getEncodedValuesLists() {
+		return ENCODED_VALUES;
 	}
+
+//	@Override
+//	public Map<Integer, List<Float>> generateEncodingTable(
+//			Set<byte[]> possibleGenotypes,
+//			Collection<byte[]> rawGenotypes)
+//	{
+//		Map<Integer, List<Float>> encodingTable
+//				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
+//
+//		Map<Integer, Integer> baseEncodingTable
+//				= generateBaseEncodingTable(possibleGenotypes);
+//
+////		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
+////
+////		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
+////		for (Genotype genotype : sortedGenotypes) {
+////			encodingTable.put(genotype, encodedValues.next());
+////		}
+//
+//
+//
+////		Genotype lastNonZeroGt = rawGenotypes.get(0);
+//////		for (Genotype rawGenotype : rawGenotypes) {
+////		for (int rgi = rawGenotypes.size() - 1; rgi >= 0; rgi--) {
+////			Genotype rawGenotype = rawGenotypes.get(rgi);
+////			if (rawGenotype.getFather() != '0' && rawGenotype.getMother() != '0') {
+////				lastNonZeroGt = rawGenotype;
+////				break;
+////			}
+////		}
+////		// true if the alphabetically lower letter appears first in the gt samples,
+////		// eg. the first value is "AA" or "AT", false is "TA" or "TT"
+////		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
+////		Genotype firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+////		if (firstNonZeroBaseGt.getFather() == '0') {
+////			firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+////		}
+//////		final byte lowestCharFirst = (byte) Math.min(firstNonZeroGt.getFather(), firstNonZeroGt.getMother());
+////		final byte charLast = lastNonZeroGt.getMother();
+////		final byte lowestCharFirstBase = (byte) Math.min(firstNonZeroBaseGt.getFather(), firstNonZeroBaseGt.getMother());
+//////		final boolean isLowerFirst = (firstNonZeroGt.getFather() == firstNonZeroBaseGt.getFather());
+//////		final boolean isLowerFirst = (firstNonZeroGt.getMother() == firstNonZeroBaseGt.getMother());
+////		// true if the alphabetically lower letter appears in the first non-"00" GT.
+////		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
+////		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
+//
+//
+//
+////		Map<Integer, List<Double>> encodedValues
+////				= lowerInFirst
+////				? ENCODED_VALUES_LOWER
+////				: ENCODED_VALUES_UPPER;
+//		Map<Integer, List<Float>> encodedValues
+//				= ENCODED_VALUES_UPPER;
+//
+//		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+//System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
+////			double curValue;
+////			switch (baseEncoding.getValue()) {
+////				case 4: // "AA"
+////					curValue = 3.0;
+////					break;
+////				case 5: // "AG"
+////					curValue = 2.0;
+////					break;
+////				case 7: // "GA"
+////					curValue = 1.0;
+////					break;
+////				case 8: // "GG"
+////					curValue = 0.0;
+////					break;
+////				default: // "00"
+////					curValue = 4.0;
+////					break;
+////			}
+//			encodingTable.put(baseEncoding.getKey(), encodedValues.get(baseEncoding.getValue()));
+//		}
+//
+//		return encodingTable;
+//	}
 
 	@Override
 	public int getEncodingFactor() {

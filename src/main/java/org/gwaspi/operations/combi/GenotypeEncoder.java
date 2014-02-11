@@ -63,6 +63,9 @@ public interface GenotypeEncoder {
 	 */
 	void encodeGenotypes(
 			final List<byte[]> rawGenotypes,
+			final byte majorAllele,
+			final byte minorAllele,
+			final int[] genotypeCounts,
 			SamplesFeaturesStorage<Float> encodedSamplesMarkers,
 			int markerIndex);
 

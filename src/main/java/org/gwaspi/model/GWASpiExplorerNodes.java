@@ -171,7 +171,9 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createOperationTreeNode(OperationKey operationKey) {
+
 		DefaultMutableTreeNode tn = null;
+
 		try {
 			OperationMetadata op = OperationsList.getOperation(operationKey);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
@@ -183,6 +185,7 @@ public class GWASpiExplorerNodes {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return tn;
 	}
 
@@ -317,8 +320,8 @@ public class GWASpiExplorerNodes {
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION NODES">
 	public static void insertOperationUnderMatrixNode(OperationKey operationKey) throws IOException {
-		try {
 
+		try {
 			// GET MATRIX
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + operationKey.getParentMatrixId() + " - " + matrixMetadata.getFriendlyName(), 0, Position.Bias.Forward);

@@ -38,7 +38,8 @@ public class CombiTestParams {
 //	 * Which matrix to operate on (read from).
 //	 */
 //	private final MatrixKey matrixKey;
-	private final OperationKey censusOperationKey;
+//	private final OperationKey censusOperationKey;
+	private final OperationKey qaMarkersOperationKey;
 	private final DataSetKey parentKey;
 //	private final OperationKey hardyWeinbergOperationKey;
 //	private final double hardyWeinbergThreshold;
@@ -51,7 +52,7 @@ public class CombiTestParams {
 	private Integer totalMarkers;
 	/**
 	 * How many markers to be left with,
-	 * after the filtering with the Combi method.
+	 * after the filtering with the COMBI method.
 	 */
 	private final int markersToKeep;
 	/**
@@ -62,7 +63,8 @@ public class CombiTestParams {
 
 	public CombiTestParams(
 //			MatrixKey matrixKey,
-			OperationKey censusOperationKey,
+//			OperationKey censusOperationKey,
+			OperationKey qaMarkersOperationKey,
 //			OperationKey hardyWeinbergOperationKey,
 //			Double hardyWeinbergThreshold,
 			GenotypeEncoder encoder,
@@ -72,8 +74,9 @@ public class CombiTestParams {
 			String resultMatrixName)
 	{
 //		this.matrixKey = matrixKey;
-		this.censusOperationKey = censusOperationKey;
-		this.parentKey = new DataSetKey(censusOperationKey);
+//		this.censusOperationKey = censusOperationKey;
+		this.qaMarkersOperationKey = qaMarkersOperationKey;
+		this.parentKey = new DataSetKey(qaMarkersOperationKey);
 //		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
 //		this.hardyWeinbergThreshold = (hardyWeinbergThreshold == null)
 //				? getHardyWeinbergThresholdDefault()
@@ -154,7 +157,7 @@ public class CombiTestParams {
 	 * @return
 	 */
 	public Set<MatrixKey> getParticipatingMatrices() {
-		return Collections.singleton(censusOperationKey.getParentMatrixKey());
+		return Collections.singleton(parentKey.getOrigin());
 	}
 
 	public DataSetKey getParentKey() {
@@ -165,8 +168,12 @@ public class CombiTestParams {
 //		return matrixKey;
 //	}
 
-	public OperationKey getCensusOperationKey() {
-		return censusOperationKey;
+//	public OperationKey getCensusOperationKey() {
+//		return censusOperationKey;
+//	}
+
+	public OperationKey getQAMarkerOperationKey() {
+		return qaMarkersOperationKey;
 	}
 
 //	public OperationKey getHardyWeinbergOperationKey() {

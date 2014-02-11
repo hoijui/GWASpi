@@ -22,11 +22,27 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	/**
-	 * @return the missing ratio of this marker
-	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT
-	 */
-	double getMissingRatio();
+	public static enum AlleleCounts {
+		_A,
+		_a,
+		_0,
+		/** This stands for all other values summed up */
+		_dash;
+	}
+
+	public static enum GenotypeCounts {
+		_AA,
+		_A0,
+		_0A,
+		_Aa,
+		_aA,
+		_aa,
+		_a0,
+		_0a,
+		_00,
+		/** This stands for all other values summed up */
+		_dash_dash;
+	}
 
 	/**
 	 * @return
@@ -58,12 +74,12 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	 */
 	double getMinorAlleleFrequency();
 
-	/**
-	 * @return allele-AA, allele-Aa, allele-aa, missing-count of this marker
-	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL
-	 * @deprecated use the 4 individual property fetchers instead
-	 */
-	int[] getAllCensus();
+//	/**
+//	 * @return allele-AA, allele-Aa, allele-aa, missing-count of this marker
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL
+//	 * @deprecated use the 4 individual property fetchers instead
+//	 */
+//	int[] getAllCensus();
 
 	/**
 	 * @return allele-AA of this marker
@@ -88,4 +104,51 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL [3]
 	 */
 	int getMissingCount();
+
+	/**
+	 * This is the missing count divided by the total number of samples.
+	 * @return the missing ratio of this marker
+	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT
+	 */
+	double getMissingRatio();
+
+//	/**
+//	 * @return how many times each allele appears in this marker,
+//	 *   indexed by ordinal (index) of the allele in
+//	 *   {@link cNetCDF.Defaults.AlleleByte}.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_ALLELE_COUNTS
+//	 */
+//	int[] getAlleleOrdinalCounts();
+//	/**
+//	 * @return how many times each allele appears in this marker.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_ALLELE_COUNTS
+//	 */
+//	Map<Byte, Integer> getAlleleCounts();
+	/**
+	 * Returns how many times each allele appears in this marker.
+	 * @return an array of fixed size 4, with the counts of alleles:
+	 *   A, a, 0, - (stands for all others)
+	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_ALLELE_COUNTS
+	 */
+	int[] getAlleleCounts();
+
+//	/**
+//	 * @return how many times each genotype/allele-pair appears in this marker,
+//	 *   indexed by the major and minor allele ordinals (indices) in
+//	 *   {@link cNetCDF.Defaults.AlleleByte}.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_GENOTYPE_COUNTS
+//	 */
+//	int[][] getGenotypeOrdinalCounts();
+//	/**
+//	 * @return how many times each genotype/allele-pair appears in this marker.
+//	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_GENOTYPE_COUNTS
+//	 */
+//	Map<Byte, Map<Byte, Integer>> getGenotypeCounts();
+	/**
+	 * Returns how many times each genotype/allele-pair appears in this marker.
+	 * @return an array of fixed size 9, with the counts of alleles:
+	 *   AA, A0, 0A, Aa, aA, aa, a0, 0a, -- (this one stands for all others)
+	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_GENOTYPE_COUNTS
+	 */
+	int[] getGenotypeCounts();
 }

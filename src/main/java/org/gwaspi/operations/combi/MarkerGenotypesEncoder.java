@@ -26,6 +26,9 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 
 	private final List<GenotypesList> markersGenotypesSource;
 //	private final MarkersGenotypesSource markersGenotypesSource;
+	private final List<Byte> majorAlleles;
+	private final List<Byte> minorAlleles;
+	private final List<int[]> markerGenotypesCounts;
 	private final GenotypeEncoder genotypeEncoder;
 	/** The total number of markers. */
 	private final int dSamples;
@@ -54,6 +57,9 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 
 	MarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
+			final List<Byte> majorAlleles,
+			final List<Byte> minorAlleles,
+			final List<int[]> markerGenotypesCounts,
 			final GenotypeEncoder genotypeEncoder,
 			final int dSamples,
 			final int n,
@@ -61,6 +67,9 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 			throws IOException
 	{
 		this.markersGenotypesSource = markersGenotypesSource;
+		this.majorAlleles = majorAlleles;
+		this.minorAlleles = minorAlleles;
+		this.markerGenotypesCounts = markerGenotypesCounts;
 		this.genotypeEncoder = genotypeEncoder;
 		this.dSamples = dSamples;
 		this.dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
@@ -124,8 +133,11 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 
 			// encode only a chunk/part of the markers at a time
 			// which gives us a part of the feature matrix
-			CombiTestMatrixOperation.encodeSamples(
+			CombiTestMatrixOperation.encodeAndWhitenSamples(
 					markersGenotypesSource,
+					majorAlleles,
+					minorAlleles,
+					markerGenotypesCounts,
 	//				sampleInfos.keySet(),
 	//				sampleAffections,
 					genotypeEncoder,

@@ -22,30 +22,34 @@ import org.gwaspi.operations.AbstractOperationDataEntry;
 
 public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements QAMarkersOperationEntry {
 
-	private final double missingRatio;
 	private final boolean mismatchState;
 	private final byte majorAllele;
 	private final double majorAlleleFrequency;
 	private final byte minorAllele;
 	private final double minorAlleleFrequency;
-	private final int alleleAA;
-	private final int alleleAa;
-	private final int alleleaa;
+//	private final int alleleAA;
+//	private final int alleleAa;
+//	private final int alleleaa;
 	private final int missingCount;
+	private final double missingRatio;
+	private final int[] alleleCounts;
+	private final int[] genotypeCounts;
 
 	public DefaultQAMarkersOperationEntry(
 			MarkerKey key,
 			int index,
-			double missingRatio,
 			boolean mismatchState,
 			byte majorAllele,
 			double majorAlleleFrequency,
 			byte minorAllele,
 			double minorAlleleFrequency,
-			int alleleAA,
-			int alleleAa,
-			int alleleaa,
-			int missingCount)
+//			int alleleAA,
+//			int alleleAa,
+//			int alleleaa,
+			int missingCount,
+			double missingRatio,
+			int[] alleleCounts,
+			int[] genotypeCounts)
 	{
 		super(key, index);
 
@@ -55,10 +59,12 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 		this.majorAlleleFrequency = majorAlleleFrequency;
 		this.minorAllele = minorAllele;
 		this.minorAlleleFrequency = minorAlleleFrequency;
-		this.alleleAA = alleleAA;
-		this.alleleAa = alleleAa;
-		this.alleleaa = alleleaa;
+//		this.alleleAA = alleleAA;
+//		this.alleleAa = alleleAa;
+//		this.alleleaa = alleleaa;
 		this.missingCount = missingCount;
+		this.alleleCounts = alleleCounts;
+		this.genotypeCounts = genotypeCounts;
 	}
 
 	@Override
@@ -91,28 +97,46 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 		return minorAlleleFrequency;
 	}
 
-	@Override
-	public int[] getAllCensus() {
-		return new int[] {alleleAA, alleleAa, alleleaa, missingCount};
-	}
+//	@Override
+//	public int[] getAllCensus() {
+//		return new int[] {alleleAA, alleleAa, alleleaa, missingCount};
+//	}
 
 	@Override
 	public int getAlleleAA() {
-		return alleleAA;
+		return
+				getGenotypeCounts()[GenotypeCounts._AA.ordinal()]
+				+ getGenotypeCounts()[GenotypeCounts._A0.ordinal()]
+				+ getGenotypeCounts()[GenotypeCounts._0A.ordinal()];
 	}
 
 	@Override
 	public int getAlleleAa() {
-		return alleleAa;
+		return
+				getGenotypeCounts()[GenotypeCounts._Aa.ordinal()]
+				+ getGenotypeCounts()[GenotypeCounts._aA.ordinal()];
 	}
 
 	@Override
 	public int getAlleleaa() {
-		return alleleaa;
+		return
+				getGenotypeCounts()[GenotypeCounts._aa.ordinal()]
+				+ getGenotypeCounts()[GenotypeCounts._a0.ordinal()]
+				+ getGenotypeCounts()[GenotypeCounts._0a.ordinal()];
 	}
 
 	@Override
 	public int getMissingCount() {
 		return missingCount;
+	}
+
+	@Override
+	public int[] getAlleleCounts() {
+		return alleleCounts;
+	}
+
+	@Override
+	public int[] getGenotypeCounts() {
+		return genotypeCounts;
 	}
 }
