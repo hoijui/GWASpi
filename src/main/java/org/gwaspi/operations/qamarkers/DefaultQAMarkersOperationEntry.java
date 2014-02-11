@@ -17,12 +17,12 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import java.util.Map;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.AbstractOperationDataEntry;
 
 public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements QAMarkersOperationEntry {
 
-	private final double missingRatio;
 	private final boolean mismatchState;
 	private final byte majorAllele;
 	private final double majorAlleleFrequency;
@@ -32,11 +32,13 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	private final int alleleAa;
 	private final int alleleaa;
 	private final int missingCount;
+	private final double missingRatio;
+	private final Map<Byte, Integer> alleleCounts;
+	private final Map<Byte, Map<Byte, Integer>> genotypeCounts;
 
 	public DefaultQAMarkersOperationEntry(
 			MarkerKey key,
 			int index,
-			double missingRatio,
 			boolean mismatchState,
 			byte majorAllele,
 			double majorAlleleFrequency,
@@ -45,7 +47,10 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 			int alleleAA,
 			int alleleAa,
 			int alleleaa,
-			int missingCount)
+			int missingCount,
+			double missingRatio,
+			Map<Byte, Integer> alleleCounts,
+			Map<Byte, Map<Byte, Integer>> genotypeCounts)
 	{
 		super(key, index);
 
@@ -59,6 +64,8 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 		this.alleleAa = alleleAa;
 		this.alleleaa = alleleaa;
 		this.missingCount = missingCount;
+		this.alleleCounts = alleleCounts;
+		this.genotypeCounts = genotypeCounts;
 	}
 
 	@Override
@@ -114,5 +121,15 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	@Override
 	public int getMissingCount() {
 		return missingCount;
+	}
+
+	@Override
+	public Map<Byte, Integer> getAlleleCounts() {
+		return alleleCounts;
+	}
+
+	@Override
+	public Map<Byte, Map<Byte, Integer>> getGenotypeCounts() {
+		return genotypeCounts;
 	}
 }

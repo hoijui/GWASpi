@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -104,9 +105,15 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		allelesSpace.add(alleleStrideDim);
 
 		// Define OP Variables
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.BYTE, markersSpace);xxx;
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.INT, markersSpace);
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
@@ -176,12 +183,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Boolean> getMismatchStates(int from, int to) throws IOException {
+	public List<Boolean> getMismatchStates(int from, int to) throws IOException {
 
 		Collection<Integer> mismatchIntegerStates = new ArrayList<Integer>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
 
-		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
+		List<Boolean> mismatchStates = new ArrayList<Boolean>(0);
 		for (Integer mismatchIntegerState : mismatchIntegerStates) {
 			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 		}
@@ -190,109 +197,198 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Double> getMissingRatio(int from, int to) throws IOException {
+	public List<Double> getMissingRatio(int from, int to) throws IOException {
 
-		Collection<Double> missingRatios = new ArrayList<Double>(0);
+		List<Double> missingRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, from, to, missingRatios, null);
 
 		return missingRatios;
 	}
 
 	@Override
-	public Collection<Byte> getKnownMajorAllele(int from, int to) throws IOException {
+	public List<Byte> getKnownMajorAllele(int from, int to) throws IOException {
 
-		Collection<Byte> knownMajorAllele = new ArrayList<Byte>(0);
+		List<Byte> knownMajorAllele = new ArrayList<Byte>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
 
 		return knownMajorAllele;
 	}
 
 	@Override
-	public Collection<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException {
+	public List<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException {
 
-		Collection<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
+		List<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
 
 		return knownMajorAlleleFreq;
 	}
 
 	@Override
-	public Collection<Byte> getKnownMinorAllele(int from, int to) throws IOException {
+	public List<Byte> getKnownMinorAllele(int from, int to) throws IOException {
 
-		Collection<Byte> knownMinorAllele = new ArrayList<Byte>(0);
+		List<Byte> knownMinorAllele = new ArrayList<Byte>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
 
 		return knownMinorAllele;
 	}
 
 	@Override
-	public Collection<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException {
+	public List<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException {
 
-		Collection<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
+		List<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
 
 		return knownMinorAlleleFreq;
 	}
 
-	@Override
-	public Collection<int[]> getCensusAll(int from, int to) throws IOException {
+//	public List<int[]> getCensusAll(int from, int to) throws IOException {
+//
+//		List<int[]> censusAll = new ArrayList<int[]>(0);
+//		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, from, to, censusAll, null);
+//
+//		return censusAll;
+//	}
 
-		Collection<int[]> censusAll = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, from, to, censusAll, null);
+	public List<Integer> getNumAAs(int from, int to) throws IOException {
 
-		return censusAll;
+		List<Integer> numAAs = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, from, to, numAAs, null);
+
+		return numAAs;
+	}
+
+	public List<Integer> getNumAas(int from, int to) throws IOException {
+
+		List<Integer> numAas = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, from, to, numAas, null);
+
+		return numAas;
+	}
+
+	public List<Integer> getNumaas(int from, int to) throws IOException {
+
+		List<Integer> numaas = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, from, to, numaas, null);
+
+		return numaas;
+	}
+
+	public List<Integer> getMissingCounts(int from, int to) throws IOException {
+
+		List<Integer> numMissings = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, from, to, numMissings, null);
+
+		return numMissings;
+	}
+
+	public List<Map<Byte, Integer>> getAlleleCounts(int from, int to) throws IOException {
+
+		List<Byte> appearingAllele = new ArrayList<Byte>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to, appearingAllele, null);
+		List<Integer> appearingAllelesCount = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to, appearingAllelesCount, null);
+
+		Map<Byte, Integer> alleleCounts = new LinkedHashMap<Byte, Integer>(appearingAllele.size());
+		Iterator<Integer> appearingAllelesCountIt = appearingAllelesCount.iterator();
+		for (Byte allele : appearingAllele) {
+			Integer count = appearingAllelesCountIt.next();
+			alleleCounts.put(allele, count);
+		}
+
+		return alleleCounts;
+	}
+
+	public List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts(int from, int to) throws IOException {
+		XXX;
 	}
 
 	@Override
-	public Collection<QAMarkersOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<QAMarkersOperationEntry> getEntries(int from, int to) throws IOException {
 
 //		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 //		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 
-		Collection<Double> missingRatios = getMissingRatio(from, to);
-		Collection<Boolean> mismatchStates = getMismatchStates(from, to);
+		List<Boolean> mismatchStates = getMismatchStates(from, to);
+		List<Byte> knownMajorAllele = getKnownMajorAllele(from, to);
+		List<Double> knownMajorAlleleFreq = getKnownMajorAlleleFrequencies(from, to);
+		List<Byte> knownMinorAllele = getKnownMinorAllele(from, to);
+		List<Double> knownMinorAlleleFreq = getKnownMinorAlleleFrequencies(from, to);
+//		List<int[]> censusAll = getCensusAll(from, to);
+		List<Integer> numAAs = getNumAAs(from, to);
+		List<Integer> numAas = getNumAas(from, to);
+		List<Integer> numaas = getNumaas(from, to);
+		List<Integer> numMissings = getMissingCounts(from, to);
+		List<Double> missingRatios = getMissingRatio(from, to);
+		List<Map<Byte, Integer>> alleleCounts = getAlleleCounts(from, to);
+		List<Map<Byte, Map<Byte, Integer>>> genotypeCounts = getGenotypeCounts(from, to);
 
-		Collection<Byte> knownMajorAllele = getKnownMajorAllele(from, to);
-		Collection<Double> knownMajorAlleleFreq = getKnownMajorAlleleFrequencies(from, to);
-		Collection<Byte> knownMinorAllele = getKnownMinorAllele(from, to);
-		Collection<Double> knownMinorAlleleFreq = getKnownMinorAlleleFrequencies(from, to);
-		Collection<int[]> censusAll = getCensusAll(from, to);
-
-		Collection<QAMarkersOperationEntry> entries
+		List<QAMarkersOperationEntry> entries
 				= new ArrayList<QAMarkersOperationEntry>(missingRatios.size());
-		Iterator<Double> missingRatioIt = missingRatios.iterator();
 		Iterator<Boolean> mismatchStatesIt = mismatchStates.iterator();
 		Iterator<Byte> knownMajorAlleleIt = knownMajorAllele.iterator();
 		Iterator<Double> knownMajorAlleleFreqIt = knownMajorAlleleFreq.iterator();
 		Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
 		Iterator<Double> knownMinorAlleleFreqIt = knownMinorAlleleFreq.iterator();
-		Iterator<int[]> censusAllIt = censusAll.iterator();
+//		Iterator<int[]> censusAllIt = censusAll.iterator();
+		Iterator<Integer> numAAIt = numAAs.iterator();
+		Iterator<Integer> numAaIt = numAas.iterator();
+		Iterator<Integer> numaaIt = numaas.iterator();
+		Iterator<Integer> numMissingIt = numMissings.iterator();
+		Iterator<Double> missingRatioIt = missingRatios.iterator();
+		Iterator<Map<Byte, Integer>> alleleCountsIt = alleleCounts.iterator();
+		Iterator<Map<Byte, Map<Byte, Integer>>> genotypeCountsIt = genotypeCounts.iterator();
 //		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
 		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
-			int[] censusAllValues = censusAllIt.next();
+//			int[] censusAllValues = censusAllIt.next();
 			entries.add(new DefaultQAMarkersOperationEntry(
 					origIndicesAndKey.getValue(),
 					origIndicesAndKey.getKey(),
-					missingRatioIt.next(),
 					mismatchStatesIt.next(),
 					knownMajorAlleleIt.next(),
 					knownMajorAlleleFreqIt.next(),
 					knownMinorAlleleIt.next(),
 					knownMinorAlleleFreqIt.next(),
-					censusAllValues[0],
-					censusAllValues[1],
-					censusAllValues[2],
-					censusAllValues[3]));
+//					censusAllValues[0],
+//					censusAllValues[1],
+//					censusAllValues[2],
+//					censusAllValues[3],
+					numAAIt.next(),
+					numAaIt.next(),
+					numaaIt.next(),
+					numMissingIt.next(),
+					missingRatioIt.next(),
+					alleleCountsIt.next(),
+					genotypeCountsIt.next()));
 		}
 
 		return entries;
 	}
 
 	@Override
-	public Collection<Boolean> getMismatchStates() throws IOException {
+	public List<Byte> getKnownMajorAllele() throws IOException {
+		return getKnownMajorAllele(-1, -1);
+	}
 
-		Collection<Boolean> mismatchStates = getMismatchStates(-1, -1);
+	@Override
+	public List<Double> getKnownMajorAlleleFrequencies() throws IOException {
+		return getKnownMajorAlleleFrequencies(-1, -1);
+	}
+
+	@Override
+	public List<Byte> getKnownMinorAllele() throws IOException {
+		return getKnownMinorAllele(-1, -1);
+	}
+
+	@Override
+	public List<Double> getKnownMinorAlleleFrequencies() throws IOException {
+		return getKnownMinorAlleleFrequencies(-1, -1);
+	}
+
+	@Override
+	public List<Boolean> getMismatchStates() throws IOException {
+
+		List<Boolean> mismatchStates = getMismatchStates(-1, -1);
 //		// EXCLUDE MARKER BY MISMATCH STATE
 //		Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates
 //				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
@@ -307,10 +403,26 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return mismatchStates;
 	}
 
-	@Override
-	public Collection<Double> getMissingRatio() throws IOException {
+	public List<Integer> getNumAAs() throws IOException {
+		return getNumAAs(-1, -1);
+	}
 
-		Collection<Double> missingRatios = getMissingRatio(-1, -1);
+	public List<Integer> getNumAas() throws IOException {
+		return getNumAas(-1, -1);
+	}
+
+	public List<Integer> getNumaas() throws IOException {
+		return getNumaas(-1, -1);
+	}
+
+	public List<Integer> getMissingCounts() throws IOException {
+		return getMissingCounts(-1, -1);
+	}
+
+	@Override
+	public List<Double> getMissingRatio() throws IOException {
+
+		List<Double> missingRatios = getMissingRatio(-1, -1);
 //		// EXCLUDE MARKER BY MISSING RATIO
 //		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat
 //				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
@@ -323,6 +435,14 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //		}
 
 		return missingRatios;
+	}
+
+	public List<Map<Byte, Integer>> getAlleleCounts() throws IOException {
+		return getAlleleCounts(-1, -1);
+	}
+
+	public List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts() throws IOException {
+		return getGenotypeCounts(-1, -1);
 	}
 
 	@Override

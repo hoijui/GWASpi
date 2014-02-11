@@ -125,10 +125,16 @@ public class cNetCDF {
 //		public static final String VAR_OP_MARKERS_CENSUSCASE_IDX = "OP_markers_censuscase_idx";
 //		public static final String VAR_OP_MARKERS_CENSUSCTRL_IDX = "OP_markers_censusctrl_idx";
 //		public static final String VAR_OP_MARKERS_CENSUSHW_IDX = "OP_markers_censushw_idx";
+		public static final String VAR_OP_MARKERS_NUM_AA = "OP_markers_num_AA";
+		public static final String VAR_OP_MARKERS_NUM_Aa = "OP_markers_num_Aa";
+		public static final String VAR_OP_MARKERS_NUM_aa = "OP_markers_num_aa";
+		public static final String VAR_OP_MARKERS_NUM_MISSING = "OP_markers_num_missing";
 		public static final String VAR_OP_MARKERS_CENSUSALL = "OP_markers_censusall";
 		public static final String VAR_OP_MARKERS_CENSUSCASE = "OP_markers_censuscase";
 		public static final String VAR_OP_MARKERS_CENSUSCTRL = "OP_markers_censusctrl";
 		public static final String VAR_OP_MARKERS_CENSUSHW = "OP_markers_censushw";
+		public static final String VAR_OP_MARKERS_APPEARING_ALLELE = "OP_markers_appearing_alleles";
+		public static final String VAR_OP_MARKERS_APPEARING_ALLELE_COUNT = "OP_markers_appearing_alleles_count";
 		//public static final String VAR_OP_MARKERS_KNOWNALLELES ="OP_marker_knownalleles";
 		public static final String VAR_OP_MARKERS_MINALLELES = "OP_marker_minalleles";
 		public static final String VAR_OP_MARKERS_MINALLELEFRQ = "OP_marker_minallelefrq";
