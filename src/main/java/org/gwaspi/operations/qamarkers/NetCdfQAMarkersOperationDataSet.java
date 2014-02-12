@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -82,18 +81,24 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			List<Dimension> samplesSpace)
 			throws IOException
 	{
-		final int gtStride = cNetCDF.Strides.STRIDE_GT;
+//		final int gtStride = cNetCDF.Strides.STRIDE_GT;
+//		final int maxDifferentAllelePerMarker = AlleleByte.values().length;
+//		final int maxDifferentAllelePairsPerMarker = maxDifferentAllelePerMarker * maxDifferentAllelePerMarker;
+		final int maxDifferentAllelePerMarker = QAMarkersOperationEntry.AlleleCounts.values().length;
+		final int maxDifferentAllelePairsPerMarker = QAMarkersOperationEntry.GenotypeCounts.values().length;
 
 		// dimensions
 		Dimension markersDim = markersSpace.get(0);
-		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
-		Dimension alleleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
+//		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+//		Dimension alleleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
+		Dimension allelesStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKER_ALLELES_STRIDE, maxDifferentAllelePerMarker);
+		Dimension genotypesStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKER_GENOTYPES_STRIDE, maxDifferentAllelePairsPerMarker);
 		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
-		// MARKER SPACES
-		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
-		markers4Space.add(markersDim);
-		markers4Space.add(boxes4Dim);
+//		// MARKER SPACES
+//		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
+//		markers4Space.add(markersDim);
+//		markers4Space.add(boxes4Dim);
 
 		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>(2);
 		markerPropertySpace4.add(markersDim);
@@ -102,7 +107,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		// ALLELES SPACES
 		List<Dimension> allelesSpace = new ArrayList<Dimension>(2);
 		allelesSpace.add(markersDim);
-		allelesSpace.add(alleleStrideDim);
+		allelesSpace.add(allelesStrideDim);
+
+		List<Dimension> genotypesSpace = new ArrayList<Dimension>(2);
+		genotypesSpace.add(markersDim);
+		genotypesSpace.add(genotypesStrideDim);
 
 		// Define OP Variables
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, markersSpace);
@@ -112,8 +121,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.BYTE, markersSpace);xxx;
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.INT, markersSpace);
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
@@ -122,6 +129,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, DataType.INT, allelesSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_1, DataType.BYTE, genotypesSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_2, DataType.BYTE, genotypesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, DataType.INT, genotypesSpace);
 	}
 
 	@Override
@@ -281,25 +293,29 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return numMissings;
 	}
 
-	public List<Map<Byte, Integer>> getAlleleCounts(int from, int to) throws IOException {
+	public List<int[]> getAlleleCounts(int from, int to) throws IOException {
 
-		List<Byte> appearingAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to, appearingAllele, null);
-		List<Integer> appearingAllelesCount = new ArrayList<Integer>(0);
+//		List<Byte> appearingAllele = new ArrayList<Byte>(0);
+//		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to, appearingAllele, null);
+		List<int[]> appearingAllelesCount = new ArrayList<int[]>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to, appearingAllelesCount, null);
 
-		Map<Byte, Integer> alleleCounts = new LinkedHashMap<Byte, Integer>(appearingAllele.size());
-		Iterator<Integer> appearingAllelesCountIt = appearingAllelesCount.iterator();
-		for (Byte allele : appearingAllele) {
-			Integer count = appearingAllelesCountIt.next();
-			alleleCounts.put(allele, count);
-		}
+//		Map<Byte, Integer> alleleCounts = new LinkedHashMap<Byte, Integer>(appearingAllele.size());
+//		Iterator<Integer> appearingAllelesCountIt = appearingAllelesCount.iterator();
+//		for (Byte allele : appearingAllele) {
+//			Integer count = appearingAllelesCountIt.next();
+//			alleleCounts.put(allele, count);
+//		}
 
-		return alleleCounts;
+		return appearingAllelesCount;
 	}
 
-	public List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts(int from, int to) throws IOException {
-		XXX;
+	public List<int[]> getGenotypeCounts(int from, int to) throws IOException {
+
+		List<int[]> appearingGenotypesCount = new ArrayList<int[]>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, from, to, appearingGenotypesCount, null);
+
+		return appearingGenotypesCount;
 	}
 
 	@Override
@@ -315,13 +331,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		List<Byte> knownMinorAllele = getKnownMinorAllele(from, to);
 		List<Double> knownMinorAlleleFreq = getKnownMinorAlleleFrequencies(from, to);
 //		List<int[]> censusAll = getCensusAll(from, to);
-		List<Integer> numAAs = getNumAAs(from, to);
-		List<Integer> numAas = getNumAas(from, to);
-		List<Integer> numaas = getNumaas(from, to);
+//		List<Integer> numAAs = getNumAAs(from, to);
+//		List<Integer> numAas = getNumAas(from, to);
+//		List<Integer> numaas = getNumaas(from, to);
 		List<Integer> numMissings = getMissingCounts(from, to);
 		List<Double> missingRatios = getMissingRatio(from, to);
-		List<Map<Byte, Integer>> alleleCounts = getAlleleCounts(from, to);
-		List<Map<Byte, Map<Byte, Integer>>> genotypeCounts = getGenotypeCounts(from, to);
+		List<int[]> alleleCounts = getAlleleCounts(from, to);
+		List<int[]> genotypeCounts = getGenotypeCounts(from, to);
 
 		List<QAMarkersOperationEntry> entries
 				= new ArrayList<QAMarkersOperationEntry>(missingRatios.size());
@@ -331,13 +347,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
 		Iterator<Double> knownMinorAlleleFreqIt = knownMinorAlleleFreq.iterator();
 //		Iterator<int[]> censusAllIt = censusAll.iterator();
-		Iterator<Integer> numAAIt = numAAs.iterator();
-		Iterator<Integer> numAaIt = numAas.iterator();
-		Iterator<Integer> numaaIt = numaas.iterator();
+//		Iterator<Integer> numAAIt = numAAs.iterator();
+//		Iterator<Integer> numAaIt = numAas.iterator();
+//		Iterator<Integer> numaaIt = numaas.iterator();
 		Iterator<Integer> numMissingIt = numMissings.iterator();
 		Iterator<Double> missingRatioIt = missingRatios.iterator();
-		Iterator<Map<Byte, Integer>> alleleCountsIt = alleleCounts.iterator();
-		Iterator<Map<Byte, Map<Byte, Integer>>> genotypeCountsIt = genotypeCounts.iterator();
+		Iterator<int[]> alleleCountsIt = alleleCounts.iterator();
+		Iterator<int[]> genotypeCountsIt = genotypeCounts.iterator();
 //		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
 		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 //			int[] censusAllValues = censusAllIt.next();
@@ -353,9 +369,9 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //					censusAllValues[1],
 //					censusAllValues[2],
 //					censusAllValues[3],
-					numAAIt.next(),
-					numAaIt.next(),
-					numaaIt.next(),
+//					numAAIt.next(),
+//					numAaIt.next(),
+//					numaaIt.next(),
 					numMissingIt.next(),
 					missingRatioIt.next(),
 					alleleCountsIt.next(),
@@ -437,11 +453,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return missingRatios;
 	}
 
-	public List<Map<Byte, Integer>> getAlleleCounts() throws IOException {
+	public List<int[]> getAlleleCounts() throws IOException {
 		return getAlleleCounts(-1, -1);
 	}
 
-	public List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts() throws IOException {
+	public List<int[]> getGenotypeCounts() throws IOException {
 		return getGenotypeCounts(-1, -1);
 	}
 

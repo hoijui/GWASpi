@@ -20,7 +20,6 @@ package org.gwaspi.operations.qamarkers;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
@@ -108,8 +107,10 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 	List<Double> getMissingRatio() throws IOException; // TODO add an 's' at method-name end
 //	List<int[]> getAlleleOrdinalCounts() throws IOException;
 //	List<int[][]> getGenotypeOrdinalCounts() throws IOException;
-	List<Map<Byte, Integer>> getAlleleCounts() throws IOException;
-	List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts() throws IOException;
+//	List<Map<Byte, Integer>> getAlleleCounts() throws IOException;
+//	List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts() throws IOException;
+	List<int[]> getAlleleCounts() throws IOException;
+	List<int[]> getGenotypeCounts() throws IOException;
 
 	List<Boolean> getMismatchStates(int from, int to) throws IOException;
 	List<Byte> getKnownMajorAllele(int from, int to) throws IOException;
@@ -124,6 +125,8 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 	List<Double> getMissingRatio(int from, int to) throws IOException; // TODO add an 's' at method-name end
 //	List<int[]> getAlleleOrdinalCounts(int from, int to) throws IOException;
 //	List<int[][]> getGenotypeOrdinalCounts(int from, int to) throws IOException;
-	List<Map<Byte, Integer>> getAlleleCounts(int from, int to) throws IOException;
-	List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts(int from, int to) throws IOException;
+//	List<Map<Byte, Integer>> getAlleleCounts(int from, int to) throws IOException;
+//	List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts(int from, int to) throws IOException;
+	List<int[]> getAlleleCounts(int from, int to) throws IOException;
+	List<int[]> getGenotypeCounts(int from, int to) throws IOException;
 }
