@@ -18,16 +18,7 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import org.gwaspi.model.Genotype;
 
 /**
  * Uses this encoding scheme:<br/>
@@ -41,26 +32,9 @@ import org.gwaspi.model.Genotype;
 public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 	public static final NominalGenotypeEncoder SINGLETON = new NominalGenotypeEncoder();
+
 	private static final List<List<Float>> ENCODED_VALUES;
 	static {
-//		ENCODED_VALUES_MAP = new LinkedHashMap<Integer, List<Float>>(5);
-//
-//		ENCODED_VALUES_MAP.put(
-//				GenotypeCounts._00.ordinal(),
-//				makeHard(Arrays.asList(0.0f, 0.0f, 0.0f)));
-//		ENCODED_VALUES_MAP.put(
-//				GenotypeCounts._AA.ordinal(),
-//				makeHard(Arrays.asList(1.0f, 0.0f, 0.0f)));
-//		ENCODED_VALUES_MAP.put(
-//				GenotypeCounts._Aa.ordinal(),
-//				makeHard(Arrays.asList(0.0f, 1.0f, 0.0f)));
-//		ENCODED_VALUES_MAP.put(
-//				GenotypeCounts._aA.ordinal(),
-//				makeHard(Arrays.asList(0.0f, 1.0f, 0.0f)));
-//		ENCODED_VALUES_MAP.put(
-//				GenotypeCounts._aa.ordinal(),
-//				makeHard(Arrays.asList(0.0f, 0.0f, 1.0f)));
-
 		ENCODED_VALUES = new ArrayList<List<Float>>(5);
 
 		ENCODED_VALUES.add(makeHard(Arrays.asList(2.0f))); // "AA"

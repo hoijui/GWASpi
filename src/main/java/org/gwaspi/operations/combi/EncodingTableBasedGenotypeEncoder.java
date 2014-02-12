@@ -19,7 +19,6 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -287,7 +286,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		final int numSamples = rawGenotypes.size();
 
 		// create the encoding table
-		Map<Integer, List<Float>> encodingTable
+		final Map<Integer, List<Float>> encodingTable
 //				= generateEncodingTable(possibleGenotypes, rawGenotypes);
 				= generateEncodingTable(majorAllele, majorAllele, genotypeCounts, numSamples);
 //		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
@@ -298,6 +297,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			}
 //			System.err.println();
 //		}
+		// this is the -- value
+		List<Float> invalidEncoded = encodingTable.remove(null);
 
 		// In here, we store the features 1+ for the given marker,
 		// in case the exist.
@@ -310,8 +311,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			tempHigherFeaturesEncodedGTs.add(new ArrayList<Float>(numSamples));
 		}
 
-		if (possibleGenotypes.size() - (
-				possibleGenotypes.contains(Genotype.INVALID.hashCode()) // FIXME
+		if (encodingTable.size() - (
+				encodingTable.keySet().contains(Genotype.INVALID.hashCode())
 				? 1 : 0) == 1)
 		{
 			// only one valid GT type was found
@@ -333,6 +334,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			for (float[] encodedSamplesMarker : encodedSamplesMarkers) {
 //				encodedSamplesMarker[mi] = 0.0f;
 //			}
+			// just set everythign to 0.0f, as this marker contains no meaningful information
 			for (int lfi = 0; lfi < getEncodingFactor(); lfi++) {
 				final int fi = markerIndex + lfi;
 				encodedSamplesFeatures.startStoringFeature(fi);
@@ -350,6 +352,9 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 				// include all samples
 				for (byte[] genotype : rawGenotypes) {
 					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
+					if (encodedGT == null) {
+						encodedGT = invalidEncoded;
+					}
 					encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0).floatValue());
 						for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
 						tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));

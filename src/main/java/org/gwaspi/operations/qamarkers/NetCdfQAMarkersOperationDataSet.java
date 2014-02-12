@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
@@ -165,42 +164,42 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 				isMarkersOperationSet());
 	}
 
-	@Override
-	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-	}
-
-	@Override
-	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
-
-		// we can not use this, as NetCDF does not support writing boolean arrays :/
-//		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-
-		Collection<Integer> markerMismatchIntegerStates
-				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-		for (boolean mismatch : markerMismatchStates) {
-			markerMismatchIntegerStates.add(mismatch
-					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-		}
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-	}
-
-	@Override
-	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
-
-		NetcdfFileWriteable netCdfWriteFile = getNetCdfWriteFile();
-		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_MAJOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MAJOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_MINOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MINOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
-	}
-
-	@Override
-	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
-		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-	}
+//	@Override
+//	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
+//		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+//	}
+//
+//	@Override
+//	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
+//
+//		// we can not use this, as NetCDF does not support writing boolean arrays :/
+////		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+//
+//		Collection<Integer> markerMismatchIntegerStates
+//				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
+//		for (boolean mismatch : markerMismatchStates) {
+//			markerMismatchIntegerStates.add(mismatch
+//					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
+//					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+//		}
+//		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+//	}
+//
+//	@Override
+//	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
+//
+//		NetcdfFileWriteable netCdfWriteFile = getNetCdfWriteFile();
+//		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
+//		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_MAJOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
+//		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MAJOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+//		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_MINOR_ALLELE, cNetCDF.Strides.STRIDE_GT / 2);
+//		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_MINOR_ALLELE_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+//	}
+//
+//	@Override
+//	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
+//		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+//	}
 
 	@Override
 	public List<Boolean> getMismatchStates(int from, int to) throws IOException {
