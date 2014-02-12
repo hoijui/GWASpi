@@ -25,33 +25,25 @@ import org.gwaspi.operations.OperationDataSet;
 
 public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOperationEntry> {
 
-	/**
-	 * @param markerMissingRatios
-	 *   the marker missing ratio values, one per marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MISSINGRAT
-	 * @throws IOException
-	 */
-	void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException;
-
-	/**
-	 * @param markerMismatchStates
-	 *   whether there is a mismatch (true) or not (false), one per marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MISMATCHSTATE
-	 * @throws IOException
-	 */
-	void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException;
-
-	/**
-	 * @param markerKnownAlleles
-	 *   the dictionary allele 1 and 2 values and their frequencies, one such set per marker in this operation
-	 * NetCDF variable:
-	 * - Census.VAR_OP_MARKERS_MAJALLELES
-	 * - Census.VAR_OP_MARKERS_MAJALLELEFRQ
-	 * - Census.VAR_OP_MARKERS_MINALLELES
-	 * - Census.VAR_OP_MARKERS_MINALLELEFRQ
-	 * @throws IOException
-	 */
-	void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException;
+//	/**
+//	 * @param markerMismatchStates
+//	 *   whether there is a mismatch (true) or not (false), one per marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MISMATCHSTATE
+//	 * @throws IOException
+//	 */
+//	void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException;
+//
+//	/**
+//	 * @param markerKnownAlleles
+//	 *   the dictionary allele 1 and 2 values and their frequencies, one such set per marker in this operation
+//	 * NetCDF variable:
+//	 * - Census.VAR_OP_MARKERS_MAJALLELES
+//	 * - Census.VAR_OP_MARKERS_MAJALLELEFRQ
+//	 * - Census.VAR_OP_MARKERS_MINALLELES
+//	 * - Census.VAR_OP_MARKERS_MINALLELEFRQ
+//	 * @throws IOException
+//	 */
+//	void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException;
 
 //	/**
 //	 * @param markerMajorAlleles
@@ -85,14 +77,22 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 //	 */
 //	void setMarkerMinorAlleleFrequencies(Collection<Double> markerMinorAllelesFrequencies) throws IOException;
 
-	/**
-	 * @param markerCensusAll
-	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
-	 * @throws IOException
-	 */
-//	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
-	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
+//	/**
+//	 * @param markerCensusAll
+//	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
+//	 * @throws IOException
+//	 */
+////	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
+//	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
+//
+//	/**
+//	 * @param markerMissingRatios
+//	 *   the marker missing ratio values, one per marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MISSINGRAT
+//	 * @throws IOException
+//	 */
+//	void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException;
 
 	List<Boolean> getMismatchStates() throws IOException;
 	List<Byte> getKnownMajorAllele() throws IOException;

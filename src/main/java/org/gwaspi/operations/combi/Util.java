@@ -370,7 +370,10 @@ public class Util {
 
 	static void storeForEncoding(
 			List<MarkerKey> markers,
-			final List<Census> allMarkersCensus,
+//			final List<Census> allMarkersCensus,
+			final List<Byte> majorAlleles,
+			final List<Byte> minorAlleles,
+			final List<int[]> markerGenotypesCounts,
 			List<SampleKey> samples,
 			List<Affection> sampleAffecs,
 			List<GenotypesList> markerGTs)
@@ -390,8 +393,9 @@ public class Util {
 //		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(dataSetSource.getSamplesKeysSource());
 //		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(dataSetSource.getMarkersGenotypesSource().get(0));
 		List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(markers);
+//		List<int[]> markerGenotypesCountsCopy = new ArrayList<int[]>(markerGenotypesCounts);
 		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(samples);
-		List<SampleInfo.Affection> sampleAffections = new ArrayList<SampleInfo.Affection>(sampleAffecs);
+		List<Affection> sampleAffections = new ArrayList<Affection>(sampleAffecs);
 		List<GenotypesList> markerGenotypes = new ArrayList<GenotypesList>(markerGTs.size());
 		for (GenotypesList mGTs : markerGTs) {
 			markerGenotypes.add(CompactGenotypesList.FACTORY.extract(mGTs));
@@ -402,6 +406,9 @@ public class Util {
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 
 			oos.writeObject(markerKeys);
+			oos.writeObject(majorAlleles);
+			oos.writeObject(minorAlleles);
+			oos.writeObject(markerGenotypesCounts);
 			oos.writeObject(sampleKeys);
 			oos.writeObject(sampleAffections);
 			oos.writeObject(markerGenotypes);
@@ -415,6 +422,9 @@ public class Util {
 	private static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
 
 		List<MarkerKey> markerKeys;
+		List<Byte> majorAlleles;
+		List<Byte> minorAlleles;
+		List<int[]> markerGenotypesCounts;
 		List<SampleKey> sampleKeys;
 		List<Affection> sampleAffections;
 		List<GenotypesList> markerGenotypes;
@@ -423,13 +433,16 @@ public class Util {
 			ObjectInputStream ois = new ObjectInputStream(fin);
 
 			markerKeys = (List<MarkerKey>) ois.readObject();
+			majorAlleles = (List<Byte>) ois.readObject();
+			minorAlleles = (List<Byte>) ois.readObject();
+			markerGenotypesCounts = (List<int[]>) ois.readObject();
 			sampleKeys = (List<SampleKey>) ois.readObject();
 			sampleAffections = (List<Affection>) ois.readObject();
 			markerGenotypes = (List<GenotypesList>) ois.readObject();
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
+			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

@@ -18,28 +18,221 @@
 package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.Genotype;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
 
-	public abstract Map<Integer, List<Float>> generateEncodingTable(
-			Set<byte[]> possibleGenotypes,
-			Collection<byte[]> rawGenotypes);
+//	public abstract Map<Integer, List<Float>> generateEncodingTable(
+////			Set<byte[]> possibleGenotypes,
+////			Collection<byte[]> rawGenotypes);
+//			final byte majorAllele,
+//			final byte minorAllele,
+//			final int[] genotypeCounts,
+//			final int numMarkers);
 
 	/**
-	 *
+	 * @return The encoded values for: "AA", "Aa", "aA", "aa", "--" (stands for everything else)
+	 */
+	protected abstract List<List<Float>> getEncodedValuesLists();
+
+
+	protected static <V> List<V> makeHard(List<V> soft) {
+		return Collections.unmodifiableList(new ArrayList<V>(soft));
+	}
+	private static List<List<Integer>> createGenotypesHashes(
+			final byte majorAllele,
+			final byte minorAllele)
+	{
+		final List<List<Integer>> genotypesHashes = new ArrayList<List<Integer>>(5);
+
+		genotypesHashes.add(Arrays.asList(
+				Genotype.hashCode(majorAllele, majorAllele),
+				Genotype.hashCode(majorAllele, cNetCDF.Defaults.AlleleByte._0_VALUE),
+				Genotype.hashCode(cNetCDF.Defaults.AlleleByte._0_VALUE, majorAllele)
+		)); // AA
+		genotypesHashes.add(Arrays.asList(
+				Genotype.hashCode(majorAllele, minorAllele)
+		)); // Aa
+		genotypesHashes.add(Arrays.asList(
+				Genotype.hashCode(minorAllele, majorAllele)
+		)); // aA
+		genotypesHashes.add(Arrays.asList(
+				Genotype.hashCode(minorAllele, minorAllele),
+				Genotype.hashCode(minorAllele, cNetCDF.Defaults.AlleleByte._0_VALUE),
+				Genotype.hashCode(cNetCDF.Defaults.AlleleByte._0_VALUE, minorAllele)
+		)); // aa
+		genotypesHashes.add(null); // --
+//		genotypeHashes.add(Genotype.hashCode(majorAllele, majorAllele)); // AA
+//		genotypeHashes.add(Genotype.hashCode(majorAllele, minorAllele)); // Aa
+//		genotypeHashes.add(Genotype.hashCode(minorAllele, majorAllele)); // aA
+//		genotypeHashes.add(Genotype.hashCode(minorAllele, minorAllele)); // aa
+//		genotypeHashes.add(Genotype.hashCode(AlleleByte._0_VALUE, AlleleByte._0_VALUE));
+
+		return genotypesHashes;
+	}
+
+	private List<Integer> accumulateGenotypesCounts(int[] genotypeCounts) {
+
+		final List<Integer> genotypeCountsAccumulated = new ArrayList<Integer>(5);
+
+		genotypeCountsAccumulated.add(
+				genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._AA.ordinal()]
+				+ genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._A0.ordinal()]
+				+ genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._0A.ordinal()]
+		); // AA
+		genotypeCountsAccumulated.add(
+				genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._Aa.ordinal()]
+		); // Aa
+		genotypeCountsAccumulated.add(
+				genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._aA.ordinal()]
+		); // aA
+		genotypeCountsAccumulated.add(
+				genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._aa.ordinal()]
+				+ genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._a0.ordinal()]
+				+ genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._0a.ordinal()]
+		); // aa
+		genotypeCountsAccumulated.add(
+				genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._00.ordinal()]
+				+ genotypeCounts[QAMarkersOperationEntry.GenotypeCounts._dash_dash.ordinal()]
+		); // -- (everything else)
+
+		return genotypeCountsAccumulated;
+	}
+
+//	private static int calculateTotalCount(int[] genotypeCounts) {
+//
+//		int sum = 0;
+//
+//		for (int genotypeCount : genotypeCounts) {
+//			sum += genotypeCount;
+//		}
+//
+//		return sum;
+//	}
+
+	private static List<List<Float>> createWhitenedValuesLists(List<List<Float>> valuesLists, List<Integer> genotypesCountsAccumulated, final int numSamples) {
+
+		// calculate genotype weights
+		List<Double> weights = new ArrayList<Double>(genotypesCountsAccumulated.size());
+		for (Integer genotypeCountsAccumulated : genotypesCountsAccumulated) {
+			weights.add((double) genotypeCountsAccumulated / numSamples);
+		}
+
+		// calculate weighted sum (== values centers)
+		// We do it with double, to possible get some higher accuracy.
+		double[] valueCenters = new double[valuesLists.get(0).size()];
+//		Arrays.fill(summedValues, 0.0f);
+		Iterator<Double> weightsIt = weights.iterator();
+		for (List<Float> valuesList : valuesLists) {
+			final double weight = weightsIt.next();
+			for (int vi = 0; vi < valueCenters.length; vi++) {
+				valueCenters[vi] += valuesList.get(vi) * weight;
+			}
+		}
+
+		// calculate the weighted variance sums
+		double[] varianceSums = new double[valueCenters.length];
+		weightsIt = weights.iterator();
+		for (List<Float> valuesList : valuesLists) {
+			final double weight = weightsIt.next();
+			for (int vi = 0; vi < valueCenters.length; vi++) {
+				final double centeredValue = valuesList.get(vi) - valueCenters[vi];
+				varianceSums[vi] += centeredValue * centeredValue * weight;
+			}
+		}
+
+		// whiten (center & set variance to 1.0)
+		final List<List<Float>> whitenedValuesLists = new ArrayList<List<Float>>(valuesLists.size());
+		for (List<Float> valuesList : valuesLists) {
+			final List<Float> whitenedValuesList = new ArrayList<Float>(valueCenters.length);
+			for (int vi = 0; vi < valueCenters.length; vi++) {
+				final double centeredValue = valuesList.get(vi) - valueCenters[vi];
+				final double whitenedValue = centeredValue / varianceSums[vi];
+				whitenedValuesList.add((float) whitenedValue);
+			}
+			whitenedValuesLists.add(whitenedValuesList);
+		}
+
+		return whitenedValuesLists;
+	}
+
+	private Map<Integer, List<Float>> stitchTogether(List<List<Integer>> genotypesHashes, List<List<Float>> valuesLists, List<Integer> genotypesCountsAccumulated) {
+
+		Map<Integer, List<Float>> encodingTable = new HashMap<Integer, List<Float>>(5);
+
+		Iterator<List<Float>> valuesListsIt = valuesLists.iterator();
+		Iterator<Integer> genotypesCountsAccumulatedIt = genotypesCountsAccumulated.iterator();
+		for (List<Integer> genotypeHashes : genotypesHashes) {
+			List<Float> valuesList = valuesListsIt.next();
+			Integer genotypesCount = genotypesCountsAccumulatedIt.next();
+			if (genotypesCount > 0) {
+				for (Integer genotypeHashe : genotypeHashes) {
+					encodingTable.put(genotypeHashe, valuesList);
+				}
+			}
+		}
+
+		return encodingTable;
+	}
+
+//	@Override
+	private Map<Integer, List<Float>> generateEncodingTable(
+//			Set<byte[]> possibleGenotypes,
+//			Collection<byte[]> rawGenotypes)
+			final byte majorAllele,
+			final byte minorAllele,
+			final int[] genotypeCounts,
+			final int numSamples)
+	{
+//		Map<Integer, List<Float>> encodingTable
+//				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
+//
+////		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
+////
+////		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
+////		for (Genotype genotype : sortedGenotypes) {
+////			encodingTable.put(genotype, encodedValues.next());
+////		}
+//		Map<Integer, Integer> baseEncodingTable
+//				= generateBaseEncodingTable(possibleGenotypes);
+//		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+////System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
+//			encodingTable.put(baseEncoding.getKey(), ENCODED_VALUES.get(baseEncoding.getValue()));
+//		}
+//
+//		return encodingTable;
+
+
+//		Map<Integer, List<Float>> genotypeOrdinalToEncodedLookupTable = getGenotypeOrdinalToEncodedLookupTable();
+		List<List<Integer>> genotypesHashes = createGenotypesHashes(majorAllele, minorAllele);
+		List<Integer> genotypesCountsAccumulated = accumulateGenotypesCounts(genotypeCounts);
+		List<List<Float>> encodedValuesLists = getEncodedValuesLists();
+
+		List<List<Float>> encodedAndWhitenedValuesLists = createWhitenedValuesLists(encodedValuesLists, genotypesCountsAccumulated, numSamples);
+
+		Map<Integer, List<Float>> encodingTable = stitchTogether(genotypesHashes, encodedAndWhitenedValuesLists, genotypesCountsAccumulated);
+
+		return encodingTable;
+	}
+
+	/**
 	 * @param possibleGenotypes
 	 * @return will e.g. contain (a sub-set of):
 	 *   {"00".hash():0, "0A".hash():1, "0G".hash():2, "A0".hash():3, "AA".hash():4, "AG".hash():5, "G0".hash():6, "GA".hash():7, "GG".hash():8}
 	 */
-	protected static Map<Integer, Integer> generateBaseEncodingTable(
+	private static Map<Integer, Integer> generateBaseEncodingTable(
 			Set<byte[]> possibleGenotypes)
 	{
 		Map<Integer, Integer> baseEncodingTable
@@ -75,11 +268,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	@Override
 	public void encodeGenotypes(
 			final List<byte[]> rawGenotypes,
+			final byte majorAllele,
+			final byte minorAllele,
+			final int[] genotypeCounts,
 			SamplesFeaturesStorage<Float> encodedSamplesFeatures,
 			int markerIndex)
 	{
-		final Set<byte[]> possibleGenotypes
-				= NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
+//		final Set<byte[]> possibleGenotypes
+//				= NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 //		if (samplesToKeep == null) {
 //			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
 //				rawGenotypes);
@@ -92,7 +288,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		// create the encoding table
 		Map<Integer, List<Float>> encodingTable
-				= generateEncodingTable(possibleGenotypes, rawGenotypes);
+//				= generateEncodingTable(possibleGenotypes, rawGenotypes);
+				= generateEncodingTable(majorAllele, majorAllele, genotypeCounts, numSamples);
 //		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
 //		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {
 //			System.err.print("\t" + encodingTableEntry.getKey() + " ->");

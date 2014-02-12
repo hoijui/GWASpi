@@ -70,7 +70,8 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 		QAMarkersOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
+		final int numMarkers = parentDataSetSource.getNumMarkers();
+		dataSet.setNumMarkers(numMarkers);
 		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
 
@@ -102,6 +103,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 			MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics
 					= calculateMarkerAlleleAndGTStatistics(rawMarkerAlleleAndGTStatistics);
+			extractCompactStatistics(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics, numMarkers);
 
 			final double missingRatio = (double) rawMarkerAlleleAndGTStatistics.getMissingCount() / parentDataSetSource.getNumSamples();
 
@@ -118,8 +120,8 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 //					markerAlleleAndGTStatistics.getNumaa(),
 					rawMarkerAlleleAndGTStatistics.getMissingCount(),
 					missingRatio,
-					compactAlleleStatistics,
-					compactGenotypeStatistics
+					markerAlleleAndGTStatistics.getCompactAlleleStatistics(),
+					markerAlleleAndGTStatistics.getCompactGenotypeStatistics()
 			));
 		}
 		//</editor-fold>
@@ -315,7 +317,13 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 		return markerAlleleAndGTStatistics;
 	}
 
-	private static void extractCompactStatistics() {
+	private static void extractCompactStatistics(
+			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
+			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics,
+			final int numMarkers)
+	{
+		final int[] alleleValueToOrdinalLookupTable = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
+
 		final int majorAlleleOrdinal = alleleValueToOrdinalLookupTable[markerAlleleAndGTStatistics.getMajorAllele()];
 		final int minorAlleleOrdinal = alleleValueToOrdinalLookupTable[markerAlleleAndGTStatistics.getMinorAllele()];
 
@@ -326,11 +334,12 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			Math.round(alleleOrdinalCounts[AlleleByte._0_ORDINAL]),
 			0 // will be set later
 		};
-		int remainingAlleleCount = parentDataSetSource.getNumMarkers() * 2;
+		int remainingAlleleCount = numMarkers * 2;
 		for (int i = 0; i < compactAlleleStatistics.length - 1; i++) {
 			remainingAlleleCount -= compactAlleleStatistics[i];
 		}
 		compactAlleleStatistics[compactAlleleStatistics.length - 1] = remainingAlleleCount;
+		markerAlleleAndGTStatistics.setCompactAlleleStatistics(compactAlleleStatistics);
 
 		float[][] genotypeOrdinalCounts = rawMarkerAlleleAndGTStatistics.getGtOrdinalCounts();
 		final int[] compactGenotypeStatistics = new int[] {
@@ -345,10 +354,11 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			Math.round(genotypeOrdinalCounts[AlleleByte._0_ORDINAL][AlleleByte._0_ORDINAL]),
 			0, // will be set later
 		};
-		int remainingGenotypeCount = parentDataSetSource.getNumMarkers() * 2;
+		int remainingGenotypeCount = numMarkers;
 		for (int i = 0; i < compactGenotypeStatistics.length - 1; i++) {
 			remainingGenotypeCount -= compactGenotypeStatistics[i];
 		}
 		compactGenotypeStatistics[compactGenotypeStatistics.length - 1] = remainingGenotypeCount;
+		markerAlleleAndGTStatistics.setCompactGenotypeStatistics(compactGenotypeStatistics);
 	}
 }

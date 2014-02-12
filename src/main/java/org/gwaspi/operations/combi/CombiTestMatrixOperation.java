@@ -47,6 +47,7 @@ import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	private String problemDescription;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
-		super(params.getCensusOperationKey());
+		super(params.getParentKey());
 
 		this.params = params;
 		this.valid = null;
@@ -128,9 +129,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		LOG.info("Combi Association Test: init");
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
-		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
+//		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
+////				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
+//				= (MarkerCensusOperationDataSet) parentDataSetSource;
+		QAMarkersOperationDataSet parentQAMarkersOperationDataSet
 //				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
-				= (MarkerCensusOperationDataSet) parentDataSetSource;
+				= (QAMarkersOperationDataSet) parentDataSetSource;
 
 		CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
 
@@ -155,12 +159,15 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		LOG.debug("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
 		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
+//		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
+		final List<Byte> majorAlleles = parentQAMarkersOperationDataSet.getKnownMajorAllele();
+		final List<Byte> minorAlleles = parentQAMarkersOperationDataSet.getKnownMinorAllele();
+		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
 		LOG.info("Combi Association Test: start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, allMarkersCensus, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
+		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
 
 		// TODO sort the weights (should already be absolute?)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -228,8 +235,11 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * @param encodedSamples
 	 * @throws IOException
 	 */
-	static void encodeSamples(
+	static void encodeAndWhitenSamples(
 			List<GenotypesList> markerGTs,
+			final List<Byte> majorAlleles,
+			final List<Byte> minorAlleles,
+			final List<int[]> markerGenotypesCounts,
 			GenotypeEncoder encoder,
 			final int markerIndexFrom,
 			final int markersChunkSize,
@@ -249,7 +259,10 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", markerIndexFrom, markerIndexFrom + markersChunkSize);
 		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
 			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
-			encoder.encodeGenotypes(gtsForOneMarker, encodedSamples, mi);
+			Byte majorAllele = majorAlleles.get(mi);
+			Byte minorAllele = minorAlleles.get(mi);
+			int[] genotypeCounts = markerGenotypesCounts.get(mi);
+			encoder.encodeGenotypes(gtsForOneMarker, majorAllele, minorAllele, genotypeCounts, encodedSamples, mi);
 
 			encodingMarkersPM.setProgress(mi);
 			if ((mi % 50) == 0) {
@@ -265,7 +278,10 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 	static List<Double> runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
-			final List<Census> allMarkersCensus,
+//			final List<Census> allMarkersCensus,
+			final List<Byte> majorAlleles,
+			final List<Byte> minorAlleles,
+			final List<int[]> markerGenotypesCounts,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
@@ -296,7 +312,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			}
 
 			// HACK This next line is for debugging purposes only
-			Util.storeForEncoding(markerKeys, allMarkersCensus, sampleKeys, sampleAffections, markerGTs);
+			Util.storeForEncoding(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs);
 		}
 
 		final float[][] kernelMatrix;
@@ -310,7 +326,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			throw new IOException(er);
 		}
 		MarkerGenotypesEncoder markerGenotypesEncoder = createMarkerGenotypesEncoder(
-				markerGTs, genotypeEncoder, dSamples, n);
+				markerGTs, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n);
 
 		// check if feature matrix is equivalent to the one calculated with matlab
 		if (Util.EXAMPLE_TEST) {
@@ -352,10 +368,13 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	}
 
 	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
-			List<GenotypesList> markersGenotypesSource,
-			GenotypeEncoder genotypeEncoder,
-			int dSamples,
-			int n)
+			final List<GenotypesList> markersGenotypesSource,
+			final List<Byte> majorAlleles,
+			final List<Byte> minorAlleles,
+			final List<int[]> markerGenotypesCounts,
+			final GenotypeEncoder genotypeEncoder,
+			final int dSamples,
+			final int n)
 			throws IOException
 	{
 		// max memory usage of this function [bytes]
@@ -365,7 +384,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
 		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage));
 
-		return new MarkerGenotypesEncoder(markersGenotypesSource, genotypeEncoder, dSamples, n, maxChunkSize);
+		return new MarkerGenotypesEncoder(markersGenotypesSource, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, maxChunkSize);
 	}
 
 	/**

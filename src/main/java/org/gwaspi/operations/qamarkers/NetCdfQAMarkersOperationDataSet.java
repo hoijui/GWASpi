@@ -36,6 +36,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.AlleleCounts;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.GenotypeCounts;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
@@ -62,7 +64,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	private ArrayDouble.D1 netCdfMajorAllelesFrequencies;
 	private ArrayByte.D1 netCdfMinorAlleles;
 	private ArrayDouble.D1 netCdfMinorAllelesFrequencies;
-	private ArrayInt.D2 netCdfCensusAlls;
+//	private ArrayInt.D2 netCdfCensusAlls;
+	private ArrayInt.D1 netCdfNumAA;
+	private ArrayInt.D1 netCdfNumAa;
+	private ArrayInt.D1 netCdfNumaa;
+	private ArrayInt.D1 netCdfNumMissing;
+	private ArrayInt.D2 netCdfAllelesCount;
+	private ArrayInt.D2 netCdfGenotypesCount;
 
 	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
@@ -473,7 +481,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMajorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
 			netCdfMinorAlleles = new ArrayByte.D1(writeBuffer.size());
 			netCdfMinorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
-			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+//			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+			netCdfNumAA = new ArrayInt.D1(writeBuffer.size());
+			netCdfNumAa = new ArrayInt.D1(writeBuffer.size());
+			netCdfNumaa = new ArrayInt.D1(writeBuffer.size());
+			netCdfNumMissing = new ArrayInt.D1(writeBuffer.size());
+			netCdfAllelesCount = new ArrayInt.D2(writeBuffer.size(), AlleleCounts.values().length);
+			netCdfGenotypesCount = new ArrayInt.D2(writeBuffer.size(), GenotypeCounts.values().length);
 		} else if (writeBuffer.size() < netCdfMajorAlleles.getShape()[0]) {
 			// we end up here at the end of the processing, if, for example,
 			// we have a buffer size of 10, but only 7 items are left to be written
@@ -487,7 +501,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 				netCdfMajorAllelesFrequencies = (ArrayDouble.D1) netCdfMajorAllelesFrequencies.sectionNoReduce(reducedRange1D);
 				netCdfMinorAlleles = (ArrayByte.D1) netCdfMinorAlleles.sectionNoReduce(reducedRange1D);
 				netCdfMinorAllelesFrequencies = (ArrayDouble.D1) netCdfMinorAllelesFrequencies.sectionNoReduce(reducedRange1D);
-				netCdfCensusAlls = (ArrayInt.D2) netCdfCensusAlls.sectionNoReduce(reducedRange2D);
+//				netCdfCensusAlls = (ArrayInt.D2) netCdfCensusAlls.sectionNoReduce(reducedRange2D);
+				netCdfNumAA = (ArrayInt.D1) netCdfNumAA.sectionNoReduce(reducedRange1D);
+				netCdfNumAa = (ArrayInt.D1) netCdfNumAa.sectionNoReduce(reducedRange1D);
+				netCdfNumaa = (ArrayInt.D1) netCdfNumaa.sectionNoReduce(reducedRange1D);
+				netCdfNumMissing = (ArrayInt.D1) netCdfNumMissing.sectionNoReduce(reducedRange1D);
+				netCdfAllelesCount = (ArrayInt.D2) netCdfAllelesCount.sectionNoReduce(reducedRange2D);
+				netCdfGenotypesCount = (ArrayInt.D2) netCdfGenotypesCount.sectionNoReduce(reducedRange2D);
 			} catch (InvalidRangeException ex) {
 				throw new IOException(ex);
 			}
@@ -498,10 +518,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMajorAllelesFrequencies.setDouble(netCdfMajorAllelesFrequencies.getIndex().set(index), entry.getMajorAlleleFrequency());
 			netCdfMinorAlleles.setByte(netCdfMinorAlleles.getIndex().set(index), entry.getMinorAllele());
 			netCdfMinorAllelesFrequencies.setDouble(netCdfMinorAllelesFrequencies.getIndex().set(index), entry.getMinorAlleleFrequency());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 0), entry.getAlleleAA());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleAa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getAlleleaa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 3), entry.getMissingCount());
+//			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 0), entry.getAlleleAA());
+//			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleAa());
+//			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getAlleleaa());
+//			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 3), entry.getMissingCount());
+			netCdfNumAA.setInt(netCdfNumAA.getIndex().set(index), entry.getAlleleAA());
+			netCdfNumAa.setInt(netCdfNumAa.getIndex().set(index), entry.getAlleleAa());
+			netCdfNumaa.setInt(netCdfNumaa.getIndex().set(index), entry.getAlleleaa());
+			netCdfNumMissing.setInt(netCdfNumMissing.getIndex().set(index), entry.getMissingCount());
+			final int[] alleleCounts = entry.getAlleleCounts();
+			for (int ai = 0; ai < AlleleCounts.values().length; ai++) {
+				netCdfAllelesCount.setInt(netCdfAllelesCount.getIndex().set(index, ai), alleleCounts[ai]);
+			}
+			final int[] genotypeCounts = entry.getGenotypeCounts();
+			for (int gi = 0; gi < GenotypeCounts.values().length; gi++) {
+				netCdfGenotypesCount.setInt(netCdfGenotypesCount.getIndex().set(index, gi), genotypeCounts[gi]);
+			}
 			index++;
 		}
 		try {
@@ -509,7 +541,13 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin2D, netCdfCensusAlls);
+//			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin2D, netCdfCensusAlls);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, origin, netCdfNumAA);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, origin, netCdfNumAa);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, origin, netCdfNumaa);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, origin, netCdfNumMissing);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, origin2D, netCdfAllelesCount);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, origin2D, netCdfGenotypesCount);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

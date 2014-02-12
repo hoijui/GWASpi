@@ -31,6 +31,8 @@ public class MarkerAlleleAndGTStatistics implements Cloneable {
 	private int numAA;
 	private int numAa;
 	private int numaa;
+	private int[] compactAlleleStatistics;
+	private int[] compactGenotypeStatistics;
 
 	public MarkerAlleleAndGTStatistics() {
 
@@ -153,6 +155,22 @@ public class MarkerAlleleAndGTStatistics implements Cloneable {
 		this.numaa = numaa;
 	}
 
+	public int[] getCompactAlleleStatistics() {
+		return compactAlleleStatistics;
+	}
+
+	public void setCompactAlleleStatistics(int[] compactAlleleStatistics) {
+		this.compactAlleleStatistics = compactAlleleStatistics;
+	}
+
+	public int[] getCompactGenotypeStatistics() {
+		return compactGenotypeStatistics;
+	}
+
+	public void setCompactGenotypeStatistics(int[] compactGenotypeStatistics) {
+		this.compactGenotypeStatistics = compactGenotypeStatistics;
+	}
+
 //	public final void calculateSummaryValues(RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics) {
 //
 //		numAA = 0;
@@ -186,5 +204,7 @@ public class MarkerAlleleAndGTStatistics implements Cloneable {
 		numAA = -1;
 		numAa = -1;
 		numaa = -1;
+		compactAlleleStatistics = null;
+		compactGenotypeStatistics = null;
 	}
 }
