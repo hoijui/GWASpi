@@ -61,7 +61,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public static final String TITLE = "Edit Combi-Test parameters";
 
-	private CombiTestParams originalCombiTestParams;
+	private CombiTestOperationParams originalCombiTestParams;
 
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
@@ -233,7 +233,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.resultMatrixP.setLayout(contentPanelLayout);
 	}
 
-	public void setCombiTestParams(CombiTestParams combiTestParams) {
+	public void setCombiTestParams(CombiTestOperationParams combiTestParams) {
 
 		this.originalCombiTestParams = combiTestParams;
 
@@ -260,7 +260,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
-		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestParams.getEncoderDefault()));
+		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
 		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
 				combiTestParams.getMarkersToKeep(), // initial value
@@ -283,8 +283,8 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
-		this.resultMatrixValue.setText(combiTestParams.getResultOperationName());
-		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getResultOperationNameDefault()));
+		this.resultMatrixValue.setText(combiTestParams.getName());
+		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getNameDefault()));
 
 		this.validate();
 	}
@@ -348,9 +348,9 @@ public class CombiTestParamsGUI extends JPanel {
 		 return hwOperationKeys;
 	}
 
-	public CombiTestParams getCombiTestParams() {
+	public CombiTestOperationParams getCombiTestParams() {
 
-		CombiTestParams combiTestParams = new CombiTestParams(
+		CombiTestOperationParams combiTestParams = new CombiTestOperationParams(
 //				originalCombiTestParams.getMatrixKey(), // cause it is not editable
 				(OperationKey) censusOperationValue.getSelectedItem(),
 //				(OperationKey) hwOperationValue.getSelectedItem(),
@@ -364,7 +364,7 @@ public class CombiTestParamsGUI extends JPanel {
 		return combiTestParams;
 	}
 
-	public static CombiTestParams chooseCombiTestParams(Component parentComponent, CombiTestParams combiTestParams) {
+	public static CombiTestOperationParams chooseCombiTestParams(Component parentComponent, CombiTestOperationParams combiTestParams) {
 
 		CombiTestParamsGUI combiTestParamsGUI = new CombiTestParamsGUI();
 		combiTestParamsGUI.setCombiTestParams(combiTestParams);
@@ -375,7 +375,7 @@ public class CombiTestParamsGUI extends JPanel {
 				TITLE,
 				JOptionPane.OK_CANCEL_OPTION);
 
-		CombiTestParams returnCombiTestParams;
+		CombiTestOperationParams returnCombiTestParams;
 		if (selectedValue == JOptionPane.OK_OPTION) {
 			returnCombiTestParams = combiTestParamsGUI.getCombiTestParams();
 		} else {

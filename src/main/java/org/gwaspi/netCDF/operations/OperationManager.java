@@ -17,7 +17,6 @@
 
 package org.gwaspi.netCDF.operations;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
@@ -45,64 +45,18 @@ public class OperationManager {
 
 	//<editor-fold defaultstate="expanded" desc="MATRIX CENSUS">
 	public static OperationKey censusCleanMatrixMarkers(
-			MatrixKey rdMatrixKey,
-			OperationKey samplesQAOpKey,
-			OperationKey markersQAOpKey,
-			double markerMissingRatio,
-			boolean discardMismatches,
-			double sampleMissingRatio,
-			double sampleHetzygRatio,
-			String censusName)
+			final MarkerCensusOperationParams params)
 			throws IOException
 	{
-		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
+		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
 
-		MatrixOperation operation = new OP_MarkerCensus(
-				rdMatrixKey,
-				censusName,
-				samplesQAOpKey,
-				sampleMissingRatio,
-				sampleHetzygRatio,
-				markersQAOpKey,
-				discardMismatches,
-				markerMissingRatio,
-				null);
+		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
+
+		MatrixOperation operation = new OP_MarkerCensus(params);
 
 		int resultOpId = operation.processMatrix();
 
-		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
-
-		return operationKey;
-	}
-
-	public static OperationKey censusCleanMatrixMarkersByPhenotypeFile(
-			MatrixKey rdMatrixKey,
-			OperationKey samplesQAOpKey,
-			OperationKey markersQAOpKey,
-			double markerMissingRatio,
-			boolean discardMismatches,
-			double sampleMissingRatio,
-			double sampleHetzygRatio,
-			String censusName,
-			File phenoFile)
-			throws IOException
-	{
-		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
-
-		MatrixOperation operation = new OP_MarkerCensus(
-				rdMatrixKey,
-				censusName,
-				samplesQAOpKey,
-				sampleMissingRatio,
-				sampleHetzygRatio,
-				markersQAOpKey,
-				discardMismatches,
-				markerMissingRatio,
-				phenoFile);
-
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		return operationKey;
 	}
@@ -191,7 +145,7 @@ public class OperationManager {
 //		return operationKey;
 //	}
 
-	public static OperationKey performRawCombiTest(CombiTestParams params)
+	public static OperationKey performRawCombiTest(CombiTestOperationParams params)
 			throws IOException
 	{
 		MatrixOperation operation = new CombiTestMatrixOperation(params);
@@ -206,7 +160,7 @@ public class OperationManager {
 			resultOpId = Integer.MIN_VALUE;
 		}
 
-		final OperationKey operationKey = new OperationKey(params.getParentKey().getOrigin(), resultOpId);
+		final OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		return operationKey;
 	}

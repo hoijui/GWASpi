@@ -46,6 +46,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -392,18 +393,41 @@ public class MoreGWASinOneGoInfo extends JFrame {
 						gwasParams.setGtCode((GenotypeEncoding) cmb_GTCode.getSelectedItem());
 					}
 
-					gwasParams.setDiscardGTMismatches(chkB_MMM.isSelected());
-					gwasParams.setDiscardMarkerByMisRat(chkB_MMS.isSelected());
-					gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(txtF_MMS.getText()));
-	//				gwasParams.discardMarkerByHetzyRat = chkB_MHZ.isSelected();
-	//				gwasParams.discardMarkerHetzyRatVal = Double.parseDouble(txtF_MHZ.getText());
+					MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+
+					markerCensusOperationParams.setDiscardMismatches(chkB_MMM.isSelected());
+
+					final double markerMissingRatio;
+					if (chkB_MHZ.isSelected()) {
+						markerMissingRatio = Double.parseDouble(txtF_MHZ.getText());
+					} else {
+						markerMissingRatio = MarkerCensusOperationParams.DISABLE_MARKER_MISSING_RATIO;
+					}
+					markerCensusOperationParams.setMarkerMissingRatio(markerMissingRatio);
+
+//					gwasParams.discardMarkerByHetzyRat = chkB_MHZ.isSelected();
+//					gwasParams.discardMarkerHetzyRatVal = Double.parseDouble(txtF_MHZ.getText());
+
+					final double sampleMissingRatio;
+					if (chkB_SMS.isSelected()) {
+						sampleMissingRatio = Double.parseDouble(txtF_SMS.getText());
+					} else {
+						sampleMissingRatio = MarkerCensusOperationParams.DISABLE_SAMPLE_MISSING_RATIO;
+					}
+					markerCensusOperationParams.setSampleMissingRatio(sampleMissingRatio);
+
+					final double sampleHetzyRatio;
+					if (chkB_SHZ.isSelected()) {
+						sampleHetzyRatio = Double.parseDouble(txtF_SHZ.getText());
+					} else {
+						sampleHetzyRatio = MarkerCensusOperationParams.DISABLE_SAMPLE_HETZY_RATIO;
+					}
+					markerCensusOperationParams.setSampleHetzygRatio(sampleHetzyRatio);
+
 					gwasParams.setDiscardMarkerHWCalc(rdioB_HW_Calc.isSelected());
 					gwasParams.setDiscardMarkerHWFree(rdioB_HW_free.isSelected());
 					gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(txtF_HW_free.getText()));
-					gwasParams.setDiscardSampleByMisRat(chkB_SMS.isSelected());
-					gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(txtF_SMS.getText()));
-					gwasParams.setDiscardSampleByHetzyRat(chkB_SHZ.isSelected());
-					gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(txtF_SHZ.getText()));
+
 					gwasParams.setProceed(true);
 				} catch (NumberFormatException ex) {
 					log.warn(null, ex);

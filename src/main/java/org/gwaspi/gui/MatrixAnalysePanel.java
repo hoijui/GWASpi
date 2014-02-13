@@ -65,7 +65,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.CombiTestParamsGUI;
 import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
@@ -417,10 +417,10 @@ public class MatrixAnalysePanel extends JPanel {
 							}
 						}
 
-						CombiTestParams combiTestParams = null;
+						CombiTestOperationParams combiTestParams = null;
 						if (reProceed) {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
-								combiTestParams = new CombiTestParams(
+								combiTestParams = new CombiTestOperationParams(
 //										parentMatrixKey,
 										censusOPKey//,
 //										hwOPKey
@@ -465,7 +465,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class GenFreqAndHWAction extends AbstractAction {
 
-		private MatrixKey parentMatrixKey;
+		private final MatrixKey parentMatrixKey;
 		private GWASinOneGOParams gwasParams;
 
 		GenFreqAndHWAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams) {
@@ -500,18 +500,18 @@ public class MatrixAnalysePanel extends JPanel {
 					}
 				}
 
-				if (!gwasParams.isDiscardMarkerByMisRat()) {
-					gwasParams.setDiscardMarkerMisRatVal(1);
-				}
-				if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-					gwasParams.setDiscardMarkerHetzyRatVal(1);
-				}
-				if (!gwasParams.isDiscardSampleByMisRat()) {
-					gwasParams.setDiscardSampleMisRatVal(1);
-				}
-				if (!gwasParams.isDiscardSampleByHetzyRat()) {
-					gwasParams.setDiscardSampleHetzyRatVal(1);
-				}
+//				if (!gwasParams.isDiscardMarkerByMisRat()) {
+//					gwasParams.setDiscardMarkerMisRatVal(1);
+//				}
+//				if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+//					gwasParams.setDiscardMarkerHetzyRatVal(1);
+//				}
+//				if (!gwasParams.isDiscardSampleByMisRat()) {
+//					gwasParams.setDiscardSampleMisRatVal(1);
+//				}
+//				if (!gwasParams.isDiscardSampleByHetzyRat()) {
+//					gwasParams.setDiscardSampleHetzyRatVal(1);
+//				}
 
 				if (gwasParams.isProceed()) {
 					ProcessTab.getSingleton().showTab();

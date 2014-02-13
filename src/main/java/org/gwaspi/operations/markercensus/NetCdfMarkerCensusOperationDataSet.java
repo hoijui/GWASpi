@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.markercensus;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,12 +81,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		categoryNetCdfVarName.putAll(categoryNetCdfVarNameWithoutAll);
 	}
 
-	private String censusName;
-	private File phenoFile;
-	private double sampleMissingRatio;
-	private double sampleHetzygRatio;
-	private double markerMissingRatio;
-	private boolean discardMismatches;
+	private MarkerCensusOperationParams params;
 	private ArrayByte.D2 netCdfKnownAlleles;
 	private ArrayInt.D2 netCdfCensusAlls;
 	private ArrayInt.D2 netCdfCensusesRest;
@@ -117,28 +111,9 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		return chunkSize;
 	}
 
-	public void setPhenoFile(File phenoFile) {
-		this.phenoFile = phenoFile;
-	}
-
-	public void setCensusName(String censusName) {
-		this.censusName = censusName;
-	}
-
-	public void setSampleMissingRatio(double sampleMissingRatio) {
-		this.sampleMissingRatio = sampleMissingRatio;
-	}
-
-	public void setSampleHetzygRatio(double sampleHetzygRatio) {
-		this.sampleHetzygRatio = sampleHetzygRatio;
-	}
-
-	public void setMarkerMissingRatio(double markerMissingRatio) {
-		this.markerMissingRatio = markerMissingRatio;
-	}
-
-	public void setDiscardMismatches(boolean discardMismatches) {
-		this.discardMismatches = discardMismatches;
+	@Override
+	public void setParams(final MarkerCensusOperationParams params) {
+		this.params = params;
 	}
 
 	@Override
@@ -200,20 +175,20 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
 
-		String description = "Genotype frequency count -" + censusName + "- on " + rdDataSetMetadata.getFriendlyName();
-		if (phenoFile != null) {
-			description += "\nCase/Control status read from file: " + phenoFile.getPath();
+		String description = "Genotype frequency count -" + params.getName() + "- on " + rdDataSetMetadata.getFriendlyName();
+		if (params.getPhenotypeFile() != null) {
+			description += "\nCase/Control status read from file: " + params.getPhenotypeFile().getPath();
 			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
 		return new OperationMetadata(
 				getParent(), // parent data set
-				"Genotypes freq. - " + censusName, // friendly name
+				"Genotypes freq. - " + params.getName(), // friendly name
 				description
-					+ "\nSample missing ratio threshold: " + sampleMissingRatio
-					+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
-					+ "\nMarker missing ratio threshold: " + markerMissingRatio
-					+ "\nDiscard mismatching Markers: " + discardMismatches
+					+ "\nSample missing ratio threshold: " + params.getSampleMissingRatio()
+					+ "\nSample heterozygosity ratio threshold: " + params.getSampleHetzygRatio()
+					+ "\nMarker missing ratio threshold: " + params.getMarkerMissingRatio()
+					+ "\nDiscard mismatching Markers: " + params.isDiscardMismatches()
 					+ "\nMarkers: " + getNumMarkers()
 					+ "\nSamples: " + getNumSamples(), // description
 				opType,

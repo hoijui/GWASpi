@@ -17,22 +17,20 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.operations.AbstractOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Parameters for the {@link CombiTestMatrixOperation}.
  */
-public class CombiTestParams {
+public class CombiTestOperationParams extends AbstractOperationParams {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CombiTestParams.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CombiTestOperationParams.class);
 
 //	/**
 //	 * Which matrix to operate on (read from).
@@ -40,12 +38,10 @@ public class CombiTestParams {
 //	private final MatrixKey matrixKey;
 //	private final OperationKey censusOperationKey;
 	private final OperationKey qaMarkersOperationKey;
-	private final DataSetKey parentKey;
 //	private final OperationKey hardyWeinbergOperationKey;
 //	private final double hardyWeinbergThreshold;
 	private final GenotypeEncoder encoder;
 //	private final File phenotypeInfo;
-	private final String resultOperationName;
 	/**
 	 * The number of total markers in the matrix we operate on, unfiltered.
 	 */
@@ -61,7 +57,7 @@ public class CombiTestParams {
 	 */
 	private final boolean useThresholdCalibration;
 
-	public CombiTestParams(
+	public CombiTestOperationParams(
 //			MatrixKey matrixKey,
 //			OperationKey censusOperationKey,
 			OperationKey qaMarkersOperationKey,
@@ -71,12 +67,13 @@ public class CombiTestParams {
 //			File phenotypeInfo,
 			Integer markersToKeep,
 			Boolean useThresholdCalibration,
-			String resultMatrixName)
+			String name)
 	{
+		super(new DataSetKey(qaMarkersOperationKey), name);
+
 //		this.matrixKey = matrixKey;
 //		this.censusOperationKey = censusOperationKey;
 		this.qaMarkersOperationKey = qaMarkersOperationKey;
-		this.parentKey = new DataSetKey(qaMarkersOperationKey);
 //		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
 //		this.hardyWeinbergThreshold = (hardyWeinbergThreshold == null)
 //				? getHardyWeinbergThresholdDefault()
@@ -92,9 +89,6 @@ public class CombiTestParams {
 				? isUseThresholdCalibrationDefault()
 				: useThresholdCalibration;
 //		this.phenotypeInfo = phenotypeInfo;
-		this.resultOperationName = (resultMatrixName == null)
-				? getResultOperationNameDefault()
-				: resultMatrixName;
 	}
 
 //	public CombiTestParams(
@@ -116,7 +110,7 @@ public class CombiTestParams {
 //				);
 //	}
 
-	public CombiTestParams(
+	public CombiTestOperationParams(
 //			MatrixKey matrixKey,
 			OperationKey censusOperationKey/*,
 			OperationKey hardyWeinbergOperationKey*/)
@@ -148,20 +142,6 @@ public class CombiTestParams {
 		}
 
 		return total;
-	}
-
-	/**
-	 * Returns a set of all matrices (excluding the newly created one, if any)
-	 * that are participating the the process of this operation.
-	 * This is mainly used for locking.
-	 * @return
-	 */
-	public Set<MatrixKey> getParticipatingMatrices() {
-		return Collections.singleton(parentKey.getOrigin());
-	}
-
-	public DataSetKey getParentKey() {
-		return parentKey;
 	}
 
 //	public MatrixKey getMatrixKey() {
@@ -207,7 +187,7 @@ public class CombiTestParams {
 	public int getTotalMarkers() {
 
 		if (totalMarkers == null) {
-			totalMarkers = fetchTotalMarkers(getParentKey());
+			totalMarkers = fetchTotalMarkers(getParent());
 		}
 
 		return totalMarkers;
@@ -225,11 +205,8 @@ public class CombiTestParams {
 		return false;
 	}
 
-	public String getResultOperationName() {
-		return resultOperationName;
-	}
-
-	public String getResultOperationNameDefault() {
-		return "Combi-Test for matrix " + getParentKey().getOrigin().toString(); // TODO use nicer matrix name!
+	@Override
+	protected String getNameDefault() {
+		return "Combi-Test for matrix " + getParent().getOrigin().toString(); // TODO use nicer matrix name!
 	}
 }

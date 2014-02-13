@@ -30,6 +30,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.Util;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -137,6 +138,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		String pedFileName = name + ".ped";
 
 		final String dataSpecifier = mapFileName + ", " + pedFileName;
+
+		OperationManager.censusCleanMatrixMarkers(matrixKey, null, null, matrixId, true, matrixId, matrixId, pedFileName)
 
 		List<OperationKey> opKeys = testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
 		OperationKey gtFreqOpKey = opKeys.get(0);

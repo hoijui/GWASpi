@@ -63,18 +63,18 @@ public class Threaded_Test extends CommonRunnable {
 		List<OperationMetadata> operations = OperationsList.getOperationsList(censusOpKey.getParentMatrixKey());
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		if (!gwasParams.isDiscardMarkerByMisRat()) {
-			gwasParams.setDiscardMarkerMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-			gwasParams.setDiscardMarkerHetzyRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByMisRat()) {
-			gwasParams.setDiscardSampleMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByHetzyRat()) {
-			gwasParams.setDiscardSampleHetzyRatVal(1);
-		}
+//		if (!gwasParams.isDiscardMarkerByMisRat()) {
+//			gwasParams.setDiscardMarkerMisRatVal(1);
+//		}
+//		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+//			gwasParams.setDiscardMarkerHetzyRatVal(1);
+//		}
+//		if (!gwasParams.isDiscardSampleByMisRat()) {
+//			gwasParams.setDiscardSampleMisRatVal(1);
+//		}
+//		if (!gwasParams.isDiscardSampleByHetzyRat()) {
+//			gwasParams.setDiscardSampleHetzyRatVal(1);
+//		}
 
 		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);

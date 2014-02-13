@@ -20,19 +20,19 @@ package org.gwaspi.threadbox;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_Combi extends CommonRunnable {
 
-	private final CombiTestParams params;
+	private final CombiTestOperationParams params;
 
-	public Threaded_Combi(CombiTestParams params) {
+	public Threaded_Combi(CombiTestOperationParams params) {
 		super(
 				"Combi Association Test",
 				"Combi Association Study",
-				"Combi Association Test on: " + params.getParentKey().toString(),
+				"Combi Association Test on: " + params.getParent().toString(),
 				"Combi Association Test");
 
 		this.params = params;

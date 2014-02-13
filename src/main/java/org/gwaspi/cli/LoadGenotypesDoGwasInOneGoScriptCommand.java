@@ -23,6 +23,7 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 
 class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
@@ -76,16 +77,31 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 			String newMatrixName = args.get("new-matrix-name");
 			String description = args.get("description");
 
-			gwasParams.setDiscardGTMismatches(true);
-			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get("discard-marker-by-missing-ratio")));
-			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get("discard-marker-missing-ratio-threshold")));
+			boolean markersMismatchDiscard = true;
+//			boolean markersMismatchDiscard = Boolean.parseBoolean(args.get("discard-mismached-marker"));
+//			boolean discardByMarkersMissingRatio = Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio"));
+			double markersMissingRatioThreshold = Double.parseDouble(args.get("discard-marker-missing-ratio-threshold"));
+//			boolean discardBySamplesMissingRatio = Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio"));
+			double samplesMissingRatioThreshold = Double.parseDouble(args.get("discard-samples-missing-ratio-threshold"));
+			double samplesHetzyRatioThreshold = Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold"));
+
+			MarkerCensusOperationParams markerCensusOperationParams
+					= new MarkerCensusOperationParams(
+							XXX,
+							null,
+							XXX,
+							samplesMissingRatioThreshold,
+							samplesHetzyRatioThreshold,
+							XXX,
+							markersMismatchDiscard,
+							markersMissingRatioThreshold,
+							null);
+
+			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
+
 			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get("calculate-discard-threshold-for-HW")));
 			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get("discard-marker-with-provided-threshold")));
 			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get("discard-marker-HW-treshold")));
-			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio")));
-			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get("discard-samples-missing-ratio-threshold")));
-			gwasParams.setDiscardSampleByHetzyRat(Boolean.parseBoolean(args.get("discard-samples-by-heterozygosity-ratio")));
-			gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold")));
 			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get("perform-Allelic-Tests")));
 			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get("perform-Genotypic-Tests")));
 			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get("perform-Trend-Tests")));

@@ -27,7 +27,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.threadbox.MultiOperations;
@@ -97,7 +97,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
 
-			CombiTestParams params = new CombiTestParams(
+			CombiTestOperationParams params = new CombiTestOperationParams(
 //					matrixKey,
 					censusOperationKey,
 //					hwOperationKey,

@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 
 public class GWASinOneGOParams {
 
@@ -26,18 +27,23 @@ public class GWASinOneGOParams {
 	private boolean performAllelicTests = true;
 	private boolean performGenotypicTests = true;
 	private boolean performTrendTests = true;
-	private boolean discardGTMismatches = true;
-	private boolean discardMarkerByMisRat = true;
-	private double discardMarkerMisRatVal = 0;
-	private boolean discardMarkerByHetzyRat = false;
-	private double discardMarkerHetzyRatVal = 0;
+
 	private boolean discardMarkerHWCalc = true;
 	private boolean discardMarkerHWFree = false;
 	private double discardMarkerHWTreshold = 0;
-	private boolean discardSampleByMisRat = true;
-	private double discardSampleMisRatVal = 0;
-	private boolean discardSampleByHetzyRat = false;
-	private double discardSampleHetzyRatVal = 0;
+
+//	private boolean discardGTMismatches = true;
+//	private boolean discardMarkerByMisRat = true;
+//	private double discardMarkerMisRatVal = 0;
+//	private boolean discardMarkerByHetzyRat = false;
+//	private double discardMarkerHetzyRatVal = 0;
+//	private boolean discardSampleByMisRat = true;
+//	private double discardSampleMisRatVal = 0;
+//	private boolean discardSampleByHetzyRat = false;
+//	private double discardSampleHetzyRatVal = 0;
+	private MarkerCensusOperationParams markerCensusOperationParams;
+
+
 	private String chromosome = "";
 	private StrandType strandType = StrandType.UNKNOWN;
 	private GenotypeEncoding gtCode = GenotypeEncoding.UNKNOWN;
@@ -79,46 +85,6 @@ public class GWASinOneGOParams {
 		this.performTrendTests = performTrendTests;
 	}
 
-	public boolean isDiscardGTMismatches() {
-		return discardGTMismatches;
-	}
-
-	public void setDiscardGTMismatches(boolean discardGTMismatches) {
-		this.discardGTMismatches = discardGTMismatches;
-	}
-
-	public boolean isDiscardMarkerByMisRat() {
-		return discardMarkerByMisRat;
-	}
-
-	public void setDiscardMarkerByMisRat(boolean discardMarkerByMisRat) {
-		this.discardMarkerByMisRat = discardMarkerByMisRat;
-	}
-
-	public double getDiscardMarkerMisRatVal() {
-		return discardMarkerMisRatVal;
-	}
-
-	public void setDiscardMarkerMisRatVal(double discardMarkerMisRatVal) {
-		this.discardMarkerMisRatVal = discardMarkerMisRatVal;
-	}
-
-	public boolean isDiscardMarkerByHetzyRat() {
-		return discardMarkerByHetzyRat;
-	}
-
-	public void setDiscardMarkerByHetzyRat(boolean discardMarkerByHetzyRat) {
-		this.discardMarkerByHetzyRat = discardMarkerByHetzyRat;
-	}
-
-	public double getDiscardMarkerHetzyRatVal() {
-		return discardMarkerHetzyRatVal;
-	}
-
-	public void setDiscardMarkerHetzyRatVal(double discardMarkerHetzyRatVal) {
-		this.discardMarkerHetzyRatVal = discardMarkerHetzyRatVal;
-	}
-
 	public boolean isDiscardMarkerHWCalc() {
 		return discardMarkerHWCalc;
 	}
@@ -143,36 +109,84 @@ public class GWASinOneGOParams {
 		this.discardMarkerHWTreshold = discardMarkerHWTreshold;
 	}
 
-	public boolean isDiscardSampleByMisRat() {
-		return discardSampleByMisRat;
+//	public boolean isDiscardGTMismatches() {
+//		return discardGTMismatches;
+//	}
+//
+//	public void setDiscardGTMismatches(boolean discardGTMismatches) {
+//		this.discardGTMismatches = discardGTMismatches;
+//	}
+//
+//	public boolean isDiscardMarkerByMisRat() {
+//		return discardMarkerByMisRat;
+//	}
+//
+//	public void setDiscardMarkerByMisRat(boolean discardMarkerByMisRat) {
+//		this.discardMarkerByMisRat = discardMarkerByMisRat;
+//	}
+//
+//	public double getDiscardMarkerMisRatVal() {
+//		return discardMarkerMisRatVal;
+//	}
+//
+//	public void setDiscardMarkerMisRatVal(double discardMarkerMisRatVal) {
+//		this.discardMarkerMisRatVal = discardMarkerMisRatVal;
+//	}
+//
+//	public boolean isDiscardMarkerByHetzyRat() {
+//		return discardMarkerByHetzyRat;
+//	}
+//
+//	public void setDiscardMarkerByHetzyRat(boolean discardMarkerByHetzyRat) {
+//		this.discardMarkerByHetzyRat = discardMarkerByHetzyRat;
+//	}
+//
+//	public double getDiscardMarkerHetzyRatVal() {
+//		return discardMarkerHetzyRatVal;
+//	}
+//
+//	public void setDiscardMarkerHetzyRatVal(double discardMarkerHetzyRatVal) {
+//		this.discardMarkerHetzyRatVal = discardMarkerHetzyRatVal;
+//	}
+//
+//	public boolean isDiscardSampleByMisRat() {
+//		return discardSampleByMisRat;
+//	}
+//
+//	public void setDiscardSampleByMisRat(boolean discardSampleByMisRat) {
+//		this.discardSampleByMisRat = discardSampleByMisRat;
+//	}
+//
+//	public double getDiscardSampleMisRatVal() {
+//		return discardSampleMisRatVal;
+//	}
+//
+//	public void setDiscardSampleMisRatVal(double discardSampleMisRatVal) {
+//		this.discardSampleMisRatVal = discardSampleMisRatVal;
+//	}
+//
+//	public boolean isDiscardSampleByHetzyRat() {
+//		return discardSampleByHetzyRat;
+//	}
+//
+//	public void setDiscardSampleByHetzyRat(boolean discardSampleByHetzyRat) {
+//		this.discardSampleByHetzyRat = discardSampleByHetzyRat;
+//	}
+//
+//	public double getDiscardSampleHetzyRatVal() {
+//		return discardSampleHetzyRatVal;
+//	}
+//
+//	public void setDiscardSampleHetzyRatVal(double discardSampleHetzyRatVal) {
+//		this.discardSampleHetzyRatVal = discardSampleHetzyRatVal;
+//	}
+
+	public MarkerCensusOperationParams getMarkerCensusOperationParams() {
+		return markerCensusOperationParams;
 	}
 
-	public void setDiscardSampleByMisRat(boolean discardSampleByMisRat) {
-		this.discardSampleByMisRat = discardSampleByMisRat;
-	}
-
-	public double getDiscardSampleMisRatVal() {
-		return discardSampleMisRatVal;
-	}
-
-	public void setDiscardSampleMisRatVal(double discardSampleMisRatVal) {
-		this.discardSampleMisRatVal = discardSampleMisRatVal;
-	}
-
-	public boolean isDiscardSampleByHetzyRat() {
-		return discardSampleByHetzyRat;
-	}
-
-	public void setDiscardSampleByHetzyRat(boolean discardSampleByHetzyRat) {
-		this.discardSampleByHetzyRat = discardSampleByHetzyRat;
-	}
-
-	public double getDiscardSampleHetzyRatVal() {
-		return discardSampleHetzyRatVal;
-	}
-
-	public void setDiscardSampleHetzyRatVal(double discardSampleHetzyRatVal) {
-		this.discardSampleHetzyRatVal = discardSampleHetzyRatVal;
+	public void setMarkerCensusOperationParams(MarkerCensusOperationParams markerCensusOperationParams) {
+		this.markerCensusOperationParams = markerCensusOperationParams;
 	}
 
 	public String getChromosome() {

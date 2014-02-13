@@ -34,7 +34,6 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -45,8 +44,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
-import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,12 +64,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
-	private final CombiTestParams params;
+	private final CombiTestOperationParams params;
 	private Boolean valid;
 	private String problemDescription;
 
-	public CombiTestMatrixOperation(CombiTestParams params) {
-		super(params.getParentKey());
+	public CombiTestMatrixOperation(CombiTestOperationParams params) {
+		super(params.getParent());
 
 		this.params = params;
 		this.valid = null;

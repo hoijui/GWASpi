@@ -19,6 +19,7 @@ package org.gwaspi.threadbox;
 
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -27,13 +28,11 @@ import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
-import org.gwaspi.netCDF.loader.ZipTwoWaySaverSamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputQAMarkers;
-import org.gwaspi.reports.OutputQASamples;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,29 +80,34 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				samplesReceiver);
 		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(samplesReceiver.getDataSet().getSampleInfos());
 
+		MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+
+		markerCensusOperationParams.setName(cNetCDF.Defaults.DEFAULT_AFFECTION);
+
 		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
-		MatrixKey matrixKey = null;
+		final DataSetKey parent;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			LoadManager.dispatchLoadByFormat(
 					loadDescription,
 					samplesReceiver);
-			matrixKey = samplesReceiver.getResultMatrixKey();
+			MatrixKey matrixKey = samplesReceiver.getResultMatrixKey();
 			samplesReceiver.done();
 			MultiOperations.printCompleted("Loading Genotypes");
 			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
+			parent = new DataSetKey(matrixKey);
+			markerCensusOperationParams.setParent(parent);
 		}
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="QA PROCESS">
-		OperationKey samplesQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(matrixKey));
+			OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
+			markerCensusOperationParams.setSampleQAOpKey(samplesQAOpKey);
 		}
 
-		OperationKey markersQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(matrixKey));
-			MultiOperations.printCompleted("Matrix Quality Control");
+			OperationKey markersQAOpKey = OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
+			markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
 		}
 		//</editor-fold>
 
@@ -117,15 +121,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			// GENOTYPE FREQ.
 			OperationKey censusOpKey = null;
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				censusOpKey = OperationManager.censusCleanMatrixMarkers(
-						matrixKey,
-						samplesQAOpKey,
-						markersQAOpKey,
-						gwasParams.getDiscardMarkerMisRatVal(),
-						gwasParams.isDiscardGTMismatches(),
-						gwasParams.getDiscardSampleMisRatVal(),
-						gwasParams.getDiscardSampleHetzyRatVal(),
-						cNetCDF.Defaults.DEFAULT_AFFECTION);
+				censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
 			}
 

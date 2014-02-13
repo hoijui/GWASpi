@@ -35,7 +35,7 @@ import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 
 public class MultiOperations {
 
@@ -160,7 +160,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doCombiTest(final CombiTestParams params) {
+	public static void doCombiTest(final CombiTestOperationParams params) {
 
 		CommonRunnable task = new Threaded_Combi(params);
 
