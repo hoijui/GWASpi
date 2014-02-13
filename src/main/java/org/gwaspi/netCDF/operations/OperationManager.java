@@ -194,14 +194,15 @@ public class OperationManager {
 	public static OperationKey performRawCombiTest(CombiTestParams params)
 			throws IOException
 	{
-		org.gwaspi.global.Utils.sysoutStart(" Combi Association Test");
-
 		MatrixOperation operation = new CombiTestMatrixOperation(params);
 
 		final int resultOpId;
 		if (operation.isValid()) {
 			resultOpId = operation.processMatrix();
 		} else {
+			log.error(
+					"Can not execute COMBI operation, because the given parameters are invalid: {}",
+					operation.getProblemDescription());
 			resultOpId = Integer.MIN_VALUE;
 		}
 

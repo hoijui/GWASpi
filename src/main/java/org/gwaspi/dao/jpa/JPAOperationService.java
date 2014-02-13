@@ -255,7 +255,7 @@ public class JPAOperationService implements OperationService {
 				OPType type = (OPType) operationTypeAndParentOperationId[0];
 				Integer parentOperationId = (Integer) operationTypeAndParentOperationId[1];
 				operationTypes.add(type);
-				if (parentOperationId == null) {
+				if (parentOperationId == OperationKey.NULL_ID) {
 					curOperationKey = null;
 				} else {
 					curOperationKey = new OperationKey(curOperationKey.getParentMatrixKey(), parentOperationId);

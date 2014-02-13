@@ -94,9 +94,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(getParentKey().getOperationParent());
 
 		if (ancestorOperationTypes.isEmpty()
-				|| (ancestorOperationTypes.get(0) != OPType.MARKER_CENSUS_BY_AFFECTION))
+				|| (ancestorOperationTypes.get(0) != OPType.MARKER_QA))
 		{
-			problemDescription = "the direct parent has to be a marker-census (by affection) operation";
+			problemDescription = "the direct parent has to be a QA markers operation";
 			valid = false;
 			return valid;
 		}
@@ -173,6 +173,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// TODO write stuff to a matrix (maybe the list of important markers?)
 
 		dataSet.setWeights(weights);
+
+		dataSet.finnishWriting();
 
 		LOG.info("Combi Association Test: finished");
 
