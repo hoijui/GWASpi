@@ -34,12 +34,8 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
-
-	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples.class);
 
 	/**
 	 * This constructor to join 2 Matrices.

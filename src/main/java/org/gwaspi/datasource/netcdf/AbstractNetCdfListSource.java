@@ -18,7 +18,6 @@
 package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.global.Extractor;
@@ -28,34 +27,28 @@ import ucar.nc2.NetcdfFile;
 
 /**
  * TODO
+ * @param <VT> list value type
  */
-public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
+public abstract class AbstractNetCdfListSource<VT> extends AbstractOrigIndicesFilteredChunkedListSource<VT> {
 
-	private final int chunkSize;
 	private final String varNameDimension;
-	private List<Integer> originalIndices;
 	private Integer size;
 	private final NetcdfFile rdNetCdfFile;
-	private int loadedChunkNumber;
-	private List<VT> loadedChunk;
 
 	private AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
+		super(chunkSize, originalIndices);
 
-		this.chunkSize = chunkSize;
 		this.varNameDimension = varNameDimension;
-		this.originalIndices = originalIndices;
-		this.size = (originalIndices == null) ? null : originalIndices.size();
+		this.size = null;
 		this.rdNetCdfFile = rdNetCdfFile;
-		this.loadedChunkNumber = -1;
-		this.loadedChunk = null;
 	}
 
 	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
 		this(rdNetCdfFile, chunkSize, null, varNameDimension);
 	}
 
-	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices) {
-		this(rdNetCdfFile, chunkSize, originalIndices, null);
+	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension, List<Integer> originalIndices) {
+		this(rdNetCdfFile, chunkSize, originalIndices, varNameDimension);
 	}
 
 	protected NetcdfFile getReadNetCdfFile() {
@@ -83,43 +76,7 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 	}
 
 	@Override
-	public VT get(int index) {
-
-		final int rawIndex;
-		if (originalIndices == null) {
-			rawIndex = index;
-		} else {
-			rawIndex = originalIndices.get(index);
-		}
-
-		return getRaw(rawIndex);
-	}
-
-	private VT getRaw(int index) {
-
-		final int chunkNumber = index / chunkSize;
-		final int inChunkPosition = index % chunkSize;
-
-		if (chunkNumber != loadedChunkNumber) {
-			try {
-//				if (index >= size()) {
-//					throw new IndexOutOfBoundsException();
-//				}
-				final int itemsBefore = chunkNumber * chunkSize;
-				final int itemsInAndAfter = size() - itemsBefore;
-				final int curChunkSize = Math.min(chunkSize, itemsInAndAfter);
-				loadedChunk = getRange(itemsBefore, itemsBefore + curChunkSize - 1);
-				loadedChunkNumber = chunkNumber;
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-		return loadedChunk.get(inChunkPosition);
-	}
-
-	@Override
-	public int size() {
+	public int sizeInternal() {
 
 		if (size == null) {
 			Dimension dim = rdNetCdfFile.findDimension(varNameDimension);
@@ -128,6 +85,4 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 
 		return size;
 	}
-
-	protected abstract List<VT> getRange(int from, int to) throws IOException;
 }

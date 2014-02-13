@@ -132,7 +132,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		this.operationKey = operationKey;
 
-		rdOPMetadata = OperationsList.getOperation(this.operationKey);
+		rdOPMetadata = OperationsList.getOperationMetadata(this.operationKey);
 		rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
 
 		initChart();

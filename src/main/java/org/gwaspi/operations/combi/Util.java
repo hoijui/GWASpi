@@ -28,11 +28,9 @@ import java.io.ObjectOutputStream;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.model.Census;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 
@@ -232,7 +230,7 @@ public class Util {
 
 		final double diff = Math.abs(valA - valB);
 		final double relativeDiff = Math.abs((valA - valB) / (valA + valB));
-		return !(diff > 0.00000000001) ||Double.isNaN(relativeDiff) || !(relativeDiff > 0.01);
+		return !(diff > 0.00000000001) || Double.isNaN(relativeDiff) || !(relativeDiff > 0.015); // TODO get rid of magic values, and possibly make them configurable
 	}
 
 	public static List<List<Double>> transpose(List<List<Double>> matrix) {
@@ -251,6 +249,16 @@ public class Util {
 		}
 
 		return transposed;
+	}
+
+	public static void abs(List<List<Double>> matrix) {
+
+		for (int r = 0; r < matrix.size(); r++) {
+			List<Double> row = matrix.get(r);
+			for (int c = 0; c < row.size(); c++) {
+				row.set(c, Math.abs(row.get(c)));
+			}
+		}
 	}
 
 	public static List<List<Double>> parsePlainTextMatrix(File sourceFile) {

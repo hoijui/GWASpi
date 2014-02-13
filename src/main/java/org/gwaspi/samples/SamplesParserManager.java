@@ -28,11 +28,12 @@ import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -65,16 +66,16 @@ public class SamplesParserManager {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DB SAMPLE INFO PROVIDERS">
-	public static Set<SampleInfo.Affection> getDBAffectionStates(MatrixKey matrixKey) {
+	public static Set<Affection> getDBAffectionStates(final DataSetKey dataSetKey) {
 
-		Set<SampleInfo.Affection> affections = EnumSet.noneOf(SampleInfo.Affection.class);
+		Set<Affection> affections = EnumSet.noneOf(Affection.class);
 
 		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+			DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(dataSetKey);
 			log.info("Getting Sample Affection info for: {}",
-					rdMatrixMetadata.getFriendlyName());
-			DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(matrixKey);
-			for (SampleKey key : rdDataSetSource.getSamplesKeysSource()) {
+					dataSetMetadata.getFriendlyName());
+			DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(dataSetKey);
+			for (SampleKey key : dataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = SampleInfoList.getSample(key);
 				if (sampleInfo != null) {
 					affections.add(sampleInfo.getAffection());
@@ -83,6 +84,7 @@ public class SamplesParserManager {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return affections;
 	}
 	//</editor-fold>
@@ -91,9 +93,9 @@ public class SamplesParserManager {
 		sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath, samplesReceiver);
 	}
 
-	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
+	public static Set<Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
 
-		Set<SampleInfo.Affection> result = EnumSet.noneOf(SampleInfo.Affection.class);
+		Set<Affection> result = EnumSet.noneOf(Affection.class);
 
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -103,7 +105,7 @@ public class SamplesParserManager {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-			result.add(SampleInfo.Affection.parse(cVals[GWASpi.affection]));
+			result.add(Affection.parse(cVals[GWASpi.affection]));
 		}
 
 		inputBufferReader.close();

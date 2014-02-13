@@ -40,7 +40,7 @@ public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<Chrom
 	}
 
 	private NetCdfChromosomesInfosSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_CHRSET, originalIndices);
 	}
 
 	public static ChromosomesInfosSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {

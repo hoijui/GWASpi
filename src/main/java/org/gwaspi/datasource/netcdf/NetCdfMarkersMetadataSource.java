@@ -23,8 +23,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<MarkerMetadata> implements MarkersMetadataSource {
@@ -32,20 +36,71 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
-	private NetCdfMarkersMetadataSource(NetcdfFile rdNetCdfFile) {
+	private final DataSetSource dataSetSource;
+	private final MatrixKey origin;
+	private DataSetSource originDataSetSource;
+	private MarkersMetadataSource originSource;
+
+	private NetCdfMarkersMetadataSource(
+			final DataSetSource dataSetSource,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile)
+	{
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
+
+		this.dataSetSource = dataSetSource;
+		this.origin = origin;
+		this.originDataSetSource = null;
+		this.originSource = null;
 	}
 
-	private NetCdfMarkersMetadataSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+	private NetCdfMarkersMetadataSource(
+			final DataSetSource dataSetSource,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile,
+			final List<Integer> originalIndices)
+	{
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_MARKERSET, originalIndices);
+
+		this.dataSetSource = dataSetSource;
+		this.origin = origin;
+		this.originDataSetSource = null;
+		this.originSource = null;
 	}
 
-	public static MarkersMetadataSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfMarkersMetadataSource(rdNetCdfFile);
+	private DataSetSource getDataSetSource() {
+		return dataSetSource;
 	}
 
-	public static MarkersMetadataSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfMarkersMetadataSource(rdNetCdfFile, originalIndices);
+	private DataSetSource getOrigDataSetSource() throws IOException {
+
+		if (originDataSetSource == null) {
+			originDataSetSource = MatrixFactory.generateMatrixDataSetSource(origin);
+		}
+
+		return originDataSetSource;
+	}
+
+	private MarkersMetadataSource getOrigSource() throws IOException {
+
+		if (originSource == null) {
+			originSource = getOrigDataSetSource().getMarkersMetadatasSource();
+		}
+
+		return originSource;
+	}
+
+	public static MarkersMetadataSource createForMatrix(final DataSetSource dataSetSource, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfMarkersMetadataSource(dataSetSource, null, rdNetCdfFile);
+	}
+
+	public static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfMarkersMetadataSource(dataSetSource, origin, rdNetCdfFile, originalIndices);
+	}
+
+	@Override
+	public MarkersKeysSource getKeysSource() throws IOException {
+		return getDataSetSource().getMarkersKeysSource();
 	}
 
 	@Override
@@ -103,33 +158,111 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 		return getStrands(-1, -1);
 	}
 
-	@Override
+//	@Override
 	public List<String> getMarkerIds(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<String> allOriginMarkerIds = origSource.getMarkerIds();
+			final List<String> localMarkerIds = extractValuesByOrigIndices(allOriginIndices, allOriginMarkerIds, toExtractSampleOrigIndices);
+			return localMarkerIds;
+		}
 	}
 
-	@Override
+//	@Override
 	public List<String> getRsIds(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_MARKERS_RSID, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_MARKERS_RSID, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<String> allOriginRsIds = origSource.getRsIds();
+			final List<String> localRsIds = extractValuesByOrigIndices(allOriginIndices, allOriginRsIds, toExtractSampleOrigIndices);
+			return localRsIds;
+		}
 	}
 
-	@Override
+//	@Override
 	public List<String> getChromosomes(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_MARKERS_CHR, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_MARKERS_CHR, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<String> allOriginChromosomes = origSource.getChromosomes();
+			final List<String> localChromosomes = extractValuesByOrigIndices(allOriginIndices, allOriginChromosomes, toExtractSampleOrigIndices);
+			return localChromosomes;
+		}
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getPositions(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_MARKERS_POS, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_MARKERS_POS, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<Integer> allOriginPositions = origSource.getPositions();
+			final List<Integer> localPositions = extractValuesByOrigIndices(allOriginIndices, allOriginPositions, toExtractSampleOrigIndices);
+			return localPositions;
+		}
 	}
 
-	@Override
+//	@Override
 	public List<String> getAlleles(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<String> allOriginAlleles = origSource.getAlleles();
+			final List<String> localAlleles = extractValuesByOrigIndices(allOriginIndices, allOriginAlleles, toExtractSampleOrigIndices);
+			return localAlleles;
+		}
 	}
 
-	@Override
+//	@Override
 	public List<String> getStrands(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_GT_STRAND, from, to);
+
+		if (origin == null) {
+			// we are the origin
+			// we have direct storage of all marker info attributes
+			return readVar(cNetCDF.Variables.VAR_GT_STRAND, from, to);
+		} else {
+			// we do not have direct storage, thus we extract it from the origin
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
+			final MarkersMetadataSource origSource = getOrigSource();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getMarkersKeysSource().getIndices();
+			final List<String> allOriginStrands = origSource.getStrands();
+			final List<String> localStrands = extractValuesByOrigIndices(allOriginIndices, allOriginStrands, toExtractSampleOrigIndices);
+			return localStrands;
+		}
 	}
 }

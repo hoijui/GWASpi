@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -35,7 +36,7 @@ import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 
 public class MultiOperations {
 
@@ -87,21 +88,30 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	/** LOAD & GWAS */
-	public static void doGWASwithAlterPhenotype(
-			final MatrixKey matrixKey,
-			final File phenofile,
-			final GWASinOneGOParams gwasParams)
+	private static TaskLockProperties createTaskLockProperties(
+			final DataSetKey parent)
 	{
-		CommonRunnable task = new Threaded_GWAS(
-				matrixKey,
-				phenofile,
-				gwasParams);
+		final MatrixKey matrixKey = parent.getOrigin();
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(matrixKey.getStudyId());
 		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		if (parent.isOperation()) {
+			lockProperties.getOperationsIds().add(parent.getOperationParent().getId());
+		}
+
+		return lockProperties;
+	}
+
+	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
+	/** LOAD & GWAS */
+	public static void doGWASwithAlterPhenotype(
+			final GWASinOneGOParams gwasParams)
+	{
+		CommonRunnable task = new Threaded_GWAS(gwasParams);
+
+		final DataSetKey parent = gwasParams.getMarkerCensusOperationParams().getParent();
+		TaskLockProperties lockProperties = createTaskLockProperties(parent);
 
 		queueTask(task, lockProperties);
 	}
@@ -119,19 +129,12 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doGTFreqDoHW(
-			final MatrixKey matrixKey,
-			final File phenoFile,
-			final GWASinOneGOParams gwasParams)
-	{
-		CommonRunnable task = new Threaded_GTFreq_HW(
-				matrixKey,
-				phenoFile,
-				gwasParams);
+	public static void doGTFreqDoHW(final GWASinOneGOParams gwasParams) {
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		CommonRunnable task = new Threaded_GTFreq_HW(gwasParams);
+
+		final DataSetKey parent = gwasParams.getMarkerCensusOperationParams().getParent();
+		TaskLockProperties lockProperties = createTaskLockProperties(parent);
 
 		queueTask(task, lockProperties);
 	}
@@ -160,7 +163,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doCombiTest(final CombiTestParams params) {
+	public static void doCombiTest(final CombiTestOperationParams params) {
 
 		CommonRunnable task = new Threaded_Combi(params);
 

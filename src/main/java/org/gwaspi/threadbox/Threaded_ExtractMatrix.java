@@ -22,13 +22,9 @@ import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.operations.MatrixDataExtractor;
 import org.gwaspi.netCDF.operations.MatrixDataExtractorNetCDFDataSetDestination;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
-import org.gwaspi.netCDF.operations.OP_QASamples;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +80,6 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		MatrixKey resultMatrixKey = null;
-
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MatrixDataExtractorNetCDFDataSetDestination dataSetDestination
 					= new MatrixDataExtractorNetCDFDataSetDestination(
@@ -98,7 +92,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					markerPickVar,
 					samplePickCase,
 					samplePickVar);
-			MatrixDataExtractor exMatrix = new MatrixDataExtractor(
+			MatrixDataExtractor matrixOperation = new MatrixDataExtractor(
 					dataSetSource,
 					dataSetDestination,
 					markerPickCase,
@@ -110,19 +104,12 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					Integer.MIN_VALUE, // Filter pos, not used now
 					markerCriteriaFile,
 					sampleCriteriaFile);
-			dataSetDestination.setMatrixDataExtractor(exMatrix); // HACK!
-			exMatrix.processMatrix();
-			resultMatrixKey = dataSetDestination.getResultMatrixKey();
-			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
-		}
+			dataSetDestination.setMatrixDataExtractor(matrixOperation); // HACK!
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(resultMatrixKey));
-		}
+			matrixOperation.processMatrix();
+			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(resultMatrixKey));
-			MultiOperations.printCompleted("Matrix Quality Control");
+			Threaded_TranslateMatrix.matrixCompleeted(thisSwi, resultMatrixKey);
 		}
 	}
 }

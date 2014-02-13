@@ -102,7 +102,7 @@ class TestScriptCommand extends AbstractScriptCommand {
 			gwasParams.setPerformGenotypicTests(testType == OPType.GENOTYPICTEST);
 			gwasParams.setPerformTrendTests(testType == OPType.TRENDTEST);
 
-			gwasParams.setDiscardGTMismatches(true);
+			gwasParams.getMarkerCensusOperationParams().setDiscardMismatches(true);
 			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get("calculate-discard-threshold-for-HW")));
 			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get("discard-marker-with-provided-HW-threshold")));
 			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get("discard-marker-HW-treshold")));

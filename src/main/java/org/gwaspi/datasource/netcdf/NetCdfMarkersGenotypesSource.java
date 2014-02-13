@@ -20,16 +20,16 @@ package org.gwaspi.datasource.netcdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkersGenotypesSource;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.gwaspi.model.SampleKey;
+//import org.gwaspi.netCDF.operations.NetCdfUtils;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -38,8 +38,8 @@ import ucar.nc2.Variable;
 
 public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements MarkersGenotypesSource {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
+//	private static final Logger log
+//			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
 
 //	private final MatrixMetadata matrixMetadata;
 //	private Map<SampleKey, ?> sampleIdSetMap;
@@ -93,7 +93,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 			List<Integer> originalMarkersIndices)
 			throws IOException
 	{
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalMarkersIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_MARKERSET, originalMarkersIndices);
 
 		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalSamplesIndices);
 	}
@@ -269,51 +269,51 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 //		return readAllSamplesGTsFromCurrentMarker(rdNcFile, null, markerNb);
 //	}
 
-	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
-
-		Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
-
-		if (null == genotypes) {
-			return null;
-		}
-		try {
-			int[] varShape = genotypes.getShape();
-
-			Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
-
-//				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
-			ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
-
-			int[] shp = gt_ACD3.getShape();
-			int reducer = 0;
-			if (shp[0] == 1) {
-				reducer++;
-			}
-			if (shp[1] == 1) {
-				reducer++;
-			}
-			if (shp[2] == 1) {
-				reducer++;
-			}
-
-			if (reducer == 1) {
-				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-				if (rdBytes == null) {
-					return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
-				} else {
-					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
-				}
-			} else {
-				throw new IllegalStateException();
-			}
-		} catch (InvalidRangeException ex) {
-			throw new IOException("Cannot read data", ex);
-		}
-
-		return null;
-	}
+//	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
+//
+//		Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+//
+//		if (null == genotypes) {
+//			return null;
+//		}
+//		try {
+//			int[] varShape = genotypes.getShape();
+//
+//			Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+//
+//			String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
+//
+////				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
+//			ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
+//
+//			int[] shp = gt_ACD3.getShape();
+//			int reducer = 0;
+//			if (shp[0] == 1) {
+//				reducer++;
+//			}
+//			if (shp[1] == 1) {
+//				reducer++;
+//			}
+//			if (shp[2] == 1) {
+//				reducer++;
+//			}
+//
+//			if (reducer == 1) {
+//				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
+//				if (rdBytes == null) {
+//					return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+//				} else {
+//					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+//				}
+//			} else {
+//				throw new IllegalStateException();
+//			}
+//		} catch (InvalidRangeException ex) {
+//			throw new IOException("Cannot read data", ex);
+//		}
+//
+//		return null;
+//	}
 
 //	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
 //

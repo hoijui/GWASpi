@@ -17,7 +17,6 @@
 
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
 public interface MetadataLoader {

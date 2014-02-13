@@ -30,7 +30,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
-import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -54,7 +53,7 @@ public class OutputQASamples {
 	}
 
 	public static boolean writeReportsForQASamplesData(OperationKey sampleQAOpKey, boolean newReport) throws IOException {
-		OperationMetadata op = OperationsList.getOperation(sampleQAOpKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(sampleQAOpKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		reportPath = Study.constructReportsPath(op.getStudyKey());

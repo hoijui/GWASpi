@@ -20,13 +20,9 @@ package org.gwaspi.threadbox;
 import java.io.File;
 import java.io.IOException;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
-import org.gwaspi.netCDF.operations.OP_QASamples;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +59,6 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		MatrixKey resultMatrixKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MatrixGenotypesFlipperNetCDFDataSetDestination dataSetDestination
 					= new MatrixGenotypesFlipperNetCDFDataSetDestination(
@@ -71,22 +66,15 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 					newMatrixName,
 					description,
 					markerFlipFile);
-			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(
+			MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(
 					parentDataSetSource,
 					dataSetDestination,
 					markerFlipFile);
-			flipMatrix.processMatrix();
-			resultMatrixKey = dataSetDestination.getResultMatrixKey();
-			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
-		}
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(resultMatrixKey));
-		}
+			matrixOperation.processMatrix();
+			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(resultMatrixKey));
-			MultiOperations.printCompleted("Matrix Quality Control");
+			Threaded_TranslateMatrix.matrixCompleeted(thisSwi, resultMatrixKey);
 		}
 	}
 }

@@ -17,18 +17,24 @@
 
 package org.gwaspi.netCDF.operations;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
-import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
+import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
@@ -45,77 +51,33 @@ public class OperationManager {
 
 	//<editor-fold defaultstate="expanded" desc="MATRIX CENSUS">
 	public static OperationKey censusCleanMatrixMarkers(
-			MatrixKey rdMatrixKey,
-			OperationKey samplesQAOpKey,
-			OperationKey markersQAOpKey,
-			double markerMissingRatio,
-			boolean discardMismatches,
-			double sampleMissingRatio,
-			double sampleHetzygRatio,
-			String censusName)
+			final MarkerCensusOperationParams params)
 			throws IOException
 	{
-		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
+		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
 
-		MatrixOperation operation = new OP_MarkerCensus(
-				rdMatrixKey,
-				censusName,
-				samplesQAOpKey,
-				sampleMissingRatio,
-				sampleHetzygRatio,
-				markersQAOpKey,
-				discardMismatches,
-				markerMissingRatio,
-				null);
+		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
+
+		MatrixOperation operation = new OP_MarkerCensus(params);
 
 		int resultOpId = operation.processMatrix();
 
-		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
+
+		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 
 		return operationKey;
 	}
 
-	public static OperationKey censusCleanMatrixMarkersByPhenotypeFile(
-			MatrixKey rdMatrixKey,
-			OperationKey samplesQAOpKey,
-			OperationKey markersQAOpKey,
-			double markerMissingRatio,
-			boolean discardMismatches,
-			double sampleMissingRatio,
-			double sampleHetzygRatio,
-			String censusName,
-			File phenoFile)
-			throws IOException
-	{
-		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
-
-		MatrixOperation operation = new OP_MarkerCensus(
-				rdMatrixKey,
-				censusName,
-				samplesQAOpKey,
-				sampleMissingRatio,
-				sampleHetzygRatio,
-				markersQAOpKey,
-				discardMismatches,
-				markerMissingRatio,
-				phenoFile);
-
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
-
-		return operationKey;
-	}
-
-	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
+	public static OperationKey performHardyWeinberg(HardyWeinbergOperationParams params) throws IOException {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		MatrixOperation operation = new OP_HardyWeinberg(censusOpKey, hwName);
+		MatrixOperation operation = new OP_HardyWeinberg(params);
 
 		int resultOpId = operation.processMatrix();
 
-		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
 
@@ -133,18 +95,19 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart(OutputTest.createTestName(testType) + " Test using QA and HW thresholds");
 
+		// TODO first check if such an exclude operation (with the same parameters) does already exist (would be a child of the hwOp), and if so, use it!
+		// exclude by Hardy & Weinberg threshold
+		final MatrixOperation excludeOperation = new ByHardyWeinbergThresholdFilterOperation(
+				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
+		int resultExcludeOpId = excludeOperation.processMatrix();
+		OperationKey excludeOperationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultExcludeOpId);
+
+		// run the test
 		final MatrixOperation operation;
 		if (testType == OPType.TRENDTEST) {
-			operation = new OP_TrendTests(
-					censusOpKey,
-					hwOpKey,
-					hwThreshold);
+			operation = new OP_TrendTests(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
-			operation = new OP_AssociationTests(
-					censusOpKey,
-					hwOpKey,
-					hwThreshold,
-					testType);
+			operation = new OP_AssociationTests(new AssociationTestOperationParams(excludeOperationKey, censusOpKey, testType));
 		}
 
 		int resultOpId = operation.processMatrix();
@@ -191,7 +154,7 @@ public class OperationManager {
 //		return operationKey;
 //	}
 
-	public static OperationKey performRawCombiTest(CombiTestParams params)
+	public static OperationKey performRawCombiTest(CombiTestOperationParams params)
 			throws IOException
 	{
 		MatrixOperation operation = new CombiTestMatrixOperation(params);
@@ -206,9 +169,26 @@ public class OperationManager {
 			resultOpId = Integer.MIN_VALUE;
 		}
 
-		final OperationKey operationKey = new OperationKey(params.getParentKey().getOrigin(), resultOpId);
+		final OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		return operationKey;
+	}
+
+	public static OperationKey performOperation(MatrixOperation operation)
+			throws IOException
+	{
+		final int resultOperationId = operation.processMatrix();
+
+		final DataSetKey parent = operation.getParams().getParent();
+		final OperationKey resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
+
+		if (parent.isMatrix()) {
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
+		} else {
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+		}
+
+		return resultOperationKey;
 	}
 	//</editor-fold>
 
@@ -250,7 +230,7 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
@@ -270,7 +250,7 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				// Check if current operation is from parent matrix or parent operation
@@ -290,7 +270,7 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
@@ -313,7 +293,7 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperations(operationKey);
+			List<OperationMetadata> chkOperations = OperationsList.getChildrenOperationsMetadata(operationKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();

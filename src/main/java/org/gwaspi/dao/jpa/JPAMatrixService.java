@@ -225,7 +225,7 @@ public class JPAMatrixService implements MatrixService {
 		String genotypesFolder = Study.constructGTPath(matrixMetadata.getKey().getStudyKey());
 
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 		for (OperationMetadata op : operations) {
 			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}

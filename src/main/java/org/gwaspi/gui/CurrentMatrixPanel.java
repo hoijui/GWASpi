@@ -119,7 +119,7 @@ public class CurrentMatrixPanel extends JPanel {
 		txtA_MatrixDesc.setText(matrixMetadata.getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
 
-		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(matrixKey)));
+		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOffspringOperationsMetadata(matrixKey)));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
 
 		pnl_NewOperation.setBorder(GWASpiExplorerPanel.createRegularTitledBorder( Text.Operation.newOperation)); // NOI18N
@@ -362,7 +362,7 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 
 						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+						List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 						OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpKey != null) {
 							MultiOperations.doExportMatrix(matrixKey, format, expPhenotype);

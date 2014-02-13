@@ -82,7 +82,7 @@ public abstract class AbstractOperationSet<K, V> {
 
 		NetcdfFile ncfile = null;
 		try {
-			OperationMetadata opMetadata = OperationsList.getOperation(operationKey);
+			OperationMetadata opMetadata = OperationsList.getOperationMetadata(operationKey);
 			ncfile = NetcdfFile.open(OperationMetadata.generatePathToNetCdfFile(opMetadata).getAbsolutePath());
 			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_OPSET);
 

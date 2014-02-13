@@ -66,7 +66,7 @@ public final class MatricesList {
 		if (key.isMatrix()) {
 			return getMatrixMetadataById(key.getMatrixParent());
 		} else {
-			return OperationsList.getOperation(key.getOperationParent());
+			return OperationsList.getOperationMetadata(key.getOperationParent());
 		}
 	}
 

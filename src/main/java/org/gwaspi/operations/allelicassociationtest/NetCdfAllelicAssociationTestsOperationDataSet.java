@@ -32,7 +32,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 

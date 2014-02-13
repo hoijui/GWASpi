@@ -72,7 +72,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 	}
 
 	private NetCdfSamplesGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalSamplesIndices, List<Integer> originalMarkersIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalSamplesIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_SAMPLESET, originalSamplesIndices);
 
 		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalMarkersIndices);
 	}
@@ -81,7 +81,12 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 		return new NetCdfSamplesGenotypesSource(rdNetCdfFile);
 	}
 
-	public static SamplesGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalSamplesIndices, List<Integer> originalMarkersIndices) throws IOException {
+	public static SamplesGenotypesSource createForOperation(
+			NetcdfFile rdNetCdfFile,
+			List<Integer> originalSamplesIndices,
+			List<Integer> originalMarkersIndices)
+			throws IOException
+	{
 		return new NetCdfSamplesGenotypesSource(rdNetCdfFile, originalSamplesIndices, originalMarkersIndices);
 	}
 

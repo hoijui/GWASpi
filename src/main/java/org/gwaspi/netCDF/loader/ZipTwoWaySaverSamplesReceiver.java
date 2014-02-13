@@ -32,7 +32,6 @@ import java.util.zip.ZipOutputStream;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
@@ -50,7 +49,7 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 	private String startTime;
 	private MatrixKey resultMatrixKey;
 //	private int curAlleleSampleIndex;
-	private int curAllelesMarkerIndex;
+	private final int curAllelesMarkerIndex;
 	private StringBuilder descSB;
 	private MatrixFactory matrixFactory;
 	private ZipOutputStream curArchive;
@@ -58,8 +57,8 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 //	private ZipOutputStream curMarkersArchive;
 	private Boolean alleleLoadPerSample;
 	/** This is only used when alleleLoadPerSample == FALSE */
-	private List<byte[]> genotypesHyperslabs;
-	private int hyperSlabRows;
+	private final List<byte[]> genotypesHyperslabs;
+	private final int hyperSlabRows;
 
 	public ZipTwoWaySaverSamplesReceiver(
 			GenotypesLoadDescription loadDescription)

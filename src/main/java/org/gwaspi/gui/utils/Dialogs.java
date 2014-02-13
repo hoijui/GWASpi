@@ -61,7 +61,7 @@ public class Dialogs {
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
 	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, OPType filterOpType) throws IOException {
 		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey);
+		List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
@@ -98,7 +98,7 @@ public class Dialogs {
 
 	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, List<String> filterOpTypes, String title) throws IOException {
 		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey);
+		List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
@@ -138,7 +138,7 @@ public class Dialogs {
 	public static OperationMetadata showOperationSubOperationsCombo(OperationKey parentOpKey, OPType filterOpType, String title) throws IOException {
 
 		OperationMetadata selectedSubOp = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperations(parentOpKey);
+		List<OperationMetadata> operationsList = OperationsList.getChildrenOperationsMetadata(parentOpKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();

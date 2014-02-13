@@ -17,47 +17,26 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfoList;
-import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.samples.SamplesParserManager;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_GTFreq_HW extends CommonRunnable {
 
-	private final MatrixKey matrixKey;
-	private final File phenotypeFile;
 	private final GWASinOneGOParams gwasParams;
 
-	public Threaded_GTFreq_HW(
-			MatrixKey matrixKey,
-			File phenotypeFile,
-			GWASinOneGOParams gwasParams)
-	{
+	public Threaded_GTFreq_HW(GWASinOneGOParams gwasParams) {
 		super(
 				"GT Freq. & HW",
 				"Genotype Frequency count & Hardy-Weinberg test",
-				"Genotypes Freq. & HW on Matrix ID: " + matrixKey.getMatrixId(),
+				"Genotypes Freq. & HW on: " + gwasParams.getMarkerCensusOperationParams().getParent().toString(),
 				"Genotype Frequency count & Hardy-Weinberg test");
 
-		this.matrixKey = matrixKey;
-		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
 	}
 
@@ -69,94 +48,15 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
-		OperationKey sampleQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
-		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
-
-		//<editor-fold defaultstate="expanded" desc="GT FREQ. & HW PROCESS">
-		if (!gwasParams.isDiscardMarkerByMisRat()) {
-			gwasParams.setDiscardMarkerMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-			gwasParams.setDiscardMarkerHetzyRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByMisRat()) {
-			gwasParams.setDiscardSampleMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByHetzyRat()) {
-			gwasParams.setDiscardSampleHetzyRatVal(1);
-		}
-
-		// GT FREQ. BY PHENOFILE OR DB AFFECTION
-		OperationKey censusOpKey = null;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { // BY EXTERNAL PHENOTYPE FILE
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
-
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					getLog().info("Updating Sample Info in DB");
-					InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
-					SamplesParserManager.scanSampleInfo(
-							matrixKey.getStudyKey(),
-							ImportFormat.GWASpi,
-							phenotypeFile.getPath(),
-							inMemorySamplesReceiver);
-					Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
-					SampleInfoList.insertSampleInfos(sampleInfos);
-
-					censusOpKey = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
-							matrixKey,
-							sampleQAOpKey,
-							markersQAOpKey,
-							gwasParams.getDiscardMarkerMisRatVal(),
-							gwasParams.isDiscardGTMismatches(),
-							gwasParams.getDiscardSampleMisRatVal(),
-							gwasParams.getDiscardSampleHetzyRatVal(),
-							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(phenotypeFile.getName()).toString(),
-							phenotypeFile);
-
-					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
-					//MultiOperations.updateTree();
-				} else {
-					getLog().warn(Text.Operation.warnAffectionMissing);
-				}
-			} else { // BY DB AFFECTION
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixKey); // use Sample Info file affection state
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					censusOpKey = OperationManager.censusCleanMatrixMarkers(
-							matrixKey,
-							sampleQAOpKey,
-							markersQAOpKey,
-							gwasParams.getDiscardMarkerMisRatVal(),
-							gwasParams.isDiscardGTMismatches(),
-							gwasParams.getDiscardSampleMisRatVal(),
-							gwasParams.getDiscardSampleHetzyRatVal(),
-							gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION);
-
-					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
-					//MultiOperations.updateTree();
-				} else {
-					getLog().warn(Text.Operation.warnAffectionMissing);
-				}
-			}
-
-			if (censusOpKey != null) {
-				censusOpKey = OperationKey.valueOf(OperationsList.getOperation(censusOpKey));
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
-			}
-		}
+		OperationKey censusOpKey = Threaded_GWAS.checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
 
 		// HW ON GENOTYPE FREQ.
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 				&& (censusOpKey != null))
 		{
-			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			OperationKey hwOpKey = OperationManager.performHardyWeinberg(params);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
-		//</editor-fold>
 	}
 }

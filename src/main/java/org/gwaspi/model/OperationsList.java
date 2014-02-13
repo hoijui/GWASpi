@@ -34,36 +34,67 @@ public class OperationsList {
 	private OperationsList() {
 	}
 
-	public static OperationMetadata getOperation(OperationKey operationKey) throws IOException {
-		return operationService.getOperation(operationKey);
+	/**
+	 * @see OperationService#getOperationMetadata(OperationKey)
+	 */
+	public static OperationMetadata getOperationMetadata(OperationKey operationKey) throws IOException {
+		return operationService.getOperationMetadata(operationKey);
 	}
 
+	/**
+	 * @see OperationService#getOperationKeysByName(StudyKey, String)
+	 */
 	public static List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException {
 		return operationService.getOperationKeysByName(studyKey, operationFriendlyName);
 	}
 
-	public static List<OperationMetadata> getOperationsList(MatrixKey origin) throws IOException {
-		return operationService.getOperations(origin);
+	/**
+	 * @see OperationService#getOffspringOperationsMetadata(MatrixKey)
+	 */
+	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin) throws IOException {
+		return operationService.getOffspringOperationsMetadata(origin);
 	}
 
-	public static List<OperationMetadata> getOperationsList(MatrixKey origin, OPType opType) throws IOException {
-		return operationService.getOperations(origin, opType);
+	/**
+	 * @see OperationService#getOffspringOperationsMetadata(MatrixKey, OPType)
+	 */
+	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin, OPType opType) throws IOException {
+		return operationService.getOffspringOperationsMetadata(origin, opType);
 	}
 
-	public static List<OperationMetadata> getOperations(OperationKey parent) throws IOException {
-		return operationService.getOperations(parent);
+	/**
+	 * @see OperationService#getChildrenOperationsMetadata(OperationKey)
+	 */
+	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
+		return operationService.getChildrenOperationsMetadata(parent);
 	}
 
-	public static List<OperationMetadata> getOperationsList(OperationKey parent, OPType opType) throws IOException {
-		return operationService.getOperations(parent, opType);
+	/**
+	 * @see OperationService#getChildrenOperationsMetadata(OperationKey, OPType)
+	 */
+	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
+		return operationService.getChildrenOperationsMetadata(parent, opType);
 	}
 
-	public static List<OperationMetadata> getOperationsTable(MatrixKey parentMatrixKey) throws IOException {
-		return operationService.getOperations(parentMatrixKey);
+	/**
+	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey)
+	 */
+	public static List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent) throws IOException {
+		return operationService.getChildrenOperationsMetadata(parent);
 	}
 
-	public static List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException {
-		return operationService.getOperationAndSubOperations(rootOperationKey);
+	/**
+	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey, OPType)
+	 */
+	public static List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent, OPType opType) throws IOException {
+		return operationService.getChildrenOperationsMetadata(parent, opType);
+	}
+
+	/**
+	 * @see OperationService#getSelfAndOffspringOperationsMetadata(OperationKey)
+	 */
+	public static List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey rootOperationKey) throws IOException {
+		return operationService.getSelfAndOffspringOperationsMetadata(rootOperationKey);
 	}
 
 	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
@@ -79,15 +110,24 @@ public class OperationsList {
 		return result;
 	}
 
+	/**
+	 * @see OperationService#getAncestorOperationTypes(OperationKey)
+	 */
 	public static List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException {
 		return operationService.getAncestorOperationTypes(operationKey);
 	}
 
-	public static OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+	/**
+	 * @see OperationService#insertOperation(OperationMetadata)
+	 */
+	public static OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException {
 		return operationService.insertOperation(operationMetadata);
 	}
 
-	public static void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
+	/**
+	 * @see OperationService#deleteOperationBranch(OperationKey, boolean)
+	 */
+	public static void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException {
 		operationService.deleteOperation(operationKey, deleteReports);
 	}
 }

@@ -75,7 +75,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		final OperationMetadata currentOP;
 		if (opId != OperationKey.NULL_ID) {
 			this.currentOPKey = new OperationKey(parentMatrixKey, opId);
-			currentOP = OperationsList.getOperation(currentOPKey);
+			currentOP = OperationsList.getOperationMetadata(currentOPKey);
 		} else {
 			this.currentOPKey = null;
 			currentOP = null;

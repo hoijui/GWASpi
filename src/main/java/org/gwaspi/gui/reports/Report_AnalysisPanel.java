@@ -62,7 +62,7 @@ public class Report_AnalysisPanel extends JPanel {
 	public Report_AnalysisPanel(final MatrixKey parentMatrixKey, final OperationKey operationKey, final Integer nRows) throws IOException {
 
 		if (operationKey != null) {
-			currentOP = OperationsList.getOperation(operationKey);
+			currentOP = OperationsList.getOperationMetadata(operationKey);
 		} else {
 			currentOP = null;
 		}

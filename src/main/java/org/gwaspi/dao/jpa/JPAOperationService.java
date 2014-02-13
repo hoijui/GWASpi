@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -98,7 +99,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public OperationMetadata getOperation(OperationKey operationKey) throws IOException {
+	public OperationMetadata getOperationMetadata(OperationKey operationKey) throws IOException {
 
 		OperationMetadata operationMetadata = null;
 
@@ -116,7 +117,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(MatrixKey origin) throws IOException {
+	public List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -138,7 +139,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(MatrixKey origin, OPType opType) throws IOException {
+	public List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -161,7 +162,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(OperationKey parent) throws IOException {
+	public List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -184,7 +185,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(OperationKey parent, OPType opType) throws IOException {
+	public List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -207,8 +208,36 @@ public class JPAOperationService implements OperationService {
 		return operations;
 	}
 
+	public List<OperationMetadata> getChildrenOperationsMetadata(MatrixKey parent) throws IOException {
+		return getChildrenOperationsMetadata(new OperationKey(parent, OperationKey.NULL_ID));
+	}
+
+	public List<OperationMetadata> getChildrenOperationsMetadata(MatrixKey parent, OPType opType) throws IOException {
+		return getChildrenOperationsMetadata(new OperationKey(parent, OperationKey.NULL_ID), opType);
+	}
+
 	@Override
-	public List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException {
+	public List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent) throws IOException {
+
+		if (parent.isMatrix()) {
+			return getChildrenOperationsMetadata(parent.getMatrixParent());
+		} else {
+			return getChildrenOperationsMetadata(parent.getOperationParent());
+		}
+	}
+
+	@Override
+	public List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent, OPType opType) throws IOException {
+
+		if (parent.isMatrix()) {
+			return getChildrenOperationsMetadata(parent.getMatrixParent(), opType);
+		} else {
+			return getChildrenOperationsMetadata(parent.getOperationParent(), opType);
+		}
+	}
+
+	@Override
+	public List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey rootOperationKey) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -296,10 +325,10 @@ public class JPAOperationService implements OperationService {
 		final StudyKey studyKey = new StudyKey(operationKey.getStudyId());
 
 		try {
-			OperationMetadata op = getOperation(operationKey);
+			OperationMetadata op = getOperationMetadata(operationKey);
 
 			// delete child operations
-			List<OperationMetadata> childOperations = getOperations(operationKey);
+			List<OperationMetadata> childOperations = getChildrenOperationsMetadata(operationKey);
 			if (!childOperations.isEmpty()) {
 				childOperations.add(op);
 				for (int i = 0; i < childOperations.size(); i++) {

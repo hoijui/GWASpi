@@ -116,7 +116,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 
 		OperationMetadata operation = null;
 		try {
-			operation = OperationsList.getOperation(this);
+			operation = OperationsList.getOperationMetadata(this);
 		} catch (IOException ex) {
 			// do nothing, as operation will be null
 		}

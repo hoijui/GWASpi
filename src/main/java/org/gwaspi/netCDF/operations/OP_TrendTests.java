@@ -24,27 +24,19 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 
 /**
  * Performs the Cochran-Armitage Trend Test.
  */
-public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet> {
+public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
 
-	public OP_TrendTests(
-			OperationKey markerCensusOPKey,
-			OperationKey hwOPKey,
-			double hwThreshold)
-	{
-		super(
-			markerCensusOPKey,
-			hwOPKey,
-			hwThreshold,
-			"Cochran-Armitage Trend Test");
+	public OP_TrendTests(final TrendTestOperationParams params) {
+		super(params);
 	}
 
 	@Override

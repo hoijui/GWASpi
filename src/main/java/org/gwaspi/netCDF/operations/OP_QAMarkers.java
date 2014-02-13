@@ -27,23 +27,19 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
-public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
+public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
 
-	public OP_QAMarkers(MatrixKey parent) {
-		super(parent);
-	}
-
-	public OP_QAMarkers(OperationKey parent) {
-		super(parent);
+	public OP_QAMarkers(MarkersQAOperationParams params) {
+		super(params);
 	}
 
 	@Override
@@ -70,10 +66,10 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 		QAMarkersOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		final int numMarkers = parentDataSetSource.getNumMarkers();
-		dataSet.setNumMarkers(numMarkers);
+		final int numSamples = parentDataSetSource.getNumSamples();
+		dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
-		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
+		dataSet.setNumSamples(numSamples);
 
 		final List<Sex> sampleSexes = parentDataSetSource.getSamplesInfosSource().getSexes();
 
@@ -86,9 +82,11 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 		RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics = new RawMarkerAlleleAndGTStatistics(alleleValueToOrdinalLookupTable);
 
-		Iterator<GenotypesList> markersGenotypesSourceIt = parentDataSetSource.getMarkersGenotypesSource().iterator();
+		MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
+		Iterator<GenotypesList> markersGenotypesSourceIt = markersGenotypesSource.iterator();
 		Iterator<String> markersChromosomesIt = parentDataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
-		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : parentDataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
+		Map<Integer, MarkerKey> markersIndicesMap = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
+		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markersIndicesMap.entrySet()) {
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
 			final GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
@@ -103,7 +101,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 			MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics
 					= calculateMarkerAlleleAndGTStatistics(rawMarkerAlleleAndGTStatistics);
-			extractCompactStatistics(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics, numMarkers);
+			extractCompactStatistics(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics, numSamples);
 
 			final double missingRatio = (double) rawMarkerAlleleAndGTStatistics.getMissingCount() / parentDataSetSource.getNumSamples();
 
@@ -320,7 +318,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 	private static void extractCompactStatistics(
 			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics,
-			final int numMarkers)
+			final int numSamples)
 	{
 		final int[] alleleValueToOrdinalLookupTable = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
 
@@ -334,7 +332,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			Math.round(alleleOrdinalCounts[AlleleByte._0_ORDINAL]),
 			0 // will be set later
 		};
-		int remainingAlleleCount = numMarkers * 2;
+		int remainingAlleleCount = numSamples * 2;
 		for (int i = 0; i < compactAlleleStatistics.length - 1; i++) {
 			remainingAlleleCount -= compactAlleleStatistics[i];
 		}
@@ -354,7 +352,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 			Math.round(genotypeOrdinalCounts[AlleleByte._0_ORDINAL][AlleleByte._0_ORDINAL]),
 			0, // will be set later
 		};
-		int remainingGenotypeCount = numMarkers;
+		int remainingGenotypeCount = numSamples;
 		for (int i = 0; i < compactGenotypeStatistics.length - 1; i++) {
 			remainingGenotypeCount -= compactGenotypeStatistics[i];
 		}

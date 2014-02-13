@@ -17,10 +17,7 @@
 
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +43,6 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
-
-		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& (censusOpKey != null)
-				&& (censusOpKey.getId() != OperationKey.NULL_ID))
-		{
-			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
-		}
+		Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
 	}
 }

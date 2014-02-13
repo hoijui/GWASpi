@@ -46,6 +46,11 @@ public class NetCdfSimpleOperationDataSet extends AbstractNetCdfOperationDataSet
 	}
 
 	@Override
+	public boolean isDataLeft() throws IOException {
+		return ((getNumMarkers() > 0) && (getNumSamples() > 0));
+	}
+
+	@Override
 	public void setType(OPType operationType) throws IOException {
 		this.operationType = operationType;
 	}

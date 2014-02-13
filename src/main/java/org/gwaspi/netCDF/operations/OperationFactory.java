@@ -35,6 +35,7 @@ import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.combi.NetCdfCombiTestOperationDataSet;
+import org.gwaspi.operations.filter.NetCdfSimpleOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
@@ -128,7 +129,7 @@ public class OperationFactory {
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
 
-		OperationMetadata operationMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(operationKey);
 		OPType operationType = operationMetadata.getOperationType();
 
 		return generateOperationDataSet(operationType, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent());
@@ -165,6 +166,10 @@ public class OperationFactory {
 					break;
 				case TRENDTEST:
 					operationDataSet = new NetCdfTrendTestOperationDataSet(origin, parent, operationKey);
+					break;
+				case FILTER_BY_HW_THREASHOLD:
+				case FILTER_BY_VALID_AFFECTION:
+					operationDataSet = new NetCdfSimpleOperationDataSet(origin, parent, operationKey);
 					break;
 				default:
 				case SAMPLE_HTZYPLOT:

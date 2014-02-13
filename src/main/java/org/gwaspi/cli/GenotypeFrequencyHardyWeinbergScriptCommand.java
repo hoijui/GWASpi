@@ -24,10 +24,12 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 
 class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand {
@@ -75,11 +77,27 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 				phenoFile = new File(args.get("external-phenotype-file"));
 			}
 
-			gwasParams.setDiscardGTMismatches(true);
-			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio")));
-			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get("discard-marker-missing-ratio-threshold")));
-			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio")));
-			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get("discard-samples-missing-ratio-threshold")));
+			boolean markersMismatchDiscard = true;
+//			boolean markersMismatchDiscard = Boolean.parseBoolean(args.get("discard-mismached-marker"));
+//			boolean discardByMarkersMissingRatio = Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio"));
+			double markersMissingRatioThreshold = Double.parseDouble(args.get("discard-marker-missing-ratio-threshold"));
+//			boolean discardBySamplesMissingRatio = Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio"));
+			double samplesMissingRatioThreshold = Double.parseDouble(args.get("discard-samples-missing-ratio-threshold"));
+			double samplesHetzyRatioThreshold = Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold"));
+
+			MarkerCensusOperationParams markerCensusOperationParams
+					= new MarkerCensusOperationParams(
+							new DataSetKey(matrixKey),
+							gtFrqName,
+							null, // qaSamplesOp
+							samplesMissingRatioThreshold,
+							samplesHetzyRatioThreshold,
+							null, // qaMarkersOp
+							markersMismatchDiscard,
+							markersMissingRatioThreshold,
+							phenoFile);
+
+			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 			gwasParams.setFriendlyName(gtFrqName);
 			gwasParams.setProceed(true);
 
@@ -98,10 +116,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGTFreqDoHW(
-						matrixKey,
-						phenoFile,
-						gwasParams);
+				MultiOperations.doGTFreqDoHW(gwasParams);
 				return true;
 			}
 		}

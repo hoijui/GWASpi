@@ -34,7 +34,6 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -45,8 +44,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
-import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,24 +54,20 @@ import org.slf4j.LoggerFactory;
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet> {
+public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
-	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
+	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
+	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra/generatedData_old"); // HACK
 
-	/**
-	 * Whether we are to perform allelic or genotypic association tests.
-	 */
-	private final CombiTestParams params;
 	private Boolean valid;
 	private String problemDescription;
 
-	public CombiTestMatrixOperation(CombiTestParams params) {
-		super(params.getParentKey());
+	public CombiTestMatrixOperation(CombiTestOperationParams params) {
+		super(params);
 
-		this.params = params;
 		this.valid = null;
 		this.problemDescription = null;
 	}
@@ -101,18 +94,22 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			return valid;
 		}
 
-		// We also require that somewhere in our ancestry,
-		// all the samples with invalid affection info have been excluded.
-		boolean hasOnlyValidAffections = false;
-		for (OPType ancestorOpType : ancestorOperationTypes) {
-			if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
-				hasOnlyValidAffections = true;
-				break;
+		if (REQUIRE_ONLY_VALID_AFFECTION) {
+			// We also require that somewhere in our ancestry,
+			// all the samples with invalid affection info have been excluded.
+			boolean hasOnlyValidAffections = false;
+			for (OPType ancestorOpType : ancestorOperationTypes) {
+				if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
+					hasOnlyValidAffections = true;
+					break;
+				}
 			}
-		}
-		valid = hasOnlyValidAffections;
-		if (!hasOnlyValidAffections) {
-			problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+			valid = hasOnlyValidAffections;
+			if (!hasOnlyValidAffections) {
+				problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+			}
+		} else {
+			valid = true;
 		}
 
 		return valid;
@@ -143,7 +140,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
 
 		final int dSamples = parentDataSetSource.getNumMarkers();
-		final int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
+		final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
 		final int n = parentDataSetSource.getNumSamples();
 
 		final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
@@ -156,7 +153,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		LOG.debug("Combi Association Test: #samples: " + n);
 		LOG.debug("Combi Association Test: #markers: " + dSamples);
-		LOG.debug("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
+		LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
 		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
 //		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
@@ -167,7 +164,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		LOG.info("Combi Association Test: start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
+		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder());
 
 		// TODO sort the weights (should already be absolute?)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -351,6 +348,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				}
 			}
 			List<List<Double>> xValuesTrans = Util.transpose(X);
+//			Util.abs(correctFeatures);
+//			Util.abs(xValuesTrans);
 			LOG.debug("\ncompare feature matrices ...");
 			Util.compareMatrices(correctFeatures, xValuesTrans);
 			LOG.debug("done. they are equal! good!\n");
@@ -470,7 +469,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
 				sampleIndexNode.index = 0;
-				sampleIndexNode.value = si;
+				sampleIndexNode.value = si + 1;
 				prob.x[si][0] = sampleIndexNode;
 
 				for (int s2i = si; s2i < n; s2i++) {
@@ -655,7 +654,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
-			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
+			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + alphas[0]);
 			LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
 			File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
@@ -677,8 +676,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// sample index and value of non-zero alphas
 		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
 		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index = (int) svmModel.SV[i][0].value/* - 1*/; // XXX NOTE only works with PRECOMPUTED!
+			final double value = svmModel.sv_coef[0][i]/* * -1.0*/; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
 			nonZeroAlphas.put(index, value);
 		}
 

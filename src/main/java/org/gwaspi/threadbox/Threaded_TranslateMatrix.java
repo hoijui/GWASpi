@@ -17,9 +17,11 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
@@ -27,6 +29,8 @@ import org.gwaspi.netCDF.operations.MatrixTranslatorNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
+import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,25 +69,39 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 					dataSetSource,
 					newMatrixName,
 					description);
-			MatrixTranslator matrixTransformer = new MatrixTranslator(
+			MatrixTranslator matrixOperation = new MatrixTranslator(
 					dataSetSource,
 					dataSetDestination);
 
-			matrixTransformer.processMatrix();
-			MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
+			matrixOperation.processMatrix();
+			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
-
-			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				return;
-			}
-			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(resultMatrixKey));
-
-			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				return;
-			}
-			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(resultMatrixKey));
-			MultiOperations.printCompleted("Matrix Quality Control");
+			matrixCompleeted(thisSwi, resultMatrixKey);
 		}
+	}
+
+	static OperationKey[] matrixCompleeted(SwingWorkerItem thisSwi, MatrixKey matrixKey)
+			throws Exception
+	{
+		OperationKey[] resultOperationKeys = new OperationKey[2];
+
+		GWASpiExplorerNodes.insertMatrixNode(matrixKey);
+
+		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			return resultOperationKeys;
+		}
+		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
+
+		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			return resultOperationKeys;
+		}
+		final OperationKey markersQAOpKey = OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(new MarkersQAOperationParams(new DataSetKey(matrixKey))));
+
+		resultOperationKeys[0] = samplesQAOpKey;
+		resultOperationKeys[1] = markersQAOpKey;
+
+		MultiOperations.printCompleted("Matrix Quality Control");
+
+		return resultOperationKeys;
 	}
 }

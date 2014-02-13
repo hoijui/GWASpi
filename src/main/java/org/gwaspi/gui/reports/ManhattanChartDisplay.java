@@ -361,7 +361,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				OperationMetadata op = OperationsList.getOperation(operationKey);
+				OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());

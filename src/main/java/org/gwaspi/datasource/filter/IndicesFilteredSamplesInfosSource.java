@@ -19,31 +19,39 @@ package org.gwaspi.datasource.filter;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
+import org.gwaspi.model.SamplesKeysSource;
 
 public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<SampleInfo> implements SamplesInfosSource {
 
+	private final DataSetSource dataSetSource;
 	private final SamplesInfosSource wrapped;
 
-	public IndicesFilteredSamplesInfosSource(final SamplesInfosSource wrapped, final List<Integer> includeIndices) {
+	public IndicesFilteredSamplesInfosSource(final DataSetSource dataSetSource, final SamplesInfosSource wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);
 
+		this.dataSetSource = dataSetSource;
 		this.wrapped = wrapped;
 	}
 
 	@Override
-	public List<Integer> getSampleOrigIndices() throws IOException {
-		return new IndicesFilteredList<Integer>(wrapped.getSampleOrigIndices(), getIncludeIndices());
+	public SamplesKeysSource getKeysSource() throws IOException {
+		return dataSetSource.getSamplesKeysSource();
 	}
 
-	@Override
-	public List<SampleKey> getSampleKeys() throws IOException {
-		return new IndicesFilteredList<SampleKey>(wrapped.getSampleKeys(), getIncludeIndices());
-	}
+//	@Override
+//	public List<Integer> getSampleOrigIndices() throws IOException {
+//		return new IndicesFilteredList<Integer>(wrapped.getSampleOrigIndices(), getIncludeIndices());
+//	}
+//
+//	@Override
+//	public List<SampleKey> getSampleKeys() throws IOException {
+//		return new IndicesFilteredList<SampleKey>(wrapped.getSampleKeys(), getIncludeIndices());
+//	}
 
 	@Override
 	public List<Integer> getOrderIds() throws IOException {
@@ -71,8 +79,8 @@ public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<Sampl
 	}
 
 	@Override
-	public List<String> getCategoriess() throws IOException {
-		return new IndicesFilteredList<String>(wrapped.getCategoriess(), getIncludeIndices());
+	public List<String> getCategories() throws IOException {
+		return new IndicesFilteredList<String>(wrapped.getCategories(), getIncludeIndices());
 	}
 
 	@Override
@@ -105,72 +113,72 @@ public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<Sampl
 		return new IndicesFilteredList<Integer>(wrapped.getStatuses(), getIncludeIndices());
 	}
 
-	@Override
-	public List<Integer> getSampleOrigIndices(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getSampleOrigIndices(), getIncludeIndices(), from, to);
-	}
+//	@Override
+//	public List<Integer> getSampleOrigIndices(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getSampleOrigIndices(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<SampleKey> getSampleKeys(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getSampleKeys(), getIncludeIndices(), from, to);
+//	}
 
-	@Override
-	public List<SampleKey> getSampleKeys(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getSampleKeys(), getIncludeIndices(), from, to);
-	}
-
-	@Override
+//	@Override
 	public List<Integer> getOrderIds(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getOrderIds(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getFathers(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getFathers(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getMothers(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getMothers(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<SampleInfo.Sex> getSexes(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getSexes(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<SampleInfo.Affection> getAffections(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getAffections(), getIncludeIndices(), from, to);
 	}
 
-	@Override
-	public List<String> getCategoriess(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getCategoriess(), getIncludeIndices(), from, to);
+//	@Override
+	public List<String> getCategories(int from, int to) throws IOException {
+		return IndicesFilteredList.getWrappedRange(wrapped.getCategories(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getDiseases(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getDiseases(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getPopulations(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getPopulations(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getAges(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getAges(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getFilters(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getFilters(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getApproveds(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getApproveds(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getStatuses(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getStatuses(), getIncludeIndices(), from, to);
 	}

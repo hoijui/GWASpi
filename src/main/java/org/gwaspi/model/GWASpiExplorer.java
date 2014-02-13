@@ -151,8 +151,8 @@ public class GWASpiExplorer {
 				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j));
 
 				// LOAD Parent OPERATIONS ON CURRENT MATRIX
-				List<OperationMetadata> parentOperations = OperationsList.getOperationsList(matrixList.get(j));
-				List<OperationMetadata> allOperations = OperationsList.getOperationsList(matrixList.get(j));
+				List<OperationMetadata> parentOperations = OperationsList.getOffspringOperationsMetadata(matrixList.get(j));
+				List<OperationMetadata> allOperations = OperationsList.getOffspringOperationsMetadata(matrixList.get(j));
 				for (int k = 0; k < parentOperations.size(); k++) {
 					// LOAD SUB OPERATIONS ON CURRENT MATRIX
 					OperationMetadata currentOP = parentOperations.get(k);
@@ -325,7 +325,7 @@ public class GWASpiExplorer {
 						tree.expandPath(treePath);
 						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
 						OperationKey parentOPKey = (OperationKey) parentElementInfo.getContentKey();
-						OperationMetadata currentOP = OperationsList.getOperation(currentOPKey);
+						OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
 						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG)) {
 							// Display HW Report
 							List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
@@ -357,7 +357,7 @@ public class GWASpiExplorer {
 						// Display Operation
 						tree.expandPath(treePath);
 						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
-						OperationMetadata currentOP = OperationsList.getOperation(currentOPKey);
+						OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
 						if (currentOP.getOperationType().equals(OPType.MARKER_QA)) {
 							// Display MarkerQA panel
 							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(currentOP.getStudyKey(), currentOP.getParentMatrixId()), currentOP.getId()));

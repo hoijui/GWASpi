@@ -32,12 +32,8 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
-
-	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
 	public AbstractMergeMarkersMatrixOperation(
 			DataSetSource dataSetSource1,

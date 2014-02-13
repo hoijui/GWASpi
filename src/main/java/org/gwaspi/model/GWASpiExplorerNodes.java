@@ -175,7 +175,7 @@ public class GWASpiExplorerNodes {
 		DefaultMutableTreeNode tn = null;
 
 		try {
-			OperationMetadata op = OperationsList.getOperation(operationKey);
+			OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentMatrixId(),
 					operationKey.getId(),
@@ -190,6 +190,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createSubOperationTreeNode(OperationKey operationKey) {
+
 		DefaultMutableTreeNode tn = null;
 		try {
 
@@ -200,7 +201,7 @@ public class GWASpiExplorerNodes {
 //			studyNodeName
 //			nodeUniqueName
 
-			OperationMetadata op = OperationsList.getOperation(operationKey);
+			OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
@@ -211,6 +212,7 @@ public class GWASpiExplorerNodes {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return tn;
 	}
 
@@ -338,9 +340,10 @@ public class GWASpiExplorerNodes {
 	}
 
 	public static void insertSubOperationUnderOperationNode(OperationKey parentOpKey, OperationKey operationKey) throws IOException {
+
 		try {
 			// GET MATRIX
-			OperationMetadata parentOP = OperationsList.getOperation(parentOpKey);
+			OperationMetadata parentOP = OperationsList.getOperationMetadata(parentOpKey);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpKey.getId() + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
@@ -371,10 +374,11 @@ public class GWASpiExplorerNodes {
 
 	//<editor-fold defaultstate="expanded" desc="REPORT NODES">
 	public static void insertReportsUnderOperationNode(OperationKey parentOpKey) throws IOException {
+
 		if (StartGWASpi.guiMode) {
 			try {
 				// GET OPERATION
-				OperationMetadata parentOP = OperationsList.getOperation(parentOpKey);
+				OperationMetadata parentOP = OperationsList.getOperationMetadata(parentOpKey);
 				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpKey.getId() + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 

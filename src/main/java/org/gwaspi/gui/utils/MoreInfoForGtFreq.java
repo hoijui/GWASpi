@@ -37,6 +37,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,27 +119,35 @@ public class MoreInfoForGtFreq extends JFrame {
 		chkB_1.setEnabled(false);
 
 		chkB_2.setText(Text.Operation.discardMarkerMissing);
-		txtF_1.setText("0.05");
+		double markerMissingRatioThreshold;
+		try {
+			markerMissingRatioThreshold = Double.parseDouble(Config.getConfigValue(
+					"markerMissingRatioThreshold",
+					String.valueOf(MarkerCensusOperationParams.DEFAULT_MARKER_MISSING_RATIO)));
+		} catch (IOException ex) {
+			markerMissingRatioThreshold = MarkerCensusOperationParams.DISABLE_MARKER_MISSING_RATIO;
+		}
+		txtF_1.setText(String.valueOf(markerMissingRatioThreshold));
 
 		chkB_SMS.setText(Text.Operation.discardSampleMissing);
-		double missingThreshold;
+		double sampleMissingRatioThreshold;
 		try {
-			missingThreshold = Double.parseDouble(Config.getConfigValue(
+			sampleMissingRatioThreshold = Double.parseDouble(Config.getConfigValue(
 					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
-					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
+					String.valueOf(MarkerCensusOperationParams.DEFAULT_SAMPLE_MISSING_RATIO)));
 		} catch (IOException ex) {
-			missingThreshold = 0.05; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT?
+			sampleMissingRatioThreshold = MarkerCensusOperationParams.DISABLE_SAMPLE_MISSING_RATIO;
 		}
-		txtF_SMS.setText(String.valueOf(missingThreshold));
+		txtF_SMS.setText(String.valueOf(sampleMissingRatioThreshold));
 
 		chkB_SHZ.setText(Text.Operation.discardSampleHetzy);
 		double hetzygThreshold;
 		try {
 			hetzygThreshold = Double.parseDouble(Config.getConfigValue(
 					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
-					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT)));
+					String.valueOf(MarkerCensusOperationParams.DEFAULT_SAMPLE_HETZY_RATIO)));
 		} catch (IOException ex) {
-			hetzygThreshold = 1.0; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT?
+			hetzygThreshold = MarkerCensusOperationParams.DISABLE_SAMPLE_HETZY_RATIO;
 		}
 		txtF_SHZ.setText(String.valueOf(hetzygThreshold));
 		chkB_SHZ.setEnabled(true);
@@ -213,15 +222,37 @@ public class MoreInfoForGtFreq extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			if (!txtF_1.getText().isEmpty() && !txtF_SMS.getText().isEmpty()) {
 				try {
-					gwasParams.setDiscardGTMismatches(chkB_1.isSelected());
-					gwasParams.setDiscardMarkerByMisRat(chkB_2.isSelected());
-					gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(txtF_1.getText()));
-					gwasParams.setDiscardSampleByMisRat(chkB_SMS.isSelected());
-					gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(txtF_SMS.getText()));
-					gwasParams.setDiscardSampleByHetzyRat(chkB_SHZ.isSelected());
-					gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(txtF_SHZ.getText()));
+					MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+
+					markerCensusOperationParams.setDiscardMismatches(chkB_1.isSelected());
+
+					final double markerMissingRatio;
+					if (chkB_2.isSelected()) {
+						markerMissingRatio = Double.parseDouble(txtF_1.getText());
+					} else {
+						markerMissingRatio = MarkerCensusOperationParams.DISABLE_MARKER_MISSING_RATIO;
+					}
+					markerCensusOperationParams.setMarkerMissingRatio(markerMissingRatio);
+
+					final double sampleMissingRatio;
+					if (chkB_SMS.isSelected()) {
+						sampleMissingRatio = Double.parseDouble(txtF_SMS.getText());
+					} else {
+						sampleMissingRatio = MarkerCensusOperationParams.DISABLE_SAMPLE_MISSING_RATIO;
+					}
+					markerCensusOperationParams.setSampleMissingRatio(sampleMissingRatio);
+
+					final double sampleHetzyRatio;
+					if (chkB_SHZ.isSelected()) {
+						sampleHetzyRatio = Double.parseDouble(txtF_SHZ.getText());
+					} else {
+						sampleHetzyRatio = MarkerCensusOperationParams.DISABLE_SAMPLE_HETZY_RATIO;
+					}
+					markerCensusOperationParams.setSampleHetzygRatio(sampleHetzyRatio);
+
 					gwasParams.setProceed(true);
 				} catch (NumberFormatException ex) {
 					log.warn(null, ex);

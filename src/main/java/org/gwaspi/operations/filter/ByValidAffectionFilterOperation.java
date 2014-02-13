@@ -24,15 +24,14 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 
-public abstract class ByValidAffectionFilterOperation extends AbstractFilterOperation {
+public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByValidAffectionFilterOperationParams> {
 
-	public ByValidAffectionFilterOperation(OperationKey parent) {
-		super(parent);
+	public ByValidAffectionFilterOperation(ByValidAffectionFilterOperationParams params) {
+		super(params);
 	}
 
 	@Override
@@ -61,5 +60,10 @@ public abstract class ByValidAffectionFilterOperation extends AbstractFilterOper
 				filteredSampleOrigIndicesAndKeys.put(sample.getKey(), sample.getValue());
 			}
 		}
+	}
+
+	@Override
+	protected String getFilterDescription() {
+		return "Removes all samples that are invalid, which means, they are neither marked as affeted nor as unaffected";
 	}
 }

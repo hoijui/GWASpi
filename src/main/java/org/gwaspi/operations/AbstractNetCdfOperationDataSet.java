@@ -46,6 +46,8 @@ import org.gwaspi.datasource.netcdf.NetCdfMarkersMetadataSource;
 import org.gwaspi.datasource.netcdf.NetCdfSamplesGenotypesSource;
 import org.gwaspi.datasource.netcdf.NetCdfSamplesInfosSource;
 import org.gwaspi.datasource.netcdf.NetCdfSamplesKeysSource;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	private Boolean useAllMarkersFromParent;
 	private Boolean useAllSamplesFromParent;
 	private Boolean useAllChromosomesFromParent;
+	private NetcdfFile originReadNcFile;
 	private NetcdfFile readNcFile;
 	private NetcdfFileWriteable writeNcFile;
 
@@ -86,6 +89,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 		this.useAllMarkersFromParent = null;
 		this.useAllSamplesFromParent = null;
 		this.useAllChromosomesFromParent = null;
+		this.originReadNcFile = null;
 		this.readNcFile = null;
 		this.writeNcFile = null;
 	}
@@ -110,22 +114,23 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	@Override
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
 		return NetCdfMarkersGenotypesSource.createForOperation(
-				readNcFile,
-				getMarkersKeysSource().getIndices(),
-				getSamplesKeysSource().getIndices());
+				getOriginNetCdfReadFile(),
+				getSamplesKeysSource().getIndices(),
+				getMarkersKeysSource().getIndices());
 	}
 
 	@Override
 	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
 		return NetCdfSamplesGenotypesSource.createForOperation(
-				readNcFile,
+				getOriginNetCdfReadFile(),
 				getSamplesKeysSource().getIndices(),
 				getMarkersKeysSource().getIndices());
 	}
 
 	@Override
 	protected int getNumMarkersRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
+//		return getNetCdfReadFile().findVariable(getIndexVar(true)).getShape(0);
+		return getNetCdfReadFile().findDimension(getDimensionName(true)).getLength();
 	}
 
 	/**
@@ -152,7 +157,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected int getNumSamplesRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
+//		return getNetCdfReadFile().findVariable(getIndexVar(false)).getShape(0);
+		return getNetCdfReadFile().findDimension(getDimensionName(false)).getLength();
 	}
 
 	/**
@@ -179,7 +185,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected int getNumChromosomesRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
+//		return getNetCdfReadFile().findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getShape(0);
+		return getNetCdfReadFile().findDimension(cNetCDF.Dimensions.DIM_CHRSET).getLength();
 	}
 
 	/**
@@ -215,10 +222,24 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	public void finnishWriting() throws IOException {
 		super.finnishWriting();
 
-		if (writeNcFile != null) {
-			writeNcFile.close();
-			writeNcFile = null;
+		if (writeNcFile == null) {
+			ensureWriteNcFile();
 		}
+
+		writeNcFile.close();
+		writeNcFile = null;
+	}
+
+	protected NetcdfFile getOriginNetCdfReadFile() throws IOException {
+
+		if (originReadNcFile == null) {
+			MatrixMetadata originMatrixMetadata = MatricesList.getMatrixMetadataById(getOrigin());
+
+			File readFile = MatrixMetadata.generatePathToNetCdfFile(originMatrixMetadata);
+			originReadNcFile = NetcdfFile.open(readFile.getAbsolutePath());
+		}
+
+		return originReadNcFile;
 	}
 
 	protected NetcdfFile getNetCdfReadFile() throws IOException {
@@ -415,14 +436,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 			ncFile.write(varName, origin, values);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
-		} finally {
-			if (null != ncFile) {
-				try {
-					ncFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file " + ncFile, ex);
-				}
-			}
 		}
 	}
 
@@ -448,6 +461,18 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 		}
 
 		return varName;
+	}
+
+	private String getDimensionName(boolean markers) {
+
+		final String dimensionName;
+		if (isMarkersOperationSet() == markers) {
+			dimensionName = cNetCDF.Dimensions.DIM_OPSET;
+		} else {
+			dimensionName = cNetCDF.Dimensions.DIM_IMPLICITSET;
+		}
+
+		return dimensionName;
 	}
 
 	@Override
@@ -505,7 +530,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
-		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
+		return NetCdfSamplesInfosSource.createForOperation(this, getOrigin().getStudyKey(), getOrigin(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
 	}
 
 	@Override
@@ -515,7 +540,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
-		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSource().getIndices());
+		return NetCdfMarkersMetadataSource.createForOperation(this, getOrigin(), getNetCdfReadFile(), getMarkersKeysSource().getIndices());
 	}
 
 	@Override

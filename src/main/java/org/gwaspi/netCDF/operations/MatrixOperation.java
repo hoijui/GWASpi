@@ -18,8 +18,9 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import org.gwaspi.operations.OperationParams;
 
-public interface MatrixOperation {
+public interface MatrixOperation<PT extends OperationParams> {
 
 	/**
 	 * Whether the operation is valid, given its parameters.
@@ -40,6 +41,11 @@ public interface MatrixOperation {
 	String getProblemDescription();
 
 	/**
+	 * @return this operations parameters; may be <code>null</code>
+	 */
+	PT getParams();
+
+	/**
 	 * Returns whether this creates a matrix or an operation as result.
 	 * @return <code>true</code> if this creates a matrix,
 	 *   <code>true</code> if this creates an operation
@@ -51,6 +57,7 @@ public interface MatrixOperation {
 	 * @return the resulting matrixes ID if the operation succeeded,
 	 *   with the given parameters if the operation is invalid;
 	 *   <code>Integer#MIN_VALUE</code> otherwise
+	 * @throws IOException
 	 */
 	int processMatrix() throws IOException;
 }

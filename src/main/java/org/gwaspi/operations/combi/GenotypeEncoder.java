@@ -16,7 +16,6 @@
  */
 package org.gwaspi.operations.combi;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,6 +40,7 @@ public interface GenotypeEncoder {
 	 *     {{'G', 'G'}, {'G', 'T'}, {'T', 'T'}}, // possible values for marker 2
 	 *   }
 	 *   </code>
+	 * @param majorAllele
 	 * @param rawGenotypes input, one genotype(-pair) per marker and sample,
 	 *   for example:
 	 *   <code>
@@ -50,6 +50,7 @@ public interface GenotypeEncoder {
 	 *     {{'G', 'G'}, {'T', 'T'}, {'T', 'T'}, ...}, // samples for marker 2
 	 *   }
 	 *   </code>
+	 * @param minorAllele
 	 * @param encodedSamplesMarkers output, possibly multiple values per marker,
 	 *   for example (Nominal encoding):
 	 *   <code>
@@ -59,6 +60,7 @@ public interface GenotypeEncoder {
 	 *     {1, 3, 3, ...}, // encoded samples for marker 2
 	 *   }
 	 *   </code>
+	 * @param genotypeCounts {@link org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.GenotypeCounts}
 	 * @param markerIndex which marker the rawGenotypes belong to
 	 */
 	void encodeGenotypes(
@@ -75,6 +77,7 @@ public interface GenotypeEncoder {
 	 * For example:
 	 * {'A', 'G'} --gets-converted-to--> {0.0, 1.0, 1.0, 0.0}
 	 * -> return 4
+	 * @return
 	 */
 	int getEncodingFactor();
 
@@ -98,7 +101,7 @@ public interface GenotypeEncoder {
 			List<Double> decodedWeights);
 
 	/**
-	 * Returns a human friendly name of the encoding algorithm.
+	 * @return a human friendly name of the encoding algorithm.
 	 */
 	String getHumanReadableName();
 }

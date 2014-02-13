@@ -37,8 +37,6 @@ import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -48,6 +46,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.markercensus.RawMarkerCensusStatistics;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -55,46 +54,18 @@ import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationDataSet> {
+public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationDataSet, MarkerCensusOperationParams> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
-	private final String censusName;
-	private final OperationKey sampleQAOPKey;
-	private final double sampleMissingRatio;
-	private final double sampleHetzygRatio;
-	private final OperationKey markerQAOPKey;
-	private final boolean discardMismatches;
-	private final double markerMissingRatio;
-	private final File phenoFile;
-
-	public OP_MarkerCensus(
-			MatrixKey parent,
-			String censusName,
-			OperationKey sampleQAOPKey,
-			double sampleMissingRatio,
-			double sampleHetzygRatio,
-			OperationKey markerQAOPKey,
-			boolean discardMismatches,
-			double markerMissingRatio,
-			File phenoFile)
-	{
-		super(parent);
-
-		this.censusName = censusName;
-		this.sampleQAOPKey = sampleQAOPKey;
-		this.sampleMissingRatio = sampleMissingRatio;
-		this.sampleHetzygRatio = sampleHetzygRatio;
-		this.markerQAOPKey = markerQAOPKey;
-		this.discardMismatches = discardMismatches;
-		this.markerMissingRatio = markerMissingRatio;
-		this.phenoFile = phenoFile;
+	public OP_MarkerCensus(final MarkerCensusOperationParams params) {
+		super(params);
 	}
 
 	@Override
 	public OPType getType() {
 
-		if (phenoFile == null) {
+		if (getParams().getPhenotypeFile() == null) {
 			return OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		} else {
 			return OPType.MARKER_CENSUS_BY_AFFECTION;
@@ -147,12 +118,10 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(wrSampleKeys.size());
 
-		dataSet.setCensusName(censusName); // HACK
-		dataSet.setPhenoFile(phenoFile); // HACK
-		dataSet.setSampleMissingRatio(sampleMissingRatio);// HACK
-		dataSet.setSampleHetzygRatio(sampleHetzygRatio); // HACK
-		dataSet.setMarkerMissingRatio(markerMissingRatio); // HACK
-		dataSet.setDiscardMismatches(discardMismatches); // HACK
+		final int numMySamples = wrSampleKeys.size();
+		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
+
+		dataSet.setParams(getParams());
 
 		dataSet.setSamples(wrSampleKeys);
 
@@ -280,13 +249,13 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			Map<Integer, Object> excludeMarkersValue)
 			throws IOException
 	{
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markerQAOPKey);
-		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerQAOpKey());
+		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getSampleQAOpKey());
 
 		final int excludedMarkerNb;
 		if (excludeMarkersOrigIndexAndKey != null) {
 			// EXCLUDE MARKER BY MISMATCH STATE
-			if (discardMismatches) {
+			if (getParams().isDiscardMismatches()) {
 				Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
 				for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkersKeysSource().getIndicesMap().entrySet()) {
 					MarkerKey key = qaMarkerOrigIndexKey.getValue();
@@ -307,7 +276,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				MarkerKey key = qaMarkerOrigIndexKey.getValue();
 				Double missingRatio = missingRatioIt.next();
 				Integer origIndex = qaMarkerOrigIndexKey.getKey();
-				if (missingRatio > markerMissingRatio) {
+				if (missingRatio > getParams().getMarkerMissingRatio()) {
 					excludeMarkersOrigIndexAndKey.put(origIndex, key);
 					if (excludeMarkersValue != null) {
 						excludeMarkersValue.put(origIndex, missingRatio);
@@ -328,7 +297,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 					SampleKey key = qaSampleOrigIndexKey.getValue();
 					Double missingRatio = missingRatioIt.next();
 					Integer origIndex = qaSampleOrigIndexKey.getKey();
-					if (missingRatio > sampleMissingRatio) {
+					if (missingRatio > getParams().getSampleMissingRatio()) {
 						excludeSamplesOrigIndexAndKey.put(origIndex, key);
 						if (excludeSampleValue != null) {
 							excludeSampleValue.put(origIndex, missingRatio);
@@ -344,7 +313,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 					SampleKey key = qaSampleOrigIndexKey.getValue();
 					Double hetzyRatio = hetzyRatioIt.next();
 					Integer origIndex = qaSampleOrigIndexKey.getKey();
-					if (hetzyRatio > sampleHetzygRatio) {
+					if (hetzyRatio > getParams().getSampleHetzygRatio()) {
 						excludeSamplesOrigIndexAndKey.put(origIndex, key);
 						if (excludeSampleValue != null) {
 							excludeSampleValue.put(origIndex, hetzyRatio);
@@ -470,7 +439,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			List<Affection> samplesAffection)
 			throws IOException
 	{
-		if (phenoFile == null) {
+		if (getParams().getPhenotypeFile() == null) {
 			SamplesInfosSource samplesInfosSource = dataSetSource.getSamplesInfosSource();
 			Iterator<Integer> allSampleOrigIndicesIt = dataSetSource.getSamplesKeysSource().getIndices().iterator();
 			Iterator<Sex> allSexesIt = samplesInfosSource.getSexes().iterator();
@@ -487,7 +456,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		} else {
 			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOriginDataSetSource(), toKeepSampleOrigIndices);
 			SamplesInfosSource filteredStorageSamplesInfosSource = sampleIndicesFilteredData.getSamplesInfosSource();
-			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, phenoFile);
+			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, getParams().getPhenotypeFile());
 			for (SampleInfo storageSampleInfo : filteredStorageSamplesInfosSource) {
 				final SampleKey sampleKey = SampleKey.valueOf(storageSampleInfo);
 				SampleInfo sampleInfoToUse = phenoFileSamplesInfos.get(sampleKey);

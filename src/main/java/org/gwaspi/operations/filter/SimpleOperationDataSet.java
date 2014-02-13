@@ -23,6 +23,8 @@ import org.gwaspi.operations.OperationDataSet;
 
 public interface SimpleOperationDataSet extends OperationDataSet<SimpleOperationEntry> {
 
+	boolean isDataLeft() throws IOException;
+
 	void setType(OPType operationType) throws IOException;
 
 	void setFilterDescription(String filterDescription) throws IOException;
