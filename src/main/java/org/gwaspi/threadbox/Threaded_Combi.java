@@ -51,10 +51,8 @@ public class Threaded_Combi extends CommonRunnable {
 //		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			params.
-
-			OperationKey assocOpKey = OperationManager.performCleanCombiTest(params);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(assocOpKey);
+			OperationKey combiOpKey = OperationManager.performRawCombiTest(params);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(combiOpKey);
 
 //			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
 //			if (assocOpId != OperationKey.NULL_ID) {
