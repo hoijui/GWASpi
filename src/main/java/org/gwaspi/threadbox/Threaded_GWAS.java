@@ -35,6 +35,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
@@ -43,18 +44,15 @@ import org.slf4j.LoggerFactory;
 public class Threaded_GWAS extends CommonRunnable {
 
 	private final MatrixKey matrixKey;
-	private final File phenotypeFile;
 	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_GWAS(
 			MatrixKey matrixKey,
-			File phenotypeFile,
 			GWASinOneGOParams gwasParams)
 	{
 		super("GWAS", "GWAS", "GWAS on Matrix ID: " + matrixKey.getMatrixId(), "GWAS");
 
 		this.matrixKey = matrixKey;
-		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
 	}
 
@@ -74,7 +72,14 @@ public class Threaded_GWAS extends CommonRunnable {
 		// GENOTYPE FREQ.
 		OperationKey censusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { // BY EXTERNAL PHENOTYPE FILE
+			final MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+
+			markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
+
+			final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
+//			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) {
+			if (phenotypeFile != null) {
+				// BY EXTERNAL PHENOTYPE FILE
 				// use Sample Info file affection state
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
 

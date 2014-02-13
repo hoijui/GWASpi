@@ -96,6 +96,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 			parent = new DataSetKey(matrixKey);
 			markerCensusOperationParams.setParent(parent);
+		} else {
+			return;
 		}
 		//</editor-fold>
 
@@ -103,11 +105,15 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
 			markerCensusOperationParams.setSampleQAOpKey(samplesQAOpKey);
+		} else {
+			return;
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			OperationKey markersQAOpKey = OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
 			markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
+		} else {
+			return;
 		}
 		//</editor-fold>
 
