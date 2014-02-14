@@ -35,6 +35,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class Threaded_GTFreq_HW extends CommonRunnable {
 
 	private final MatrixKey matrixKey;
-	private final File phenotypeFile;
 	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_GTFreq_HW(
@@ -57,7 +57,6 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				"Genotype Frequency count & Hardy-Weinberg test");
 
 		this.matrixKey = matrixKey;
-		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
 	}
 
@@ -73,25 +72,20 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		OperationKey sampleQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		//<editor-fold defaultstate="expanded" desc="GT FREQ. & HW PROCESS">
-		if (!gwasParams.isDiscardMarkerByMisRat()) {
-			gwasParams.setDiscardMarkerMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-			gwasParams.setDiscardMarkerHetzyRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByMisRat()) {
-			gwasParams.setDiscardSampleMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByHetzyRat()) {
-			gwasParams.setDiscardSampleHetzyRatVal(1);
-		}
+		final MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
 
+		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
+		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
+
+		//<editor-fold defaultstate="expanded" desc="GT FREQ. & HW PROCESS">
 		// GT FREQ. BY PHENOFILE OR DB AFFECTION
 		OperationKey censusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { // BY EXTERNAL PHENOTYPE FILE
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
+			final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
+			if (phenotypeFile != null) {
+				// BY EXTERNAL PHENOTYPE FILE
+				// use Sample Info file affection state
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -106,16 +100,10 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
 					SampleInfoList.insertSampleInfos(sampleInfos);
 
-					censusOpKey = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
-							matrixKey,
-							sampleQAOpKey,
-							markersQAOpKey,
-							gwasParams.getDiscardMarkerMisRatVal(),
-							gwasParams.isDiscardGTMismatches(),
-							gwasParams.getDiscardSampleMisRatVal(),
-							gwasParams.getDiscardSampleHetzyRatVal(),
-							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(phenotypeFile.getName()).toString(),
-							phenotypeFile);
+					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
+					markerCensusOperationParams.setName(censusName);
+
+					censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
@@ -127,18 +115,10 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
-					censusOpKey = OperationManager.censusCleanMatrixMarkers(
-							matrixKey,
-							sampleQAOpKey,
-							markersQAOpKey,
-							gwasParams.getDiscardMarkerMisRatVal(),
-							gwasParams.isDiscardGTMismatches(),
-							gwasParams.getDiscardSampleMisRatVal(),
-							gwasParams.getDiscardSampleHetzyRatVal(),
-							gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION);
+					String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
+					markerCensusOperationParams.setName(censusName);
 
-					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
-					//MultiOperations.updateTree();
+					censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 				} else {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}

@@ -96,11 +96,11 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			MarkerCensusOperationParams markerCensusOperationParams
 					= new MarkerCensusOperationParams(
 							new DataSetKey(matrixKey),
-							null,
-							XXX,
+							null, // name
+							null, // qaSamplesOp
 							samplesMissingRatioThreshold,
 							samplesHetzyRatioThreshold,
-							XXX,
+							null, // qaMarkersOp
 							markersMismatchDiscard,
 							markersMissingRatioThreshold,
 							phenoFile);

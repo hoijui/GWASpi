@@ -58,6 +58,8 @@ public class OperationManager {
 
 		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
+		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
+
 		return operationKey;
 	}
 

@@ -121,8 +121,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 				&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 		{
-			Threaded_GWAS.checkRequired(gwasParams);
-
 			//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 			// GENOTYPE FREQ.
 			OperationKey censusOpKey = null;

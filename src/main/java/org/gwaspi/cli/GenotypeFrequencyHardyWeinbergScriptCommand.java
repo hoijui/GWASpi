@@ -89,10 +89,10 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 					= new MarkerCensusOperationParams(
 							new DataSetKey(matrixKey),
 							gtFrqName,
-							XXX,
+							null, // qaSamplesOp
 							samplesMissingRatioThreshold,
 							samplesHetzyRatioThreshold,
-							XXX,
+							null, // qaMarkersOp
 							markersMismatchDiscard,
 							markersMissingRatioThreshold,
 							phenoFile);

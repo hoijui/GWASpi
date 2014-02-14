@@ -87,15 +87,15 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 
 			MarkerCensusOperationParams markerCensusOperationParams
 					= new MarkerCensusOperationParams(
-							XXX,
-							null,
-							XXX,
+							null, // parent
+							null, // name
+							null, // qaSamplesOp
 							samplesMissingRatioThreshold,
 							samplesHetzyRatioThreshold,
-							XXX,
+							null, // qaMarkersOp
 							markersMismatchDiscard,
 							markersMissingRatioThreshold,
-							null);
+							null); // phenotypeFile
 
 			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 
