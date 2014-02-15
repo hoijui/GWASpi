@@ -114,12 +114,12 @@ public class OutputTest {
 	}
 
 	public OutputTest(OperationKey testOpKey) throws IOException {
-		this(testOpKey, OperationsList.getOperation(testOpKey).getOperationType());
+		this(testOpKey, OperationsList.getOperationMetadata(testOpKey).getOperationType());
 	}
 
 	public void writeReportsForTestData() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperation(testOpKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(testOpKey);
 		final StudyKey studyKey = testOpKey.getParentMatrixKey().getStudyKey();
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(studyKey)));
@@ -175,7 +175,7 @@ public class OutputTest {
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
 		int pointNb = rdOPMetadata.getNumMarkers();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -206,7 +206,7 @@ public class OutputTest {
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
 		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(
@@ -231,7 +231,7 @@ public class OutputTest {
 		}
 
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedOrigIndices, markersMetadatas);
@@ -252,7 +252,7 @@ public class OutputTest {
 
 		// WRITE KNOWN ALLELES FROM QA
 		// get MARKER_QA Operation
-		List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(rdOPMetadata.getParentMatrixKey());
 		OperationKey markersQAopKey = null;
 		for (int i = 0; i < operations.size(); i++) {
 			OperationMetadata op = operations.get(i);

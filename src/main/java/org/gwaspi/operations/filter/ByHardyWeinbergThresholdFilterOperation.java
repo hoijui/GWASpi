@@ -29,30 +29,11 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation {
+public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
 
-	private static final Logger LOG
-			= LoggerFactory.getLogger(ByHardyWeinbergThresholdFilterOperation.class);
-
-	private final OperationKey hwOpKey;
-	private final double hwPValueThreshold;
-
-	/**
-	 *
-	 * @param parent
-	 * @param hwOpKey This operation should be the parent,
-	 *   or one of its ancestors, to make sure we have a hardy&weinberg entry
-	 *   for every entry in the parent
-	 * @param hwPValueThreshold
-	 */
-	public ByHardyWeinbergThresholdFilterOperation(OperationKey parent, OperationKey hwOpKey, double hwPValueThreshold) {
-		super(parent);
-
-		this.hwOpKey = hwOpKey;
-		this.hwPValueThreshold = hwPValueThreshold;
+	public ByHardyWeinbergThresholdFilterOperation(ByHardyWeinbergThresholdFilterOperationParams params) {
+		super(params);
 	}
 
 	@Override
@@ -68,6 +49,9 @@ public abstract class ByHardyWeinbergThresholdFilterOperation extends AbstractFi
 			throws IOException
 	{
 		DataSetSource parentDataSetSource = getParentDataSetSource();
+
+		final OperationKey hwOpKey = getParams().getHardyWeinbergOperationKey();
+		final double hwPValueThreshold = getParams().getHardyWeinbergPValueThreshold();
 
 		HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
 				= (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(hwOpKey);
@@ -98,4 +82,8 @@ public abstract class ByHardyWeinbergThresholdFilterOperation extends AbstractFi
 		filteredSampleOrigIndicesAndKeys.putAll(parentDataSetSource.getSamplesKeysSource().getIndicesMap());
 	}
 
+	@Override
+	protected String getFilterDescription() {
+		return "Removes all markers that have a Hardy & Weinberg P-value smaller then a given threshold.";
+	}
 }

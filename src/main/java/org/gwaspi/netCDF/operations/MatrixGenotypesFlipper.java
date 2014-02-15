@@ -36,6 +36,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,11 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	@Override
 	public boolean isCreatingResultMatrix() {
 		return true;
+	}
+
+	@Override
+	public OperationParams getParams() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**

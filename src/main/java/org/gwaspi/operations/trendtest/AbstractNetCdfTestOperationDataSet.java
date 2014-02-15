@@ -107,7 +107,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
+		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
 
 		return new OperationMetadata(
 				new DataSetKey(markerCensusOPKey), // parent data set

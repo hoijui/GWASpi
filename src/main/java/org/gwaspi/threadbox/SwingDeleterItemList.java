@@ -101,7 +101,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						OperationsList.deleteOperationBranch(
+						OperationsList.deleteOperation(
 								currentSdi.getOperationKey(),
 								currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOperationKey());

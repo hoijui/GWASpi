@@ -612,7 +612,7 @@ public abstract class Report_Analysis extends JPanel {
 			this.operationKey = operationKey;
 			OperationMetadata operation = null;
 			try {
-				operation = OperationsList.getOperation(operationKey);
+				operation = OperationsList.getOperationMetadata(operationKey);
 			} catch (IOException ex) {
 				setEnabled(false);
 				putValue(SHORT_DESCRIPTION,

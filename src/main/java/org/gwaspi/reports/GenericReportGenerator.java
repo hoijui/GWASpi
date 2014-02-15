@@ -700,7 +700,7 @@ public class GenericReportGenerator {
 
 		QASamplesOperationDataSet qaSamplesOpDS = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(operationKey);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
 
 		Map<Integer, SampleKey> samples = qaSamplesOpDS.getSamplesKeysSource().getIndicesMap();
 		List<Double> hetzyRatios = (List) qaSamplesOpDS.getHetzyRatios(-1, -1);

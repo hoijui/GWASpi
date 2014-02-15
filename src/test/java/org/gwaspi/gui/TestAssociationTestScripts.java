@@ -25,13 +25,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.Util;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
+import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
+import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -79,9 +86,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixKey.getMatrixId()));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
-		List<OperationMetadata> hwOpsBefore = OperationsList.getOperationsList(matrixKey, OPType.HARDY_WEINBERG);
-		List<OperationMetadata> censusOpsBefore = OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
-		censusOpsBefore.addAll(OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+		List<OperationMetadata> hwOpsBefore = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsBefore = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsBefore.addAll(OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
 
 		File logFile = new File(setup.getTmpDir(), "log_test_hardyWeinberg_" + dataSpecifier.replaceAll("[, \t.]", "_") + ".txt");
 
@@ -90,7 +97,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		log.info("Run Hardy-Weinberg Test ({}) DONE.", dataSpecifier);
 
 		if (log.isDebugEnabled()) {
-			List<OperationMetadata> operationsTable = OperationsList.getOperationsTable(matrixKey);
+			List<OperationMetadata> operationsTable = OperationsList.getOffspringOperationsMetadata(matrixKey);
 			log.debug("available operations:");
 			for (OperationMetadata operationMetadata : operationsTable) {
 				log.debug("\toperation id: {}, name: \"{}\"",
@@ -99,9 +106,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			}
 		}
 
-		List<OperationMetadata> hwOpsAfter = OperationsList.getOperationsList(matrixKey, OPType.HARDY_WEINBERG);
-		List<OperationMetadata> censusOpsAfter = OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
-		censusOpsAfter.addAll(OperationsList.getOperationsList(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+		List<OperationMetadata> hwOpsAfter = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsAfter = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsAfter.addAll(OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
 
 		OperationKey gtFreqOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(censusOpsBefore, censusOpsAfter).get(0)); // HACK
 		OperationKey hwOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(hwOpsBefore, hwOpsAfter).get(0)); // HACK
@@ -131,19 +138,37 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
 		MatrixKey matrixKey = new MatrixKey(new StudyKey(setup.getStudyId()), matrixId);
-//		int gtFreqOpId = 3; // FIXME should not be hardcoded
-//		int hwOpId = 4; // FIXME should not be hardcoded
 
 		String mapFileName = name + ".map";
 		String pedFileName = name + ".ped";
 
 		final String dataSpecifier = mapFileName + ", " + pedFileName;
 
-		OperationManager.censusCleanMatrixMarkers(matrixKey, null, null, matrixId, true, matrixId, matrixId, pedFileName)
+//		List<OperationKey> opKeys = testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
+//		OperationKey gtFreqOpKey = opKeys.get(0);
+//		OperationKey hwOpKey = opKeys.get(1);
 
-		List<OperationKey> opKeys = testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
-		OperationKey gtFreqOpKey = opKeys.get(0);
-		OperationKey hwOpKey = opKeys.get(1);
+		DataSetKey initialParent = new DataSetKey(matrixKey);
+		final OperationKey matrixSampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.SAMPLE_QA).get(0));
+		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
+
+//		new OP_MarkerCensus();
+		MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
+		OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
+
+//		new OP_HardyWeinberg(gtFreqOpKey, dataSpecifier);
+		final OperationKey hwOpKey = OperationManager.performHardyWeinberg(gtFreqOpKey, dataSpecifier);
+
+		final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
+		final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
+		final OperationKey byHwThresholFilterOpKey = OperationManager.performOperation(byHardyWeinbergThresholdFilterOperation);
+
+		final ByValidAffectionFilterOperationParams byValidAffectionFilterOperationParams = new ByValidAffectionFilterOperationParams(new DataSetKey(byHwThresholFilterOpKey), null);
+		final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
+		final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
+
+		final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(byValidAffectionFilterOpKey);
+		final OperationKey qaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
 
 		log.info("Run Combi Association Test ({}, {}) ...", mapFileName, pedFileName);
 
@@ -163,8 +188,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
-		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpKey.getId()));
-		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpKey.getId()));
+//		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpKey.getId()));
+//		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpKey.getId()));
+		substitutions.put("\\$\\{QA_MARKERS_OPERATION_ID\\}", String.valueOf(qaMarkersOpKey.getId()));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");

@@ -328,7 +328,7 @@ public class CombiTestParamsGUI extends JPanel {
 //			OperationKey censusOPKey = MatrixAnalysePanel.AssociationTestsAction.evaluateCensusOPId(currentCensusOPKey, parentMatrixKey);
 //			hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
 			// FIXME use also censusOp?
-			List<OperationMetadata> operations = OperationsList.getOperationsList(parentMatrixKey);
+			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentMatrixKey);
 			hwOperations = new ArrayList<OperationMetadata>(operations.size());
 			for (OperationMetadata operationMetadata : operations) {
 				if (operationMetadata.getOperationType() == OPType.HARDY_WEINBERG) {

@@ -50,6 +50,7 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -490,6 +491,11 @@ public class MatrixDataExtractor implements MatrixOperation {
 	@Override
 	public String getProblemDescription() {
 		return null;
+	}
+
+	@Override
+	public OperationParams getParams() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override

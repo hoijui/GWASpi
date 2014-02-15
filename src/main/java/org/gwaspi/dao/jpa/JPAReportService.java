@@ -183,7 +183,7 @@ public class JPAReportService implements ReportService {
 					|| operationType.equals(OPType.GENOTYPICTEST)
 					|| operationType.equals(OPType.TRENDTEST))
 			{
-				OperationMetadata parentOp = OperationsList.getOperation(op.getParentOperationKey());
+				OperationMetadata parentOp = OperationsList.getOperationMetadata(op.getParentOperationKey());
 				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
 				prefix.append("_");

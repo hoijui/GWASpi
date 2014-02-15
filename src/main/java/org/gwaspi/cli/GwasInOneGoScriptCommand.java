@@ -131,10 +131,7 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			// GWAS block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGWASwithAlterPhenotype(
-						matrixKey,
-						phenoFile,
-						gwasParams);
+				MultiOperations.doGWASwithAlterPhenotype(gwasParams);
 				return true;
 			}
 		}

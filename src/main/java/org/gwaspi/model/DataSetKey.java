@@ -62,4 +62,14 @@ public final class DataSetKey {
 	public OperationKey getOperationParent() {
 		return operationParent;
 	}
+
+	@Override
+	public String toString() {
+
+		if (isMatrix()) {
+			return getMatrixParent().toString();
+		} else {
+			return getOperationParent().toString();
+		}
+	}
 }

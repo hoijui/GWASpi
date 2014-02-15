@@ -36,6 +36,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +101,11 @@ public class MatrixTranslator implements MatrixOperation {
 		}
 
 		return problemDescription;
+	}
+
+	@Override
+	public OperationParams getParams() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override

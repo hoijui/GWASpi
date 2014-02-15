@@ -40,6 +40,9 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	private final OperationKey qaMarkersOperationKey;
 //	private final OperationKey hardyWeinbergOperationKey;
 //	private final double hardyWeinbergThreshold;
+	/**
+	 * Whether we are to perform allelic or genotypic association tests.
+	 */
 	private final GenotypeEncoder encoder;
 //	private final File phenotypeInfo;
 	/**

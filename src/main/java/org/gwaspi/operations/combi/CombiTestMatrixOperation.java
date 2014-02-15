@@ -54,24 +54,19 @@ import org.slf4j.LoggerFactory;
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet> {
+public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
 	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
 
-	/**
-	 * Whether we are to perform allelic or genotypic association tests.
-	 */
-	private final CombiTestOperationParams params;
 	private Boolean valid;
 	private String problemDescription;
 
 	public CombiTestMatrixOperation(CombiTestOperationParams params) {
-		super(params.getParent());
+		super(params);
 
-		this.params = params;
 		this.valid = null;
 		this.problemDescription = null;
 	}
@@ -140,7 +135,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
 
 		final int dSamples = parentDataSetSource.getNumMarkers();
-		final int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
+		final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
 		final int n = parentDataSetSource.getNumSamples();
 
 		final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
@@ -153,7 +148,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		LOG.debug("Combi Association Test: #samples: " + n);
 		LOG.debug("Combi Association Test: #markers: " + dSamples);
-		LOG.debug("Combi Association Test: encoding factor: " + params.getEncoder().getEncodingFactor());
+		LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
 		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
 //		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
@@ -164,7 +159,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		LOG.info("Combi Association Test: start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, params.getEncoder());
+		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder());
 
 		// TODO sort the weights (should already be absolute?)
 		// TODO write stuff to a matrix (maybe the list of important markers?)

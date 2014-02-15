@@ -55,7 +55,7 @@ public class OutputQAMarkers {
 
 	public static void writeReportsForQAMarkersData(OperationKey operationKey) throws IOException {
 
-		OperationMetadata op = OperationsList.getOperation(operationKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String markMissOutName = prefix + "markmissing.txt";
@@ -113,7 +113,7 @@ public class OutputQAMarkers {
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(markersQAopKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
@@ -215,7 +215,7 @@ public class OutputQAMarkers {
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(markersQAopKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(unsortedOrigIndices, markersMetadatas);
 

@@ -22,6 +22,8 @@ import java.util.Date;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.datasource.netcdf.NetCDFDataSetSource;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.netCDF.operations.OperationFactory;
 
 public class MatrixFactory {
 
@@ -38,6 +40,19 @@ public class MatrixFactory {
 //		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
 
 		return matrixName;
+	}
+
+	public static DataSetSource generateDataSetSource(DataSetKey dataSetKey) {
+
+		try {
+			if (dataSetKey.isMatrix()) {
+				return generateMatrixDataSetSource(dataSetKey.getMatrixParent());
+			} else {
+				return OperationFactory.generateOperationDataSet(dataSetKey.getOperationParent());
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {

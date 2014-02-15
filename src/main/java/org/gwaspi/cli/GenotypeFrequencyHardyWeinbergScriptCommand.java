@@ -116,10 +116,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGTFreqDoHW(
-						matrixKey,
-						phenoFile,
-						gwasParams);
+				MultiOperations.doGTFreqDoHW(gwasParams);
 				return true;
 			}
 		}

@@ -132,7 +132,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
 			//</editor-fold>
 
-			Threaded_GWAS.performGWAS(gwasParams, matrixKey, thisSwi, markersQAOpKey, censusOpKey, hwOpKey);
+			Threaded_GWAS.performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
 		}
 	}
 }

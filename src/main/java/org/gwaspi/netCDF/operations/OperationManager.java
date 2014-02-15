@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -166,6 +167,23 @@ public class OperationManager {
 
 		return operationKey;
 	}
+
+	public static OperationKey performOperation(MatrixOperation operation)
+			throws IOException
+	{
+		final int resultOperationId = operation.processMatrix();
+
+		final DataSetKey parent = operation.getParams().getParent();
+		final OperationKey resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
+
+		if (parent.isMatrix()) {
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
+		} else {
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+		}
+
+		return resultOperationKey;
+	}
 	//</editor-fold>
 
 	public static OperationKey performQASamplesOperationAndCreateReports(
@@ -206,7 +224,7 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
@@ -226,7 +244,7 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				// Check if current operation is from parent matrix or parent operation
@@ -246,7 +264,7 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
+			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
@@ -269,7 +287,7 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperations(operationKey);
+			List<OperationMetadata> chkOperations = OperationsList.getChildrenOperationsMetadata(operationKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();

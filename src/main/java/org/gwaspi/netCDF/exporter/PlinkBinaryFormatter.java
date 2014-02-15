@@ -88,7 +88,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		MatrixKey parentMatrix = MatrixKey.valueOf(rdMatrixMetadata);
 
 		// ALLELES
-		List<OperationMetadata> operations = OperationsList.getOperationsList(parentMatrix);
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentMatrix);
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAOpKey);

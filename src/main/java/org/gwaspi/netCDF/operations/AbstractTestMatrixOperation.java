@@ -31,6 +31,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.OperationParams;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -40,7 +41,7 @@ import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet> extends AbstractOperation<DST> {
+public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet, PT extends OperationParams> extends AbstractOperation<DST, PT> {
 
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);

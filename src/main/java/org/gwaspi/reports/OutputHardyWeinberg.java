@@ -59,7 +59,7 @@ public class OutputHardyWeinberg {
 
 	public static void writeReportsForMarkersHWData(OperationKey operationKey) throws IOException {
 
-		OperationMetadata op = OperationsList.getOperation(operationKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = ReportsList.getReportNamePrefix(op);
@@ -95,7 +95,7 @@ public class OutputHardyWeinberg {
 
 		// GET MARKER INFO
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
 		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
@@ -127,7 +127,7 @@ public class OutputHardyWeinberg {
 
 		// WRITE KNOWN ALLELES FROM QA
 		// get MARKER_QA Operation
-		List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(rdOPMetadata.getParentMatrixKey());
 		OperationKey markersQAopKey = null;
 		for (int i = 0; i < operations.size(); i++) {
 			OperationMetadata op = operations.get(i);

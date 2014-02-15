@@ -60,7 +60,7 @@ public class Threaded_Test extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(censusOpKey.getParentMatrixKey());
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(censusOpKey.getParentMatrixKey());
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 //		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -77,7 +77,7 @@ public class Threaded_Test extends CommonRunnable {
 //		}
 
 		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-		OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
+		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());

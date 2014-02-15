@@ -20,7 +20,6 @@ package org.gwaspi.operations.filter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
@@ -30,24 +29,17 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractFilterOperation extends AbstractOperation<SimpleOperationDataSet> {
+public abstract class AbstractFilterOperation<PT extends OperationParams> extends AbstractOperation<SimpleOperationDataSet, PT> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(AbstractFilterOperation.class);
 
-	protected AbstractFilterOperation(DataSetKey parent) {
-		super(parent);
-	}
-
-	protected AbstractFilterOperation(MatrixKey parent) {
-		super(parent);
-	}
-
-	protected AbstractFilterOperation(OperationKey parent) {
-		super(parent);
+	protected AbstractFilterOperation(PT params) {
+		super(params);
 	}
 
 	@Override

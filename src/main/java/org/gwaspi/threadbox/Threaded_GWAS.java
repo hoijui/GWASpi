@@ -26,11 +26,11 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -43,16 +43,11 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_GWAS extends CommonRunnable {
 
-	private final MatrixKey matrixKey;
 	private final GWASinOneGOParams gwasParams;
 
-	public Threaded_GWAS(
-			MatrixKey matrixKey,
-			GWASinOneGOParams gwasParams)
-	{
-		super("GWAS", "GWAS", "GWAS on Matrix ID: " + matrixKey.getMatrixId(), "GWAS");
+	public Threaded_GWAS(GWASinOneGOParams gwasParams) {
+		super("GWAS", "GWAS", "GWAS on: " + gwasParams.getMarkerCensusOperationParams().getParent().toString(), "GWAS");
 
-		this.matrixKey = matrixKey;
 		this.gwasParams = gwasParams;
 	}
 
@@ -62,33 +57,40 @@ public class Threaded_GWAS extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
-		OperationKey sampleQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
-		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
+
+		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey);
+
+		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
+	}
+
+	static OperationKey checkPerformMarkerCensus(Logger log, SwingWorkerItem thisSwi, GWASinOneGOParams gwasParams) throws Exception {
 
 		final MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+
+		final OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.SAMPLE_QA).get(0));
+		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.MARKER_QA).get(0));
 
 		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
 		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
 
 		//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
-		// GENOTYPE FREQ.
+		// GENOTYPE FREQ. BY PHENOFILE OR DB AFFECTION
 		OperationKey censusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
-//			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) {
 			if (phenotypeFile != null) {
 				// BY EXTERNAL PHENOTYPE FILE
 				// use Sample Info file affection state
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
+				Set<Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
 
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				if (affectionStates.contains(Affection.UNAFFECTED)
+						&& affectionStates.contains(Affection.AFFECTED))
 				{
-					getLog().info("Updating Sample Info in DB");
+					log.info("Updating Sample Info in DB");
 					InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
 					SamplesParserManager.scanSampleInfo(
-							matrixKey.getStudyKey(),
+							markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
 							ImportFormat.GWASpi,
 							phenotypeFile.getPath(),
 							inMemorySamplesReceiver);
@@ -97,38 +99,34 @@ public class Threaded_GWAS extends CommonRunnable {
 
 					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
 					markerCensusOperationParams.setName(censusName);
-
-					censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
-
-					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 				} else {
-					getLog().warn(Text.Operation.warnAffectionMissing);
+					log.warn(Text.Operation.warnAffectionMissing);
+					return censusOpKey;
 				}
-			} else { // BY DB AFFECTION
-				// use Sample Info file affection state
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixKey);
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+			} else {
+				// BY DB AFFECTION
+				// use Sample Info from the DB to extract affection state
+				Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(markerCensusOperationParams.getParent());
+				if (affectionStates.contains(Affection.UNAFFECTED)
+						&& affectionStates.contains(Affection.AFFECTED))
 				{
 					String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
 					markerCensusOperationParams.setName(censusName);
-
-					censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 				} else {
-					getLog().warn(Text.Operation.warnAffectionMissing);
+					log.warn(Text.Operation.warnAffectionMissing);
+					return censusOpKey;
 				}
 			}
 
+			censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
+
 			if (censusOpKey != null) {
-				censusOpKey = OperationKey.valueOf(OperationsList.getOperation(censusOpKey));
+				censusOpKey = OperationKey.valueOf(OperationsList.getOperationMetadata(censusOpKey));
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
 			}
 		}
 
-		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey);
-		//</editor-fold>
-
-		performGWAS(gwasParams, matrixKey, thisSwi, markersQAOpKey, censusOpKey, hwOpKey);
+		return censusOpKey;
 	}
 
 	static OperationKey checkPerformHW(SwingWorkerItem thisSwi, OperationKey censusOpKey) throws Exception {
@@ -145,7 +143,9 @@ public class Threaded_GWAS extends CommonRunnable {
 		return hwOpKey;
 	}
 
-	static void performGWAS(GWASinOneGOParams gwasParams, MatrixKey matrixKey, SwingWorkerItem thisSwi, OperationKey markersQAOpKey, OperationKey censusOpKey, OperationKey hwOpKey) throws Exception {
+	static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey) throws Exception {
+
+		final OperationKey markersQAOpKey = gwasParams.getMarkerCensusOperationParams().getMarkerQAOpKey();
 
 		// ASSOCIATION TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformAssociationTests()
@@ -156,7 +156,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			final boolean allelic = gwasParams.isPerformAllelicTests();
 			final OPType testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
 
-			OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
+			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
@@ -182,7 +182,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpKey != null
 				&& hwOpKey != null)
 		{
-			OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
+			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());

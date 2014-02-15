@@ -189,7 +189,7 @@ class BeagleFormatter implements Formatter {
 			markerBW = new BufferedWriter(markerFW);
 
 			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
+			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(MatrixKey.valueOf(rdMatrixMetadata));
 			OperationKey markersQAopKey = null;
 			for (int i = 0; i < operations.size(); i++) {
 				OperationMetadata op = operations.get(i);

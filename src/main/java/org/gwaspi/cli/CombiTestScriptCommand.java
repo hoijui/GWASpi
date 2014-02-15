@@ -79,10 +79,12 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
 
 //			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
-			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "gtfreq-id", "gtfreq-name");
+//			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "gtfreq-id", "gtfreq-name");
 
-			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-id", "hw-name");
-			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
+//			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-id", "hw-name");
+//			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
+
+			OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers-id", "qa-markers-name");
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
@@ -99,9 +101,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			CombiTestOperationParams params = new CombiTestOperationParams(
 //					matrixKey,
-					censusOperationKey,
+//					censusOperationKey,
 //					hwOperationKey,
 //					hwThreshold,
+					qaMarkersOperationKey,
 					genotypeEncoder,
 					markersToKeep,
 					useThresholdCalibration,

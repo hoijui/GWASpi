@@ -20,6 +20,7 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -27,7 +28,7 @@ import org.gwaspi.model.StudyKey;
 
 public interface OperationService {
 
-	OperationMetadata getOperation(OperationKey operationKey) throws IOException;
+	OperationMetadata getOperationMetadata(OperationKey operationKey) throws IOException;
 
 	List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException;
 
@@ -37,7 +38,7 @@ public interface OperationService {
 	 * @return
 	 * @throws IOException
 	 */
-	List<OperationMetadata> getOperations(MatrixKey origin) throws IOException;
+	List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin) throws IOException;
 
 	/**
 	 * Returns operations that have the given origin and are of the given type.
@@ -46,7 +47,7 @@ public interface OperationService {
 	 * @return
 	 * @throws IOException
 	 */
-	List<OperationMetadata> getOperations(MatrixKey origin, OPType opType) throws IOException;
+	List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin, OPType opType) throws IOException;
 
 	/**
 	 * Returns operations that have the given parent.
@@ -54,19 +55,43 @@ public interface OperationService {
 	 * @return
 	 * @throws IOException
 	 */
-	List<OperationMetadata> getOperations(OperationKey parent) throws IOException;
+	List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException;
 
 	/**
 	 * Returns operations that have the given parent and are of the given type.
-	 * @param origin
 	 * @param parent
 	 * @param opType
 	 * @return
 	 * @throws IOException
 	 */
-	List<OperationMetadata> getOperations(OperationKey parent, OPType opType) throws IOException;
+	List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException;
 
-	List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException;
+	/**
+	 * Returns operations that have the given parent.
+	 * @param parent
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent) throws IOException;
+
+	/**
+	 * Returns operations that have the given parent and are of the given type.
+	 * @param parent
+	 * @param opType
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent, OPType opType) throws IOException;
+
+	/**
+	 * Returns meta-data of the given operation and all of its offspring.
+	 * In other words, meta-data of its self and all operations that have it
+	 * as the origin.
+	 * @param rootOperationKey
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey rootOperationKey) throws IOException;
 
 	/**
 	 * Returns all the ancestor operations types,

@@ -140,9 +140,9 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		if (operationMetadata == null) {
 			if (operationKey == null) {
 				operationMetadata = createOperationMetadata();
-				operationKey = OperationsList.insertOPMetadata(operationMetadata);
+				operationKey = OperationsList.insertOperation(operationMetadata);
 			} else {
-				operationMetadata = OperationsList.getOperation(operationKey);
+				operationMetadata = OperationsList.getOperationMetadata(operationKey);
 			}
 		}
 

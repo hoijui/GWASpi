@@ -128,7 +128,7 @@ public class OperationFactory {
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
 
-		OperationMetadata operationMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(operationKey);
 		OPType operationType = operationMetadata.getOperationType();
 
 		return generateOperationDataSet(operationType, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent());
