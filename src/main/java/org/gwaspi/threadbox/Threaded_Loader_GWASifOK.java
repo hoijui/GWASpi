@@ -29,8 +29,6 @@ import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
-import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
@@ -101,21 +99,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="expanded" desc="QA PROCESS">
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
-			markerCensusOperationParams.setSampleQAOpKey(samplesQAOpKey);
-		} else {
-			return;
-		}
+		final OperationKey[] resultOperationKeys = Threaded_TranslateMatrix.matrixCompleeted(thisSwi, parent.getOrigin());
+		final OperationKey samplesQAOpKey = resultOperationKeys[0];
+		final OperationKey markersQAOpKey = resultOperationKeys[1];
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey markersQAOpKey = OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(parent.getOrigin())); // HACK change the operation to accept dataSetKey instead of matrix
-			markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
-		} else {
-			return;
-		}
-		//</editor-fold>
+		markerCensusOperationParams.setSampleQAOpKey(samplesQAOpKey);
+		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
 
 		if (performGwas
 				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)

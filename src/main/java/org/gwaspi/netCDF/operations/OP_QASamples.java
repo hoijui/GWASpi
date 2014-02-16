@@ -26,24 +26,19 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qasamples.DefaultQASamplesOperationEntry;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
+import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 
-public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
+public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
 
-	public OP_QASamples(MatrixKey parent) {
-		super(parent);
-	}
-
-	public OP_QASamples(OperationKey parent) {
-		super(parent);
+	public OP_QASamples(SamplesQAOperationParams params) {
+		super(params);
 	}
 
 	@Override

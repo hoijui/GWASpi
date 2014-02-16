@@ -29,6 +29,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
@@ -64,15 +65,15 @@ public class OperationManager {
 		return operationKey;
 	}
 
-	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
+	public static OperationKey performHardyWeinberg(HardyWeinbergOperationParams params) throws IOException {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		MatrixOperation operation = new OP_HardyWeinberg(censusOpKey, hwName);
+		MatrixOperation operation = new OP_HardyWeinberg(params);
 
 		int resultOpId = operation.processMatrix();
 
-		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
 

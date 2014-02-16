@@ -27,24 +27,19 @@ import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDataSet> {
+public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	private final OperationKey markerCensusOPKey;
-	private final String hwName;
-
-	public OP_HardyWeinberg(OperationKey markerCensusOPKey, String hwName) {
-		super(markerCensusOPKey);
-
-		this.markerCensusOPKey = markerCensusOPKey;
-		this.hwName = hwName;
+	public OP_HardyWeinberg(HardyWeinbergOperationParams params) {
+		super(params);
 	}
 
 	@Override
@@ -67,6 +62,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 
 		int resultOpId;
 
+		final OperationKey markerCensusOPKey = getParams().getParent().getOperationParent();
 		MarkerCensusOperationDataSet markerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
 
 		HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
@@ -74,7 +70,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 		dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
 		dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
 
-		dataSet.setHardyWeinbergName(hwName);
+		dataSet.setHardyWeinbergName(getParams().getName());
 		dataSet.setMarkerCensusOperationKey(markerCensusOPKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">

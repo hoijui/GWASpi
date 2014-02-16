@@ -46,23 +46,8 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
-	private final OperationKey markerCensusOPKey;
-	private final OperationKey hwOPKey;
-	private final double hwThreshold;
-	private final String testName;
-
-	public AbstractTestMatrixOperation(
-			OperationKey markerCensusOPKey,
-			OperationKey hwOPKey,
-			double hwThreshold,
-			String testName)
-	{
-		super(hwOPKey);
-
-		this.markerCensusOPKey = markerCensusOPKey;
-		this.hwOPKey = hwOPKey;
-		this.hwThreshold = hwThreshold;
-		this.testName = testName;
+	public AbstractTestMatrixOperation(PT params) {
+		super(params);
 	}
 
 	@Override
@@ -123,7 +108,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getNumChromosomes()); // HACK
 				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
 				dataSet.setTestType(getType()); // HACK
-				dataSet.setTestName(testName); // HACK
+				dataSet.setTestName(getParams().getName()); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
 //				dataSet.setChromosomes(chromosomeInfo);
@@ -220,13 +205,13 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 //				Map<MarkerKey, int[]> rdMarkerCensusCtrls = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 //				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
-				org.gwaspi.global.Utils.sysoutStart(testName);
+				org.gwaspi.global.Utils.sysoutStart(getParams().getName());
 				performTest(
 						dataSet,
 						wrMarkerKeysFiltered,
 						wrCaseMarkerCensusesFiltered,
 						wrCtrlMarkerCensusesFiltered);
-				org.gwaspi.global.Utils.sysoutCompleted(testName);
+				org.gwaspi.global.Utils.sysoutCompleted(getParams().getName());
 				//</editor-fold>
 
 				dataSet.finnishWriting();

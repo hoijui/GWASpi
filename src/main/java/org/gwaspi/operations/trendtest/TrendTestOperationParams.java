@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.threadbox;
+package org.gwaspi.operations.trendtest;
 
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.operations.AbstractOperationParams;
 
-public class Threaded_HardyWeinberg extends CommonRunnable {
+public class TrendTestOperationParams extends AbstractOperationParams {
 
-	private final OperationKey censusOpKey;
+	public TrendTestOperationParams(OperationKey markerCensusOPKey, String name) {
+		super(new DataSetKey(markerCensusOPKey), name);
+	}
 
-	public Threaded_HardyWeinberg(OperationKey censusOpKey) {
-
-		super(
-				"Hardy-Weinberg",
-				"Hardy-Weinberg test",
-				"Hardy-Weinberg on Matrix ID: " + censusOpKey.getParentMatrixId(),
-				"Hardy-Weinberg");
-
-		this.censusOpKey = censusOpKey;
+	public TrendTestOperationParams(OperationKey markerCensusOPKey) {
+		this(markerCensusOPKey, null);
 	}
 
 	@Override
-	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_HardyWeinberg.class);
-	}
-
-	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
-		Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
+	protected String getNameDefault() {
+		return "Cochran-Armitage Trend test operation";
 	}
 }

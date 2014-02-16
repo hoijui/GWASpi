@@ -24,46 +24,29 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
+import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.genotypicassociationtest.DefaultGenotypicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
-import org.gwaspi.reports.OutputTest;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 
-public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestOperationDataSet> {
+public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestOperationDataSet, AssociationTestOperationParams> {
 
-	/**
-	 * Whether we are to perform allelic or genotypic association tests.
-	 */
-	private final OPType testType;
-
-	public OP_AssociationTests(
-			OperationKey markerCensusOPKey,
-			OperationKey hwOPKey,
-			double hwThreshold,
-			OPType testType)
-	{
-		super(
-			markerCensusOPKey,
-			hwOPKey,
-			hwThreshold,
-			OutputTest.createTestName(testType) + " Test");
-
-		this.testType = testType;
+	public OP_AssociationTests(final AssociationTestOperationParams params) {
+		super(params);
 	}
 
 	@Override
 	public OPType getType() {
-		return testType;
+		return getParams().getType();
 	}
 
 	private boolean isAllelic() {
-		return (testType == OPType.ALLELICTEST);
+		return (getType() == OPType.ALLELICTEST);
 	}
 
 	/**

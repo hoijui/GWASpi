@@ -20,14 +20,13 @@ package org.gwaspi.threadbox;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputQAMarkers;
-import org.gwaspi.reports.OutputQASamples;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
+import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,17 +51,17 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OPType> necessaryOPsAL = new ArrayList<OPType>();
-		necessaryOPsAL.add(OPType.SAMPLE_QA);
-		necessaryOPsAL.add(OPType.MARKER_QA);
-		List<OPType> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixKey);
+		List<OPType> necessaryOPs = new ArrayList<OPType>();
+		necessaryOPs.add(OPType.SAMPLE_QA);
+		necessaryOPs.add(OPType.MARKER_QA);
+		List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
 
-		if (missingOPsAL.size() > 0) {
-			if (missingOPsAL.contains(OPType.SAMPLE_QA)) {
-				OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(matrixKey));
+		if (missingOPs.size() > 0) {
+			if (missingOPs.contains(OPType.SAMPLE_QA)) {
+				OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
 			}
-			if (missingOPsAL.contains(OPType.MARKER_QA)) {
-				OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(matrixKey));
+			if (missingOPs.contains(OPType.MARKER_QA)) {
+				OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(new MarkersQAOperationParams(new DataSetKey(matrixKey))));
 			}
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}

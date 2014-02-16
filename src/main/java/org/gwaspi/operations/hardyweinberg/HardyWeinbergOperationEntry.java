@@ -91,7 +91,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 	double getP();
 
 	/**
-	 * @return Observed Hetzy
+	 * @return Observed Heterozygosity
 	 *   NetCDF variables:
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [0] Control
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [0] Alternate
@@ -100,7 +100,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 	double getObsHzy();
 
 	/**
-	 * @return Hardy-Weinberg Expected Hetzy
+	 * @return Hardy-Weinberg Expected Heterozygosity
 	 *   NetCDF variables:
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [1] Control
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [1] Alternate

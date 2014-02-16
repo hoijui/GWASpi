@@ -27,23 +27,18 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
-public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
+public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
 
-	public OP_QAMarkers(MatrixKey parent) {
-		super(parent);
-	}
-
-	public OP_QAMarkers(OperationKey parent) {
-		super(parent);
+	public OP_QAMarkers(MarkersQAOperationParams params) {
+		super(params);
 	}
 
 	@Override
