@@ -59,7 +59,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
-
 //	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
 //	static {
 //		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);

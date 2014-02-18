@@ -118,6 +118,9 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(wrSampleKeys.size());
 
+		final int numMySamples = wrSampleKeys.size();
+		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
+
 		dataSet.setParams(getParams());
 
 		dataSet.setSamples(wrSampleKeys);

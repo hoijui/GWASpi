@@ -59,9 +59,12 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 		Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
 		List<HardyWeinbergOperationEntry> hwEntriesControl = hardyWeinbergOperationDataSet.getEntriesControl();
 		Iterator<HardyWeinbergOperationEntry> hwEntriesControlIt = hwEntriesControl.iterator();
-		HardyWeinbergOperationEntry curHardyWeinbergOperationEntry
-				= hwEntriesControlIt.next();
+		HardyWeinbergOperationEntry curHardyWeinbergOperationEntry = null;
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
+			if (curHardyWeinbergOperationEntry == null) {
+				curHardyWeinbergOperationEntry = hwEntriesControlIt.next();
+			}
+
 			if (curHardyWeinbergOperationEntry.getIndex() == parentMarkersEntry.getKey()) {
 				final double pValue = curHardyWeinbergOperationEntry.getP();
 				if (pValue >= hwPValueThreshold) {
@@ -69,7 +72,7 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 							parentMarkersEntry.getKey(),
 							parentMarkersEntry.getValue());
 				}
-				curHardyWeinbergOperationEntry = hwEntriesControlIt.next();
+				curHardyWeinbergOperationEntry = null;
 			} else {
 				// This marker is not a control entry, thus include it no matter what.
 				filteredMarkerOrigIndicesAndKeys.put(

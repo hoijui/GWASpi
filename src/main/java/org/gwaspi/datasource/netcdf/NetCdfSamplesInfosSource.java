@@ -51,6 +51,10 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 		this.studyKey = studyKey;
 	}
 
+	private SamplesInfosSource getOrigSource() {
+
+	}
+
 	public static SamplesInfosSource createForMatrix(StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
 		return new NetCdfSamplesInfosSource(studyKey, rdNetCdfFile);
 	}
@@ -70,7 +74,7 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 		Iterator<String> mothersIt = getMothers(from, to).iterator();
 		Iterator<Sex> sexesIt = getSexes(from, to).iterator();
 		Iterator<Affection> affectionsIt = getAffections(from, to).iterator();
-		Iterator<String> categoriesIt = getCategoriess(from, to).iterator();
+		Iterator<String> categoriesIt = getCategories(from, to).iterator();
 		Iterator<String> diseasesIt = getDiseases(from, to).iterator();
 		Iterator<String> populationsIt = getPopulations(from, to).iterator();
 		Iterator<Integer> agesIt = getAges(from, to).iterator();
@@ -136,8 +140,8 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 	}
 
 	@Override
-	public List<String> getCategoriess() throws IOException {
-		return getCategoriess(-1, -1);
+	public List<String> getCategories() throws IOException {
+		return getCategories(-1, -1);
 	}
 
 	@Override
@@ -202,11 +206,30 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 
 	@Override
 	public List<Affection> getAffections(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
+
+		// if we had direct storage of all sample info attributes
+//		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
+
+		// ... as we do not, we extract it from the origin
+		// HACK This will be very inefficient, for example if we use
+		//   many small intervalls to get the whole range.
+		final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+		final SamplesInfosSource origSource = getOrigSource();
+		final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+		final List<Affection> allOriginAffections = origSource.getAffections();
+		final Iterator<Affection> allOriginAffectionsIt = allOriginAffections.iterator();
+		final List<Affection> localAffections = new ArrayList<Affection>(toExtractSampleOrigIndices.size());
+		for (Integer originIndex : allOriginIndices) {
+			Affection originAffection = allOriginAffectionsIt.next();
+			if (toExtractSampleOrigIndices.contains(originIndex)) {
+				localAffections.add(originAffection);
+			}
+		}
+		return localAffections;
 	}
 
 	@Override
-	public List<String> getCategoriess(int from, int to) throws IOException {
+	public List<String> getCategories(int from, int to) throws IOException {
 		return readVar(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, from, to);
 	}
 

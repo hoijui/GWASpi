@@ -93,6 +93,7 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		dataSet.setNumMarkers(filteredMarkerOrigIndicesAndKeys.size());
 //		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());
 		dataSet.setNumChromosomes(filteredSampleOrigIndicesAndKeys.size());
+		dataSet.setNumSamples(filteredSampleOrigIndicesAndKeys.size());
 
 		dataSet.setMarkers(filteredMarkerOrigIndicesAndKeys);
 //		dataSet.setChromosomes(filteredChromosomeOrigIndicesAndKeys);

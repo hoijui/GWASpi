@@ -24,6 +24,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 				&& (censusOpKey != null))
 		{
-			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			OperationKey hwOpKey = OperationManager.performHardyWeinberg(params);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
 	}

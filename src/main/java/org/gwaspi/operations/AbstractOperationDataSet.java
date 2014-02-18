@@ -112,6 +112,8 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	/**
 	 * TODO revise this, for performance reasons.
+	 * @param markersOperationSet
+	 * @return
 	 */
 	protected static int getDefaultEntriesWriteBufferSize(boolean markersOperationSet) {
 
@@ -215,7 +217,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	public final int getNumMarkers() throws IOException {
 
 		if (numMarkers == null) {
-			if (getUseAllSamplesFromParent()) {
+			if (getUseAllMarkersFromParent()) {
 				setNumMarkers(getParentDataSetSource().getNumMarkers());
 			} else {
 				setNumMarkers(getNumMarkersRaw());
@@ -231,6 +233,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	 *   if this operation has one, or from the parent matrix otherwise.
 	 *   If false, we will store/retrieve/manage a separate list of markers
 	 *   for this operation.
+	 * @throws IOException
 	 */
 	protected abstract void setUseAllMarkersFromParent(boolean useAll) throws IOException;
 
@@ -266,6 +269,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	 *   if this operation has one, or from the parent matrix otherwise.
 	 *   If false, we will store/retrieve/manage a separate list of samples
 	 *   for this operation.
+	 * @throws IOException
 	 */
 	protected abstract void setUseAllSamplesFromParent(boolean useAll) throws IOException;
 
@@ -301,6 +305,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	 *   if this operation has one, or from the parent matrix otherwise.
 	 *   If false, we will store/retrieve/manage a separate list of chromosomes
 	 *   for this operation.
+	 * @throws IOException
 	 */
 	protected abstract void setUseAllChromosomesFromParent(boolean useAll) throws IOException;
 

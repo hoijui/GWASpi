@@ -34,7 +34,7 @@ public interface SamplesInfosSource extends List<SampleInfo> {
 	List<String> getMothers() throws IOException;
 	List<Sex> getSexes() throws IOException;
 	List<Affection> getAffections() throws IOException;
-	List<String> getCategoriess() throws IOException;
+	List<String> getCategories() throws IOException;
 	List<String> getDiseases() throws IOException;
 	List<String> getPopulations() throws IOException;
 	List<Integer> getAges() throws IOException;
@@ -49,7 +49,7 @@ public interface SamplesInfosSource extends List<SampleInfo> {
 	List<String> getMothers(int from, int to) throws IOException;
 	List<Sex> getSexes(int from, int to) throws IOException;
 	List<Affection> getAffections(int from, int to) throws IOException;
-	List<String> getCategoriess(int from, int to) throws IOException;
+	List<String> getCategories(int from, int to) throws IOException;
 	List<String> getDiseases(int from, int to) throws IOException;
 	List<String> getPopulations(int from, int to) throws IOException;
 	List<Integer> getAges(int from, int to) throws IOException;

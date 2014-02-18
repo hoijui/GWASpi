@@ -269,51 +269,51 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 //		return readAllSamplesGTsFromCurrentMarker(rdNcFile, null, markerNb);
 //	}
 
-	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
-
-		Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
-
-		if (null == genotypes) {
-			return null;
-		}
-		try {
-			int[] varShape = genotypes.getShape();
-
-			Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
-
-//				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
-			ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
-
-			int[] shp = gt_ACD3.getShape();
-			int reducer = 0;
-			if (shp[0] == 1) {
-				reducer++;
-			}
-			if (shp[1] == 1) {
-				reducer++;
-			}
-			if (shp[2] == 1) {
-				reducer++;
-			}
-
-			if (reducer == 1) {
-				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-				if (rdBytes == null) {
-					return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
-				} else {
-					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
-				}
-			} else {
-				throw new IllegalStateException();
-			}
-		} catch (InvalidRangeException ex) {
-			throw new IOException("Cannot read data", ex);
-		}
-
-		return null;
-	}
+//	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
+//
+//		Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+//
+//		if (null == genotypes) {
+//			return null;
+//		}
+//		try {
+//			int[] varShape = genotypes.getShape();
+//
+//			Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+//
+//			String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
+//
+////				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
+//			ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
+//
+//			int[] shp = gt_ACD3.getShape();
+//			int reducer = 0;
+//			if (shp[0] == 1) {
+//				reducer++;
+//			}
+//			if (shp[1] == 1) {
+//				reducer++;
+//			}
+//			if (shp[2] == 1) {
+//				reducer++;
+//			}
+//
+//			if (reducer == 1) {
+//				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
+//				if (rdBytes == null) {
+//					return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+//				} else {
+//					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+//				}
+//			} else {
+//				throw new IllegalStateException();
+//			}
+//		} catch (InvalidRangeException ex) {
+//			throw new IOException("Cannot read data", ex);
+//		}
+//
+//		return null;
+//	}
 
 //	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
 //

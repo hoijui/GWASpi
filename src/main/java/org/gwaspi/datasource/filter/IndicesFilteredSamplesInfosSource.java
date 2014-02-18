@@ -71,8 +71,8 @@ public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<Sampl
 	}
 
 	@Override
-	public List<String> getCategoriess() throws IOException {
-		return new IndicesFilteredList<String>(wrapped.getCategoriess(), getIncludeIndices());
+	public List<String> getCategories() throws IOException {
+		return new IndicesFilteredList<String>(wrapped.getCategories(), getIncludeIndices());
 	}
 
 	@Override
@@ -141,8 +141,8 @@ public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<Sampl
 	}
 
 	@Override
-	public List<String> getCategoriess(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getCategoriess(), getIncludeIndices(), from, to);
+	public List<String> getCategories(int from, int to) throws IOException {
+		return IndicesFilteredList.getWrappedRange(wrapped.getCategories(), getIncludeIndices(), from, to);
 	}
 
 	@Override

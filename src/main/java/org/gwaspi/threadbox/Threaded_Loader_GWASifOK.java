@@ -78,9 +78,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				samplesReceiver);
 		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(samplesReceiver.getDataSet().getSampleInfos());
 
-		MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
-
-		markerCensusOperationParams.setName(cNetCDF.Defaults.DEFAULT_AFFECTION);
+		final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
 
 		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
 		final DataSetKey parent;
@@ -93,7 +91,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			MultiOperations.printCompleted("Loading Genotypes");
 			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 			parent = new DataSetKey(matrixKey);
-			markerCensusOperationParams.setParent(parent);
 		} else {
 			return;
 		}
@@ -103,8 +100,10 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		final OperationKey samplesQAOpKey = resultOperationKeys[0];
 		final OperationKey markersQAOpKey = resultOperationKeys[1];
 
-		markerCensusOperationParams.setSampleQAOpKey(samplesQAOpKey);
-		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
+		final MarkerCensusOperationParams markerCensusOperationParams
+				= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
+		markerCensusOperationParams.setName(markerCensusName);
+		gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 
 		if (performGwas
 				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)

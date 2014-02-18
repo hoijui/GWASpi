@@ -29,8 +29,12 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
+import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
+import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
@@ -91,18 +95,19 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart(OutputTest.createTestName(testType) + " Test using QA and HW thresholds");
 
+		// TODO first check if such an exclude operation (with the same parameters) does already exist (would be a child of the hwOp), and if so, use it!
+		// exclude by Hardy & Weinberg threshold
+		final MatrixOperation excludeOperation = new ByHardyWeinbergThresholdFilterOperation(
+				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
+		int resultExcludeOpId = excludeOperation.processMatrix();
+		OperationKey excludeOperationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultExcludeOpId);
+
+		// run the test
 		final MatrixOperation operation;
 		if (testType == OPType.TRENDTEST) {
-			operation = new OP_TrendTests(
-					censusOpKey,
-					hwOpKey,
-					hwThreshold);
+			operation = new OP_TrendTests(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
-			operation = new OP_AssociationTests(
-					censusOpKey,
-					hwOpKey,
-					hwThreshold,
-					testType);
+			operation = new OP_AssociationTests(new AssociationTestOperationParams(excludeOperationKey, censusOpKey, testType));
 		}
 
 		int resultOpId = operation.processMatrix();

@@ -125,7 +125,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected int getNumMarkersRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
+//		return getNetCdfReadFile().findVariable(getIndexVar(true)).getShape(0);
+		return getNetCdfReadFile().findDimension(getDimensionName(true)).getLength();
 	}
 
 	/**
@@ -152,7 +153,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected int getNumSamplesRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
+//		return getNetCdfReadFile().findVariable(getIndexVar(false)).getShape(0);
+		return getNetCdfReadFile().findDimension(getDimensionName(false)).getLength();
 	}
 
 	/**
@@ -179,7 +181,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected int getNumChromosomesRaw() throws IOException {
-		return getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
+//		return getNetCdfReadFile().findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getShape(0);
+		return getNetCdfReadFile().findDimension(cNetCDF.Dimensions.DIM_CHRSET).getLength();
 	}
 
 	/**
@@ -415,14 +418,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 			ncFile.write(varName, origin, values);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
-		} finally {
-			if (null != ncFile) {
-				try {
-					ncFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file " + ncFile, ex);
-				}
-			}
 		}
 	}
 
@@ -448,6 +443,18 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 		}
 
 		return varName;
+	}
+
+	private String getDimensionName(boolean markers) {
+
+		final String dimensionName;
+		if (isMarkersOperationSet() == markers) {
+			dimensionName = cNetCDF.Dimensions.DIM_OPSET;
+		} else {
+			dimensionName = cNetCDF.Dimensions.DIM_IMPLICITSET;
+		}
+
+		return dimensionName;
 	}
 
 	@Override

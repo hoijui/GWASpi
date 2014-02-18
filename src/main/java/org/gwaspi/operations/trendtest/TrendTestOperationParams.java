@@ -23,12 +23,20 @@ import org.gwaspi.operations.AbstractOperationParams;
 
 public class TrendTestOperationParams extends AbstractOperationParams {
 
-	public TrendTestOperationParams(OperationKey markerCensusOPKey, String name) {
-		super(new DataSetKey(markerCensusOPKey), name);
+	private final OperationKey markerCensusOpKey;
+
+	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
+		super(new DataSetKey(hardyWeinbergExcludeOpKey), name);
+
+		this.markerCensusOpKey = markerCensusOpKey;
 	}
 
-	public TrendTestOperationParams(OperationKey markerCensusOPKey) {
-		this(markerCensusOPKey, null);
+	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOpKey) {
+		this(hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
+	}
+
+	public OperationKey getMarkerCensus() {
+		return markerCensusOpKey;
 	}
 
 	@Override

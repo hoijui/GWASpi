@@ -38,7 +38,9 @@ import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -153,11 +155,12 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
 
 //		new OP_MarkerCensus();
-		MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
-		OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
+		final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
+		final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 
 //		new OP_HardyWeinberg(gtFreqOpKey, dataSpecifier);
-		final OperationKey hwOpKey = OperationManager.performHardyWeinberg(gtFreqOpKey, dataSpecifier);
+		final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier);
+		final OperationKey hwOpKey = OperationManager.performHardyWeinberg(hardyWeinbergOperationParams);
 
 		final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
 		final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
@@ -167,7 +170,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
 		final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
 
-		final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(byValidAffectionFilterOpKey);
+		final MarkersQAOperationParams markersQAOperationParams = new MarkersQAOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
+		final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(markersQAOperationParams);
 		final OperationKey qaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
 
 		log.info("Run Combi Association Test ({}, {}) ...", mapFileName, pedFileName);

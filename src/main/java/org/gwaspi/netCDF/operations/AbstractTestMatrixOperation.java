@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,17 +30,18 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.OperationParams;
+import org.gwaspi.operations.filter.SimpleOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet, PT extends OperationParams> extends AbstractOperation<DST, PT> {
+public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams> extends AbstractOperation<DST, PT> {
 
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
@@ -65,32 +65,33 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 
 		int resultOpId = OperationKey.NULL_ID;
 
-		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
-		boolean dataLeft = excludeMarkersByHW(hwOPKey, hwThreshold, toBeExcluded);
+		SimpleOperationDataSet filteredOperationDataSet
+				= (SimpleOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerCensus());
 
 		// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-		if (!dataLeft) {
+		if (!filteredOperationDataSet.isDataLeft()) {
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
 			return resultOpId;
 		}
 
-		MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
+		MarkerCensusOperationDataSet markerCensusOperationDataSet
+				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerCensus());
 
 		AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) generateFreshOperationDataSet();
 
-		dataSet.setNumMarkers(rdMarkerCensusOperationDataSet.getNumMarkers());
-		dataSet.setNumSamples(rdMarkerCensusOperationDataSet.getNumSamples());
-		dataSet.setNumChromosomes(rdMarkerCensusOperationDataSet.getNumChromosomes());
+		dataSet.setNumMarkers(filteredOperationDataSet.getNumMarkers());
+		dataSet.setNumSamples(filteredOperationDataSet.getNumSamples());
+		dataSet.setNumChromosomes(filteredOperationDataSet.getNumChromosomes());
 
-		dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
+		dataSet.setMarkerCensusOPKey(getParams().getMarkerCensus()); // HACK
 		dataSet.setTestType(getType()); // HACK
 		dataSet.setTestName(getParams().getName()); // HACK
 
-		Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
-		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filterByValues(censusOpMarkers, toBeExcluded);
+		Map<Integer, MarkerKey> censusOpMarkers = markerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
+		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filteredOperationDataSet.getMarkersKeysSource().getIndicesMap();
 
-		Iterator<Census> wrCaseMarkerCensusesIt = rdMarkerCensusOperationDataSet.getCensus(Category.CASE).iterator();
-		Iterator<Census> wrCtrlMarkerCensusesIt = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL).iterator();
+		Iterator<Census> wrCaseMarkerCensusesIt = markerCensusOperationDataSet.getCensus(Category.CASE).iterator();
+		Iterator<Census> wrCtrlMarkerCensusesIt = markerCensusOperationDataSet.getCensus(Category.CONTROL).iterator();
 		List<Census> wrCaseMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
 		List<Census> wrCtrlMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
 		for (Integer allOrigIndex : censusOpMarkers.keySet()) {
@@ -132,7 +133,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		return filtered;
 	}
 
-	public static <K, V> Map<K, V> filterByValues(Map<K, V> toBeFiltered, Collection<V> toBeExcluded) {
+	private static <K, V> Map<K, V> filterByValues(Map<K, V> toBeFiltered, Collection<V> toBeExcluded) {
 
 		Map<K, V> filtered = new LinkedHashMap<K, V>();
 		if (toBeFiltered != null) {
