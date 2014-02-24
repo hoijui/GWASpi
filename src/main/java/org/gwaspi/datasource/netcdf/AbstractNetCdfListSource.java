@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -104,6 +105,7 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 				localValues.add(originValues);
 			}
 		}
+
 		return localValues;
 	}
 
