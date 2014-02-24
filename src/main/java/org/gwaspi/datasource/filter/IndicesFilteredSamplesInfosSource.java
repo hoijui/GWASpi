@@ -115,62 +115,62 @@ public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<Sampl
 		return IndicesFilteredList.getWrappedRange(wrapped.getSampleKeys(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getOrderIds(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getOrderIds(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getFathers(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getFathers(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getMothers(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getMothers(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<SampleInfo.Sex> getSexes(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getSexes(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<SampleInfo.Affection> getAffections(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getAffections(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getCategories(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getCategories(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getDiseases(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getDiseases(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getPopulations(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getPopulations(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getAges(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getAges(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<String> getFilters(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getFilters(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getApproveds(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getApproveds(), getIncludeIndices(), from, to);
 	}
 
-	@Override
+//	@Override
 	public List<Integer> getStatuses(int from, int to) throws IOException {
 		return IndicesFilteredList.getWrappedRange(wrapped.getStatuses(), getIncludeIndices(), from, to);
 	}

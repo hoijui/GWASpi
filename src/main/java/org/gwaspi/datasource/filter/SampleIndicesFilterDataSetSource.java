@@ -36,12 +36,12 @@ import org.gwaspi.model.SamplesKeysSource;
 public class SampleIndicesFilterDataSetSource implements DataSetSource {
 
 	private final DataSetSource parent;
-	private final List<Integer> toKeppSampleOrigIndices;
+	private final List<Integer> toKeepSampleOrigIndices;
 
-	public SampleIndicesFilterDataSetSource(DataSetSource parent, List<Integer> toKeppSampleOrigIndices) {
+	public SampleIndicesFilterDataSetSource(DataSetSource parent, List<Integer> toKeepSampleOrigIndices) {
 
 		this.parent = parent;
-		this.toKeppSampleOrigIndices = toKeppSampleOrigIndices;
+		this.toKeepSampleOrigIndices = toKeepSampleOrigIndices;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class SampleIndicesFilterDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
-		return new InternalIndicesFilteredMarkersGenotypesSource(parent.getMarkersGenotypesSource(), toKeppSampleOrigIndices);
+		return new InternalIndicesFilteredMarkersGenotypesSource(parent.getMarkersGenotypesSource(), toKeepSampleOrigIndices);
 	}
 
 	@Override
@@ -91,21 +91,21 @@ public class SampleIndicesFilterDataSetSource implements DataSetSource {
 
 	@Override
 	public int getNumSamples() {
-		return toKeppSampleOrigIndices.size();
+		return toKeepSampleOrigIndices.size();
 	}
 
 	@Override
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
-		return new IndicesFilteredSamplesGenotypesSource(parent.getSamplesGenotypesSource(), toKeppSampleOrigIndices);
+		return new IndicesFilteredSamplesGenotypesSource(parent.getSamplesGenotypesSource(), toKeepSampleOrigIndices);
 	}
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return new IndicesFilteredSamplesInfosSource(parent.getSamplesInfosSource(), toKeppSampleOrigIndices);
+		return new IndicesFilteredSamplesInfosSource(parent.getSamplesInfosSource(), toKeepSampleOrigIndices);
 	}
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
-		return new IndicesFilteredSamplesKeysSource(parent.getSamplesKeysSource(), toKeppSampleOrigIndices);
+		return new IndicesFilteredSamplesKeysSource(parent.getSamplesKeysSource(), toKeepSampleOrigIndices);
 	}
 }
