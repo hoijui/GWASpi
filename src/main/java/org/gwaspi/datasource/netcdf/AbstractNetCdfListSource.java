@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.global.Extractor;
-import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 
 /**
  * TODO
+ * @param <VT> list value type
  */
 public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 
@@ -84,7 +84,7 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 		return values;
 	}
 
-	protected <VT> List<VT> getAffections(final List<VT> allOriginValues, int from, int to) throws IOException {
+	protected static <VT> List<VT> extractValuesByOrigIndices(final List<Integer> allOriginIndices, final List<VT> allOriginValues, final List<Integer> toExtractOrigIndices) throws IOException {
 
 		// if we had direct storage of all sample info attributes
 //		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
@@ -92,14 +92,15 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 		// ... as we do not, we extract it from the origin
 		// HACK This will be very inefficient, for example if we use
 		//   many small intervalls to get the whole range.
-		final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
-		final SamplesInfosSource origSource = getOrigSource();
-		final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+
+//		final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+//		final SamplesInfosSource origSource = getOrigSource();
+//		final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
 		final Iterator<VT> allOriginValuesIt = allOriginValues.iterator();
-		final List<VT> localValues = new ArrayList<VT>(toExtractSampleOrigIndices.size());
+		final List<VT> localValues = new ArrayList<VT>(toExtractOrigIndices.size());
 		for (Integer originIndex : allOriginIndices) {
 			VT originValues = allOriginValuesIt.next();
-			if (toExtractSampleOrigIndices.contains(originIndex)) {
+			if (toExtractOrigIndices.contains(originIndex)) {
 				localValues.add(originValues);
 			}
 		}

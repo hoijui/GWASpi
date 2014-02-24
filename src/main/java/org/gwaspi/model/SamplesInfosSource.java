@@ -44,16 +44,16 @@ public interface SamplesInfosSource extends List<SampleInfo> {
 
 	List<Integer> getSampleOrigIndices(int from, int to) throws IOException;
 	List<SampleKey> getSampleKeys(int from, int to) throws IOException;
-	List<Integer> getOrderIds(int from, int to) throws IOException;
-	List<String> getFathers(int from, int to) throws IOException;
-	List<String> getMothers(int from, int to) throws IOException;
-	List<Sex> getSexes(int from, int to) throws IOException;
-	List<Affection> getAffections(int from, int to) throws IOException;
-	List<String> getCategories(int from, int to) throws IOException;
-	List<String> getDiseases(int from, int to) throws IOException;
-	List<String> getPopulations(int from, int to) throws IOException;
-	List<Integer> getAges(int from, int to) throws IOException;
-	List<String> getFilters(int from, int to) throws IOException;
-	List<Integer> getApproveds(int from, int to) throws IOException;
-	List<Integer> getStatuses(int from, int to) throws IOException;
+//	List<Integer> getOrderIds(int from, int to) throws IOException;
+//	List<String> getFathers(int from, int to) throws IOException;
+//	List<String> getMothers(int from, int to) throws IOException;
+//	List<Sex> getSexes(int from, int to) throws IOException;
+//	List<Affection> getAffections(int from, int to) throws IOException;
+//	List<String> getCategories(int from, int to) throws IOException;
+//	List<String> getDiseases(int from, int to) throws IOException;
+//	List<String> getPopulations(int from, int to) throws IOException;
+//	List<Integer> getAges(int from, int to) throws IOException;
+//	List<String> getFilters(int from, int to) throws IOException;
+//	List<Integer> getApproveds(int from, int to) throws IOException;
+//	List<Integer> getStatuses(int from, int to) throws IOException;
 }
