@@ -21,11 +21,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
@@ -77,11 +74,11 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 				filteredSampleOrigIndicesAndKeys);
 
 		if (filteredMarkerOrigIndicesAndKeys.isEmpty()) {
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
+			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (markers)");
 			return Integer.MIN_VALUE;
 		}
 		if (filteredSampleOrigIndicesAndKeys.isEmpty()) {
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
+			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (samples)");
 			return Integer.MIN_VALUE;
 		}
 
