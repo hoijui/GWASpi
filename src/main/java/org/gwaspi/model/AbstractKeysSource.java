@@ -23,6 +23,7 @@ import java.util.Map;
 
 /**
  * TODO
+ * @param <VT> value type
  */
 public interface AbstractKeysSource<VT> extends List<VT> {
 
@@ -35,6 +36,8 @@ public interface AbstractKeysSource<VT> extends List<VT> {
 
 	/**
 	 * Returns the indices of the elements in the original matrix
+	 * @param from
+	 * @param to
 	 * @return original indices
 	 * @throws IOException implementation dependent
 	 */

@@ -29,8 +29,8 @@ import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
+import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.markers.NoStorageSuccessiveIndicesList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.nc2.NetcdfFile;
 
@@ -77,6 +77,11 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 	}
 
 	@Override
+	public SamplesKeysSource getKeysSource() throws IOException {
+		XXX;
+	}
+
+	@Override
 	public List<SampleInfo> getRange(int from, int to) throws IOException {
 
 		List<SampleInfo> values = new ArrayList<SampleInfo>(to - from);
@@ -117,15 +122,15 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 		return values;
 	}
 
-	@Override
-	public List<Integer> getSampleOrigIndices() throws IOException {
-		return getSampleOrigIndices(-1, -1);
-	}
+//	@Override
+//	public List<Integer> getSampleOrigIndices() throws IOException {
+//		return getSampleOrigIndices(-1, -1);
+//	}
 
-	@Override
-	public List<SampleKey> getSampleKeys() throws IOException {
-		return getSampleKeys(-1, -1);
-	}
+//	@Override
+//	public List<SampleKey> getSampleKeys() throws IOException {
+//		return getSampleKeys(-1, -1);
+//	}
 
 	@Override
 	public List<Integer> getOrderIds() throws IOException {
@@ -187,22 +192,22 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 		return getStatuses(-1, -1);
 	}
 
-	@Override
-	public List<Integer> getSampleOrigIndices(int from, int to) throws IOException {
+//	@Override
+//	public List<Integer> getSampleOrigIndices(int from, int to) throws IOException {
+//
+//		if (from == -1) {
+//			from = 0;
+//		}
+//		if (to == -1) {
+//			to = size() - 1;
+//		}
+//		return new NoStorageSuccessiveIndicesList(to - from + 1, from);
+//	}
 
-		if (from == -1) {
-			from = 0;
-		}
-		if (to == -1) {
-			to = size() - 1;
-		}
-		return new NoStorageSuccessiveIndicesList(from, to - from);
-	}
-
-	@Override
-	public List<SampleKey> getSampleKeys(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_KEY, from, to);
-	}
+//	@Override
+//	public List<SampleKey> getSampleKeys(int from, int to) throws IOException {
+//		return readVar(cNetCDF.Variables.VAR_SAMPLE_KEY, from, to);
+//	}
 
 	public List<Integer> getOrderIds(int from, int to) throws IOException {
 

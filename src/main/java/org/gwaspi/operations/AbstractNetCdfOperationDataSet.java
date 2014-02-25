@@ -218,10 +218,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	public void finnishWriting() throws IOException {
 		super.finnishWriting();
 
-		if (writeNcFile != null) {
-			writeNcFile.close();
-			writeNcFile = null;
+		if (writeNcFile == null) {
+			ensureWriteNcFile();
 		}
+
+		writeNcFile.close();
+		writeNcFile = null;
 	}
 
 	protected NetcdfFile getNetCdfReadFile() throws IOException {
@@ -522,7 +524,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
-		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSource().getIndices());
+		return NetCdfMarkersMetadataSource.createForOperation(getOrigin(), getNetCdfReadFile(), getMarkersKeysSource().getIndices());
 	}
 
 	@Override

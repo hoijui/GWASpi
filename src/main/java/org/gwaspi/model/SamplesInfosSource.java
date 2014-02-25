@@ -27,8 +27,10 @@ import org.gwaspi.model.SampleInfo.Sex;
  */
 public interface SamplesInfosSource extends List<SampleInfo> {
 
-	List<Integer> getSampleOrigIndices() throws IOException;
-	List<SampleKey> getSampleKeys() throws IOException;
+	SamplesKeysSource getKeysSource() throws IOException;
+
+//	List<Integer> getSampleOrigIndices() throws IOException;
+//	List<SampleKey> getSampleKeys() throws IOException;
 	List<Integer> getOrderIds() throws IOException;
 	List<String> getFathers() throws IOException;
 	List<String> getMothers() throws IOException;
@@ -42,8 +44,8 @@ public interface SamplesInfosSource extends List<SampleInfo> {
 	List<Integer> getApproveds() throws IOException;
 	List<Integer> getStatuses() throws IOException;
 
-	List<Integer> getSampleOrigIndices(int from, int to) throws IOException;
-	List<SampleKey> getSampleKeys(int from, int to) throws IOException;
+//	List<Integer> getSampleOrigIndices(int from, int to) throws IOException;
+//	List<SampleKey> getSampleKeys(int from, int to) throws IOException;
 //	List<Integer> getOrderIds(int from, int to) throws IOException;
 //	List<String> getFathers(int from, int to) throws IOException;
 //	List<String> getMothers(int from, int to) throws IOException;

@@ -25,6 +25,8 @@ import java.util.List;
  */
 public interface MarkersMetadataSource extends List<MarkerMetadata> {
 
+	MarkersKeysSource getKeysSource() throws IOException;
+
 	List<String> getMarkerIds() throws IOException;
 	List<String> getRsIds() throws IOException;
 	List<String> getChromosomes() throws IOException;
@@ -32,10 +34,10 @@ public interface MarkersMetadataSource extends List<MarkerMetadata> {
 	List<String> getAlleles() throws IOException;
 	List<String> getStrands() throws IOException;
 
-	List<String> getMarkerIds(int from, int to) throws IOException;
-	List<String> getRsIds(int from, int to) throws IOException;
-	List<String> getChromosomes(int from, int to) throws IOException;
-	List<Integer> getPositions(int from, int to) throws IOException;
-	List<String> getAlleles(int from, int to) throws IOException;
-	List<String> getStrands(int from, int to) throws IOException;
+////	List<String> getMarkerIds(int from, int to) throws IOException;
+//	List<String> getRsIds(int from, int to) throws IOException;
+//	List<String> getChromosomes(int from, int to) throws IOException;
+//	List<Integer> getPositions(int from, int to) throws IOException;
+//	List<String> getAlleles(int from, int to) throws IOException;
+//	List<String> getStrands(int from, int to) throws IOException;
 }

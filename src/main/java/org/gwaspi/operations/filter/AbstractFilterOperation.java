@@ -96,6 +96,8 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 //		dataSet.setChromosomes(filteredChromosomeOrigIndicesAndKeys);
 		dataSet.setSamples(filteredSampleOrigIndicesAndKeys);
 
+		dataSet.finnishWriting();
+
 		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 	}
 

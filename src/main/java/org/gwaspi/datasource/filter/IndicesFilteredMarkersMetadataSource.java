@@ -20,6 +20,7 @@ package org.gwaspi.datasource.filter;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 
 public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredList<MarkerMetadata> implements MarkersMetadataSource {
@@ -30,6 +31,11 @@ public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredList<Ma
 		super(wrapped, includeIndices);
 
 		this.wrapped = wrapped;
+	}
+
+	@Override
+	public MarkersKeysSource getKeysSource() throws IOException {
+		XXX;
 	}
 
 	@Override
@@ -62,33 +68,33 @@ public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredList<Ma
 		return new IndicesFilteredList<String>(wrapped.getStrands(), getIncludeIndices());
 	}
 
-	@Override
-	public List<String> getMarkerIds(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getMarkerIds(), getIncludeIndices(), from, to);
-	}
-
-	@Override
-	public List<String> getRsIds(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getRsIds(), getIncludeIndices(), from, to);
-	}
-
-	@Override
-	public List<String> getChromosomes(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getChromosomes(), getIncludeIndices(), from, to);
-	}
-
-	@Override
-	public List<Integer> getPositions(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getPositions(), getIncludeIndices(), from, to);
-	}
-
-	@Override
-	public List<String> getAlleles(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getAlleles(), getIncludeIndices(), from, to);
-	}
-
-	@Override
-	public List<String> getStrands(int from, int to) throws IOException {
-		return IndicesFilteredList.getWrappedRange(wrapped.getStrands(), getIncludeIndices(), from, to);
-	}
+//	@Override
+//	public List<String> getMarkerIds(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getMarkerIds(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<String> getRsIds(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getRsIds(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<String> getChromosomes(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getChromosomes(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<Integer> getPositions(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getPositions(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<String> getAlleles(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getAlleles(), getIncludeIndices(), from, to);
+//	}
+//
+//	@Override
+//	public List<String> getStrands(int from, int to) throws IOException {
+//		return IndicesFilteredList.getWrappedRange(wrapped.getStrands(), getIncludeIndices(), from, to);
+//	}
 }
