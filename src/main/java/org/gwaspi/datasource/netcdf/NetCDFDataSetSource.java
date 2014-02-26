@@ -302,7 +302,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-		return NetCdfMarkersMetadataSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfMarkersMetadataSource.createForMatrix(this, getReadNetCdfFile());
 	}
 
 	@Override
@@ -350,7 +350,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
 
 		ensureMatrixMetadata();
-		return NetCdfSamplesInfosSource.createForMatrix(matrixKey.getStudyKey(), getReadNetCdfFile());
+		return NetCdfSamplesInfosSource.createForMatrix(this, matrixKey.getStudyKey(), getReadNetCdfFile());
 	}
 
 	@Override

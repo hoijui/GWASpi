@@ -101,7 +101,7 @@ public class SampleIndicesFilterDataSetSource implements DataSetSource {
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return new IndicesFilteredSamplesInfosSource(parent.getSamplesInfosSource(), toKeepSampleOrigIndices);
+		return new IndicesFilteredSamplesInfosSource(this, parent.getSamplesInfosSource(), toKeepSampleOrigIndices);
 	}
 
 	@Override
