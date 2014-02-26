@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
@@ -39,46 +40,74 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
+	private final DataSetSource dataSetSource;
 	private final StudyKey studyKey;
 	private final MatrixKey origin;
+	private DataSetSource originDataSetSource;
 	private SamplesInfosSource originSource;
 
-	private NetCdfSamplesInfosSource(StudyKey studyKey, MatrixKey origin, NetcdfFile rdNetCdfFile) {
+	private NetCdfSamplesInfosSource(
+			final DataSetSource dataSetSource,
+			final StudyKey studyKey,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile)
+	{
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
 
+		this.dataSetSource = dataSetSource;
 		this.studyKey = studyKey;
 		this.origin = origin;
 		this.originSource = null;
 	}
 
-	private NetCdfSamplesInfosSource(StudyKey studyKey, MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+	private NetCdfSamplesInfosSource(
+			final DataSetSource dataSetSource,
+			final StudyKey studyKey,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile,
+			final List<Integer> originalIndices)
+	{
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
 
+		this.dataSetSource = dataSetSource;
 		this.studyKey = studyKey;
 		this.origin = origin;
 		this.originSource = null;
+	}
+
+	private DataSetSource getDataSetSource() {
+		return dataSetSource;
+	}
+
+	private DataSetSource getOrigDataSetSource() throws IOException {
+
+		if (originDataSetSource == null) {
+			originDataSetSource = MatrixFactory.generateMatrixDataSetSource(origin);
+		}
+
+		return originDataSetSource;
 	}
 
 	private SamplesInfosSource getOrigSource() throws IOException {
 
 		if (originSource == null) {
-			originSource = MatrixFactory.generateMatrixDataSetSource(origin).getSamplesInfosSource();
+			originSource = getOrigDataSetSource().getSamplesInfosSource();
 		}
 
 		return originSource;
 	}
 
-	public static SamplesInfosSource createForMatrix(StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfSamplesInfosSource(studyKey, null, rdNetCdfFile);
+	public static SamplesInfosSource createForMatrix(DataSetSource dataSetSource, StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfSamplesInfosSource(dataSetSource, studyKey, null, rdNetCdfFile);
 	}
 
-	public static SamplesInfosSource createForOperation(StudyKey studyKey, MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfSamplesInfosSource(studyKey, origin, rdNetCdfFile, originalIndices);
+	public static SamplesInfosSource createForOperation(DataSetSource dataSetSource, StudyKey studyKey, MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfSamplesInfosSource(dataSetSource, studyKey, origin, rdNetCdfFile, originalIndices);
 	}
 
 	@Override
 	public SamplesKeysSource getKeysSource() throws IOException {
-		XXX;
+		return getDataSetSource().getSamplesKeysSource();
 	}
 
 	@Override
@@ -86,7 +115,7 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 
 		List<SampleInfo> values = new ArrayList<SampleInfo>(to - from);
 
-		List<SampleKey> sampleKeys = getSampleKeys(from, to);
+		List<SampleKey> sampleKeys = getKeysSource().subList(from, to);
 		Iterator<Integer> orderIdsIt = getOrderIds(from, to).iterator();
 		Iterator<String> fathersIt = getFathers(from, to).iterator();
 		Iterator<String> mothersIt = getMothers(from, to).iterator();
@@ -217,9 +246,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Integer> allOriginOrderIds = origSource.getOrderIds();
 			final List<Integer> localOrderIds = extractValuesByOrigIndices(allOriginIndices, allOriginOrderIds, toExtractSampleOrigIndices);
 			return localOrderIds;
@@ -234,9 +263,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_FATHER, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginFathers = origSource.getFathers();
 			final List<String> localFathers = extractValuesByOrigIndices(allOriginIndices, allOriginFathers, toExtractSampleOrigIndices);
 			return localFathers;
@@ -251,9 +280,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_MOTHER, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginMothers = origSource.getMothers();
 			final List<String> localMothers = extractValuesByOrigIndices(allOriginIndices, allOriginMothers, toExtractSampleOrigIndices);
 			return localMothers;
@@ -268,9 +297,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, new Extractor.IntToEnumExtractor(Sex.values()), from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Sex> allOriginSexes = origSource.getSexes();
 			final List<Sex> localSexes = extractValuesByOrigIndices(allOriginIndices, allOriginSexes, toExtractSampleOrigIndices);
 			return localSexes;
@@ -285,9 +314,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Affection> allOriginAffections = origSource.getAffections();
 			final List<Affection> localAffections = extractValuesByOrigIndices(allOriginIndices, allOriginAffections, toExtractSampleOrigIndices);
 			return localAffections;
@@ -302,9 +331,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginCategories = origSource.getCategories();
 			final List<String> localCategories = extractValuesByOrigIndices(allOriginIndices, allOriginCategories, toExtractSampleOrigIndices);
 			return localCategories;
@@ -319,9 +348,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_DISEASE, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginDiseases = origSource.getDiseases();
 			final List<String> localDiseases = extractValuesByOrigIndices(allOriginIndices, allOriginDiseases, toExtractSampleOrigIndices);
 			return localDiseases;
@@ -336,9 +365,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_POPULATION, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginPopulations = origSource.getPopulations();
 			final List<String> localPopulations = extractValuesByOrigIndices(allOriginIndices, allOriginPopulations, toExtractSampleOrigIndices);
 			return localPopulations;
@@ -353,9 +382,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_AGE, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Integer> allOriginAges = origSource.getAges();
 			final List<Integer> localAges = extractValuesByOrigIndices(allOriginIndices, allOriginAges, toExtractSampleOrigIndices);
 			return localAges;
@@ -370,9 +399,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_FILTER, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<String> allOriginFilters = origSource.getFilters();
 			final List<String> localFilters = extractValuesByOrigIndices(allOriginIndices, allOriginFilters, toExtractSampleOrigIndices);
 			return localFilters;
@@ -387,9 +416,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_APPROVED, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Integer> allOriginApproveds = origSource.getApproveds();
 			final List<Integer> localApproveds = extractValuesByOrigIndices(allOriginIndices, allOriginApproveds, toExtractSampleOrigIndices);
 			return localApproveds;
@@ -404,9 +433,9 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			return readVar(cNetCDF.Variables.VAR_SAMPLE_STATUS, from, to);
 		} else {
 			// we do not have direct storage, thus we extract it from the origin
-			final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
+			final List<Integer> toExtractSampleOrigIndices = getKeysSource().getIndices(from, to);
 			final SamplesInfosSource origSource = getOrigSource();
-			final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
+			final List<Integer> allOriginIndices = getOrigDataSetSource().getSamplesKeysSource().getIndices();
 			final List<Integer> allOriginStatuses = origSource.getStatuses();
 			final List<Integer> localStatuses = extractValuesByOrigIndices(allOriginIndices, allOriginStatuses, toExtractSampleOrigIndices);
 			return localStatuses;

@@ -514,7 +514,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
-		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getOrigin(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
+		return NetCdfSamplesInfosSource.createForOperation(this, getOrigin().getStudyKey(), getOrigin(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
 	}
 
 	@Override

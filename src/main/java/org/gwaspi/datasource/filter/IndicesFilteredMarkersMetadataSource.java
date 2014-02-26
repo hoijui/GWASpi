@@ -19,23 +19,26 @@ package org.gwaspi.datasource.filter;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 
 public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredList<MarkerMetadata> implements MarkersMetadataSource {
 
+	private final DataSetSource dataSetSource;
 	private final MarkersMetadataSource wrapped;
 
-	public IndicesFilteredMarkersMetadataSource(final MarkersMetadataSource wrapped, final List<Integer> includeIndices) {
+	public IndicesFilteredMarkersMetadataSource(final DataSetSource dataSetSource, final MarkersMetadataSource wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);
 
+		this.dataSetSource = dataSetSource;
 		this.wrapped = wrapped;
 	}
 
 	@Override
 	public MarkersKeysSource getKeysSource() throws IOException {
-		XXX;
+		return dataSetSource.getMarkersKeysSource();
 	}
 
 	@Override

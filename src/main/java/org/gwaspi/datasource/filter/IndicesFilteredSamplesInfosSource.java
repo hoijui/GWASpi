@@ -19,6 +19,7 @@ package org.gwaspi.datasource.filter;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -27,17 +28,19 @@ import org.gwaspi.model.SamplesKeysSource;
 
 public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<SampleInfo> implements SamplesInfosSource {
 
+	private final DataSetSource dataSetSource;
 	private final SamplesInfosSource wrapped;
 
-	public IndicesFilteredSamplesInfosSource(final SamplesInfosSource wrapped, final List<Integer> includeIndices) {
+	public IndicesFilteredSamplesInfosSource(final DataSetSource dataSetSource, final SamplesInfosSource wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);
 
+		this.dataSetSource = dataSetSource;
 		this.wrapped = wrapped;
 	}
 
 	@Override
 	public SamplesKeysSource getKeysSource() throws IOException {
-		XXX;
+		return dataSetSource.getSamplesKeysSource();
 	}
 
 //	@Override

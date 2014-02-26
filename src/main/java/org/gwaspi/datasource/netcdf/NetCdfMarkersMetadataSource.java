@@ -36,32 +36,40 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
+	private final DataSetSource dataSetSource;
 	private final MatrixKey origin;
 	private DataSetSource originDataSetSource;
 	private MarkersMetadataSource originSource;
 
-	private NetCdfMarkersMetadataSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
+	private NetCdfMarkersMetadataSource(
+			final DataSetSource dataSetSource,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile)
+	{
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
 
+		this.dataSetSource = dataSetSource;
 		this.origin = origin;
 		this.originDataSetSource = null;
 		this.originSource = null;
 	}
 
-	private NetCdfMarkersMetadataSource(MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+	private NetCdfMarkersMetadataSource(
+			final DataSetSource dataSetSource,
+			final MatrixKey origin,
+			final NetcdfFile rdNetCdfFile,
+			final List<Integer> originalIndices)
+	{
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
 
+		this.dataSetSource = dataSetSource;
 		this.origin = origin;
 		this.originDataSetSource = null;
 		this.originSource = null;
 	}
-	private DataSetSource getDataSetSource() throws IOException {
 
-		if (originDataSetSource == null) {
-			originDataSetSource = MatrixFactory.generateMatrixDataSetSource(origin);
-		}
-
-		return originDataSetSource;
+	private DataSetSource getDataSetSource() {
+		return dataSetSource;
 	}
 
 	private DataSetSource getOrigDataSetSource() throws IOException {
@@ -82,12 +90,12 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 		return originSource;
 	}
 
-	public static MarkersMetadataSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfMarkersMetadataSource(null, rdNetCdfFile);
+	public static MarkersMetadataSource createForMatrix(final DataSetSource dataSetSource, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfMarkersMetadataSource(dataSetSource, null, rdNetCdfFile);
 	}
 
-	public static MarkersMetadataSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfMarkersMetadataSource(origin, rdNetCdfFile, originalIndices);
+	public static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfMarkersMetadataSource(dataSetSource, origin, rdNetCdfFile, originalIndices);
 	}
 
 	@Override
