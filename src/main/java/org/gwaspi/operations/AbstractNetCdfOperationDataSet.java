@@ -115,8 +115,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
 		return NetCdfMarkersGenotypesSource.createForOperation(
 				getOriginNetCdfReadFile(),
-				getMarkersKeysSource().getIndices(),
-				getSamplesKeysSource().getIndices());
+				getSamplesKeysSource().getIndices(),
+				getMarkersKeysSource().getIndices());
 	}
 
 	@Override

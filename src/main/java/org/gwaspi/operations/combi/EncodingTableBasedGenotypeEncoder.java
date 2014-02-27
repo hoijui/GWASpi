@@ -351,12 +351,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			if (samplesToKeep == null) {
 				// include all samples
 				for (byte[] genotype : rawGenotypes) {
-					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
+final int gtHash = Genotype.hashCode(genotype);
+final String gtStr = new String(genotype);
+					List<Float> encodedGT = encodingTable.get(gtHash);
 					if (encodedGT == null) {
 						encodedGT = invalidEncoded;
 					}
 					encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0).floatValue());
-						for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
+					for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
 						tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));
 					}
 //					for (Float encVal : encodedGT) {

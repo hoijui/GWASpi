@@ -45,7 +45,12 @@ public class IndicesFilteredList<T> extends AbstractList<T> implements List<T> {
 
 	@Override
 	public T get(int index) {
+try {
 		return wrapped.get(includeIndices.get(index));
+} catch (Throwable t) {
+	t.printStackTrace();
+	throw new RuntimeException(t);
+}
 	}
 
 	@Override

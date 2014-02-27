@@ -31,33 +31,26 @@ import ucar.nc2.NetcdfFile;
  * TODO
  * @param <VT> list value type
  */
-public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
+public abstract class AbstractNetCdfListSource<VT> extends AbstractOrigIndicesFilteredChunkedListSource<VT> {
 
-	private final int chunkSize;
 	private final String varNameDimension;
-	private List<Integer> originalIndices;
 	private Integer size;
 	private final NetcdfFile rdNetCdfFile;
-	private int loadedChunkNumber;
-	private List<VT> loadedChunk;
 
 	private AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
+		super(chunkSize, originalIndices);
 
-		this.chunkSize = chunkSize;
 		this.varNameDimension = varNameDimension;
-		this.originalIndices = originalIndices;
-		this.size = (originalIndices == null) ? null : originalIndices.size();
+		this.size = null;
 		this.rdNetCdfFile = rdNetCdfFile;
-		this.loadedChunkNumber = -1;
-		this.loadedChunk = null;
 	}
 
 	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
 		this(rdNetCdfFile, chunkSize, null, varNameDimension);
 	}
 
-	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices) {
-		this(rdNetCdfFile, chunkSize, originalIndices, null);
+	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension, List<Integer> originalIndices) {
+		this(rdNetCdfFile, chunkSize, originalIndices, varNameDimension);
 	}
 
 	protected NetcdfFile getReadNetCdfFile() {
@@ -84,76 +77,19 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractList<VT> {
 		return values;
 	}
 
-	protected static <VT> List<VT> extractValuesByOrigIndices(final List<Integer> allOriginIndices, final List<VT> allOriginValues, final List<Integer> toExtractOrigIndices) throws IOException {
-
-		// if we had direct storage of all sample info attributes
-//		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
-
-		// ... as we do not, we extract it from the origin
-		// HACK This will be very inefficient, for example if we use
-		//   many small intervalls to get the whole range.
-
-//		final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
-//		final SamplesInfosSource origSource = getOrigSource();
-//		final List<Integer> allOriginIndices = origSource.getSampleOrigIndices();
-		final Iterator<VT> allOriginValuesIt = allOriginValues.iterator();
-		final List<VT> localValues = new ArrayList<VT>(toExtractOrigIndices.size());
-		for (Integer originIndex : allOriginIndices) {
-			VT originValues = allOriginValuesIt.next();
-			if (toExtractOrigIndices.contains(originIndex)) {
-				localValues.add(originValues);
-			}
-		}
-
-		return localValues;
-	}
-
 	@Override
-	public VT get(int index) {
-
-		final int rawIndex;
-		if (originalIndices == null) {
-			rawIndex = index;
-		} else {
-			rawIndex = originalIndices.get(index);
-		}
-
-		return getRaw(rawIndex);
-	}
-
-	private VT getRaw(int index) {
-
-		final int chunkNumber = index / chunkSize;
-		final int inChunkPosition = index % chunkSize;
-
-		if (chunkNumber != loadedChunkNumber) {
-			try {
-//				if (index >= size()) {
-//					throw new IndexOutOfBoundsException();
-//				}
-				final int itemsBefore = chunkNumber * chunkSize;
-				final int itemsInAndAfter = size() - itemsBefore;
-				final int curChunkSize = Math.min(chunkSize, itemsInAndAfter);
-				loadedChunk = getRange(itemsBefore, itemsBefore + curChunkSize - 1);
-				loadedChunkNumber = chunkNumber;
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-
-		return loadedChunk.get(inChunkPosition);
-	}
-
-	@Override
-	public int size() {
+	public int sizeInternal() {
 
 		if (size == null) {
+try {
 			Dimension dim = rdNetCdfFile.findDimension(varNameDimension);
 			size =  dim.getLength();
+} catch (Throwable t) {
+	t.printStackTrace();
+	throw new RuntimeException(t);
+}
 		}
 
 		return size;
 	}
-
-	protected abstract List<VT> getRange(int from, int to) throws IOException;
 }

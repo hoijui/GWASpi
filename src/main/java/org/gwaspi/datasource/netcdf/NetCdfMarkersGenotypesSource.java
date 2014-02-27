@@ -20,16 +20,16 @@ package org.gwaspi.datasource.netcdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkersGenotypesSource;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.gwaspi.model.SampleKey;
+//import org.gwaspi.netCDF.operations.NetCdfUtils;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -38,8 +38,8 @@ import ucar.nc2.Variable;
 
 public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements MarkersGenotypesSource {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
+//	private static final Logger log
+//			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
 
 //	private final MatrixMetadata matrixMetadata;
 //	private Map<SampleKey, ?> sampleIdSetMap;
@@ -93,7 +93,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 			List<Integer> originalMarkersIndices)
 			throws IOException
 	{
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalMarkersIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_MARKERSET, originalMarkersIndices);
 
 		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalSamplesIndices);
 	}

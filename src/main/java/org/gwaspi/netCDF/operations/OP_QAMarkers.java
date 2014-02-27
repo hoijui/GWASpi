@@ -27,6 +27,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
@@ -81,11 +82,18 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 
 		RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics = new RawMarkerAlleleAndGTStatistics(alleleValueToOrdinalLookupTable);
 
-		Iterator<GenotypesList> markersGenotypesSourceIt = parentDataSetSource.getMarkersGenotypesSource().iterator();
+		MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
+		Iterator<GenotypesList> markersGenotypesSourceIt = markersGenotypesSource.iterator();
 		Iterator<String> markersChromosomesIt = parentDataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
-		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : parentDataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
+		Map<Integer, MarkerKey> markersIndicesMap = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
+System.err.println("markersIndicesMap.size(): " + markersIndicesMap.size());
+System.err.println("markersGenotypesSource.size(): " + markersGenotypesSource.size());
+int mi = -1;
+		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markersIndicesMap.entrySet()) {
+mi++;
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
+System.err.println("fetching marker index: " + mi);
 			final GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
 			final String chromosome = markersChromosomesIt.next();
 

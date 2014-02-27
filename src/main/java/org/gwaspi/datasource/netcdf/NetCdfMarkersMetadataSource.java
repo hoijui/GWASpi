@@ -60,7 +60,7 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 			final NetcdfFile rdNetCdfFile,
 			final List<Integer> originalIndices)
 	{
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_MARKERSET, originalIndices);
 
 		this.dataSetSource = dataSetSource;
 		this.origin = origin;

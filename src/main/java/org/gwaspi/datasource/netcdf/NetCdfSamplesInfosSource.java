@@ -67,7 +67,7 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			final NetcdfFile rdNetCdfFile,
 			final List<Integer> originalIndices)
 	{
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_SAMPLESET, originalIndices);
 
 		this.dataSetSource = dataSetSource;
 		this.studyKey = studyKey;
