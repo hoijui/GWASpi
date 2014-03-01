@@ -86,7 +86,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 		Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException;
 	}
 
-	private static abstract class AbstractKeyPicker<K> implements Picker<K> {
+	private abstract static class AbstractKeyPicker<K> implements Picker<K> {
 
 		private final Collection<K> criteria;
 		private final boolean include;
@@ -152,7 +152,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 	}
 
-	private static abstract class AbstractValuePicker<K, V, M> implements Picker<K> {
+	private abstract static class AbstractValuePicker<K, V, M> implements Picker<K> {
 
 		private final Collection<M> criteria;
 		private final Extractor<V, M> typeConverter;
@@ -460,12 +460,12 @@ public class MatrixDataExtractor implements MatrixOperation {
 //				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples= SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, true);
+				pickedSamples = SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, true);
 //				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples= SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, false);
+				pickedSamples = SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, false);
 //				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:

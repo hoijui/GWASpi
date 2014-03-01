@@ -168,7 +168,7 @@ public class JPAReportService implements ReportService {
 	}
 
 	public static String extractReportNamePrefix(OperationMetadata op) {
-		
+
 		StringBuilder prefix = new StringBuilder();
 		prefix.append("mx-");
 		prefix.append(op.getParentMatrixId());

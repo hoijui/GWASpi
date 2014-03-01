@@ -19,11 +19,10 @@ package org.gwaspi.operations.markercensus;
 import java.io.File;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.OP_MarkerCensus;
 import org.gwaspi.operations.AbstractOperationParams;
 
 /**
- * Parameters for the {@link OP_MarkerCensus}.
+ * Parameters for the {@link org.gwaspi.netCDF.operations.OP_MarkerCensus}.
  */
 public class MarkerCensusOperationParams extends AbstractOperationParams {
 

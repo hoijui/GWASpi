@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.junit.AfterClass;
@@ -89,7 +88,7 @@ public abstract class AbstractTestScripts {
 	protected static class Setup {
 
 		/**
-		 * Temporary data-dir; only valid during a single
+		 * Temporary data-directory; only valid during a single
 		 * unit-test-suite run.
 		 */
 		private final File dbDataDir;
@@ -107,7 +106,7 @@ public abstract class AbstractTestScripts {
 		private final File scriptsDir;
 
 		private int lastLoadedMatrixId;
-		private Map<String, Integer> fileNameToLoadedMatrixId;
+		private final Map<String, Integer> fileNameToLoadedMatrixId;
 
 		private int studyId;
 

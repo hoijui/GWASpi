@@ -17,9 +17,7 @@
 
 package org.gwaspi.model;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.gwaspi.global.EnumeratedValueExtractor;
 
 /**
  * Meta info about a chromosome.
@@ -86,8 +84,8 @@ public class ChromosomeInfo {
 	}
 
 	/**
-	 * Last physical position in current chromosome.
-	 * @return the pos
+	 * Last physical position in the current chromosome.
+	 * @return the position
 	 */
 	public int getPos() {
 		return pos;
