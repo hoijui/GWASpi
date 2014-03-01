@@ -45,12 +45,7 @@ public class InternalIndicesFilteredGenotypesListSource extends AbstractList<Gen
 
 	@Override
 	public GenotypesList get(int index) {
-try {
 		return genotypesListFactory.extract(wrapped.get(index));
-} catch (Throwable t) {
-	t.printStackTrace();
-	throw new RuntimeException(t);
-}
 	}
 
 	@Override

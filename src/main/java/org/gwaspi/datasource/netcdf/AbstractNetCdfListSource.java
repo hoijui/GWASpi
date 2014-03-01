@@ -18,9 +18,7 @@
 package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -81,13 +79,8 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractOrigIndicesFi
 	public int sizeInternal() {
 
 		if (size == null) {
-try {
 			Dimension dim = rdNetCdfFile.findDimension(varNameDimension);
 			size =  dim.getLength();
-} catch (Throwable t) {
-	t.printStackTrace();
-	throw new RuntimeException(t);
-}
 		}
 
 		return size;

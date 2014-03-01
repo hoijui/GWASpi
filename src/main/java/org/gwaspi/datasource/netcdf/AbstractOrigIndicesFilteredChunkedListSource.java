@@ -65,7 +65,6 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 	@Override
 	public VT get(int index) {
 
-try {
 		final int rawIndex;
 		if (originalIndices == null) {
 			rawIndex = index;
@@ -74,10 +73,6 @@ try {
 		}
 
 		return super.get(rawIndex);
-} catch (Throwable t) {
-	t.printStackTrace();
-	throw new RuntimeException(t);
-}
 	}
 
 	@Override
