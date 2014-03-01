@@ -66,10 +66,10 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 
 		QAMarkersOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		final int numMarkers = parentDataSetSource.getNumMarkers();
-		dataSet.setNumMarkers(numMarkers);
+		final int numSamples = parentDataSetSource.getNumSamples();
+		dataSet.setNumMarkers(parentDataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
-		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
+		dataSet.setNumSamples(numSamples);
 
 		final List<Sex> sampleSexes = parentDataSetSource.getSamplesInfosSource().getSexes();
 
@@ -86,14 +86,9 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 		Iterator<GenotypesList> markersGenotypesSourceIt = markersGenotypesSource.iterator();
 		Iterator<String> markersChromosomesIt = parentDataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
 		Map<Integer, MarkerKey> markersIndicesMap = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
-System.err.println("markersIndicesMap.size(): " + markersIndicesMap.size());
-System.err.println("markersGenotypesSource.size(): " + markersGenotypesSource.size());
-int mi = -1;
 		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markersIndicesMap.entrySet()) {
-mi++;
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
-System.err.println("fetching marker index: " + mi);
 			final GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
 			final String chromosome = markersChromosomesIt.next();
 
@@ -106,7 +101,7 @@ System.err.println("fetching marker index: " + mi);
 
 			MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics
 					= calculateMarkerAlleleAndGTStatistics(rawMarkerAlleleAndGTStatistics);
-			extractCompactStatistics(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics, numMarkers);
+			extractCompactStatistics(rawMarkerAlleleAndGTStatistics, markerAlleleAndGTStatistics, numSamples);
 
 			final double missingRatio = (double) rawMarkerAlleleAndGTStatistics.getMissingCount() / parentDataSetSource.getNumSamples();
 
@@ -323,7 +318,7 @@ System.err.println("fetching marker index: " + mi);
 	private static void extractCompactStatistics(
 			final RawMarkerAlleleAndGTStatistics rawMarkerAlleleAndGTStatistics,
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics,
-			final int numMarkers)
+			final int numSamples)
 	{
 		final int[] alleleValueToOrdinalLookupTable = rawMarkerAlleleAndGTStatistics.getAlleleValueToOrdinalLookupTable();
 
@@ -337,7 +332,7 @@ System.err.println("fetching marker index: " + mi);
 			Math.round(alleleOrdinalCounts[AlleleByte._0_ORDINAL]),
 			0 // will be set later
 		};
-		int remainingAlleleCount = numMarkers * 2;
+		int remainingAlleleCount = numSamples * 2;
 		for (int i = 0; i < compactAlleleStatistics.length - 1; i++) {
 			remainingAlleleCount -= compactAlleleStatistics[i];
 		}
@@ -357,7 +352,7 @@ System.err.println("fetching marker index: " + mi);
 			Math.round(genotypeOrdinalCounts[AlleleByte._0_ORDINAL][AlleleByte._0_ORDINAL]),
 			0, // will be set later
 		};
-		int remainingGenotypeCount = numMarkers;
+		int remainingGenotypeCount = numSamples;
 		for (int i = 0; i < compactGenotypeStatistics.length - 1; i++) {
 			remainingGenotypeCount -= compactGenotypeStatistics[i];
 		}

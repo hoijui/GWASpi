@@ -57,6 +57,16 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 		return (256 * fatherAllele) + motherAllele;
 	}
 
+	public static byte[] unhash(int gtHash) {
+
+		byte[] rawGt = new byte[2];
+
+		rawGt[0] = (byte) (gtHash / 256);
+		rawGt[1] = (byte) (gtHash % 256);
+
+		return rawGt;
+	}
+
 	@Override
 	public int hashCode() {
 		return hashCode(rawGt);

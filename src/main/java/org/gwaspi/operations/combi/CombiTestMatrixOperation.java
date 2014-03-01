@@ -59,7 +59,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
-	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
+	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
+	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra/generatedData_old"); // HACK
 
 	private Boolean valid;
 	private String problemDescription;
@@ -93,18 +94,22 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			return valid;
 		}
 
-		// We also require that somewhere in our ancestry,
-		// all the samples with invalid affection info have been excluded.
-		boolean hasOnlyValidAffections = false;
-		for (OPType ancestorOpType : ancestorOperationTypes) {
-			if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
-				hasOnlyValidAffections = true;
-				break;
+		if (REQUIRE_ONLY_VALID_AFFECTION) {
+			// We also require that somewhere in our ancestry,
+			// all the samples with invalid affection info have been excluded.
+			boolean hasOnlyValidAffections = false;
+			for (OPType ancestorOpType : ancestorOperationTypes) {
+				if (ancestorOpType == OPType.FILTER_BY_VALID_AFFECTION) {
+					hasOnlyValidAffections = true;
+					break;
+				}
 			}
-		}
-		valid = hasOnlyValidAffections;
-		if (!hasOnlyValidAffections) {
-			problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+			valid = hasOnlyValidAffections;
+			if (!hasOnlyValidAffections) {
+				problemDescription = "somewhere in the ancestry, all the samples with invalid affection info have to be excluded";
+			}
+		} else {
+			valid = true;
 		}
 
 		return valid;
@@ -343,6 +348,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				}
 			}
 			List<List<Double>> xValuesTrans = Util.transpose(X);
+//			Util.abs(correctFeatures);
+//			Util.abs(xValuesTrans);
 			LOG.debug("\ncompare feature matrices ...");
 			Util.compareMatrices(correctFeatures, xValuesTrans);
 			LOG.debug("done. they are equal! good!\n");
@@ -462,7 +469,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
 				sampleIndexNode.index = 0;
-				sampleIndexNode.value = si;
+				sampleIndexNode.value = si + 1;
 				prob.x[si][0] = sampleIndexNode;
 
 				for (int s2i = si; s2i < n; s2i++) {
@@ -647,7 +654,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
-			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
+			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + alphas[0]);
 			LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
 			File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
@@ -669,8 +676,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// sample index and value of non-zero alphas
 		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
 		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index = (int) svmModel.SV[i][0].value/* - 1*/; // XXX NOTE only works with PRECOMPUTED!
+			final double value = svmModel.sv_coef[0][i]/* * -1.0*/; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
 			nonZeroAlphas.put(index, value);
 		}
 

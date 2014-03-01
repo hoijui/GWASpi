@@ -18,9 +18,7 @@
 package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOperationEntry> {
@@ -110,6 +108,11 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 //	List<Map<Byte, Integer>> getAlleleCounts() throws IOException;
 //	List<Map<Byte, Map<Byte, Integer>>> getGenotypeCounts() throws IOException;
 	List<int[]> getAlleleCounts() throws IOException;
+	/**
+	 * {@link org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.GenotypeCounts}
+	 * @return
+	 * @throws IOException
+	 */
 	List<int[]> getGenotypeCounts() throws IOException;
 
 	List<Boolean> getMismatchStates(int from, int to) throws IOException;

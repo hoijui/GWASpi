@@ -33,6 +33,8 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.GenotypeEncoder;
+import org.gwaspi.operations.combi.NominalGenotypeEncoder;
 import org.gwaspi.operations.combi.Util;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
@@ -135,7 +137,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		return result;
 	}
 
-	private static void testCombiAssociationTest(Setup setup, String name) throws Exception {
+	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder) throws Exception {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
@@ -154,25 +156,30 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		final OperationKey matrixSampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.SAMPLE_QA).get(0));
 		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
 
-//		new OP_MarkerCensus();
-		final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
-		final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
+		final boolean doPreFiltering = false; // HACK FIXME XXX TODO
 
-//		new OP_HardyWeinberg(gtFreqOpKey, dataSpecifier);
-		final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier);
-		final OperationKey hwOpKey = OperationManager.performHardyWeinberg(hardyWeinbergOperationParams);
+		final OperationKey parentQaMarkersOpKey;
+		if (doPreFiltering) {
+			final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
+			final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 
-		final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
-		final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
-		final OperationKey byHwThresholFilterOpKey = OperationManager.performOperation(byHardyWeinbergThresholdFilterOperation);
+			final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier);
+			final OperationKey hwOpKey = OperationManager.performHardyWeinberg(hardyWeinbergOperationParams);
 
-		final ByValidAffectionFilterOperationParams byValidAffectionFilterOperationParams = new ByValidAffectionFilterOperationParams(new DataSetKey(byHwThresholFilterOpKey), null);
-		final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
-		final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
+			final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
+			final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
+			final OperationKey byHwThresholFilterOpKey = OperationManager.performOperation(byHardyWeinbergThresholdFilterOperation);
 
-		final MarkersQAOperationParams markersQAOperationParams = new MarkersQAOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
-		final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(markersQAOperationParams);
-		final OperationKey qaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
+			final ByValidAffectionFilterOperationParams byValidAffectionFilterOperationParams = new ByValidAffectionFilterOperationParams(new DataSetKey(byHwThresholFilterOpKey), null);
+			final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
+			final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
+
+			final MarkersQAOperationParams markersQAOperationParams = new MarkersQAOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
+			final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(markersQAOperationParams);
+			parentQaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
+		} else {
+			parentQaMarkersOpKey = matrixMarkersQAOpKey;
+		}
 
 		log.info("Run Combi Association Test ({}, {}) ...", mapFileName, pedFileName);
 
@@ -194,7 +201,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
 //		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpKey.getId()));
 //		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpKey.getId()));
-		substitutions.put("\\$\\{QA_MARKERS_OPERATION_ID\\}", String.valueOf(qaMarkersOpKey.getId()));
+		substitutions.put("\\$\\{QA_MARKERS_OPERATION_ID\\}", String.valueOf(parentQaMarkersOpKey.getId()));
+		substitutions.put("\\$\\{GENOTYPE_ENCODING\\}", genotypeEncoder.getHumanReadableName());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
@@ -207,14 +215,15 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	}
 
 	/**
-	 * Runs the Combi association Test on the "extra" dataset.
+	 * Runs the COMBI association Test on the "extra" dataset.
+	 * @throws Exception
 	 */
 //	@org.junit.Ignore
 	@Test
 	public void testCombiAssociationTest() throws Exception {
 
 //		testHardyWeinbergTest(getSetup(), "extra");
-		testCombiAssociationTest(getSetup(), "extra");
+		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
 	}
 
 	@org.junit.Ignore
