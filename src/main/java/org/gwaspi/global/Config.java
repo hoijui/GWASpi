@@ -65,39 +65,53 @@ public class Config {
 	 * We use per-thread prefs, initialized with the values from the main thread
 	 * (so they use at least the same data-dir, for example).
 	 */
-	private static final ThreadLocal<Map<String, Object>> instancePrefs =
-			new ThreadLocal<Map<String, Object>>() {
+	private static ThreadLocal<Map<String, Object>> instancePrefs = new PrefsThreadLocal();
 
-				private Map<String, Object> mainPrefs = null;
+	private static class PrefsThreadLocal extends ThreadLocal<Map<String, Object>> {
 
-				@Override
-				protected Map<String, Object> initialValue() {
+		private Map<String, Object> mainPrefs;
 
-					Map<String, Object> prefs;
+		PrefsThreadLocal() {
 
-					if (mainPrefs == null) {
-						// this will be calle for the main thread,
-						// initilaizing the prefs
-						prefs = new HashMap<String, Object>();
-						mainPrefs = prefs;
-					} else {
-						prefs = new HashMap<String, Object>(mainPrefs);
-					}
+			this.mainPrefs = null;
+		}
 
-					return prefs;
-				}
-			};
+		@Override
+		protected Map<String, Object> initialValue() {
+
+			Map<String, Object> prefs;
+
+			if (mainPrefs == null) {
+				// this will be calle for the main thread,
+				// initilaizing the prefs
+				prefs = new HashMap<String, Object>();
+				mainPrefs = prefs;
+			} else {
+				prefs = new HashMap<String, Object>(mainPrefs);
+			}
+
+			return prefs;
+		}
+	}
 
 	private Config() {
 	}
 
 	public static void setConfigValue(String key, Object value) throws IOException {
+
 		if (StartGWASpi.guiMode) {
 			// GUI PREFS
 			prefs.put(key, value.toString());
 		} else {
 			// CLI & THREAD PREFS
 			instancePrefs.get().put(key, value);
+		}
+	}
+	
+	public static void clearNonPersistentConfig() throws IOException {
+
+		if (!StartGWASpi.guiMode) {
+			instancePrefs = new PrefsThreadLocal();
 		}
 	}
 
