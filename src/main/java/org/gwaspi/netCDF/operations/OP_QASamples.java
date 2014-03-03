@@ -30,7 +30,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qasamples.DefaultQASamplesOperationEntry;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
@@ -107,7 +106,7 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, S
 			final double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
 			final double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
 
-			((AbstractOperationDataSet) dataSet).addEntry(new DefaultQASamplesOperationEntry(
+			dataSet.addEntry(new DefaultQASamplesOperationEntry(
 					sampleKey,
 					sampleOrigIndex,
 					missingRatio,
