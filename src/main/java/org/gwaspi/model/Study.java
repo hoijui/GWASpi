@@ -39,16 +39,8 @@ import org.slf4j.LoggerFactory;
 @Table(name = "study")
 @IdClass(StudyKey.class)
 @NamedQueries({
-//	@NamedQuery(name = "acc_size",             query = "SELECT count(a.id) FROM Account a"),
-//	@NamedQuery(name = "size_active",          query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= :minInGameTime) AND (a.lastLogin > :oneWeekAgo))"),
-//	q_size_active.setParameter("minInGameTime", Account.Rank.Beginner.getRequiredTime());
-//	@NamedQuery(name = "acc_size_active",      query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= " + /*Account.Rank.Beginner.getRequiredTime()*/(5 * 60 * 60) + ") AND (a.lastLogin > :oneWeekAgo))"),
 	@NamedQuery(name = "study_listKeys",       query = "SELECT s.id FROM Study s"),
 	@NamedQuery(name = "study_list",           query = "SELECT s FROM Study s"),
-//	@NamedQuery(name = "acc_fetchByName",      query = "SELECT a FROM Account a WHERE a.name = :name"),
-//	@NamedQuery(name = "acc_fetchByLowerName", query = "SELECT a FROM Account a WHERE (LOWER(a.name) = :lowerName)"),
-//	@NamedQuery(name = "acc_fetchByLastIP",    query = "SELECT a FROM Account a WHERE a.lastIp = :ip"),
-//	@NamedQuery(name = "acc_fetchByEmail",     query = "SELECT a FROM Account a WHERE a.email = :email")
 	@NamedQuery(name = "study_fetchById",      query = "SELECT s FROM Study s WHERE s.id = :id"),
 })
 public class Study implements Serializable {
@@ -62,7 +54,6 @@ public class Study implements Serializable {
 	private String studyType = ""; // study_type VARCHAR(255)
 	private String validity = ""; // validity SMALLINT
 	private Date creationDate; // creation_date TIMESTAMP (2009-05-13 17:22:10.984)
-//	private List<Integer> studyMatrices = new ArrayList<Integer>();
 
 	protected Study() {
 
@@ -72,7 +63,6 @@ public class Study implements Serializable {
 		this.studyType = "";
 		this.validity = "";
 		this.creationDate = new Date();
-//		this.studyMatrices = new ArrayList<Integer>();
 	}
 
 	public Study(String name, String description) {
@@ -83,7 +73,6 @@ public class Study implements Serializable {
 		this.studyType = "";
 		this.validity = "";
 		this.creationDate = new Date();
-//		this.studyMatrices = new ArrayList<Integer>();
 	}
 
 	public Study(int id, String name, String description, String studyType, String validity, Date creationDate) {
@@ -95,7 +84,6 @@ public class Study implements Serializable {
 		this.validity = validity;
 		this.creationDate = (creationDate == null)
 				? null : (Date) creationDate.clone();
-//		this.studyMatrices = new ArrayList<Integer>();
 	}
 
 	/**
