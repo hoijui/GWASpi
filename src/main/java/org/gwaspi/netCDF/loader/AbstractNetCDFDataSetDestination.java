@@ -36,6 +36,8 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -325,10 +327,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_MOTHER_ID, commonStringMaxLength);
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_MOTHER, sampleOrig2D, samplesD2);
 
-			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor(SampleInfo.TO_SEX));
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor<SampleInfo, Sex>(SampleInfo.TO_SEX));
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_SEX, sampleOrig1D, samplesD1);
 
-			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor(SampleInfo.TO_AFFECTION));
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor<SampleInfo, Affection>(SampleInfo.TO_AFFECTION));
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, sampleOrig1D, samplesD1);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_CATEGORY, commonStringMaxLength);

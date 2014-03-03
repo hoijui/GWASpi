@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
@@ -35,15 +36,15 @@ public class TestReports extends javax.swing.JPanel {
 
 		File plinkFile = new File("/home/fernando/work/Moapi/input/plink.assoc");
 		File outputFile = new File("/home/fernando/work/Moapi/input/plink.png");
-		HashSet redMarkersHS = new HashSet();
-		createCombinedPNGFromAssocUnadjLogPvsPos(plinkFile, outputFile, redMarkersHS, 4048, 700);
+		Set<String> redMarkers = new HashSet<String>();
+		createCombinedPNGFromAssocUnadjLogPvsPos(plinkFile, outputFile, redMarkers, 4048, 700);
 
 		log.info("This is a main test");
 	}
 
-	public static File createCombinedPNGFromAssocUnadjLogPvsPos(File plinkReport, File outputFile, HashSet redMarkersHS, int width, int height) throws FileNotFoundException, IOException {
+	public static File createCombinedPNGFromAssocUnadjLogPvsPos(File plinkReport, File outputFile, Set<String> redMarkers, int width, int height) throws FileNotFoundException, IOException {
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = org.gwaspi.reports.PlinkReportLoaderCombined.loadAssocUnadjLogPvsPos(plinkReport, redMarkersHS);
+		CombinedRangeXYPlot combinedPlot = org.gwaspi.reports.PlinkReportLoaderCombined.loadAssocUnadjLogPvsPos(plinkReport, redMarkers);
 
 		JFreeChart chart = new JFreeChart("P value x Chr position", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 

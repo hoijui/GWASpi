@@ -19,6 +19,7 @@ package org.gwaspi.netCDF;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class PrototypeWriteD4ArrayInt {
 		// add dimensions
 		Dimension markersDim = ncfile.addDimension("markers", 100);
 		Dimension boxesDim = ncfile.addDimension("boxes", 4); // 0=>AA, 1=>Aa, 2=>aa, 3=>00
-		ArrayList punettSpace = new ArrayList();
+		List<Dimension> punettSpace = new ArrayList<Dimension>();
 		punettSpace.add(markersDim);
 		punettSpace.add(boxesDim);
 

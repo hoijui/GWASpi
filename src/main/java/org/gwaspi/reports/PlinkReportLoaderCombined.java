@@ -47,7 +47,7 @@ public class PlinkReportLoaderCombined {
 	private PlinkReportLoaderCombined() {
 	}
 
-	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, Set<String> redMarkersHS) throws IOException {
+	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, Set<String> redMarkers) throws IOException {
 
 		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
 		sharedAxis.setTickMarkInsideLength(3.0f);
@@ -84,7 +84,7 @@ public class PlinkReportLoaderCombined {
 					double pValue = Double.parseDouble(s_pVal); // P value
 
 					if (cVals[0].toString().equals(tempChr)) {
-						if (redMarkersHS.contains(markerId)) { // Insert in alternate color series
+						if (redMarkers.contains(markerId)) { // Insert in alternate color series
 							series2.add(position, pValue);
 						} else {
 							series1.add(position, pValue);
@@ -102,7 +102,7 @@ public class PlinkReportLoaderCombined {
 						tempChr = cVals[0];
 						series1 = new XYSeries("Imputed");
 						series2 = new XYSeries("Observed"); // Alternate color series
-						if (redMarkersHS.contains(markerId)) { // Insert inlternate color series
+						if (redMarkers.contains(markerId)) { // Insert inlternate color series
 							series2.add(position, pValue);
 						} else {
 							series1.add(position, pValue);
