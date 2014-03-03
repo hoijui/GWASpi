@@ -96,21 +96,6 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public void setMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingRatios, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
-	}
-
-	@Override
-	public void setMissingCounts(Collection<Integer> sampleMissingCount) throws IOException {
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingCount, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
-	}
-
-	@Override
-	public void setHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-	}
-
-	@Override
 	public Collection<Double> getMissingRatios(int from, int to) throws IOException {
 
 		Collection<Double> missingRatios = new ArrayList<Double>(0);

@@ -29,26 +29,7 @@ public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOpe
 	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
 	// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
 
-	/**
-	 * @param sampleMissingRatios
-	 *   the sample missing ratio values, one per sample in this operation
-	 * NetCDF variable: Census.VAR_OP_SAMPLES_MISSINGRAT
-	 */
-	void setMissingRatios(Collection<Double> sampleMissingRatios) throws IOException;
-
-	/**
-	 * @param sampleMissingCount
-	 *   the sample missing count values, one per sample in this operation
-	 * NetCDF variable: Census.VAR_OP_SAMPLES_MISSINGCOUNT
-	 */
-	void setMissingCounts(Collection<Integer> sampleMissingCount) throws IOException;
-
-	/**
-	 * @param sampleHetzyRatios
-	 *   the sample hetzy ratio values, one per sample in this operation
-	 * NetCDF variable: Census.VAR_OP_SAMPLES_HETZYRAT
-	 */
-	void setHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException;
+	void addEntry(QASamplesOperationEntry entry) throws IOException;
 
 	Collection<Double> getMissingRatios(int from, int to) throws IOException;
 	Collection<Integer> getMissingCounts(int from, int to) throws IOException;
