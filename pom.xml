@@ -221,6 +221,7 @@
 					<showWarnings>true</showWarnings>
 					<compilerArguments>
 						<Xlint:unchecked/>
+						<bootclasspath>${env.JAVA6_HOME}/jre/lib/rt.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>
