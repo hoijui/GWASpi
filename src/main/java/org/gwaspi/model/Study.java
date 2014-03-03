@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 //	@NamedQuery(name = "size_active",          query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= :minInGameTime) AND (a.lastLogin > :oneWeekAgo))"),
 //	q_size_active.setParameter("minInGameTime", Account.Rank.Beginner.getRequiredTime());
 //	@NamedQuery(name = "acc_size_active",      query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= " + /*Account.Rank.Beginner.getRequiredTime()*/(5 * 60 * 60) + ") AND (a.lastLogin > :oneWeekAgo))"),
+	@NamedQuery(name = "study_listKeys",       query = "SELECT s.id FROM Study s"),
 	@NamedQuery(name = "study_list",           query = "SELECT s FROM Study s"),
 //	@NamedQuery(name = "acc_fetchByName",      query = "SELECT a FROM Account a WHERE a.name = :name"),
 //	@NamedQuery(name = "acc_fetchByLowerName", query = "SELECT a FROM Account a WHERE (LOWER(a.name) = :lowerName)"),

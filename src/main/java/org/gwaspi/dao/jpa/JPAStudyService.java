@@ -19,11 +19,13 @@ package org.gwaspi.dao.jpa;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.model.MatricesList;
@@ -114,7 +116,36 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public List<Study> getStudies() throws IOException {
+	public List<StudyKey> getStudies() throws IOException {
+
+		List<StudyKey> studies = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query = em.createNamedQuery("study_listKeys");
+			studies = convertFieldsToStudyKeys(query.getResultList());
+		} catch (Exception ex) {
+			LOG.error("Failed fetching all study keys", ex);
+		} finally {
+			close(em);
+		}
+
+		return studies;
+	}
+
+	private static List<StudyKey> convertFieldsToStudyKeys(List<Object> studyIds) {
+
+		List<StudyKey> studies = new ArrayList<StudyKey>(studyIds.size());
+		for (Object studyId : studyIds) {
+			studies.add(new StudyKey((Integer) studyId));
+		}
+
+		return studies;
+	}
+
+	@Override
+	public List<Study> getStudiesInfos() throws IOException {
 
 		List<Study> studies = Collections.EMPTY_LIST;
 

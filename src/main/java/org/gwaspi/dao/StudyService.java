@@ -26,7 +26,9 @@ public interface StudyService {
 
 	Study getStudy(StudyKey studyKey) throws IOException;
 
-	List<Study> getStudies() throws IOException;
+	List<StudyKey> getStudies() throws IOException;
+
+	List<Study> getStudiesInfos() throws IOException;
 
 	StudyKey insertStudy(Study study);
 

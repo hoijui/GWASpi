@@ -58,8 +58,12 @@ public class StudyList {
 		return studyService.getStudy(studyKey);
 	}
 
-	public static List<Study> getStudyList() throws IOException {
+	public static List<StudyKey> getStudies() throws IOException {
 		return studyService.getStudies();
+	}
+
+	public static List<Study> getStudyList() throws IOException {
+		return studyService.getStudiesInfos();
 	}
 
 	public static StudyKey insertNewStudy(Study study) {
