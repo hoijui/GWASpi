@@ -168,7 +168,7 @@ class MyTableModel extends AbstractTableModel {
 	}
 }
 
-class MyComparator implements Comparator {
+class MyComparator implements Comparator<Integer> {
 
 	private boolean isSortAsc;
 
@@ -176,10 +176,7 @@ class MyComparator implements Comparator {
 		isSortAsc = sortAsc;
 	}
 
-	public int compare(Object o1, Object o2) {
-		if (!(o1 instanceof Integer) || !(o2 instanceof Integer)) {
-			return 0;
-		}
+	public int compare(Integer o1, Integer o2) {
 		Integer s1 = (Integer) o1;
 		Integer s2 = (Integer) o2;
 		int result = s1.compareTo(s2);

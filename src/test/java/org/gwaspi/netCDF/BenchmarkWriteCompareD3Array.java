@@ -20,6 +20,7 @@ package org.gwaspi.netCDF;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class BenchmarkWriteCompareD3Array {
 		Dimension samplesDim = ncfile.addDimension("samples", 100);
 		Dimension markersDim = ncfile.addDimension("markers", markerNb);
 		Dimension allelesDim = ncfile.addDimension("alleles", 2);
-		ArrayList gtSpace = new ArrayList();
+		List<Dimension> gtSpace = new ArrayList<Dimension>();
 		gtSpace.add(samplesDim);
 		gtSpace.add(markersDim);
 		gtSpace.add(allelesDim);

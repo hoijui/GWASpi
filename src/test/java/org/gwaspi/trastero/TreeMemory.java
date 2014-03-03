@@ -2,11 +2,22 @@
 
 package org.gwaspi.trastero;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.tree.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -14,10 +25,10 @@ import javax.swing.tree.*;
  */
 public class TreeMemory extends JPanel {
 
-	private JTree tree;
-	private TreeModel model1;
-	private TreeModel model2;
-	private ArrayList lastExpanded;
+	private final JTree tree;
+	private final TreeModel model1;
+	private final TreeModel model2;
+	private List<TreePath> lastExpanded;
 
 	/**
 	 * Creates a new instance of TreeMemory
@@ -28,6 +39,7 @@ public class TreeMemory extends JPanel {
 		add(scroller, BorderLayout.CENTER);
 		JButton button = new JButton("Change Model");
 		button.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent ae) {
 				changeModel();
 			}
@@ -44,19 +56,18 @@ public class TreeMemory extends JPanel {
 		TreeModel nextModel = currentModel == model1 ? model2 : model1;
 
 		TreePath rootPath = tree.getPathForRow(0);
-		Enumeration e = tree.getExpandedDescendants(rootPath);
-		ArrayList expanded = new ArrayList();
+		Enumeration<TreePath> e = tree.getExpandedDescendants(rootPath);
+		List<TreePath> expanded = new ArrayList<TreePath>();
 		while (e.hasMoreElements()) {
 			expanded.add(e.nextElement());
 		}
 		tree.setModel(nextModel);
 		if (lastExpanded != null) {
 			for (int i = 0, ii = lastExpanded.size(); i < ii; i++) {
-				tree.expandPath((TreePath) lastExpanded.get(i));
+				tree.expandPath(lastExpanded.get(i));
 			}
 		}
 		lastExpanded = expanded;
-
 	}
 
 	private final TreeModel model(int n) {

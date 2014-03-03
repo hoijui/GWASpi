@@ -20,6 +20,7 @@ package org.gwaspi.netCDF;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import ucar.ma2.*;
@@ -44,8 +45,9 @@ public class CreateNetcdf {
 			String description,
 			String strand,
 			int sampleSetSize,
-			int markerSetSize) throws InvalidRangeException, IOException {
-
+			int markerSetSize)
+			throws InvalidRangeException, IOException
+	{
 		// CREATE netCDF-3 FILE
 		String genotypesFolder = "/media/data/work/GWASpi/genotypes";
 		File pathToStudy = new File(genotypesFolder + "/STUDY_1");
@@ -61,41 +63,42 @@ public class CreateNetcdf {
 		Dimension samplesDim = ncfile.addDimension("samples", sampleSetSize);
 		Dimension markersDim = ncfile.addDimension("markers", markerSetSize);
 		Dimension gtSpanDim = ncfile.addDimension("span", gtSpan);
-		ArrayList dims = new ArrayList();
+		Dimension markersSpanDim = ncfile.addDimension("markerSpan", markerSpan);
+		ArrayList<Dimension> dims = new ArrayList<Dimension>();
 		dims.add(samplesDim);
 		dims.add(markersDim);
 		dims.add(gtSpanDim);
 
-		ArrayList markerGenotypeDims = new ArrayList();
+		List<Dimension> markerGenotypeDims = new ArrayList<Dimension>();
 		markerGenotypeDims.add(markersDim);
-		markerGenotypeDims.add(markerSpan);
+		markerGenotypeDims.add(markersSpanDim);
 
-		ArrayList markerPositionDim = new ArrayList();
+		List<Dimension> markerPositionDim = new ArrayList<Dimension>();
 		markerPositionDim.add(markersDim);
 
-		ArrayList markerPropertyDim32 = new ArrayList();
+		List<Dimension> markerPropertyDim32 = new ArrayList<Dimension>();
 		markerPropertyDim32.add(markersDim);
-		markerPropertyDim32.add(32);
+		markerPropertyDim32.add(ncfile.addDimension("dim32", 32));
 
-		ArrayList markerPropertyDim16 = new ArrayList();
+		List<Dimension> markerPropertyDim16 = new ArrayList<Dimension>();
 		markerPropertyDim16.add(markersDim);
-		markerPropertyDim16.add(16);
+		markerPropertyDim16.add(ncfile.addDimension("dim16", 16));
 
-		ArrayList markerPropertyDim8 = new ArrayList();
+		List<Dimension> markerPropertyDim8 = new ArrayList<Dimension>();
 		markerPropertyDim8.add(markersDim);
-		markerPropertyDim8.add(8);
+		markerPropertyDim8.add(ncfile.addDimension("dim8", 8));
 
-		ArrayList markerPropertyDim2 = new ArrayList();
+		List<Dimension> markerPropertyDim2 = new ArrayList<Dimension>();
 		markerPropertyDim2.add(markersDim);
-		markerPropertyDim2.add(2);
+		markerPropertyDim2.add(ncfile.addDimension("dim2", 2));
 
-		ArrayList markerPropertyDim1 = new ArrayList();
+		List<Dimension> markerPropertyDim1 = new ArrayList<Dimension>();
 		markerPropertyDim1.add(markersDim);
-		markerPropertyDim1.add(1);
+		markerPropertyDim1.add(ncfile.addDimension("dim1", 1));
 
-		ArrayList sampleSetDims = new ArrayList();
+		List<Dimension> sampleSetDims = new ArrayList<Dimension>();
 		sampleSetDims.add(samplesDim);
-		sampleSetDims.add(sampleSpan);
+		sampleSetDims.add(markersSpanDim);
 
 		// Define Marker Variables
 		ncfile.addVariable("markerset", DataType.CHAR, markerGenotypeDims);

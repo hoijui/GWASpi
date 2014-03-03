@@ -19,6 +19,7 @@ package org.gwaspi.netCDF;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class PrototypeWriteD1ArrayLong {
 		// add dimensions
 		Dimension markersDim = ncfile.addDimension("markers", 100);
 
-		ArrayList positionSpace = new ArrayList();
+		List<Dimension> positionSpace = new ArrayList<Dimension>();
 		positionSpace.add(markersDim);
 
 		// define Variable
