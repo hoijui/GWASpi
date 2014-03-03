@@ -35,6 +35,7 @@ import javax.swing.event.ChangeListener;
  * to be used through a single class.
  * This usage deals only with the value
  * (setting, getting, listening to changes).
+ * @param <V> type of the values this container hosts
  */
 public class ValueContainer<V> {
 
@@ -104,7 +105,7 @@ public class ValueContainer<V> {
 		} else if (contInner instanceof JTextField) {
 			((JTextField) contInner).setText(value.toString());
 		} else if (contInner instanceof JComboBox) {
-			((JComboBox<V>) contInner).setSelectedItem(value);
+			((JComboBox) contInner).setSelectedItem(value);
 		} else {
 			throw new IllegalStateException();
 		}
@@ -119,7 +120,7 @@ public class ValueContainer<V> {
 		} else if (contInner instanceof JTextField) {
 			value = (V) ((JTextField) contInner).getText();
 		} else if (contInner instanceof JComboBox) {
-			value = (V) ((JComboBox<V>) contInner).getSelectedItem();
+			value = (V) ((JComboBox) contInner).getSelectedItem();
 		} else {
 			throw new IllegalStateException();
 		}
