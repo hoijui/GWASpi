@@ -49,15 +49,22 @@ import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
 import org.gwaspi.gui.utils.ValueContainer;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.StudyList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO
  */
 public class CombiTestParamsGUI extends JPanel {
+
+	private static final Logger LOG = LoggerFactory.getLogger(CombiTestParamsGUI.class);
 
 	public static final String TITLE = "Edit Combi-Test parameters";
 
@@ -262,24 +269,45 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
 		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
-				combiTestParams.getMarkersToKeep(), // initial value
-				1, // min
-				combiTestParams.getTotalMarkers() - 1, // max
-				1); // step
+		final int totalMarkers = combiTestParams.getTotalMarkers();
+
+		final SpinnerModel markersToKeepValueModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			markersToKeepValueModel = new SpinnerNumberModel(
+					20, // initial value
+					1, // min
+					100000, // max
+					1); // step
+		} else {
+			markersToKeepValueModel = new SpinnerNumberModel(
+					combiTestParams.getMarkersToKeep(), // initial value
+					1, // min
+					totalMarkers - 1, // max
+					1); // step
+		}
 		this.markersToKeepValue.setModel(markersToKeepValueModel);
 		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
-		SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
-				(double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0, // initial value
-				0.1, // min
-				100.0, // max
-				0.5); // step
+		final SpinnerModel markersToKeepPercentageModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, 20));
+			markersToKeepPercentageModel = new SpinnerNumberModel(
+					0.5, // initial value
+					0.1, // min
+					100.0, // max
+					0.5); // step
+		} else {
+			markersToKeepPercentageModel = new SpinnerNumberModel(
+					(double) combiTestParams.getMarkersToKeep() / totalMarkers * 100.0, // initial value
+					0.1, // min
+					100.0, // max
+					0.5); // step
+		}
 		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
 		this.markersToKeepComponentRelation
 				= new AbsolutePercentageComponentRelation(
 				new ValueContainer<Number>(markersToKeepValue),
 				new ValueContainer<Number>(markersToKeepPercentage),
-				combiTestParams.getTotalMarkers());
+				totalMarkers);
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
@@ -386,5 +414,34 @@ public class CombiTestParamsGUI extends JPanel {
 		}
 
 		return returnCombiTestParams;
+	}
+
+	public static void main(String[] args) {
+
+		OperationKey parentOperationKey = null;
+		try {
+			// Look for ANY QA-Markers operation in the DB
+			List<StudyKey> studies = StudyList.getStudies();
+			studiesLoop : for (StudyKey studyKey : studies) {
+				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+				for (MatrixKey matrixKey : matrices) {
+					List<OperationMetadata> qaOperationsMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
+					if (!qaOperationsMetadatas.isEmpty()) {
+						parentOperationKey = OperationKey.valueOf(qaOperationsMetadatas.get(0));
+						break studiesLoop;
+					}
+				}
+			}
+		} catch (IOException ex) {
+			LOG.error("Failed to look for QA Marker operations", ex);
+		}
+
+		if (parentOperationKey == null) {
+			LOG.warn("No suitable QA Marker operation found that could be used as parent");
+			parentOperationKey = new OperationKey(new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID), OperationKey.NULL_ID);
+		}
+
+		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
+		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams);
 	}
 }
