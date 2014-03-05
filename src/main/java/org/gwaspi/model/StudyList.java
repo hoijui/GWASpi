@@ -35,6 +35,12 @@ public class StudyList {
 	private static final Logger log
 			= LoggerFactory.getLogger(JPAStudyService.class);
 
+	/**
+	 * This will be changed by the unit testing environment during runtime.
+	 * HACK
+	 */
+	public static String PERSISTENCE_UNIT_NAME = "gwaspi";
+
 	private static EntityManagerFactory emf = null;
 	private static StudyService studyService = null;
 
@@ -60,7 +66,7 @@ public class StudyList {
 
 		if (emf == null) {
 			try {
-				emf = Persistence.createEntityManagerFactory("gwaspi");
+				emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 			} catch (PersistenceException ex) {
 				log.error("Failed to initialize database storage", ex);
 			}

@@ -18,4 +18,17 @@
 		</properties>
 
 	</persistence-unit>
+
+	<persistence-unit name="gwaspiTesting" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+			<property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+			<property name="hibernate.connection.url" value="jdbc:derby:memory:gwaspi;create=true;databaseName=gwaspi"/>
+			<property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
+
+	</persistence-unit>
 </persistence>
