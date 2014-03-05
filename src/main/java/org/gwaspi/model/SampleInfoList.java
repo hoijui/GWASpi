@@ -29,33 +29,45 @@ import org.gwaspi.dao.jpa.JPASampleInfoService;
  */
 public class SampleInfoList {
 
-	private static final SampleInfoService sampleInfoService
-			= new JPASampleInfoService(StudyList.getEntityManagerFactory());
+	private static SampleInfoService sampleInfoService = null;
 
 	private SampleInfoList() {
 	}
 
+	static void clearInternalService() {
+		sampleInfoService = null;
+	}
+
+	private static SampleInfoService getSampleInfoService() {
+
+		if (sampleInfoService == null) {
+			sampleInfoService = new JPASampleInfoService(StudyList.getEntityManagerFactory());
+		}
+
+		return sampleInfoService;
+	}
+
 	public static List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
-		return sampleInfoService.getSamples();
+		return getSampleInfoService().getSamples();
 	}
 
 	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(StudyKey studyKey) throws IOException {
-		return sampleInfoService.getSamples(studyKey);
+		return getSampleInfoService().getSamples(studyKey);
 	}
 
 	public static SampleInfo getSample(SampleKey key) throws IOException {
-		return sampleInfoService.getSample(key);
+		return getSampleInfoService().getSample(key);
 	}
 
 	public static <T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException {
-		return sampleInfoService.pickSamples(studyKey, variable, criteria, include);
+		return getSampleInfoService().pickSamples(studyKey, variable, criteria, include);
 	}
 
 	public static void deleteSamples(StudyKey studyKey) throws IOException {
-		sampleInfoService.deleteSamples(studyKey);
+		getSampleInfoService().deleteSamples(studyKey);
 	}
 
 	public static void insertSampleInfos(Collection<SampleInfo> sampleInfos) throws IOException {
-		sampleInfoService.insertSamples(sampleInfos);
+		getSampleInfoService().insertSamples(sampleInfos);
 	}
 }

@@ -107,7 +107,7 @@ public class Config {
 			instancePrefs.get().put(key, value);
 		}
 	}
-	
+
 	public static void clearNonPersistentConfig() throws IOException {
 
 		if (!StartGWASpi.guiMode) {
