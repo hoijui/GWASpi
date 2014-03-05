@@ -25,13 +25,17 @@ import javax.swing.ProgressMonitor;
  */
 public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
 
-	private final ProgressSource progressSource;
 	private final ProgressMonitor progressMonitor;
 
-	public SwingMonitorProgressListener(ProgressSource progressSource) {
+	public SwingMonitorProgressListener(IntegerProgressHandler progressSource) {
 
-		this.progressSource = progressSource;
-		this.progressMonitor = new ProgressMonitor(null, "encoding markers chunk", "", markerIndexFrom, markerIndexFrom + markersChunkSize);
+		this.progressMonitor = new ProgressMonitor(
+				null,
+				progressSource.getShortName(),
+				progressSource.getDescription(),
+				progressSource.getStartState(),
+				progressSource.getEndState()
+		);
 	}
 
 	@Override
@@ -42,7 +46,7 @@ public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
-		XXX;
+		progressMonitor.setProgress((Integer) evt.getCurrentState());
 	}
 
 	@Override
