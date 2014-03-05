@@ -45,6 +45,12 @@ import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.AbstractProgressListener;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProgressEvent;
+import org.gwaspi.progress.ProgressListener;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SwingMonitorProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,15 +241,15 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * @throws IOException
 	 */
 	static void encodeAndWhitenSamples(
-			List<GenotypesList> markerGTs,
+			final List<GenotypesList> markerGTs,
 			final List<Byte> majorAlleles,
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
-			GenotypeEncoder encoder,
+			final GenotypeEncoder encoder,
 			final int markerIndexFrom,
 			final int markersChunkSize,
-			int dSamples,
-			int n,
+			final int dSamples,
+			final int n,
 			final SamplesFeaturesStorage<Float> encodedSamples)
 			throws IOException
 	{
@@ -255,7 +261,28 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		LOG.info("Combi Association Test: allocate memory for features: {}",
 				humanReadableFeaturesMemorySize);
 
-		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", markerIndexFrom, markerIndexFrom + markersChunkSize);
+		IntegerProgressHandler encodingMarkersChunkProgressSource
+				= new IntegerProgressHandler(
+						"encoding markers chunk",
+						markerIndexFrom,
+						markerIndexFrom + markersChunkSize - 1);
+		ProgressListener<Integer> logEncodingMarkersChunkProgressListener
+				= new AbstractProgressListener<Integer>()
+				{
+					@Override
+					public void progressHappened(ProgressEvent<Integer> evt) {
+
+						if ((evt.getIntervalIndex() % 50) == 0) {
+							LOG.info("Combi Association Test: encoded markers {} / {}", evt.getIntervalIndex(), dSamples);
+						}
+					}
+				};
+		encodingMarkersChunkProgressSource.addProgressListener(logEncodingMarkersChunkProgressListener);
+		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(encodingMarkersChunkProgressSource);
+		encodingMarkersChunkProgressSource.addProgressListener(swingMonitorProgressListener);
+
+		encodingMarkersChunkProgressSource.starting();
+		encodingMarkersChunkProgressSource.initialized();
 		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
 			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
 			Byte majorAllele = majorAlleles.get(mi);
@@ -263,16 +290,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			int[] genotypeCounts = markerGenotypesCounts.get(mi);
 			encoder.encodeGenotypes(gtsForOneMarker, majorAllele, minorAllele, genotypeCounts, encodedSamples, mi);
 
-			encodingMarkersPM.setProgress(mi);
-			if ((mi % 50) == 0) {
-				encodingMarkersPM.setNote(String.format(
-						"%d / %d ~= %f%%",
-						mi,
-						dSamples,
-						(double) mi / dSamples * 100.0));
-				LOG.info("Combi Association Test: encoded markers {} / {}", mi, dSamples);
-			}
+			encodingMarkersChunkProgressSource.setProgress(mi);
 		}
+		encodingMarkersChunkProgressSource.finalized();
 	}
 
 	static List<Double> runEncodingAndSVM(
