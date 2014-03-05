@@ -17,22 +17,31 @@
 
 package org.gwaspi.progress;
 
-public class AbstractIntegerProgressSource extends AbstractProgressSource<Integer> {
+/**
+ * TODO
+ * @param <ST> the status type
+ */
+public interface ProgressHandler<ST> extends ProgressSource<ST> {
 
-	private final Integer startState;
-	private final Integer endState;
-	private final Integer difference;
+	/**
+	 * @see ProgressListener#processStarted()
+	 */
+	void starting();
 
-	protected AbstractIntegerProgressSource(Integer startState, Integer endState) {
+	/**
+	 * @see ProgressListener#processInitialized()
+	 */
+	void initialized();
 
-		this.startState = startState;
-		this.endState = endState;
-		this.difference = (endState - startState);
-	}
+	/**
+	 * Signals that the process advanced.
+	 * @see ProgressListener#progressHappened(ProgressEvent)
+	 * @param currentProgress the current/new state of progress
+	 */
+	void setProgress(ST currentProgress);
 
-	protected void fireProgressHappened(Integer currentState) {
-
-		final Double completionFraction = (double) (currentState - startState) / difference;
-		fireProgressHappened(completionFraction, currentState);
-	}
+	/**
+	 * @see ProgressListener#processFinalized()
+	 */
+	void finalized();
 }

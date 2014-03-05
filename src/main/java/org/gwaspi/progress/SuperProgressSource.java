@@ -21,20 +21,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SuperProgressSource extends AbstractProgressSource<Double> {
+public class SuperProgressSource extends AbstractProgressHandler<Double> {
 
 	private final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	private final Map<ProgressSource, Double> subProgressSourcesAndLastCompletionFraction;
 	private final ProgressListener progressListener;
 	private final double lastCompletionFraction;
 
-	private class SubProgressListener implements ProgressListener {
-
-		@Override
-		public void processStarted() {}
-
-		@Override
-		public void processInitialized() {}
+	private class SubProgressListener<ST> extends AbstractProgressListener<ST> {
 
 		@Override
 		public void progressHappened(ProgressEvent evt) {
@@ -48,16 +42,10 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 				subProgressSourcesAndLastCompletionFraction.put(progressSource, currentSubCompletionFraction);
 			}
 		}
-
-		@Override
-		public void processEnded() {}
-
-		@Override
-		public void processFinalized() {}
 	}
 
-	public SuperProgressSource(Map<ProgressSource, Double> subProgressSourcesAndWeights) {
-		super(calculateNumIntervalls(subProgressSourcesAndWeights));
+	public SuperProgressSource(String shortName, Map<ProgressSource, Double> subProgressSourcesAndWeights) {
+		super(shortName, calculateNumIntervalls(subProgressSourcesAndWeights));
 
 		this.subProgressSourcesAndWeights = subProgressSourcesAndWeights;
 		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>();
@@ -70,8 +58,8 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 		}
 	}
 
-	public SuperProgressSource(Collection<ProgressSource> subProgressSources) {
-		this(createEvenlyDistributedWeights(subProgressSources));
+	public SuperProgressSource(String shortName, Collection<ProgressSource> subProgressSources) {
+		this(shortName, createEvenlyDistributedWeights(subProgressSources));
 	}
 
 	private static Map<ProgressSource, Double> createEvenlyDistributedWeights(Collection<ProgressSource> subProgressSources) {
@@ -99,6 +87,11 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 		}
 
 		return numIntervalls;
+	}
+
+	@Override
+	public void setProgress(Double currentState) {
+		throw new UnsupportedOperationException("progress should never be set directly on the super process, but only on its child pocesses");
 	}
 
 	private void fireAdditionalProgressHappened(Double additionalCompletionFraction) {

@@ -20,25 +20,27 @@ package org.gwaspi.progress;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractProgressSource<ST> implements ProgressSource<ST> {
+public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST> {
 
 	private final List<ProgressListener> progressListeners;
-	private final Integer numInterfalls;
+	private final String shortName;
+	private final Integer numIntervalls;
 	private long startTime;
 	private long endTime;
 	private int nextEventIndex;
 
-	protected AbstractProgressSource(Integer numInterfalls) {
+	protected AbstractProgressHandler(String shortName, Integer numIntervalls) {
 
 		this.progressListeners = new ArrayList<ProgressListener>(1);
-		this.numInterfalls = numInterfalls;
+		this.shortName = shortName;
+		this.numIntervalls = numIntervalls;
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
 	}
 
-	protected AbstractProgressSource() {
-		this(null);
+	protected AbstractProgressHandler() {
+		this("generic process", null);
 	}
 
 	protected int getNextEventIndex() {
@@ -46,8 +48,18 @@ public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 	}
 
 	@Override
+	public String getShortName() {
+		return shortName;
+	}
+
+	@Override
+	public String getDescription() {
+		return "";
+	}
+
+	@Override
 	public Integer getNumIntervalls() {
-		return numInterfalls;
+		return numIntervalls;
 	}
 
 	@Override
@@ -75,7 +87,6 @@ public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 
 	protected void fireProcessInitialized() {
 
-		startTime = System.currentTimeMillis();
 		for (ProgressListener progressListener : progressListeners) {
 			progressListener.processInitialized();
 		}
@@ -114,5 +125,20 @@ public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 		for (ProgressListener progressListener : progressListeners) {
 			progressListener.processFinalized();
 		}
+	}
+
+	@Override
+	public void starting() {
+		fireProcessStarted();
+	}
+
+	@Override
+	public void initialized() {
+		fireProcessInitialized();
+	}
+
+	@Override
+	public void finalized() {
+		fireProcessFinalized();
 	}
 }
