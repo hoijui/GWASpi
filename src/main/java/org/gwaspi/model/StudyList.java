@@ -67,6 +67,11 @@ public class StudyList {
 		if (emf == null) {
 			try {
 				emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+				log.info("NOTE: The above warning (HHH015016) can be neglected.");
+				// ... as we do actually use hte correct/new provider,
+				// but due to the way JPA works, it issues this warning anyway.
+				// For more details, see:
+				// https://hibernate.atlassian.net/browse/HHH-8735
 			} catch (PersistenceException ex) {
 				log.error("Failed to initialize database storage", ex);
 			}
