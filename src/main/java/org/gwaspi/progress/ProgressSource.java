@@ -27,6 +27,19 @@ import java.util.List;
 public interface ProgressSource<ST> {
 
 	/**
+	 * Returns a name for the process this source covers.
+	 * @return a short, human oriented description of the process.
+	 */
+	String getShortName();
+
+	/**
+	 * Returns a more thorough description for the process this source covers.
+	 * This will likely be used as a tool-tip.
+	 * @return an extensive, human oriented description of the process.
+	 */
+	String getDescription();
+
+	/**
 	 * Returns the number of total progress intervals this source produces,
 	 * if it is known.
 	 * @return number of progress intervals produced,

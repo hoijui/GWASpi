@@ -17,22 +17,30 @@
 
 package org.gwaspi.progress;
 
-public class AbstractDoubleProgressSource extends AbstractProgressSource<Double> {
+public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 
-	private final Double startState;
-	private final Double endState;
-	private final Double difference;
+	private final Integer startState;
+	private final Integer endState;
 
-	protected AbstractDoubleProgressSource(Double startState, Double endState) {
+	public IntegerProgressHandler(String shortName, Integer startState, Integer endState) {
+		super(shortName, Math.abs(endState - startState));
 
 		this.startState = startState;
 		this.endState = endState;
-		this.difference = (endState - startState);
 	}
 
-	protected void fireProgressHappened(Double currentState) {
+	@Override
+	public void setProgress(Integer currentState) {
 
-		final Double completionFraction = (currentState - startState) / difference;
+		fireProgressHappened(currentState);
+		if (currentState == endState) {
+			fireProcessEnded();
+		}
+	}
+
+	protected void fireProgressHappened(Integer currentState) {
+
+		final Double completionFraction = (double) (currentState - startState) / getNumIntervalls();
 		fireProgressHappened(completionFraction, currentState);
 	}
 }
