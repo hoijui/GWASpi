@@ -27,38 +27,50 @@ import org.gwaspi.dao.jpa.JPAMatrixService;
  */
 public final class MatricesList {
 
-	private static final MatrixService matrixService
-			= new JPAMatrixService(StudyList.getEntityManagerFactory());
+	private static MatrixService matrixService = null;
 
 	private MatricesList() {
 	}
 
+	static void clearInternalService() {
+		matrixService = null;
+	}
+
+	private static MatrixService getMatrixService() {
+
+		if (matrixService == null) {
+			matrixService = new JPAMatrixService(StudyList.getEntityManagerFactory());
+		}
+
+		return matrixService;
+	}
+
 	public static List<MatrixKey> getMatrixList(StudyKey studyKey) throws IOException {
-		return matrixService.getMatrixKeys(studyKey);
+		return getMatrixService().getMatrixKeys(studyKey);
 	}
 
 	public static List<MatrixKey> getMatrixList() throws IOException {
-		return matrixService.getMatrixKeys();
+		return getMatrixService().getMatrixKeys();
 	}
 
 	public static List<MatrixMetadata> getMatricesTable(StudyKey studyKey) throws IOException {
-		return matrixService.getMatrices(studyKey);
+		return getMatrixService().getMatrices(studyKey);
 	}
 
 	public static MatrixKey insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
-		return matrixService.insertMatrix(matrixMetadata);
+		return getMatrixService().insertMatrix(matrixMetadata);
 	}
 
 	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
-		matrixService.deleteMatrix(matrixKey, deleteReports);
+		getMatrixService().deleteMatrix(matrixKey, deleteReports);
 	}
 
 	public static void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
-		matrixService.updateMatrix(matrixMetadata);
+		getMatrixService().updateMatrix(matrixMetadata);
 	}
 
 	public static MatrixMetadata getMatrixMetadataById(MatrixKey matrixKey) throws IOException {
-		return matrixService.getMatrix(matrixKey);
+		return getMatrixService().getMatrix(matrixKey);
 	}
 
 	public static DataSetMetadata getDataSetMetadata(DataSetKey key) throws IOException {
@@ -71,10 +83,10 @@ public final class MatricesList {
 	}
 
 	public static List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
-		return matrixService.getMatrixKeysBySimpleName(simpleName);
+		return getMatrixService().getMatrixKeysBySimpleName(simpleName);
 	}
 
 	public static List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
-		return matrixService.getMatrixKeysByName(friendlyName);
+		return getMatrixService().getMatrixKeysByName(friendlyName);
 	}
 }

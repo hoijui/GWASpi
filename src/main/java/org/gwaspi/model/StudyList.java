@@ -32,13 +32,28 @@ import org.slf4j.LoggerFactory;
  */
 public class StudyList {
 
-	private static EntityManagerFactory emf = null;
 	private static final Logger log
 			= LoggerFactory.getLogger(JPAStudyService.class);
-	private static final StudyService studyService
-			= new JPAStudyService(getEntityManagerFactory());
+
+	private static EntityManagerFactory emf = null;
+	private static StudyService studyService = null;
 
 	private StudyList() {
+	}
+
+	public static void clearListsInternalServices() {
+
+		clearInternalService();
+		MatricesList.clearInternalService();
+		SampleInfoList.clearInternalService();
+		ReportsList.clearInternalService();
+		OperationsList.clearInternalService();
+
+		clearEntityManagerFactory();
+	}
+
+	static void clearInternalService() {
+		studyService = null;
 	}
 
 	static EntityManagerFactory getEntityManagerFactory() {
@@ -54,27 +69,44 @@ public class StudyList {
 		return emf;
 	}
 
+	private static void clearEntityManagerFactory() {
+
+		if ((emf != null) && emf.isOpen()) {
+			emf.close();
+		}
+		emf = null;
+	}
+
+	private static StudyService getStudyService() {
+
+		if (studyService == null) {
+			studyService = new JPAStudyService(getEntityManagerFactory());
+		}
+
+		return studyService;
+	}
+
 	public static Study getStudy(StudyKey studyKey) throws IOException {
-		return studyService.getStudy(studyKey);
+		return getStudyService().getStudy(studyKey);
 	}
 
 	public static List<StudyKey> getStudies() throws IOException {
-		return studyService.getStudies();
+		return getStudyService().getStudies();
 	}
 
 	public static List<Study> getStudyList() throws IOException {
-		return studyService.getStudiesInfos();
+		return getStudyService().getStudiesInfos();
 	}
 
 	public static StudyKey insertNewStudy(Study study) {
-		return studyService.insertStudy(study);
+		return getStudyService().insertStudy(study);
 	}
 
 	public static void deleteStudy(StudyKey studyKey, boolean deleteReports) throws IOException {
-		studyService.deleteStudy(studyKey, deleteReports);
+		getStudyService().deleteStudy(studyKey, deleteReports);
 	}
 
 	public static void updateStudy(Study study) throws IOException {
-		studyService.updateStudy(study);
+		getStudyService().updateStudy(study);
 	}
 }

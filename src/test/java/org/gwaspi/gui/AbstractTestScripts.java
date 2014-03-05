@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.junit.AfterClass;
@@ -201,7 +202,8 @@ public abstract class AbstractTestScripts {
 	@BeforeClass
 	public static void createTempDataDirs() throws IOException {
 
-		Config.clearNonPersistentConfig();
+		Config.clearNonPersistentConfig(); // HACK
+		StudyList.clearListsInternalServices();// HACK
 		setup = Setup.createTemp();
 		setup.setStudyId(1); // XXX We should create a new study and use it
 	}

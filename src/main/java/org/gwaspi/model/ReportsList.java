@@ -27,37 +27,49 @@ import org.gwaspi.dao.jpa.JPAReportService;
  */
 public class ReportsList {
 
-	private static final ReportService reportService
-			= new JPAReportService(StudyList.getEntityManagerFactory());
+	private static ReportService reportService = null;
 
 	private ReportsList() {
 	}
 
+	static void clearInternalService() {
+		reportService = null;
+	}
+
+	private static ReportService getReportService() {
+
+		if (reportService == null) {
+			reportService = new JPAReportService(StudyList.getEntityManagerFactory());
+		}
+
+		return reportService;
+	}
+
 	public static Report getReport(ReportKey reportKey) throws IOException {
-		return reportService.getReport(reportKey);
+		return getReportService().getReport(reportKey);
 	}
 
 	public static List<Report> getReportsList(MatrixKey parentMatrixKey) throws IOException {
-		return reportService.getReports(parentMatrixKey);
+		return getReportService().getReports(parentMatrixKey);
 	}
 
 	public static List<Report> getReportsList(OperationKey parentOperationKey) throws IOException {
-		return reportService.getReports(parentOperationKey);
+		return getReportService().getReports(parentOperationKey);
 	}
 
 	public static String getReportNamePrefix(OperationMetadata op) {
-		return reportService.getReportNamePrefix(op);
+		return getReportService().getReportNamePrefix(op);
 	}
 
 	public static void insertRPMetadata(Report report) throws IOException {
-		reportService.insertReport(report);
+		getReportService().insertReport(report);
 	}
 
 	public static void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException {
-		reportService.deleteReportByMatrixKey(parentMatrixKey);
+		getReportService().deleteReportByMatrixKey(parentMatrixKey);
 	}
 
 	public static void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException {
-		reportService.deleteReportByOperationKey(parentOperationKey);
+		getReportService().deleteReportByOperationKey(parentOperationKey);
 	}
 }
