@@ -29,6 +29,14 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 		this.endState = endState;
 	}
 
+	public Integer getStartState() {
+		return startState;
+	}
+
+	public Integer getEndState() {
+		return endState;
+	}
+
 	@Override
 	public void setProgress(Integer currentState) {
 
