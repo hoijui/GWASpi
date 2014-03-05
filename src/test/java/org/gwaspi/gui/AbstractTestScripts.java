@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,8 +37,12 @@ import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTestScripts {
+
+	private static final Logger log = LoggerFactory.getLogger(AbstractTestScripts.class);
 
 	private static Setup setup = null;
 
@@ -202,14 +208,24 @@ public abstract class AbstractTestScripts {
 	@BeforeClass
 	public static void createTempDataDirs() throws IOException {
 
+		StudyList.PERSISTENCE_UNIT_NAME = "gwaspiTesting";
 		Config.clearNonPersistentConfig(); // HACK
-		StudyList.clearListsInternalServices();// HACK
+		StudyList.clearListsInternalServices(); // HACK
+		StudyList.clearListsInternalServices(); // HACK
 		setup = Setup.createTemp();
 		setup.setStudyId(1); // XXX We should create a new study and use it
 	}
 
 	@AfterClass
 	public static void cleanupTempDataDirs() throws IOException {
+
+		// Delete and shutdown the (in-memory) database
+		try {
+			DriverManager.getConnection("jdbc:derby:memory:gwaspi;drop=true"); // HACK
+		} catch (SQLException ex) {
+			log.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
+		}
+		StudyList.PERSISTENCE_UNIT_NAME = "gwaspi"; // HACK
 
 		setup.cleanupTemp();
 		setup = null;
