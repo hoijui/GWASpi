@@ -32,19 +32,14 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CombiTestOperationParams.class);
 
-//	/**
-//	 * Which matrix to operate on (read from).
-//	 */
-//	private final MatrixKey matrixKey;
-//	private final OperationKey censusOperationKey;
+	/**
+	 * This is our direct parent.
+	 */
 	private final OperationKey qaMarkersOperationKey;
-//	private final OperationKey hardyWeinbergOperationKey;
-//	private final double hardyWeinbergThreshold;
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
 	private final GenotypeEncoder encoder;
-//	private final File phenotypeInfo;
 	/**
 	 * The number of total markers in the matrix we operate on, unfiltered.
 	 */
@@ -61,26 +56,15 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	private final boolean useThresholdCalibration;
 
 	public CombiTestOperationParams(
-//			MatrixKey matrixKey,
-//			OperationKey censusOperationKey,
 			OperationKey qaMarkersOperationKey,
-//			OperationKey hardyWeinbergOperationKey,
-//			Double hardyWeinbergThreshold,
 			GenotypeEncoder encoder,
-//			File phenotypeInfo,
 			Integer markersToKeep,
 			Boolean useThresholdCalibration,
 			String name)
 	{
 		super(new DataSetKey(qaMarkersOperationKey), name);
 
-//		this.matrixKey = matrixKey;
-//		this.censusOperationKey = censusOperationKey;
 		this.qaMarkersOperationKey = qaMarkersOperationKey;
-//		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
-//		this.hardyWeinbergThreshold = (hardyWeinbergThreshold == null)
-//				? getHardyWeinbergThresholdDefault()
-//				: hardyWeinbergThreshold;
 		this.encoder = (encoder == null)
 				? getEncoderDefault()
 				: encoder;
@@ -91,38 +75,12 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		this.useThresholdCalibration = (useThresholdCalibration == null)
 				? isUseThresholdCalibrationDefault()
 				: useThresholdCalibration;
-//		this.phenotypeInfo = phenotypeInfo;
 	}
 
-//	public CombiTestParams(
-//			MatrixKey matrixKey,
-//			OperationKey hardyWeinbergOperationKey,
-//			double hardyWeinbergThreshold,
-//			GenotypeEncoder encoder,
-//			int markersToKeep,
-//			boolean useThresholdCalibration)
-//	{
-//		this(
-//				matrixKey,
-//				hardyWeinbergOperationKey,
-//				hardyWeinbergThreshold,
-//				encoder,
-//				markersToKeep,
-//				useThresholdCalibration,
-//				null
-//				);
-//	}
-
-	public CombiTestOperationParams(
-//			MatrixKey matrixKey,
-			OperationKey censusOperationKey/*,
-			OperationKey hardyWeinbergOperationKey*/)
+	public CombiTestOperationParams(OperationKey qaMarkersOperationKey)
 	{
 		this(
-//				matrixKey,
-				censusOperationKey,
-//				hardyWeinbergOperationKey,
-//				null,
+				qaMarkersOperationKey,
 				null,
 				null,
 				null,
@@ -147,29 +105,9 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		return total;
 	}
 
-//	public MatrixKey getMatrixKey() {
-//		return matrixKey;
-//	}
-
-//	public OperationKey getCensusOperationKey() {
-//		return censusOperationKey;
-//	}
-
 	public OperationKey getQAMarkerOperationKey() {
 		return qaMarkersOperationKey;
 	}
-
-//	public OperationKey getHardyWeinbergOperationKey() {
-//		return hardyWeinbergOperationKey;
-//	}
-//
-//	public double getHardyWeinbergThreshold() {
-//		return hardyWeinbergThreshold;
-//	}
-//
-//	public double getHardyWeinbergThresholdDefault() {
-//		return 0.005; // XXX get from the HW oepration, or somewhere else where it is defined already!
-//	}
 
 	public GenotypeEncoder getEncoder() {
 		return encoder;
@@ -178,10 +116,6 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	public static GenotypeEncoder getEncoderDefault() {
 		return GenotypicGenotypeEncoder.SINGLETON;
 	}
-//
-//	public File getPhenotypeInfo() {
-//		return phenotypeInfo;
-//	}
 
 	public int getMarkersToKeep() {
 		return markersToKeep;
