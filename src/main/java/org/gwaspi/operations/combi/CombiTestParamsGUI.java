@@ -74,8 +74,8 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
 
-	private final JLabel censusOperationLabel; // TODO This is not yet setup correctly! see hw stuff below for example!
-	private final JComboBox censusOperationValue;
+	private final JLabel qaMarkersOperationLabel; // TODO This is not yet setup correctly! see hw stuff below for example!
+	private final JComboBox qaMarkersOperationValue;
 
 	private final JLabel hwOperationLabel;
 	private final JComboBox hwOperationValue;
@@ -93,6 +93,14 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JPanel genotypeEncoderP;
 	private final JComboBox genotypeEncoderValue;
 	private final JCheckBox genotypeEncoderDefault;
+
+	private final JLabel weightsFilterWidthLabel;
+	private final JPanel weightsFilterWidthP;
+	private final JSpinner weightsFilterWidthValue;
+	private final JSpinner weightsFilterWidthPercentage;
+	private final JLabel weightsFilterWidthPercentageLabel;
+	private final JCheckBox weightsFilterWidthDefault;
+	private AbsolutePercentageComponentRelation weightsFilterWidthComponentRelation;
 
 	private final JLabel markersToKeepLabel;
 	private final JPanel markersToKeepP;
@@ -120,8 +128,8 @@ public class CombiTestParamsGUI extends JPanel {
 		this.parentMatrixLabel = new JLabel();
 		this.parentMatrixValue = new JTextField();
 
-		this.censusOperationLabel = new JLabel();
-		this.censusOperationValue = new JComboBox();
+		this.qaMarkersOperationLabel = new JLabel();
+		this.qaMarkersOperationValue = new JComboBox();
 
 		this.hwOperationLabel = new JLabel();
 		this.hwOperationValue = new JComboBox();
@@ -139,6 +147,14 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP = new JPanel();
 		this.genotypeEncoderValue = new JComboBox();
 		this.genotypeEncoderDefault = new JCheckBox();
+
+		this.weightsFilterWidthLabel = new JLabel();
+		this.weightsFilterWidthP = new JPanel();
+		this.weightsFilterWidthValue = new JSpinner();
+		this.weightsFilterWidthPercentage = new JSpinner();
+		this.weightsFilterWidthPercentageLabel = new JLabel();
+		this.weightsFilterWidthDefault = new JCheckBox();
+		this.weightsFilterWidthComponentRelation = null;
 
 		this.markersToKeepLabel = new JLabel();
 		this.markersToKeepP = new JPanel();
@@ -167,6 +183,11 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP.add(this.genotypeEncoderValue);
 		this.genotypeEncoderP.add(this.genotypeEncoderDefault);
 
+		this.weightsFilterWidthP.add(this.weightsFilterWidthValue);
+		this.weightsFilterWidthP.add(this.weightsFilterWidthPercentage);
+		this.weightsFilterWidthP.add(this.weightsFilterWidthPercentageLabel);
+		this.weightsFilterWidthP.add(this.weightsFilterWidthDefault);
+
 		this.markersToKeepP.add(this.markersToKeepValue);
 		this.markersToKeepP.add(this.markersToKeepPercentage);
 		this.markersToKeepP.add(this.markersToKeepPercentageLabel);
@@ -181,10 +202,11 @@ public class CombiTestParamsGUI extends JPanel {
 
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
 		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
-		labelsAndComponents.put(censusOperationLabel, censusOperationValue);
+		labelsAndComponents.put(qaMarkersOperationLabel, qaMarkersOperationValue);
 		labelsAndComponents.put(hwOperationLabel, hwOperationValue);
 		labelsAndComponents.put(hwThresholdLabel, hwThresholdP);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
+		labelsAndComponents.put(weightsFilterWidthLabel, weightsFilterWidthP);
 		labelsAndComponents.put(markersToKeepLabel, markersToKeepP);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
@@ -214,6 +236,11 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
 		this.genotypeEncoderP.setLayout(contentPanelLayout);
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+
+		this.weightsFilterWidthLabel.setText("weights filter kernel width");
+		this.weightsFilterWidthLabel.setLabelFor(this.weightsFilterWidthValue);
+		this.weightsFilterWidthP.setLayout(contentPanelLayout);
+		this.weightsFilterWidthPercentageLabel.setText("%");
 
 		this.markersToKeepLabel.setText("number of markers to keep");
 		this.markersToKeepLabel.setLabelFor(this.markersToKeepValue);
@@ -271,6 +298,44 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
 		final int totalMarkers = combiTestParams.getTotalMarkers();
+
+		final SpinnerModel weightsFilterWidthValueModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			weightsFilterWidthValueModel = new SpinnerNumberModel(
+					35, // initial value
+					1, // min
+					100000, // max
+					1); // step
+		} else {
+			weightsFilterWidthValueModel = new SpinnerNumberModel(
+					combiTestParams.getWeightsFilterWidth(), // initial value
+					1, // min
+					totalMarkers - 1, // max
+					1); // step
+		}
+		this.weightsFilterWidthValue.setModel(weightsFilterWidthValueModel);
+		this.weightsFilterWidthDefault.setAction(new SpinnerDefaultAction(this.weightsFilterWidthValue, combiTestParams.getMarkersToKeepDefault()));
+		final SpinnerModel weightsFilterWidthPercentageModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			this.weightsFilterWidthDefault.setAction(new SpinnerDefaultAction(this.weightsFilterWidthValue, 20));
+			weightsFilterWidthPercentageModel = new SpinnerNumberModel(
+					0.0035, // initial value
+					0.0001, // min
+					20.0, // max
+					0.0001); // step
+		} else {
+			weightsFilterWidthPercentageModel = new SpinnerNumberModel(
+					(double) combiTestParams.getWeightsFilterWidth() / totalMarkers * 100.0, // initial value
+					0.0001, // min
+					20.0, // max
+					0.0001); // step
+		}
+		this.weightsFilterWidthPercentage.setModel(weightsFilterWidthPercentageModel);
+		this.weightsFilterWidthComponentRelation
+				= new AbsolutePercentageComponentRelation(
+				new ValueContainer<Number>(weightsFilterWidthValue),
+				new ValueContainer<Number>(weightsFilterWidthPercentage),
+				totalMarkers);
 
 		final SpinnerModel markersToKeepValueModel;
 		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
@@ -381,10 +446,9 @@ public class CombiTestParamsGUI extends JPanel {
 
 		CombiTestOperationParams combiTestParams = new CombiTestOperationParams(
 //				originalCombiTestParams.getMatrixKey(), // cause it is not editable
-				(OperationKey) censusOperationValue.getSelectedItem(),
-//				(OperationKey) hwOperationValue.getSelectedItem(),
-//				(Double) hwThresholdValue.getValue(),
+				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
+				(Integer) weightsFilterWidthValue.getValue(),
 				(Integer) markersToKeepValue.getValue(),
 				useThresholdCalibrationValue.isSelected(),
 				resultMatrixValue.getText()

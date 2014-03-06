@@ -207,11 +207,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 //		GenotypeEncoder genotypeEncoder = AllelicGenotypeEncoder.SINGLETON; // TODO
 //		GenotypeEncoder genotypeEncoder = GenotypicGenotypeEncoder.SINGLETON; // TODO
 		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
+		final int weightsFilterWidth = 3; // TODO or 35, if we have more markers
 
 //		runSVM(genotypeEncoder);
 
 		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
-		Util.runEncodingAndSVM(genotypeEncoder); // FIXME
+		Util.runEncodingAndSVM(genotypeEncoder, weightsFilterWidth); // FIXME
 
 //		List<List<Double>> X = new ArrayList<List<Double>>(2);
 //		X.add(Arrays.asList(new Double[] {1.0, 0.0}));

@@ -423,7 +423,7 @@ public class Util {
 		}
 	}
 
-	public static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
+	public static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder, final int weightsFilterWidth) {
 
 		List<MarkerKey> markerKeys;
 		List<Byte> majorAlleles;
@@ -446,7 +446,7 @@ public class Util {
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
+			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder, weightsFilterWidth);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
