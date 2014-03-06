@@ -33,9 +33,11 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
+import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.GenotypeEncoder;
+import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
-import org.gwaspi.operations.combi.Util;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
@@ -207,9 +209,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
 
-		Util.EXAMPLE_TEST = true; // HACK
+		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
-		Util.EXAMPLE_TEST = false; // HACK
+		CombiTestMatrixOperation.spy = null; // HACK
 
 		log.info("Run Combi Association Test ({}, {}) DONE.", mapFileName, pedFileName);
 	}
@@ -222,8 +224,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	@Test
 	public void testCombiAssociationTest() throws Exception {
 
-//		testHardyWeinbergTest(getSetup(), "extra");
-		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
+		testCombiAssociationTest(getSetup(), "extra", AllelicGenotypeEncoder.SINGLETON);
+//		testCombiAssociationTest(getSetup(), "extra", GenotypicGenotypeEncoder.SINGLETON);
+//		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
 	}
 
 	@org.junit.Ignore
