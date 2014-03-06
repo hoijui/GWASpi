@@ -324,6 +324,8 @@ public class TEMP {
 		}
 	}
 
+	private static final String BASE_DIR = null; // see UnitTestingCombiTestOperationSpy#BASE_DIR
+
 	private static void writeLibSvmTrainingFile(
 			svm_problem libSvmProblem,
 			String encoderString)
@@ -332,7 +334,7 @@ public class TEMP {
 		final int n = libSvmProblem.y.length;
 
 		// TESTING output to libSVM input format for a precomputed kernel, to test it externally
-		File generatedLibSvmKernelFile = new File(CombiTestMatrixOperation.BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
+		File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
 
 		LOG.info("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
 		OutputStreamWriter kernOut = null;

@@ -376,7 +376,7 @@ public class Util {
 
 	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
 
-	static void storeForEncoding(
+	public static void storeForEncoding(
 			List<MarkerKey> markers,
 //			final List<Census> allMarkersCensus,
 			final List<Byte> majorAlleles,
@@ -387,10 +387,6 @@ public class Util {
 			List<GenotypesList> markerGTs)
 			throws IOException
 	{
-		if (!EXAMPLE_TEST) {
-			return;
-		}
-
 //		// we use LinkedHashMap to preserve the inut order
 //		Map<MarkerKey, Map<SampleKey, byte[]>> loadedMatrixSamples
 //				= new LinkedHashMap<MarkerKey, Map<SampleKey, byte[]>>(dSamples);
@@ -427,7 +423,7 @@ public class Util {
 		}
 	}
 
-	private static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
+	public static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
 
 		List<MarkerKey> markerKeys;
 		List<Byte> majorAlleles;
@@ -454,29 +450,5 @@ public class Util {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	public static boolean EXAMPLE_TEST = false; // HACK
-
-	public static void main(String[] args) {
-
-		EXAMPLE_TEST = true;
-//
-//		GenotypeEncoder genotypeEncoder = AllelicGenotypeEncoder.SINGLETON; // TODO
-//		GenotypeEncoder genotypeEncoder = GenotypicGenotypeEncoder.SINGLETON; // TODO
-		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
-
-//		runSVM(genotypeEncoder);
-
-		runEncodingAndSVM(genotypeEncoder); // FIXME
-
-//		List<List<Double>> X = new ArrayList<List<Double>>(2);
-//		X.add(Arrays.asList(new Double[] {1.0, 0.0}));
-//		X.add(Arrays.asList(new Double[] {0.0, 1.0}));
-//		List<Double> Y = new ArrayList<Double>(2);
-//		Y.add(1.0);
-//		Y.add(-1.0);
-//		runSVM(X, Y, genotypeEncoder, null);
-		EXAMPLE_TEST = false;
 	}
 }
