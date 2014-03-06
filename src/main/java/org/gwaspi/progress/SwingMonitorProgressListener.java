@@ -53,5 +53,7 @@ public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
 	public void processEnded() {}
 
 	@Override
-	public void processFinalized() {}
+	public void processFinalized() {
+		progressMonitor.close();
+	}
 }
