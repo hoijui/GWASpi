@@ -41,6 +41,11 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	 */
 	private final GenotypeEncoder encoder;
 	/**
+	 * The filter-width of the moving average filter (p-norm-filter)
+	 * applied to the weights after SVM training.
+	 */
+	private Integer weightsFilterWidth;
+	/**
 	 * The number of total markers in the matrix we operate on, unfiltered.
 	 */
 	private Integer totalMarkers;
@@ -58,6 +63,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	public CombiTestOperationParams(
 			OperationKey qaMarkersOperationKey,
 			GenotypeEncoder encoder,
+			Integer weightsFilterWidth,
 			Integer markersToKeep,
 			Boolean useThresholdCalibration,
 			String name)
@@ -68,6 +74,10 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		this.encoder = (encoder == null)
 				? getEncoderDefault()
 				: encoder;
+		this.weightsFilterWidth = ((weightsFilterWidth == null)
+				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= getTotalMarkers()))
+				? getWeightsFilterWidthDefault()
+				: weightsFilterWidth;
 		this.markersToKeep = ((markersToKeep == null)
 				|| (markersToKeep <= 0) || (markersToKeep >= getTotalMarkers()))
 				? getMarkersToKeepDefault()
@@ -81,6 +91,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	{
 		this(
 				qaMarkersOperationKey,
+				null,
 				null,
 				null,
 				null,
@@ -115,6 +126,14 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 
 	public static GenotypeEncoder getEncoderDefault() {
 		return GenotypicGenotypeEncoder.SINGLETON;
+	}
+
+	public int getWeightsFilterWidth() {
+		return weightsFilterWidth;
+	}
+
+	public int getWeightsFilterWidthDefault() {
+		return (int) Math.ceil(getTotalMarkers() * 0.000035);
 	}
 
 	public int getMarkersToKeep() {

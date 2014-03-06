@@ -80,6 +80,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
+			final int weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
+
 			final int markersToKeep = fetchInteger(args, "markers-to-keep", null);
 
 			final boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", false);
@@ -91,6 +93,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			CombiTestOperationParams params = new CombiTestOperationParams(
 					qaMarkersOperationKey,
 					genotypeEncoder,
+					weightsFilterWidth,
 					markersToKeep,
 					useThresholdCalibration,
 					resultOperationName);
