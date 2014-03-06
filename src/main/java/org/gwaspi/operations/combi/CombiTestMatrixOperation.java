@@ -61,6 +61,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
+	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 
 	public static CombiTestOperationSpy spy = null;
 
@@ -575,8 +576,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					// NOTE We dismiss the y, which would be part of normal SVM,
 					// because we want the absolute sum (i forgot again why so :/ )
 //					final double y = ...;
-//					final double alphaYXi = - alpha * y * x; // FIXME why here change sign again?!?!
-					final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
+//					final double alphaYXi = - alpha * y * x; // XXX why here change sign again?!?!
+					final double alphaYXi = - alpha * x; // XXX why here change sign again?!?!
 					weights[di] += alphaYXi;
 				}
 			}
@@ -602,8 +603,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// sample index and value of non-zero alphas
 		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
 		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i]/* * -1.0*/; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+			final double value = svmModel.sv_coef[0][i];
+			int index = (int) svmModel.SV[i][0].value - 1; // NOTE this only works with PRECOMPUTED!
 			nonZeroAlphas.put(index, value);
 		}
 
@@ -620,13 +621,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		List<Double> weightsFiltered = new ArrayList(weights);
 		final int filterWidth;
-		final int norm = 2;
 		if (weights.size() < 200) { // HACK A bit arbitrary, talk to marius for a better strategy
 			filterWidth = 3;
 		} else {
 			filterWidth = 35; // this is the default value used by marius
 		}
-		Util.pNormFilter(weightsFiltered, filterWidth, norm);
+		Util.pNormFilter(weightsFiltered, filterWidth, WEIGHTS_MOVING_AVERAGE_FILTER_NORM);
 
 		return weightsFiltered;
 	}
@@ -636,8 +636,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			svm_problem libSvmProblem,
 			GenotypeEncoder genotypeEncoder)
 	{
-		final int dEncoded = libSvmProblem.x[0].length; // FIXME This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers, with PRECOMPUTED
-		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor(); // FIXME see fixme above
+		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
+		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		final int n = libSvmProblem.x.length;
 
 		LOG.info("Combi Association Test: create SVM parameters");
