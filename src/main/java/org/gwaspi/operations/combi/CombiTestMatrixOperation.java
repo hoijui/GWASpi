@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.ProgressMonitor;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
@@ -44,11 +43,10 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.gwaspi.progress.AbstractProgressListener;
 import org.gwaspi.progress.IntegerProgressHandler;
-import org.gwaspi.progress.ProgressEvent;
+import org.gwaspi.progress.PerTimeIntervalFilteredProgressListener;
 import org.gwaspi.progress.ProgressListener;
-import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.Slf4jProgressListener;
 import org.gwaspi.progress.SwingMonitorProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,18 +241,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 						"encoding markers chunk",
 						markerIndexFrom,
 						markerIndexFrom + markersChunkSize - 1);
-		ProgressListener<Integer> logEncodingMarkersChunkProgressListener
-				= new AbstractProgressListener<Integer>()
-				{
-					@Override
-					public void progressHappened(ProgressEvent<Integer> evt) {
-
-						if ((evt.getIntervalIndex() % 50) == 0) {
-							LOG.info("Combi Association Test: encoded markers {} / {}", evt.getIntervalIndex(), dSamples);
-						}
-					}
-				};
-		encodingMarkersChunkProgressSource.addProgressListener(logEncodingMarkersChunkProgressListener);
+		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, encodingMarkersChunkProgressSource), 2000);
+		encodingMarkersChunkProgressSource.addProgressListener(slf4jProgressListener);
 		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(encodingMarkersChunkProgressSource);
 		encodingMarkersChunkProgressSource.addProgressListener(swingMonitorProgressListener);
 
@@ -406,19 +394,32 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			final float[][] kernelMatrix)
 			throws IOException
 	{
+		final int n = kernelMatrix.length;
+
+		IntegerProgressHandler creatingKernelMatrixProgressSource
+				= new IntegerProgressHandler(
+						"encoding features and creating kernel matrix",
+						0,
+						markerGenotypesEncoder.size() - 1);
+		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, creatingKernelMatrixProgressSource), 2000);
+		creatingKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
+		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(creatingKernelMatrixProgressSource);
+		creatingKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
+
 		// initialize the kernelMatrix
-		// this should not be required, if the aray was just created,
+		// this should not be required, if the array was just created,
 		// but who knows who will call this function in what way in the future!?
+		creatingKernelMatrixProgressSource.starting();
 		for (float[] kernelMatrixRow : kernelMatrix) {
 			for (int ci = 0; ci < kernelMatrixRow.length; ci++) {
 				kernelMatrixRow[ci] = 0.0f;
 			}
 		}
+		creatingKernelMatrixProgressSource.initialized();
 
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
-			final int n = featuresChunk.length;
 
 			// calculate the part of the kernel matrix defined by
 			// the current chunk of the feature matrix
@@ -431,7 +432,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					}
 				}
 			}
+			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
+		creatingKernelMatrixProgressSource.finalized();
 	}
 
 	private static svm_problem createLibSvmProblem(
@@ -459,9 +462,19 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				throw new IOException(er);
 			}
 
+			IntegerProgressHandler transcribeKernelMatrixProgressSource
+					= new IntegerProgressHandler(
+							"store kernel matrix rows",
+							0,
+							n - 1);
+			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, transcribeKernelMatrixProgressSource), 2000);
+			transcribeKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
+			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(transcribeKernelMatrixProgressSource);
+			transcribeKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
+
 			LOG.info("Combi Association Test: libSVM preparation: store the kernel elements");
-			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "store kernel matrix elements", "", 0, n*n);
-			int calculatedKernelElements = 0;
+			transcribeKernelMatrixProgressSource.starting();
+			transcribeKernelMatrixProgressSource.initialized();
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
@@ -476,29 +489,18 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					curNode.index = 1 + s2i;
 					curNode.value = kernelValue;
 					prob.x[si][1 + s2i] = curNode;
-					calculatedKernelElements++;
 					if (si != s2i) {
 						// because the matrix is symmetric
 						svm_node curNodeT = new svm_node();
 						curNodeT.index = 1 + si;
 						curNodeT.value = kernelValue;
 						prob.x[s2i][1 + si] = curNodeT;
-						calculatedKernelElements++;
 					}
 				}
 
-				if ((si % 10) == 0) {
-					calculatingKernelPM.setProgress(calculatedKernelElements);
-					if ((si % 100) == 0) {
-						calculatingKernelPM.setNote(String.format(
-								"%d / %d ~= %f%%",
-								calculatedKernelElements,
-								n*n,
-								(double) calculatedKernelElements / (n*n) * 100.0));
-						LOG.info("Combi Association Test: libSVM preparation: stored kernel rows: {} / {}", si, n);
-					}
-				}
+				transcribeKernelMatrixProgressSource.setProgress(si + 1);
 			}
+			transcribeKernelMatrixProgressSource.finalized();
 
 			if (Util.EXAMPLE_TEST) {
 				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
@@ -584,6 +586,18 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			final MarkerGenotypesEncoder xs,
 			final double[] ys)
 	{
+		IntegerProgressHandler calculateOriginalSpaceWeightsProgressSource
+				= new IntegerProgressHandler(
+						"calculate original space weights",
+						0,
+						xs.size() - 1);
+		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsProgressSource), 2000);
+		calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
+		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(calculateOriginalSpaceWeightsProgressSource);
+		calculateOriginalSpaceWeightsProgressSource.addProgressListener(swingMonitorProgressListener);
+
+		calculateOriginalSpaceWeightsProgressSource.starting();
+
 		// number of data-points/samples
 		final int n = ys.length;
 		// number of dimensions/features/markers*encodingFactor
@@ -594,6 +608,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		// but it does not hurt to make things clear.
 		Arrays.fill(weights, 0.0);
 
+		calculateOriginalSpaceWeightsProgressSource.initialized();
 		for (int ci = 0; ci < xs.size(); ci++) {
 			final Float[][] featuresChunk = xs.get(ci);
 			final int chunkSize = xs.getChunkSize(ci);
@@ -613,6 +628,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					weights[di] += alphaYXi;
 				}
 			}
+			calculateOriginalSpaceWeightsProgressSource.setProgress(ci);
 		}
 
 		// convert array to list
@@ -620,6 +636,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		for (int wi = 0; wi < weights.length; wi++) {
 			weightsList.add(weights[wi]);
 		}
+
+		calculateOriginalSpaceWeightsProgressSource.finalized();
 
 		return weightsList;
 	}
