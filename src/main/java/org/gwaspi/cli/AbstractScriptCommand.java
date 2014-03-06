@@ -181,4 +181,49 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 
 		return studyExists;
 	}
+
+	protected static Double fetchDouble(Map<String, String> args, String argName, Double defaultValue) throws IOException {
+
+		Double value;
+
+		try {
+			value = Double.parseDouble(args.get(argName));
+		} catch (NullPointerException ex) {
+			value = defaultValue;
+		} catch (NumberFormatException ex) {
+			value = defaultValue;
+		}
+
+		return value;
+	}
+
+	protected static Integer fetchInteger(Map<String, String> args, String argName, Integer defaultValue) throws IOException {
+
+		Integer value;
+
+		try {
+			value = Integer.parseInt(args.get(argName));
+		} catch (NullPointerException ex) {
+			value = defaultValue;
+		} catch (NumberFormatException ex) {
+			value = defaultValue;
+		}
+
+		return value;
+	}
+
+	protected static boolean fetchBoolean(Map<String, String> args, String argName, boolean defaultValue) throws IOException {
+
+		boolean value;
+
+		try {
+			value = (Integer.parseInt(args.get(argName)) != 0);
+		} catch (NullPointerException ex) {
+			value = defaultValue;
+		} catch (NumberFormatException ex) {
+			value = defaultValue;
+		}
+
+		return value;
+	}
 }

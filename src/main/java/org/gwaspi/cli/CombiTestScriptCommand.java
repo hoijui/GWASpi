@@ -80,9 +80,9 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
-			int markersToKeep = Integer.parseInt(args.get("markers-to-keep"));
+			final int markersToKeep = fetchInteger(args, "markers-to-keep", null);
 
-			boolean useThresholdCalibration = (Integer.parseInt(args.get("use-threshold-calibration")) != 0);
+			final boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", false);
 
 			// This might return null, as it is optional,
 			// which will lead to using the default name
