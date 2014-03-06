@@ -17,7 +17,6 @@
 
 package org.gwaspi.cli;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,19 +69,12 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-//		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 		// checking study
 		StudyKey studyKey = fetchStudyKey(args, "study-id", "study-name", false);
 		boolean studyExists = checkStudy(studyKey);
 
 		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
-
-//			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
-//			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "gtfreq-id", "gtfreq-name");
-
-//			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-id", "hw-name");
-//			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
 
 			OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers-id", "qa-markers-name");
 
@@ -92,33 +84,22 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			boolean useThresholdCalibration = (Integer.parseInt(args.get("use-threshold-calibration")) != 0);
 
-			String phenotypeInfoStr = args.get("phenotype-info-file");
-			File phenotypeInfo = (phenotypeInfoStr == null) ? null : new File(phenotypeInfoStr);
-
 			// This might return null, as it is optional,
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
 
 			CombiTestOperationParams params = new CombiTestOperationParams(
-//					matrixKey,
-//					censusOperationKey,
-//					hwOperationKey,
-//					hwThreshold,
 					qaMarkersOperationKey,
 					genotypeEncoder,
 					markersToKeep,
 					useThresholdCalibration,
-//					phenotypeInfo,
 					resultOperationName);
 
 			// test block
-//			if (gwasParams.isProceed()) {
-				System.out.println(Text.All.processing);
-				MultiOperations.doCombiTest(params);
-				return true;
-//			}
-//		} else {
-//			throw new RuntimeException("Study does not exist: " + studyKey.toString());
+			System.out.println(Text.All.processing);
+			MultiOperations.doCombiTest(params);
+
+			return true;
 		}
 
 		return false;
