@@ -41,7 +41,6 @@ import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -182,28 +181,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		LOG.info("Combi Association Test: finished");
 
 		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
-	}
-
-	/**
-	 * Only add samples with a valid affection.
-	 */
-	private static void extractSamplesWithValidAffection(DataSetSource parentDataSetSource, Map<Integer, SampleKey> validSamplesOrigIndicesAndKey, List<Affection> validSampleAffections) throws IOException {
-
-		SamplesKeysSource samplesKeysSource = parentDataSetSource.getSamplesKeysSource();
-		List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
-
-		// We use LinkedHashMap to preserve iteration order.
-		Iterator<Map.Entry<Integer, SampleKey>> samplesIt = samplesKeysSource.getIndicesMap().entrySet().iterator();
-		for (Affection sampleAffection : sampleAffections) {
-			Map.Entry<Integer, SampleKey> sample = samplesIt.next();
-			if (Affection.isValid(sampleAffection)) {
-				validSamplesOrigIndicesAndKey.put(sample.getKey(), sample.getValue());
-				validSampleAffections.add(sampleAffection);
-			}
-		}
-		if (validSampleAffections instanceof ArrayList) {
-			((ArrayList) validSampleAffections).trimToSize();
-		}
 	}
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections) {
@@ -647,14 +624,51 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		return weightsList;
 	}
 
+	/**
+	 * @return sample index and value of non-zero alphas
+	 */
+	private static Map<Integer, Double> extractNonZeroAlphas(final svm_model svmModel) {
+
+		// sample index and value of non-zero alphas
+		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
+		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
+			final double value = svmModel.sv_coef[0][i]/* * -1.0*/; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+			nonZeroAlphas.put(index, value);
+		}
+
+		return nonZeroAlphas;
+	}
+
+	/**
+	 * Apply a moving average filter (p-norm filter).
+	 * Basically "smoothes out the landscape".
+	 * @param weights
+	 * @return filtered weights
+	 */
+	private static List<Double> applyMovingAverageFilter(final List<Double> weights) {
+
+		List<Double> weightsFiltered = new ArrayList(weights);
+		final int filterWidth;
+		final int norm = 2;
+		if (weights.size() < 200) { // HACK A bit arbitrary, talk to marius for a better strategy
+			filterWidth = 3;
+		} else {
+			filterWidth = 35; // this is the default value used by marius
+		}
+		Util.pNormFilter(weightsFiltered, filterWidth, norm);
+
+		return weightsFiltered;
+	}
+
 	private static List<Double> runSVM(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
 			GenotypeEncoder genotypeEncoder,
 			String encoderString)
 	{
-		final int dEncoded = libSvmProblem.x[0].length; // NOTE This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers with precomputed
-		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
+		final int dEncoded = libSvmProblem.x[0].length; // FIXME This only works with libSVM kernel type != PRECOMPUTED, as it is n (number of samples) + 1, not number of encoded markers, with PRECOMPUTED
+		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor(); // FIXME see fixme above
 		final int n = libSvmProblem.x.length;
 
 		LOG.info("Combi Association Test: create SVM parameters");
@@ -694,12 +708,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		}
 
 		// sample index and value of non-zero alphas
-		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
-		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i]/* * -1.0*/; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-			nonZeroAlphas.put(index, value);
-		}
+		Map<Integer, Double> nonZeroAlphas = extractNonZeroAlphas(svmModel);
 
 		LOG.info("Combi Association Test: calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
@@ -742,17 +751,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			LOG.debug("done. they are equal! good!\n");
 		}
 
-		// apply moving average filter (p-norm filter)
 		LOG.info("Combi Association Test: apply moving average filter (p-norm filter) on the weights");
-		List<Double> weightsFiltered = new ArrayList(weights);
-		final int filterWidth;
-		final int norm = 2;
-		if (weights.size() < 200) { // HACK A bit arbitrary, talk to marius for a better strategy
-			filterWidth = 3;
-		} else {
-			filterWidth = 35; // this is the default value used by marius
-		}
-		Util.pNormFilter(weightsFiltered, filterWidth, norm);
+		List<Double> weightsFiltered = applyMovingAverageFilter(weights);
 
 		if (Util.EXAMPLE_TEST) {
 			// check if the filtered weights are equivalent to the ones calculated with matlab
