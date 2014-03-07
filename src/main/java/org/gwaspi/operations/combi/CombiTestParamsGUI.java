@@ -297,39 +297,20 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
 		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		final int totalMarkers = combiTestParams.getTotalMarkers();
+		final int totalMarkers = (combiTestParams.getTotalMarkers() < 1) ? 100000 : combiTestParams.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
 
-		final SpinnerModel weightsFilterWidthValueModel;
-		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
-			weightsFilterWidthValueModel = new SpinnerNumberModel(
-					35, // initial value
-					1, // min
-					100000, // max
-					1); // step
-		} else {
-			weightsFilterWidthValueModel = new SpinnerNumberModel(
-					combiTestParams.getWeightsFilterWidth(), // initial value
-					1, // min
-					totalMarkers - 1, // max
-					1); // step
-		}
+		final SpinnerModel weightsFilterWidthValueModel = new SpinnerNumberModel(
+				combiTestParams.getWeightsFilterWidth(), // initial value
+				1, // min
+				totalMarkers - 1, // max
+				1); // step
 		this.weightsFilterWidthValue.setModel(weightsFilterWidthValueModel);
 		this.weightsFilterWidthDefault.setAction(new SpinnerDefaultAction(this.weightsFilterWidthValue, combiTestParams.getMarkersToKeepDefault()));
-		final SpinnerModel weightsFilterWidthPercentageModel;
-		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
-			this.weightsFilterWidthDefault.setAction(new SpinnerDefaultAction(this.weightsFilterWidthValue, 20));
-			weightsFilterWidthPercentageModel = new SpinnerNumberModel(
-					0.0035, // initial value
-					0.0001, // min
-					20.0, // max
-					0.0001); // step
-		} else {
-			weightsFilterWidthPercentageModel = new SpinnerNumberModel(
-					(double) combiTestParams.getWeightsFilterWidth() / totalMarkers * 100.0, // initial value
-					0.0001, // min
-					20.0, // max
-					0.0001); // step
-		}
+		final SpinnerModel weightsFilterWidthPercentageModel = new SpinnerNumberModel(
+				(double) combiTestParams.getWeightsFilterWidth() / totalMarkers * 100.0, // initial value
+				1.0 / totalMarkers * 100.0, // min
+				20.0, // max
+				1.0 / totalMarkers * 100.0); // step
 		this.weightsFilterWidthPercentage.setModel(weightsFilterWidthPercentageModel);
 		this.weightsFilterWidthComponentRelation
 				= new AbsolutePercentageComponentRelation(
@@ -337,37 +318,18 @@ public class CombiTestParamsGUI extends JPanel {
 				new ValueContainer<Number>(weightsFilterWidthPercentage),
 				totalMarkers);
 
-		final SpinnerModel markersToKeepValueModel;
-		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
-			markersToKeepValueModel = new SpinnerNumberModel(
-					20, // initial value
-					1, // min
-					100000, // max
-					1); // step
-		} else {
-			markersToKeepValueModel = new SpinnerNumberModel(
-					combiTestParams.getMarkersToKeep(), // initial value
-					1, // min
-					totalMarkers - 1, // max
-					1); // step
-		}
+		final SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
+				combiTestParams.getMarkersToKeep(), // initial value
+				1, // min
+				totalMarkers - 1, // max
+				1); // step
 		this.markersToKeepValue.setModel(markersToKeepValueModel);
 		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
-		final SpinnerModel markersToKeepPercentageModel;
-		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
-			this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, 20));
-			markersToKeepPercentageModel = new SpinnerNumberModel(
-					0.5, // initial value
-					0.1, // min
-					100.0, // max
-					0.5); // step
-		} else {
-			markersToKeepPercentageModel = new SpinnerNumberModel(
-					(double) combiTestParams.getMarkersToKeep() / totalMarkers * 100.0, // initial value
-					0.1, // min
-					100.0, // max
-					0.5); // step
-		}
+		final SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
+				(double) combiTestParams.getMarkersToKeep() / totalMarkers * 100.0, // initial value
+				1.0 / totalMarkers * 100.0, // min
+				100.0, // max
+				1.0 / totalMarkers * 100.0); // step
 		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
 		this.markersToKeepComponentRelation
 				= new AbsolutePercentageComponentRelation(

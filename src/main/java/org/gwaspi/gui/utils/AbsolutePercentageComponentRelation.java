@@ -53,6 +53,16 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 		}
 	}
 
+	public static class NullConstrainer implements Extractor<Number, Number> {
+
+		public NullConstrainer() {}
+
+		@Override
+		public Number extract(Number object) {
+			return object;
+		}
+	}
+
 	public AbsolutePercentageComponentRelation(
 			ValueContainer absoluteComponent,
 			ValueContainer percentageComponent,
@@ -82,7 +92,7 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 			percentageComponent,
 			totalValue,
 			new RoundingConstrainer(1.0),
-			new RoundingConstrainer(10.0));
+			new NullConstrainer());
 	}
 
 	private Number absoluteToPercentage(Number absoluteValue) {
