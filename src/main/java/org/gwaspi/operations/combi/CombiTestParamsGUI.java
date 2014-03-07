@@ -43,6 +43,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
@@ -482,6 +483,8 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public static void main(String[] args) {
 
+		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
+
 		OperationKey parentOperationKey = null;
 		try {
 			// Look for ANY QA-Markers operation in the DB
@@ -505,7 +508,14 @@ public class CombiTestParamsGUI extends JPanel {
 			parentOperationKey = new OperationKey(new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID), OperationKey.NULL_ID);
 		}
 
-		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
+//		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
+		CombiTestOperationParams inputParams = new CombiTestOperationParams(
+				parentOperationKey,
+				NominalGenotypeEncoder.SINGLETON,
+				35, // weightsFIlterWidth
+				20, // markersToKeep
+				Boolean.TRUE, // useThresholdCalibration
+				"my name is... my name is... my name is ..");
 		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams);
 	}
 }
