@@ -432,7 +432,7 @@ public class Config {
 		}
 	}
 
-	public static void setDBSystemDir(String dataCenter) throws IOException {
+	public static void setDBSystemDir(String dataCenter) {
 		// decide on the db system directory
 		System.setProperty("derby.system.home", dataCenter);
 	}
