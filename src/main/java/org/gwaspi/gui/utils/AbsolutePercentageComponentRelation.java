@@ -100,30 +100,23 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
-		if (evt.getSource().equals(absoluteComponent)) {
-			Number newPercentage = absoluteToPercentage((Number) absoluteComponent.getValue());
-			if (!newPercentage.equals(percentageComponent.getValue())) {
-				percentageComponent.setValue(newPercentage);
-			}
-		} else if (evt.getSource().equals(percentageComponent)) {
-			Number newAbsolute = percentageToAbsolute((Number) percentageComponent.getValue());
-			if (!newAbsolute.equals(absoluteComponent.getValue())) {
-				absoluteComponent.setValue(newAbsolute);
-			}
-		} else {
-			throw new RuntimeException();
-		}
+		valueChanged(evt.getSource());
 	}
 
 	@Override
 	public void stateChanged(ChangeEvent evt) {
 
-		if (evt.getSource().equals(absoluteComponent)) {
+		valueChanged(evt.getSource());
+	}
+
+	private void valueChanged(Object changedComponent) {
+
+		if (changedComponent.equals(absoluteComponent)) {
 			Number newPercentage = absoluteToPercentage((Number) absoluteComponent.getValue());
 			if (!newPercentage.equals(percentageComponent.getValue())) {
 				percentageComponent.setValue(newPercentage);
 			}
-		} else if (evt.getSource().equals(percentageComponent)) {
+		} else if (changedComponent.equals(percentageComponent)) {
 			Number newAbsolute = percentageToAbsolute((Number) percentageComponent.getValue());
 			if (!newAbsolute.equals(absoluteComponent.getValue())) {
 				absoluteComponent.setValue(newAbsolute);
