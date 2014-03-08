@@ -33,57 +33,105 @@ public class AbsolutePercentageComponent extends JPanel {
 	private final JSpinner value;
 	private final JSpinner percentage;
 	private final JLabel percentageLabel;
-	private final JCheckBox defaultIndicator;
+	private JCheckBox defaultIndicator;
 	private AbsolutePercentageComponentRelation componentRelation;
+	private AbsolutePercentageModel model;
 
-	public AbsolutePercentageComponent(
-			final int initialValue,
-			final int defaultValue,
-			final int totalValue, // 100%
-			final int minimumValue,
-			final int step,
-			final int maximumValue)
-	{
+	public AbsolutePercentageComponent() {
+
 		this.value = new JSpinner();
 		this.percentage = new JSpinner();
 		this.percentageLabel = new JLabel();
-		this.defaultIndicator = new JCheckBox();
+		this.defaultIndicator = null;
 		this.componentRelation = null;
 
 		add(this.value);
 		add(this.percentage);
 		add(this.percentageLabel);
-		add(this.defaultIndicator);
 
-		FlowLayout contentPanelLayout = new FlowLayout();
+		final FlowLayout contentPanelLayout = new FlowLayout();
 		contentPanelLayout.setAlignment(FlowLayout.LEADING);
 		setLayout(contentPanelLayout);
 
 		this.percentageLabel.setText("%");
 
-		final SpinnerModel valueModel = new SpinnerNumberModel(
-				initialValue, // initial value
-				minimumValue, // min
-				maximumValue, // max
-				step); // step
-		this.value.setModel(valueModel);
-
-		final SpinnerModel percentageModel = new SpinnerNumberModel(
-				(double) initialValue / totalValue * 100.0, // initial value
-				minimumValue / totalValue * 100.0, // min
-				maximumValue / totalValue * 100.0, // max
-				step / totalValue * 100.0); // step
-		this.percentage.setModel(percentageModel);
-
-		this.defaultIndicator.setAction(new SpinnerDefaultAction(this.value, defaultValue));
-
-		this.componentRelation
-				= new AbsolutePercentageComponentRelation(
-				new ValueContainer<Number>(value),
-				new ValueContainer<Number>(percentage),
-				totalValue);
-
 		this.validate();
+	}
+
+	public void setAbsoluteEnabled(boolean absoluteEnabled) {
+
+		value.setEnabled(absoluteEnabled);
+	}
+
+	public void setPercentageEnabled(boolean absoluteEnabled) {
+
+		percentage.setEnabled(absoluteEnabled);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+
+		value.setEnabled(enabled);
+		percentage.setEnabled(enabled);
+		defaultIndicator.setEnabled(enabled);
+	}
+
+	private void clear() {
+
+		value.setModel(new SpinnerNumberModel());
+		percentage.setModel(new SpinnerNumberModel());
+
+		if (defaultIndicator != null) {
+			remove(defaultIndicator);
+			defaultIndicator = null;
+		}
+
+		validate();
+
+		setEnabled(false);
+	}
+
+	public void setModel(AbsolutePercentageModel model) {
+
+		if (model == null) {
+			clear();
+		} else {
+			final SpinnerModel valueModel = new SpinnerNumberModel(
+					model.getInitialValue().doubleValue(), // initial value
+					model.getMinimumValue().doubleValue(), // min
+					model.getMaximumValue().doubleValue(), // max
+					model.getStepSize().doubleValue()); // step
+			value.setModel(valueModel);
+
+			final SpinnerModel percentageModel = new SpinnerNumberModel(
+					model.getInitialValue().doubleValue() / model.getTotalValue().doubleValue() * 100.0, // initial value
+					model.getMinimumValue().doubleValue() / model.getTotalValue().doubleValue() * 100.0, // min
+					model.getMaximumValue().doubleValue() / model.getTotalValue().doubleValue() * 100.0, // max
+					model.getStepSize().doubleValue() / model.getTotalValue().doubleValue() * 100.0); // step
+			percentage.setModel(percentageModel);
+
+			if ((model.getDefaultValue() == null) && (defaultIndicator != null)) {
+				remove(defaultIndicator);
+				defaultIndicator = null;
+			} else if ((model.getDefaultValue() != null) && (defaultIndicator == null)) {
+				defaultIndicator = new JCheckBox();
+				add(defaultIndicator);
+			}
+			if (model.getDefaultValue() != null) {
+				defaultIndicator.setAction(new SpinnerDefaultAction(value, model.getDefaultValue().doubleValue()));
+			}
+
+			componentRelation
+					= new AbsolutePercentageComponentRelation(
+					new ValueContainer<Number>(value),
+					new ValueContainer<Number>(percentage),
+					model.getTotalValue());
+
+			validate();
+		}
+
+		this.model = model;
 	}
 
 	public int getValue() {
