@@ -64,6 +64,9 @@ public class OperationManager {
 
 		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
+		OperationKey parentOpKey = params.getParent().getOperationParent();
+		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
+
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 
 		return operationKey;
@@ -80,6 +83,9 @@ public class OperationManager {
 		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
 		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
+
+		OperationKey parentOpKey = params.getParent().getOperationParent();
+		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
 
 		return operationKey;
 	}
@@ -113,6 +119,8 @@ public class OperationManager {
 		int resultOpId = operation.processMatrix();
 
 		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+
+		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, operationKey);
 
 		return operationKey;
 	}
@@ -171,6 +179,9 @@ public class OperationManager {
 
 		final OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
 
+		OperationKey parentOpKey = params.getParent().getOperationParent();
+		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
+
 		return operationKey;
 	}
 
@@ -196,11 +207,7 @@ public class OperationManager {
 			OP_QASamples operation)
 			throws IOException
 	{
-		int samplesQAOpId = operation.processMatrix();
-
-		OperationKey samplesQAOpKey = new OperationKey(operation.getParentMatrixKey(), samplesQAOpId);
-
-		GWASpiExplorerNodes.insertOperationUnderMatrixNode(samplesQAOpKey);
+		OperationKey samplesQAOpKey = performOperation(operation);
 
 		OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
 		GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
@@ -212,11 +219,7 @@ public class OperationManager {
 			OP_QAMarkers operation)
 			throws IOException
 	{
-		int markersQAOpId = operation.processMatrix();
-
-		OperationKey markersQAOpKey = new OperationKey(operation.getParentMatrixKey(), markersQAOpId);
-
-		GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
+		OperationKey markersQAOpKey = performOperation(operation);
 
 		OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
 		GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);

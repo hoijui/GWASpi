@@ -426,7 +426,7 @@ public class MatrixAnalysePanel extends JPanel {
 										censusOPKey//,
 //										hwOPKey
 										);
-								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
+								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams, null); // HACK FIXME for COMBI
 								if (combiTestParams != null) {
 									gwasParams.setProceed(true);
 								}
