@@ -64,14 +64,8 @@ public class Text {
 		public static final String warnOnlyOneInstance = Text.App.appName + " could not be started!\nIs there another instance of the program running?";
 		public static final String jobsStillPending = "There are still pending jobs in the processing queue!\nShut down anyway?";
 		public static final String outOfMemoryError = "Out Of Memory!\nAre you trying to process to many SNPs for the currently allocated RAM?\nRefer to http://www.gwaspi.org/?page_id=632 for instructions on how to allocate more RAM.";
-		public static final String treeParent = "Parent";
 		public static final String treeStudyManagement = "Study Management";
-		public static final String treeStudy = "Study";
 		public static final String treeSampleInfo = "Sample Info";
-		public static final String treeMatrix = "Matrix";
-		public static final String treeOperation = "Operation";
-		public static final String treeReport = "Report";
-		public static final String treeReferenceDBs = "Ref. Databases";
 		public static final String close = "Close";
 		public static final String thanx = "Special thanks to Angel Carreño";
 

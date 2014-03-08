@@ -41,11 +41,22 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="NODE DEFINITION">
 	public static class NodeElementInfo {
 
+		public static enum NodeType {
+			ROOT,
+			STUDY_MANAGEMENT,
+			STUDY,
+			SAMPLE_INFO,
+			MATRIX,
+			OPERATION,
+			REPORT,
+			REF_DATABASES;
+		}
+
 		public static final int NODE_ID_NONE = 0;
 
 		private final int nodeId;
 		private final int parentNodeId;
-		private final String nodeType;
+		private final NodeType nodeType;
 		private final String nodeUniqueName;
 		/** This may contain a StudyKey, MatrixKey, OperationKey, ReportKey, ... */
 		private final Object contentKey;
@@ -54,7 +65,7 @@ public class GWASpiExplorerNodes {
 		public NodeElementInfo(
 				int parentNodeId,
 				int nodeId,
-				String nodeType,
+				NodeType nodeType,
 				String nodeName,
 				Object contentKey)
 		{
@@ -79,7 +90,7 @@ public class GWASpiExplorerNodes {
 			return parentNodeId;
 		}
 
-		public String getNodeType() {
+		public NodeType getNodeType() {
 			return nodeType;
 		}
 
@@ -105,7 +116,7 @@ public class GWASpiExplorerNodes {
 		public UncollapsableNodeElementInfo(
 				int parentNodeId,
 				int nodeId,
-				String nodeType,
+				NodeType nodeType,
 				String nodeName,
 				Object contentKey)
 		{
@@ -130,7 +141,7 @@ public class GWASpiExplorerNodes {
 				new NodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
 				study.getId(), // FIXME This will fail, if we have a study and an operation or matrix with the smae ID (which we will have). same problem in other locations!
-				Text.App.treeStudy,
+				NodeElementInfo.NodeType.STUDY,
 				"SID: " + study.getId() + " - " + study.getName(),
 				StudyKey.valueOf(study)));
 
@@ -145,7 +156,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					matrixMetadata.getStudyId(),
 					matrixKey.getMatrixId(),
-					Text.App.treeMatrix,
+					NodeElementInfo.NodeType.MATRIX,
 					"MX: " + matrixKey.getMatrixId() + " - " + matrixMetadata.getFriendlyName(),
 					matrixKey));
 		} catch (IOException ex) {
@@ -165,7 +176,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					studyKey.getId(), // parentNodeId
 					studyKey.getId(), // nodeId
-					Text.App.treeSampleInfo, // nodeType
+					NodeElementInfo.NodeType.SAMPLE_INFO, // nodeType
 					Text.App.treeSampleInfo,
 					studyKey)); // nodeUniqueName
 		}
@@ -182,7 +193,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentMatrixId(),
 					operationKey.getId(),
-					Text.App.treeOperation,
+					NodeElementInfo.NodeType.OPERATION,
 					"OP: " + operationKey.getId() + " - " + op.getFriendlyName(),
 					operationKey));
 		} catch (IOException ex) {
@@ -208,7 +219,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
 					operationKey.getId(),
-					Text.App.treeOperation,
+					NodeElementInfo.NodeType.OPERATION,
 					"OP: " + operationKey.getId() + " - " + op.getFriendlyName(),
 					operationKey));
 		} catch (IOException ex) {
@@ -226,7 +237,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					rp.getParentMatrixId(),
 					reportKey.getId(),
-					Text.App.treeReport,
+					NodeElementInfo.NodeType.REPORT,
 					"RP: " + reportKey.getId() + " - " + rp.getFriendlyName(),
 					reportKey));
 		} catch (IOException ex) {
@@ -240,6 +251,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="NODE MANAGEMENT">
 	//<editor-fold defaultstate="expanded" desc="STUDY NODES">
 	public static void insertLatestStudyNode() throws IOException {
+
 		try {
 			// GET LATEST ADDED STUDY
 			List<Study> studyList = StudyList.getStudyList();
@@ -257,6 +269,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	public static void insertStudyNode(StudyKey studyKey) throws IOException {
+
 		try {
 			// GET STUDY
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
