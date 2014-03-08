@@ -119,16 +119,17 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createStudyTreeNode(Study study) {
+
 //		parentNodeId
 //		nodeId
 //		nodeType
-//		nodeUniqueName => will be rsult of toString() call of DefaultMutableTreeNode
+//		nodeUniqueName => will be result of toString() call of DefaultMutableTreeNode
 //		friendlyName
 
 		DefaultMutableTreeNode tn = new DefaultMutableTreeNode(
 				new NodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
-				study.getId(),
+				study.getId(), // FIXME This will fail, if we have a study and an operation or matrix with the smae ID (which we will have). same problem in other locations!
 				Text.App.treeStudy,
 				"SID: " + study.getId() + " - " + study.getName(),
 				StudyKey.valueOf(study)));
@@ -137,6 +138,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createMatrixTreeNode(MatrixKey matrixKey) {
+
 		DefaultMutableTreeNode tn = null;
 		try {
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
@@ -149,6 +151,7 @@ public class GWASpiExplorerNodes {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return tn;
 	}
 
@@ -193,7 +196,6 @@ public class GWASpiExplorerNodes {
 
 		DefaultMutableTreeNode tn = null;
 		try {
-
 //			parentNodeId
 //			nodeId
 //			pathNodeIds
@@ -217,10 +219,10 @@ public class GWASpiExplorerNodes {
 	}
 
 	protected static DefaultMutableTreeNode createReportTreeNode(ReportKey reportKey) {
+
 		DefaultMutableTreeNode tn = null;
 		try {
 			Report rp = ReportsList.getReport(reportKey);
-//			int[] pathIds = new int[]{0, rp.getId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					rp.getParentMatrixId(),
 					reportKey.getId(),
@@ -230,6 +232,7 @@ public class GWASpiExplorerNodes {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return tn;
 	}
 	//</editor-fold>
@@ -358,6 +361,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	public static void deleteOperationNode(OperationKey operationKey) {
+
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + operationKey.getId() + " - ", 0, Position.Bias.Forward);
