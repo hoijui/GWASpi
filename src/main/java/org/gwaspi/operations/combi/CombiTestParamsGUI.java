@@ -22,7 +22,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,27 +31,19 @@ import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponent;
-import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
 import org.gwaspi.gui.utils.AbsolutePercentageModel;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
-import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
-import org.gwaspi.gui.utils.SpinnerDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
-import org.gwaspi.gui.utils.ValueContainer;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -218,20 +209,13 @@ public class CombiTestParamsGUI extends JPanel {
 
 		final int totalMarkers = (combiTestParams.getTotalMarkers() < 1) ? 100000 : combiTestParams.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
 
-//		this.hwThresholdValue.setModel(new AbsolutePercentageModel(
-//				combiTestParams.getHardyWeinbergThreshold(),
-//				combiTestParams.getHardyWeinbergThresholdDefault(),
-//				totalMarkers,
-//				1,
-//				1,
-//				totalMarkers - 1));
 		qaMarkersOperationValue.setSelectedItem(combiTestParams.getQAMarkerOperationKey());
 
-		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
-		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
-		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
+		genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+		genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
+		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		this.weightsFilterWidthValue.setModel(new AbsolutePercentageModel(
+		weightsFilterWidthValue.setModel(new AbsolutePercentageModel(
 				combiTestParams.getWeightsFilterWidth(),
 				combiTestParams.getWeightsFilterWidthDefault(),
 				totalMarkers,
@@ -239,7 +223,7 @@ public class CombiTestParamsGUI extends JPanel {
 				1,
 				totalMarkers - 1));
 
-		this.markersToKeepValue.setModel(new AbsolutePercentageModel(
+		markersToKeepValue.setModel(new AbsolutePercentageModel(
 				combiTestParams.getMarkersToKeep(),
 				combiTestParams.getMarkersToKeepDefault(),
 				totalMarkers,
@@ -247,12 +231,12 @@ public class CombiTestParamsGUI extends JPanel {
 				1,
 				totalMarkers - 1));
 
-		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
+		useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
-		this.resultMatrixValue.setText(combiTestParams.getName());
-		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getNameDefault()));
+		resultMatrixValue.setText(combiTestParams.getName());
+		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, combiTestParams.getNameDefault()));
 
-		this.validate();
+		validate();
 	}
 
 	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
@@ -286,37 +270,9 @@ public class CombiTestParamsGUI extends JPanel {
 		layout.setVerticalGroup(verticalGroup);
 	}
 
-	private OperationKey[] getAllHWOperationKeys(MatrixKey parentMatrixKey, OperationKey currentCensusOPKey) {
-
-		List<OperationMetadata> hwOperations;
-		try {
-//			OperationKey censusOPKey = MatrixAnalysePanel.AssociationTestsAction.evaluateCensusOPId(currentCensusOPKey, parentMatrixKey);
-//			hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
-			// FIXME use also censusOp?
-			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentMatrixKey);
-			hwOperations = new ArrayList<OperationMetadata>(operations.size());
-			for (OperationMetadata operationMetadata : operations) {
-				if (operationMetadata.getOperationType() == OPType.HARDY_WEINBERG) {
-					hwOperations.add(operationMetadata);
-				}
-			}
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		OperationKey[] hwOperationKeys = new OperationKey[hwOperations.size()];
-		int i = 0;
-		for (OperationMetadata hwOperation : hwOperations) {
-			hwOperationKeys[i] = OperationKey.valueOf(hwOperation);
-			i++;
-		}
-
-		 return hwOperationKeys;
-	}
-
 	public CombiTestOperationParams getCombiTestParams() {
 
 		CombiTestOperationParams combiTestParams = new CombiTestOperationParams(
-//				originalCombiTestParams.getMatrixKey(), // cause it is not editable
 				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
 				(Integer) weightsFilterWidthValue.getValue(),
