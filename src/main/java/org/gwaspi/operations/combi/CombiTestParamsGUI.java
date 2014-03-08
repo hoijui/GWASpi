@@ -47,6 +47,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponent;
 import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
+import org.gwaspi.gui.utils.AbsolutePercentageModel;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
@@ -79,18 +80,6 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel qaMarkersOperationLabel; // TODO This is not yet setup correctly! see hw* stuff below for example!
 	private final JComboBox qaMarkersOperationValue;
 
-	private final JLabel hwOperationLabel;
-	private final JComboBox hwOperationValue;
-
-	private final JLabel hwThresholdLabel;
-	private final JPanel hwThresholdP;
-	private final JFormattedTextField hwThresholdValue;
-//	private final JSpinner hwThresholdValue;
-	private final JSpinner hwThresholdPercentage;
-	private final JLabel hwThresholdPercentageLabel;
-	private final JCheckBox hwThresholdDefault;
-	private AbsolutePercentageComponentRelation hwThresholdComponentRelation;
-
 	private final JLabel genotypeEncoderLabel;
 	private final JPanel genotypeEncoderP;
 	private final JComboBox genotypeEncoderValue;
@@ -98,20 +87,9 @@ public class CombiTestParamsGUI extends JPanel {
 
 	private final JLabel weightsFilterWidthLabel;
 	private final AbsolutePercentageComponent weightsFilterWidthValue;
-//	private final JPanel weightsFilterWidthP;
-//	private final JSpinner weightsFilterWidthValue;
-//	private final JSpinner weightsFilterWidthPercentage;
-//	private final JLabel weightsFilterWidthPercentageLabel;
-//	private final JCheckBox weightsFilterWidthDefault;
-//	private AbsolutePercentageComponentRelation weightsFilterWidthComponentRelation;
 
 	private final JLabel markersToKeepLabel;
-	private final JPanel markersToKeepP;
-	private final JSpinner markersToKeepValue;
-	private final JSpinner markersToKeepPercentage;
-	private final JLabel markersToKeepPercentageLabel;
-	private final JCheckBox markersToKeepDefault;
-	private AbsolutePercentageComponentRelation markersToKeepComponentRelation;
+	private final AbsolutePercentageComponent markersToKeepValue;
 
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
@@ -134,39 +112,16 @@ public class CombiTestParamsGUI extends JPanel {
 		this.qaMarkersOperationLabel = new JLabel();
 		this.qaMarkersOperationValue = new JComboBox();
 
-		this.hwOperationLabel = new JLabel();
-		this.hwOperationValue = new JComboBox();
-
-		this.hwThresholdLabel = new JLabel();
-		this.hwThresholdP = new JPanel();
-		this.hwThresholdValue = new JFormattedTextField(NumberFormat.getNumberInstance());
-//		this.hwThresholdValue = new JSpinner();
-		this.hwThresholdPercentage = new JSpinner();
-		this.hwThresholdPercentageLabel = new JLabel();
-		this.hwThresholdDefault = new JCheckBox();
-		this.hwThresholdComponentRelation = null;
-
 		this.genotypeEncoderLabel = new JLabel();
 		this.genotypeEncoderP = new JPanel();
 		this.genotypeEncoderValue = new JComboBox();
 		this.genotypeEncoderDefault = new JCheckBox();
 
 		this.weightsFilterWidthLabel = new JLabel();
-		this.weightsFilterWidthValue = new AbsolutePercentageComponent
-		this.weightsFilterWidthP = new JPanel();
-		this.weightsFilterWidthValue = new JSpinner();
-		this.weightsFilterWidthPercentage = new JSpinner();
-		this.weightsFilterWidthPercentageLabel = new JLabel();
-		this.weightsFilterWidthDefault = new JCheckBox();
-		this.weightsFilterWidthComponentRelation = null;
+		this.weightsFilterWidthValue = new AbsolutePercentageComponent();
 
 		this.markersToKeepLabel = new JLabel();
-		this.markersToKeepP = new JPanel();
-		this.markersToKeepValue = new JSpinner();
-		this.markersToKeepPercentage = new JSpinner();
-		this.markersToKeepPercentageLabel = new JLabel();
-		this.markersToKeepDefault = new JCheckBox();
-		this.markersToKeepComponentRelation = null;
+		this.markersToKeepValue = new AbsolutePercentageComponent();
 
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
@@ -179,23 +134,8 @@ public class CombiTestParamsGUI extends JPanel {
 		this.resultMatrixDefault = new JCheckBox();
 
 		// pre-configure the GUI components
-		this.hwThresholdP.add(this.hwThresholdValue);
-		this.hwThresholdP.add(this.hwThresholdPercentage);
-		this.hwThresholdP.add(this.hwThresholdPercentageLabel);
-		this.hwThresholdP.add(this.hwThresholdDefault);
-
 		this.genotypeEncoderP.add(this.genotypeEncoderValue);
 		this.genotypeEncoderP.add(this.genotypeEncoderDefault);
-
-		this.weightsFilterWidthP.add(this.weightsFilterWidthValue);
-		this.weightsFilterWidthP.add(this.weightsFilterWidthPercentage);
-		this.weightsFilterWidthP.add(this.weightsFilterWidthPercentageLabel);
-		this.weightsFilterWidthP.add(this.weightsFilterWidthDefault);
-
-		this.markersToKeepP.add(this.markersToKeepValue);
-		this.markersToKeepP.add(this.markersToKeepPercentage);
-		this.markersToKeepP.add(this.markersToKeepPercentageLabel);
-		this.markersToKeepP.add(this.markersToKeepDefault);
 
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationDefault);
@@ -203,15 +143,12 @@ public class CombiTestParamsGUI extends JPanel {
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
 
-
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
 		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
 		labelsAndComponents.put(qaMarkersOperationLabel, qaMarkersOperationValue);
-		labelsAndComponents.put(hwOperationLabel, hwOperationValue);
-		labelsAndComponents.put(hwThresholdLabel, hwThresholdP);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
-		labelsAndComponents.put(weightsFilterWidthLabel, weightsFilterWidthP);
-		labelsAndComponents.put(markersToKeepLabel, markersToKeepP);
+		labelsAndComponents.put(weightsFilterWidthLabel, weightsFilterWidthValue);
+		labelsAndComponents.put(markersToKeepLabel, markersToKeepValue);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
 		createLayout(this, labelsAndComponents);
@@ -220,21 +157,11 @@ public class CombiTestParamsGUI extends JPanel {
 		contentPanelLayout.setAlignment(FlowLayout.LEADING);
 
 		this.parentMatrixLabel.setText("parent matrix");
-		this.hwOperationLabel.setLabelFor(this.parentMatrixValue);
+		this.parentMatrixLabel.setLabelFor(this.parentMatrixValue);
 		this.parentMatrixValue.setEditable(false);
 
-		this.hwOperationLabel.setText("Hardy-Weinberg operation");
-		this.hwOperationLabel.setLabelFor(this.hwOperationValue);
-
-		this.hwThresholdLabel.setText("Hardy-Weinberg threshold");
-		this.hwThresholdLabel.setLabelFor(this.hwThresholdValue);
-		this.hwThresholdP.setLayout(contentPanelLayout);
-		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
-		this.hwThresholdValue.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
-//		this.hwThresholdTF.setColumns(10);
-//		this.hwThresholdValue.addPropertyChangeListener("value", this); // TODO use this!
-		this.hwThresholdPercentage.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value / #markers");
-		this.hwThresholdPercentageLabel.setText("%");
+//		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
+//		this.hwThresholdPercentage.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value / #markers");
 
 		this.genotypeEncoderLabel.setText("geno-type to SVN feature encoding");
 		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
@@ -243,13 +170,9 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.weightsFilterWidthLabel.setText("weights filter kernel width");
 		this.weightsFilterWidthLabel.setLabelFor(this.weightsFilterWidthValue);
-		this.weightsFilterWidthP.setLayout(contentPanelLayout);
-		this.weightsFilterWidthPercentageLabel.setText("%");
 
 		this.markersToKeepLabel.setText("number of markers to keep");
 		this.markersToKeepLabel.setLabelFor(this.markersToKeepValue);
-		this.markersToKeepP.setLayout(contentPanelLayout);
-		this.markersToKeepPercentageLabel.setText("%");
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
@@ -276,70 +199,35 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.originalCombiTestParams = combiTestParams;
 
-//		this.parentMatrixValue.setText(combiTestParams.getMatrixKey().toString());
-//
-//		this.hwOperationValue.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
-//		this.hwOperationValue.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
-//
-//		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
-//		this.hwThresholdDefault.setAction(new TextDefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
-//		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
-//				combiTestParams.getHardyWeinbergThreshold() * combiTestParams.getTotalMarkers() / 100.0, // initial value
-//				0.1, // min
-//				100.0, // max
-//				0.5); // step
-//		this.hwThresholdPercentage.setModel(hwThresholdPercentageModel);
-		this.hwThresholdComponentRelation
-				= new AbsolutePercentageComponentRelation(
-				new ValueContainer<Number>(hwThresholdValue),
-				new ValueContainer<Number>(hwThresholdPercentage),
-				1.0 / combiTestParams.getTotalMarkers(),
-				new AbsolutePercentageComponentRelation.RoundingConstrainer(combiTestParams.getTotalMarkers() * 100.0),
-				new AbsolutePercentageComponentRelation.RoundingConstrainer(10.0));
+		final int totalMarkers = (combiTestParams.getTotalMarkers() < 1) ? 100000 : combiTestParams.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
+
+//		this.hwThresholdValue.setModel(new AbsolutePercentageModel(
+//				combiTestParams.getHardyWeinbergThreshold(),
+//				combiTestParams.getHardyWeinbergThresholdDefault(),
+//				totalMarkers,
+//				1,
+//				1,
+//				totalMarkers - 1));
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
 		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		final int totalMarkers = (combiTestParams.getTotalMarkers() < 1) ? 100000 : combiTestParams.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
+		this.weightsFilterWidthValue.setModel(new AbsolutePercentageModel(
+				combiTestParams.getWeightsFilterWidth(),
+				combiTestParams.getWeightsFilterWidthDefault(),
+				totalMarkers,
+				1,
+				1,
+				totalMarkers - 1));
 
-		final SpinnerModel weightsFilterWidthValueModel = new SpinnerNumberModel(
-				combiTestParams.getWeightsFilterWidth(), // initial value
-				1, // min
-				totalMarkers - 1, // max
-				1); // step
-		this.weightsFilterWidthValue.setModel(weightsFilterWidthValueModel);
-		this.weightsFilterWidthDefault.setAction(new SpinnerDefaultAction(this.weightsFilterWidthValue, combiTestParams.getMarkersToKeepDefault()));
-		final SpinnerModel weightsFilterWidthPercentageModel = new SpinnerNumberModel(
-				(double) combiTestParams.getWeightsFilterWidth() / totalMarkers * 100.0, // initial value
-				1.0 / totalMarkers * 100.0, // min
-				20.0, // max
-				1.0 / totalMarkers * 100.0); // step
-		this.weightsFilterWidthPercentage.setModel(weightsFilterWidthPercentageModel);
-		this.weightsFilterWidthComponentRelation
-				= new AbsolutePercentageComponentRelation(
-				new ValueContainer<Number>(weightsFilterWidthValue),
-				new ValueContainer<Number>(weightsFilterWidthPercentage),
-				totalMarkers);
-
-		final SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
-				combiTestParams.getMarkersToKeep(), // initial value
-				1, // min
-				totalMarkers - 1, // max
-				1); // step
-		this.markersToKeepValue.setModel(markersToKeepValueModel);
-		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
-		final SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
-				(double) combiTestParams.getMarkersToKeep() / totalMarkers * 100.0, // initial value
-				1.0 / totalMarkers * 100.0, // min
-				100.0, // max
-				1.0 / totalMarkers * 100.0); // step
-		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
-		this.markersToKeepComponentRelation
-				= new AbsolutePercentageComponentRelation(
-				new ValueContainer<Number>(markersToKeepValue),
-				new ValueContainer<Number>(markersToKeepPercentage),
-				totalMarkers);
+		this.markersToKeepValue.setModel(new AbsolutePercentageModel(
+				combiTestParams.getMarkersToKeep(),
+				combiTestParams.getMarkersToKeepDefault(),
+				totalMarkers,
+				1,
+				1,
+				totalMarkers - 1));
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 

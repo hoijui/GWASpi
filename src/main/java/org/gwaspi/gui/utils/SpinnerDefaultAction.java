@@ -17,21 +17,21 @@
 
 package org.gwaspi.gui.utils;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Allows to reset the value of a spinner component to its default.
  * In case of a toggle-button as actuator, it also buffers the custom value,
  * and later goes back to that value.
  */
-public class SpinnerDefaultAction extends AbstractDefaultAction<JSpinner, Object> implements PropertyChangeListener {
+public class SpinnerDefaultAction extends AbstractDefaultAction<JSpinner, Object> implements ChangeListener {
 
 	public SpinnerDefaultAction(JSpinner valueComponent, Object defaultValue, boolean makeUneditable) {
 		super(valueComponent, defaultValue, makeUneditable);
 
-		valueComponent.addPropertyChangeListener(this);
+		valueComponent.addChangeListener(this);
 	}
 
 	public SpinnerDefaultAction(JSpinner valueComponent, Object defaultValue) {
@@ -54,7 +54,7 @@ public class SpinnerDefaultAction extends AbstractDefaultAction<JSpinner, Object
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+	public void stateChanged(ChangeEvent evt) {
 		valueChanged();
 	}
 }
