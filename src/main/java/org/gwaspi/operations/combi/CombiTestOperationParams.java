@@ -133,7 +133,10 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	}
 
 	public int getWeightsFilterWidthDefault() {
-		return (int) Math.ceil(getTotalMarkers() * 0.000035);
+
+		// HACK review this mechanism with marius
+		return Math.min(35, Math.max(3,
+				(int) Math.ceil(getTotalMarkers() * 0.05)));
 	}
 
 	public int getMarkersToKeep() {
