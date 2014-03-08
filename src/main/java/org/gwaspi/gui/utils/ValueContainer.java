@@ -31,7 +31,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * Allows access different GUI components that contain a value of some sort,
+ * Allows to access different GUI components that contain a value of some sort,
  * to be used through a single class.
  * This usage deals only with the value
  * (setting, getting, listening to changes).
