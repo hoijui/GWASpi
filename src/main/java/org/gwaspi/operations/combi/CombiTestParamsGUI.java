@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.operations.combi;
 
 import java.awt.Color;
@@ -75,7 +76,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
 
-	private final JLabel qaMarkersOperationLabel; // TODO This is not yet setup correctly! see hw stuff below for example!
+	private final JLabel qaMarkersOperationLabel; // TODO This is not yet setup correctly! see hw* stuff below for example!
 	private final JComboBox qaMarkersOperationValue;
 
 	private final JLabel hwOperationLabel;

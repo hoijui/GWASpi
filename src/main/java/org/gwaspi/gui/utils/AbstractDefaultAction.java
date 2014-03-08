@@ -98,6 +98,5 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 
 		final boolean isDefaultValue = getValue().equals(defaultValue);
 		putValue(SELECTED_KEY, isDefaultValue);
-		// TODO .. needs more?
 	}
 }
