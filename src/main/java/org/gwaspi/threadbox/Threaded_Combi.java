@@ -52,7 +52,6 @@ public class Threaded_Combi extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			OperationKey combiOpKey = OperationManager.performRawCombiTest(params);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(combiOpKey);
 
 //			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
 //			if (assocOpId != OperationKey.NULL_ID) {

@@ -89,7 +89,6 @@ public class Threaded_Test extends CommonRunnable {
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
 					testType);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, testOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (testOpKey != null) {

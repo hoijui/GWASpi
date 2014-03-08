@@ -119,11 +119,6 @@ public class Threaded_GWAS extends CommonRunnable {
 			}
 
 			censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
-
-			if (censusOpKey != null) {
-				censusOpKey = OperationKey.valueOf(OperationsList.getOperationMetadata(censusOpKey));
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
-			}
 		}
 
 		return censusOpKey;
@@ -138,7 +133,6 @@ public class Threaded_GWAS extends CommonRunnable {
 		{
 			final HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
 			hwOpKey = OperationManager.performHardyWeinberg(params);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
 
 		return hwOpKey;
@@ -168,7 +162,6 @@ public class Threaded_GWAS extends CommonRunnable {
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
 					testType);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, assocOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpKey != null) {
@@ -194,7 +187,6 @@ public class Threaded_GWAS extends CommonRunnable {
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
 					OPType.TRENDTEST);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, trendOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendOpKey != null) {

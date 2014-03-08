@@ -56,7 +56,6 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		{
 			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
 			OperationKey hwOpKey = OperationManager.performHardyWeinberg(params);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
 	}
 }
