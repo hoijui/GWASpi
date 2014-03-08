@@ -91,7 +91,7 @@ public class GWASpiExplorer {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
 				NodeElementInfo.NODE_ID_NONE,
-				Text.App.treeParent,
+				NodeElementInfo.NodeType.ROOT,
 				Text.App.appName,
 				null));
 		growTree(top);
@@ -126,7 +126,7 @@ public class GWASpiExplorer {
 		DefaultMutableTreeNode category = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
 				NodeElementInfo.NODE_ID_NONE,
-				Text.App.treeParent,
+				NodeElementInfo.NodeType.ROOT,
 				Text.App.treeStudyManagement,
 				null));
 		top.add(category);
@@ -250,7 +250,7 @@ public class GWASpiExplorer {
 			NodeElementInfo currentElementInfo = (NodeElementInfo) currentElement;
 
 			TreePath treePath = evt.getPath();
-			if ((treePath != null) && !currentElementInfo.getNodeType().equals(Text.App.treeParent)) {
+			if ((treePath != null) && !currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.ROOT)) {
 				try {
 					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeUniqueName());
 				} catch (IOException ex) {
@@ -278,9 +278,7 @@ public class GWASpiExplorer {
 				parentElementInfo = (NodeElementInfo) parentElement;
 			}
 
-			// Reference Databse Branch
-			if (currentElementInfo.getNodeUniqueName().equals(Text.App.treeReferenceDBs)) {
-			} // Study Management Branch
+			// Study Management Branch
 			//else if(currentElementInfo.getNodeType().equals(Text.App.treeStudyManagement)) { // XXX
 			else if (currentElementInfo.getNodeUniqueName().equals(Text.App.treeStudyManagement)) {
 				try {
@@ -292,7 +290,7 @@ public class GWASpiExplorer {
 				}
 			} // Study Branch
 			//else if(parentNode != null && parentNode.toString().equals(Text.App.treeStudyManagement)){
-			else if (currentElementInfo.getNodeType().equals(Text.App.treeStudy)) {
+			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY)) {
 				try {
 					gwasPiExplorerPanel.setPnl_Content(new CurrentStudyPanel((StudyKey) currentElementInfo.getContentKey()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -300,7 +298,7 @@ public class GWASpiExplorer {
 					log.warn("StudyID: " + currentElementInfo.getNodeId(), ex);
 				}
 			} // Sample Info Branch
-			else if (currentElementInfo.getNodeType().equals(Text.App.treeSampleInfo)) {
+			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.SAMPLE_INFO)) {
 				try {
 					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel(new StudyKey(parentElementInfo.getNodeId())));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -308,7 +306,7 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Matrix Branch
-			else if (currentElementInfo.getNodeType().equals(Text.App.treeMatrix)) {
+			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.MATRIX)) {
 				try {
 					// We are in MatrixItems node
 					tree.expandPath(treePath);
@@ -318,9 +316,9 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Operations Branch
-			else if (currentElementInfo.getNodeType().equals(Text.App.treeOperation)) {
+			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
 				try {
-					if (parentElementInfo.getNodeType().toString().equals(Text.App.treeOperation)) {
+					if (parentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
 						// Display SubOperation analysis panel
 						tree.expandPath(treePath);
 						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
@@ -353,7 +351,7 @@ public class GWASpiExplorer {
 							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentOPKey.getParentMatrixKey(), operationKey));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
-					} else {
+					} else { // FIXME unreachable!
 						// Display Operation
 						tree.expandPath(treePath);
 						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
@@ -383,7 +381,7 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Reports Branch
-			else if (currentElementInfo.getNodeType().equals(Text.App.treeReport)) {
+			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.REPORT)) {
 				try {
 					// Display report summary
 					tree.expandPath(treePath);
