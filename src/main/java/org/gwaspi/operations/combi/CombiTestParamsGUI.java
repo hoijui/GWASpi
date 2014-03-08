@@ -160,6 +160,9 @@ public class CombiTestParamsGUI extends JPanel {
 		this.parentMatrixLabel.setLabelFor(this.parentMatrixValue);
 		this.parentMatrixValue.setEditable(false);
 
+		this.qaMarkersOperationLabel.setText("Parent data source");
+		this.qaMarkersOperationLabel.setToolTipText("As this has to be a QA Markers operation, only these are displayed in this list");
+
 //		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
 //		this.hwThresholdPercentage.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value / #markers");
 
@@ -195,6 +198,20 @@ public class CombiTestParamsGUI extends JPanel {
 		this.resultMatrixP.setLayout(contentPanelLayout);
 	}
 
+	public void setParentCandidates(List<OperationKey> parentCandidates) {
+
+		OperationKey previouslySelected = (OperationKey) qaMarkersOperationValue.getSelectedItem();
+		qaMarkersOperationValue.removeAllItems();
+		for (OperationKey parentCandidate : parentCandidates) {
+			qaMarkersOperationValue.addItem(parentCandidate);
+		}
+		if (previouslySelected != null) {
+			qaMarkersOperationValue.setSelectedItem(previouslySelected);
+		}
+		qaMarkersOperationValue.setEnabled(parentCandidates.size() > 0);
+		qaMarkersOperationValue.setEditable(parentCandidates.size() > 1);
+	}
+
 	public void setCombiTestParams(CombiTestOperationParams combiTestParams) {
 
 		this.originalCombiTestParams = combiTestParams;
@@ -208,6 +225,7 @@ public class CombiTestParamsGUI extends JPanel {
 //				1,
 //				1,
 //				totalMarkers - 1));
+		qaMarkersOperationValue.setSelectedItem(combiTestParams.getQAMarkerOperationKey());
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
@@ -257,7 +275,6 @@ public class CombiTestParamsGUI extends JPanel {
         horizontalG.addGroup(horizontalLabelsG);
 		horizontalG.addGroup(horizontalComponentsG);
 		layout.setHorizontalGroup(horizontalG);
-
 
         GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
@@ -311,9 +328,10 @@ public class CombiTestParamsGUI extends JPanel {
 		return combiTestParams;
 	}
 
-	public static CombiTestOperationParams chooseCombiTestParams(Component parentComponent, CombiTestOperationParams combiTestParams) {
+	public static CombiTestOperationParams chooseCombiTestParams(Component parentComponent, CombiTestOperationParams combiTestParams, List<OperationKey> parentCandidates) {
 
 		CombiTestParamsGUI combiTestParamsGUI = new CombiTestParamsGUI();
+		combiTestParamsGUI.setParentCandidates(parentCandidates);
 		combiTestParamsGUI.setCombiTestParams(combiTestParams);
 
 		int selectedValue = JOptionPane.showConfirmDialog(
@@ -339,7 +357,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
 
-		OperationKey parentOperationKey = null;
+		List<OperationKey> parentCandidates = new ArrayList<OperationKey>();
 		try {
 			// Look for ANY QA-Markers operation in the DB
 			List<StudyKey> studies = StudyList.getStudies();
@@ -347,9 +365,8 @@ public class CombiTestParamsGUI extends JPanel {
 				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
 				for (MatrixKey matrixKey : matrices) {
 					List<OperationMetadata> qaOperationsMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
-					if (!qaOperationsMetadatas.isEmpty()) {
-						parentOperationKey = OperationKey.valueOf(qaOperationsMetadatas.get(0));
-						break studiesLoop;
+					for (OperationMetadata qaOperationsMetadata : qaOperationsMetadatas) {
+						parentCandidates.add(OperationKey.valueOf(qaOperationsMetadata));
 					}
 				}
 			}
@@ -357,9 +374,12 @@ public class CombiTestParamsGUI extends JPanel {
 			LOG.error("Failed to look for QA Marker operations", ex);
 		}
 
-		if (parentOperationKey == null) {
+		final OperationKey parentOperationKey;
+		if (parentCandidates.isEmpty()) {
 			LOG.warn("No suitable QA Marker operation found that could be used as parent");
 			parentOperationKey = new OperationKey(new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID), OperationKey.NULL_ID);
+		} else {
+			parentOperationKey = parentCandidates.get(0);
 		}
 
 //		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
@@ -370,6 +390,6 @@ public class CombiTestParamsGUI extends JPanel {
 				20, // markersToKeep
 				Boolean.TRUE, // useThresholdCalibration
 				"my name is... my name is... my name is ..");
-		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams);
+		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams, parentCandidates);
 	}
 }
