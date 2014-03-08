@@ -55,17 +55,11 @@ public class OperationManager {
 			throws IOException
 	{
 		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
-
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
 
-		MatrixOperation operation = new OP_MarkerCensus(params);
+		final MatrixOperation operation = new OP_MarkerCensus(params);
 
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
-
-		OperationKey parentOpKey = params.getParent().getOperationParent();
-		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
+		final OperationKey operationKey = performOperation(operation);
 
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 
@@ -76,16 +70,11 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		MatrixOperation operation = new OP_HardyWeinberg(params);
+		final MatrixOperation operation = new OP_HardyWeinberg(params);
 
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
+		final OperationKey operationKey = performOperation(operation);
 
 		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
-
-		OperationKey parentOpKey = params.getParent().getOperationParent();
-		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
 
 		return operationKey;
 	}
@@ -105,8 +94,7 @@ public class OperationManager {
 		// exclude by Hardy & Weinberg threshold
 		final MatrixOperation excludeOperation = new ByHardyWeinbergThresholdFilterOperation(
 				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
-		int resultExcludeOpId = excludeOperation.processMatrix();
-		OperationKey excludeOperationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultExcludeOpId);
+		final OperationKey excludeOperationKey = performOperation(excludeOperation);
 
 		// run the test
 		final MatrixOperation operation;
@@ -116,11 +104,7 @@ public class OperationManager {
 			operation = new OP_AssociationTests(new AssociationTestOperationParams(excludeOperationKey, censusOpKey, testType));
 		}
 
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
-
-		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, operationKey);
+		final OperationKey operationKey = performOperation(operation);
 
 		return operationKey;
 	}
@@ -167,36 +151,31 @@ public class OperationManager {
 	{
 		MatrixOperation operation = new CombiTestMatrixOperation(params);
 
-		final int resultOpId;
-		if (operation.isValid()) {
-			resultOpId = operation.processMatrix();
-		} else {
-			log.error(
-					"Can not execute COMBI operation, because the given parameters are invalid: {}",
-					operation.getProblemDescription());
-			resultOpId = Integer.MIN_VALUE;
-		}
-
-		final OperationKey operationKey = new OperationKey(params.getParent().getOrigin(), resultOpId);
-
-		OperationKey parentOpKey = params.getParent().getOperationParent();
-		GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parentOpKey, operationKey);
-
-		return operationKey;
+		return performOperation(operation);
 	}
 
 	public static OperationKey performOperation(MatrixOperation operation)
 			throws IOException
 	{
-		final int resultOperationId = operation.processMatrix();
-
 		final DataSetKey parent = operation.getParams().getParent();
-		final OperationKey resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
 
-		if (parent.isMatrix()) {
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
+		final OperationKey resultOperationKey;
+		if (operation.isValid()) {
+			final int resultOperationId = operation.processMatrix();
+
+			resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
+
+			if (parent.isMatrix()) {
+				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
+			} else {
+				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+			}
 		} else {
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
+			log.error(
+					"Can not execute {} operation, because the given parameters are invalid: {}",
+					operation.getClass().getSimpleName(), // HACK should be getType(), but only Operation-Operations have this method
+					operation.getProblemDescription());
 		}
 
 		return resultOperationKey;
@@ -210,7 +189,6 @@ public class OperationManager {
 		OperationKey samplesQAOpKey = performOperation(operation);
 
 		OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
-		GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
 
 		return samplesQAOpKey;
 	}
@@ -222,7 +200,6 @@ public class OperationManager {
 		OperationKey markersQAOpKey = performOperation(operation);
 
 		OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-		GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
 
 		return markersQAOpKey;
 	}
