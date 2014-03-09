@@ -39,7 +39,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.gwaspi.global.Config;
-import org.gwaspi.model.GWASpiExplorer;
+import org.gwaspi.model.GWASpiExplorerTree;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +58,8 @@ public class GWASpiExplorerPanel extends JPanel {
 	private boolean refreshContentPanel = true;
 	private JPanel pnl_Content;
 	private JScrollPane scrl_Content;
-	private JScrollPane scrl_Tree;
-	private JSplitPane splt_MoapiPanel;
+	private final JScrollPane scrl_Tree;
+	private final JSplitPane splt_MoapiPanel;
 	private static GWASpiExplorerPanel singleton = null;
 	// End of variables declaration
 
@@ -224,7 +224,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
-		GWASpiExplorer gwaspiExplorer = new GWASpiExplorer();
+		GWASpiExplorerTree gwaspiExplorer = new GWASpiExplorerTree();
 		tmpTree = gwaspiExplorer.getGWASpiTree();
 		//tmpTree = GWASpiExplorer.getGWASpiTree();
 
@@ -234,7 +234,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 
 		// Find out what paths are expanded
-		List<TreePath> expandedNodesAL = null;
+		List<TreePath> expandedNodes = null;
 		if (tree != null) {
 			TreePath rootPath = tree.getPathForRow(0);
 			Enumeration e = tree.getExpandedDescendants(rootPath);
@@ -244,16 +244,16 @@ public class GWASpiExplorerPanel extends JPanel {
 					expanded.add((TreePath) e.nextElement());
 				}
 			}
-			expandedNodesAL = expanded;
+			expandedNodes = expanded;
 		}
 
 		tree = tmpTree;
 
-		if (expandedNodesAL != null) { // HAPPENS WHEN REFRESHING
+		if (expandedNodes != null) { // HAPPENS WHEN REFRESHING
 			for (int i = 0; i < tmpTree.getRowCount(); i++) {
 				TreePath ntp = tmpTree.getPathForRow(i);
 				Object lastNTP = ntp.getLastPathComponent();
-				for (TreePath tp : expandedNodesAL) {
+				for (TreePath tp : expandedNodes) {
 					Object lastTP = tp.getLastPathComponent();
 					if (lastNTP.toString().equals(lastTP.toString())) {
 						tmpTree.expandRow(i);

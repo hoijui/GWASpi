@@ -56,9 +56,12 @@ import org.gwaspi.model.GWASpiExplorerNodes.UncollapsableNodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GWASpiExplorer {
+/**
+ * The main data-structure GUI tree of the application
+ */
+public class GWASpiExplorerTree {
 
-	private static final Logger log = LoggerFactory.getLogger(GWASpiExplorer.class);
+	private static final Logger log = LoggerFactory.getLogger(GWASpiExplorerTree.class);
 
 	private JTree tree;
 	private final boolean playWithLineStyle;
@@ -69,7 +72,7 @@ public class GWASpiExplorer {
 	private static final Icon customClosedIcon = initIcon("hex_closed.png");
 	private static final Icon customLeafIcon = initIcon("leaf_sepia.png");
 
-	public GWASpiExplorer() {
+	public GWASpiExplorerTree() {
 
 		this.tree = null;
 		this.playWithLineStyle = false;
@@ -482,7 +485,7 @@ public class GWASpiExplorer {
 
 	// XXX this function could be used in other classes too!
 	private static Icon initIcon(String iconName) {
-		URL logoPath = GWASpiExplorer.class.getResource("/img/icon/" + iconName);
+		URL logoPath = GWASpiExplorerTree.class.getResource("/img/icon/" + iconName);
 		//String logoPath = Config.getConfigValue("ConfigDir", "") + "/" +iconName;
 		Icon logo = new ImageIcon(logoPath);
 		return logo;
