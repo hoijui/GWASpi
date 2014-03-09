@@ -70,7 +70,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		if (!this.getParentMatrixKey().equals(other.getParentMatrixKey())) {
 			return false;
 		}
-		return (this.getId() != other.getId());
+		return (this.getId() == other.getId());
 	}
 
 	@Override
