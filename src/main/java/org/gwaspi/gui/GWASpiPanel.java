@@ -29,7 +29,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.gwaspi.global.Config;
-import org.gwaspi.model.GWASpiExplorer;
+import org.gwaspi.model.GWASpiExplorerTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +42,9 @@ public class GWASpiPanel extends JPanel {
 	private JTree tree;
 	private boolean refreshContentPanel = true;
 	private JPanel pnl_Content;
-	private JScrollPane scrl_Content;
-	private JScrollPane scrl_Tree;
-	private JSplitPane splt_MoapiPanel;
+	private final JScrollPane scrl_Content;
+	private final JScrollPane scrl_Tree;
+	private final JSplitPane splt_MoapiPanel;
 	// End of variables declaration
 
 	// <editor-fold defaultstate="expanded" desc="Generated Code">
@@ -112,7 +112,7 @@ public class GWASpiPanel extends JPanel {
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
-		GWASpiExplorer gwaspiExplorer = new GWASpiExplorer();
+		GWASpiExplorerTree gwaspiExplorer = new GWASpiExplorerTree();
 		JTree tmpTree = gwaspiExplorer.getGWASpiTree();
 
 		scrl_Tree.setViewportView(tmpTree);

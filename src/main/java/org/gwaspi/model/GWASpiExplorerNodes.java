@@ -38,7 +38,6 @@ public class GWASpiExplorerNodes {
 	private GWASpiExplorerNodes() {
 	}
 
-	//<editor-fold defaultstate="expanded" desc="NODE DEFINITION">
 	public static class NodeElementInfo {
 
 		public static enum NodeType {
@@ -48,8 +47,7 @@ public class GWASpiExplorerNodes {
 			SAMPLE_INFO,
 			MATRIX,
 			OPERATION,
-			REPORT,
-			REF_DATABASES;
+			REPORT;
 		}
 
 		public static final int NODE_ID_NONE = 0;
@@ -131,18 +129,12 @@ public class GWASpiExplorerNodes {
 
 	protected static DefaultMutableTreeNode createStudyTreeNode(Study study) {
 
-//		parentNodeId
-//		nodeId
-//		nodeType
-//		nodeUniqueName => will be result of toString() call of DefaultMutableTreeNode
-//		friendlyName
-
 		DefaultMutableTreeNode tn = new DefaultMutableTreeNode(
 				new NodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
-				study.getId(), // FIXME This will fail, if we have a study and an operation or matrix with the smae ID (which we will have). same problem in other locations!
+				study.getId(), // FIXME This will fail, if we have a study and and operation or matrix with the smae ID (which we will have). same problem in other locations!
 				NodeElementInfo.NodeType.STUDY,
-				"SID: " + study.getId() + " - " + study.getName(),
+				"SID: " + study.getId() + " - " + study.getName(), // will be result of toString() call of DefaultMutableTreeNode
 				StudyKey.valueOf(study)));
 
 		return tn;
@@ -187,7 +179,6 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createOperationTreeNode(OperationKey operationKey) {
 
 		DefaultMutableTreeNode tn = null;
-
 		try {
 			OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
@@ -207,15 +198,7 @@ public class GWASpiExplorerNodes {
 
 		DefaultMutableTreeNode tn = null;
 		try {
-//			parentNodeId
-//			nodeId
-//			pathNodeIds
-//			nodeType
-//			studyNodeName
-//			nodeUniqueName
-
 			OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
-//			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
 					operationKey.getId(),
@@ -246,28 +229,9 @@ public class GWASpiExplorerNodes {
 
 		return tn;
 	}
-	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="NODE MANAGEMENT">
 	//<editor-fold defaultstate="expanded" desc="STUDY NODES">
-	public static void insertLatestStudyNode() throws IOException {
-
-		try {
-			// GET LATEST ADDED STUDY
-			List<Study> studyList = StudyList.getStudyList();
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
-
-			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1));
-
-			if (parentPath != null) {
-				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
-				addNode(parentNode, newNode, true);
-			}
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
-	}
-
 	public static void insertStudyNode(StudyKey studyKey) throws IOException {
 
 		try {
@@ -287,6 +251,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	public static void deleteStudyNode(StudyKey studyKey) {
+
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + studyKey.getId() + " - ", 0, Position.Bias.Forward);
@@ -303,6 +268,7 @@ public class GWASpiExplorerNodes {
 
 	//<editor-fold defaultstate="expanded" desc="MATRIX NODES">
 	public static void insertMatrixNode(MatrixKey matrixKey) throws IOException {
+
 		if (StartGWASpi.guiMode) {
 			try {
 				// GET STUDY
@@ -322,6 +288,7 @@ public class GWASpiExplorerNodes {
 	}
 
 	public static void deleteMatrixNode(MatrixKey matrixKey) {
+
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixKey.getMatrixId() + " - ", 0, Position.Bias.Forward);
