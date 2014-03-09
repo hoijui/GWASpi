@@ -210,23 +210,19 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 	}
 
-	public void updateTreePanel(boolean _refreshContentPanel) throws IOException {
+	public void updateTreePanel(boolean refreshContentPanel) throws IOException {
 
 		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
-		if (!_refreshContentPanel) {
-			refreshContentPanel = !refreshContentPanel;
+		if (!refreshContentPanel) {
+			this.refreshContentPanel = !this.refreshContentPanel;
 		}
-
-		JTree tmpTree = new JTree();
-		tmpTree.setEnabled(false);
 
 		int X = scrl_Tree.getHorizontalScrollBar().getValue();
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
 		GWASpiExplorerTree gwaspiExplorer = new GWASpiExplorerTree();
-		tmpTree = gwaspiExplorer.getGWASpiTree();
-		//tmpTree = GWASpiExplorer.getGWASpiTree();
+		JTree tmpTree = gwaspiExplorer.getGWASpiTree();
 
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
@@ -306,8 +302,8 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 
 		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
-		if (!_refreshContentPanel) {
-			refreshContentPanel = !refreshContentPanel;
+		if (!refreshContentPanel) {
+			this.refreshContentPanel = !this.refreshContentPanel;
 		}
 
 		splt_MoapiPanel.setDividerLocation(width);

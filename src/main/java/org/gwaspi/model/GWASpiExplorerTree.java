@@ -93,7 +93,6 @@ public class GWASpiExplorerTree {
 		// Create the nodes.
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
-				NodeElementInfo.NODE_ID_NONE,
 				NodeElementInfo.NodeType.ROOT,
 				Text.App.appName,
 				null));
@@ -123,106 +122,80 @@ public class GWASpiExplorerTree {
 		}
 	}
 
+
+	private static void addOperationToTree(DefaultMutableTreeNode parent, List<OperationMetadata> allOperations, OperationKey operationKey) throws IOException {
+
+		DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(operationKey);
+
+		List<OperationMetadata> childrenOps = getChildrenOperations(allOperations, operationKey);
+		for (OperationMetadata subOP : childrenOps) {
+			OperationKey subOPKey = OperationKey.valueOf(subOP);
+			addOperationToTree(operationItem, allOperations, subOPKey);
+		}
+
+		List<Report> reports = ReportsList.getReportsList(operationKey);
+		for (Report report : reports) {
+//			if (!report.getReportType().equals(OPType.ALLELICTEST)
+//					&& !report.getReportType().equals(OPType.GENOTYPICTEST)
+//					&& !report.getReportType().equals(OPType.TRENDTEST))
+//			{
+			DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(ReportKey.valueOf(report));
+			GWASpiExplorerNodes.addNode(operationItem, reportItem, false);
+//			}
+		}
+
+		GWASpiExplorerNodes.addNode(parent, operationItem, false);
+	}
+
 	private static void growTree(DefaultMutableTreeNode top) throws IOException {
 
-		//<editor-fold defaultstate="expanded" desc="STUDY MANAGEMENT">
 		DefaultMutableTreeNode category = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
-				NodeElementInfo.NODE_ID_NONE,
-				NodeElementInfo.NODE_ID_NONE,
-				NodeElementInfo.NodeType.ROOT,
+				NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.ROOT, NodeElementInfo.NODE_ID_NONE),
+				NodeElementInfo.NodeType.STUDY_MANAGEMENT,
 				Text.App.treeStudyManagement,
 				null));
-		top.add(category);
+		GWASpiExplorerNodes.addNode(top, category, false);
 
 		// LOAD ALL STUDIES
-		List<Study> studyList = StudyList.getStudyList();
-		for (int i = 0; i < studyList.size(); i++) {
+		List<Study> studies = StudyList.getStudyList();
+		for (Study study : studies) {
+			final StudyKey studyKey = StudyKey.valueOf(study);
 
 			// LOAD CURRENT STUDY
-			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studyList.get(i));
+			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(study);
 
 			// LOAD SAMPLE INFO FOR CURRENT STUDY
-			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(StudyKey.valueOf(studyList.get(i)));
+			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studyKey);
 			if (sampleInfoItem != null) {
-				studyItem.add(sampleInfoItem);
+				GWASpiExplorerNodes.addNode(studyItem, sampleInfoItem, false);
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			List<MatrixKey> matrixList = MatricesList.getMatrixList(StudyKey.valueOf(studyList.get(i)));
-			for (int j = 0; j < matrixList.size(); j++) {
+			List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+			for (MatrixKey matrixKey : matrices) {
+				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixKey);
 
-				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j));
-
-				// LOAD Parent OPERATIONS ON CURRENT MATRIX
-				List<OperationMetadata> parentOperations = OperationsList.getOffspringOperationsMetadata(matrixList.get(j));
-				List<OperationMetadata> allOperations = OperationsList.getOffspringOperationsMetadata(matrixList.get(j));
-				for (int k = 0; k < parentOperations.size(); k++) {
-					// LOAD SUB OPERATIONS ON CURRENT MATRIX
-					OperationMetadata currentOP = parentOperations.get(k);
+				// LOAD ROOT OPERATIONS (having the matrix as direct parent)
+				List<OperationMetadata> rootOperations = OperationsList.getChildrenOperationsMetadata(new DataSetKey(matrixKey));
+				List<OperationMetadata> allOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
+				for (OperationMetadata rootOperation : rootOperations) {
+					// LOAD SUB OPERATIONS (having an operation as direct parent)
+					OperationMetadata currentOP = rootOperation;
 					OperationKey currentOPKey = OperationKey.valueOf(currentOP);
-					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(OperationKey.valueOf(currentOP));
-
-
-					List<OperationMetadata> childrenOpAL = getChildrenOperations(allOperations, currentOPKey);
-					for (int m = 0; m < childrenOpAL.size(); m++) {
-						OperationMetadata subOP = childrenOpAL.get(m);
-						OperationKey subOPKey = OperationKey.valueOf(subOP);
-						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOPKey);
-
-						// LOAD REPORTS ON CURRENT SUB-OPERATION
-						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG)) { // NOT IF HW
-							List<Report> reportsList = ReportsList.getReportsList(subOPKey);
-							for (int n = 0; n < reportsList.size(); n++) {
-								Report rp = reportsList.get(n);
-								if (!rp.getReportType().equals(OPType.ALLELICTEST)
-										&& !rp.getReportType().equals(OPType.GENOTYPICTEST)
-										&& !rp.getReportType().equals(OPType.TRENDTEST)) {
-									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(ReportKey.valueOf(reportsList.get(n)));
-									subOperationItem.add(reportItem);
-								}
-
-							}
-						}
-						operationItem.add(subOperationItem);
-					}
-
-					// START TESTING
-					// LOAD REPORTS ON CURRENT OPERATION
-					List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
-					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA)) { // SAMPLE_QA MUST BE DEALT DIFFERENTLY
-						for (int n = 0; n < reportsList.size(); n++) {
-							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(ReportKey.valueOf(reportsList.get(n)));
-							operationItem.add(reportItem);
-						}
-					} else {
-						// DEAL WITH SAMPLE_HTZYPLOT
-						for (int n = 0; n < reportsList.size(); n++) {
-							Report rp = reportsList.get(n);
-							if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT)) {
-								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(ReportKey.valueOf(reportsList.get(n)));
-								operationItem.add(reportItem);
-							}
-						}
-					}
-					// END TESTING
-
-					matrixItem.add(operationItem);
-
+					addOperationToTree(matrixItem, allOperations, currentOPKey);
 				}
-				studyItem.add(matrixItem);
+
+				GWASpiExplorerNodes.addNode(studyItem, matrixItem, false);
 			}
 
-			// ADD ALL TREE-NODES INTO TREE
-			category.add(studyItem);
+			GWASpiExplorerNodes.addNode(category, studyItem, false);
 		}
-
-		top.add(category);
-		//</editor-fold>
 	}
 
 	//<editor-fold defaultstate="expanded" desc="LISTENER">
 	// TREE SELECTION LISTENER
 	private static final TreeSelectionListener treeListener = new TreeSelectionListener() {
+		@Override
 		public void valueChanged(TreeSelectionEvent evt) {
 
 			JTree tree = (JTree) evt.getSource();
@@ -238,6 +211,7 @@ public class GWASpiExplorerTree {
 
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			if (currentNode == null) {
+				// TODO Maybe, in this case, we should auto-select the root node, or something even more intelligent?
 				tree.setEnabled(true);
 				return;
 			}
@@ -248,29 +222,15 @@ public class GWASpiExplorerTree {
 				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 			}
 
-			// Check where we are in tree and show appropiate content panel
-			Object currentElement = currentNode.getUserObject();
-			NodeElementInfo currentElementInfo = (NodeElementInfo) currentElement;
-
+			// Check where we are in the tree,
+			// and show the appropriate content panel.
+			NodeElementInfo currentElementInfo = (NodeElementInfo) currentNode.getUserObject();
 			TreePath treePath = evt.getPath();
-			if ((treePath != null) && !currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.ROOT)) {
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeUniqueName());
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
-			} else if (currentElement.equals(Text.App.treeStudyManagement)) {
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, Text.App.treeStudyManagement);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
-			} else {
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+
+			try {
+				Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeId());
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
 
 			// Get parent node of currently selected node
@@ -281,9 +241,7 @@ public class GWASpiExplorerTree {
 				parentElementInfo = (NodeElementInfo) parentElement;
 			}
 
-			// Study Management Branch
-			//else if(currentElementInfo.getNodeType().equals(Text.App.treeStudyManagement)) { // XXX
-			else if (currentElementInfo.getNodeUniqueName().equals(Text.App.treeStudyManagement)) {
+			if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY_MANAGEMENT)) {
 				try {
 					// We are in StudyList node
 					gwasPiExplorerPanel.setPnl_Content(new StudyManagementPanel());
@@ -291,35 +249,30 @@ public class GWASpiExplorerTree {
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
-			} // Study Branch
-			//else if(parentNode != null && parentNode.toString().equals(Text.App.treeStudyManagement)){
-			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY)) {
+			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY)) {
 				try {
 					gwasPiExplorerPanel.setPnl_Content(new CurrentStudyPanel((StudyKey) currentElementInfo.getContentKey()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
-					log.warn("StudyID: " + currentElementInfo.getNodeId(), ex);
+					log.warn("Study: " + currentElementInfo.getContentKey(), ex);
 				}
-			} // Sample Info Branch
-			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.SAMPLE_INFO)) {
+			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.SAMPLE_INFO)) {
 				try {
-					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel(new StudyKey(parentElementInfo.getNodeId())));
+					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel((StudyKey) parentElementInfo.getContentKey()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
-			} // Matrix Branch
-			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.MATRIX)) {
+			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.MATRIX)) {
 				try {
 					// We are in MatrixItems node
 					tree.expandPath(treePath);
-					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel(new MatrixKey(new StudyKey(currentElementInfo.getParentNodeId()), currentElementInfo.getNodeId())));
+					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel((MatrixKey) currentElementInfo.getContentKey()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
-			} // Operations Branch
-			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
+			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
 				try {
 					if (parentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
 						// Display SubOperation analysis panel
@@ -350,7 +303,7 @@ public class GWASpiExplorerTree {
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else {
 							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
-							OperationKey operationKey = new OperationKey(parentOPKey.getParentMatrixKey(), currentElementInfo.getNodeId());
+							OperationKey operationKey = (OperationKey) currentElementInfo.getContentKey();
 							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentOPKey.getParentMatrixKey(), operationKey));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
@@ -374,9 +327,7 @@ public class GWASpiExplorerTree {
 							}
 						} else {
 							// Display Operation analysis panel
-							MatrixKey matrixKey = new MatrixKey(currentOP.getStudyKey(), parentElementInfo.getNodeId());
-							OperationKey operationKey = new OperationKey(matrixKey, currentElementInfo.getNodeId());
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(matrixKey, operationKey));
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(currentOPKey.getParentMatrixKey(), currentOPKey));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					}
@@ -441,6 +392,7 @@ public class GWASpiExplorerTree {
 	// PRE-EXPANSION/COLLAPSE LISTENER
 	private static class MyTreeWillExpandListener implements TreeWillExpandListener {
 
+		@Override
 		public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
 			// Get the path that will be expanded
 			TreePath treePath = evt.getPath();
@@ -453,6 +405,7 @@ public class GWASpiExplorerTree {
 			}
 		}
 
+		@Override
 		public void treeWillCollapse(TreeExpansionEvent evt) throws ExpandVetoException {
 			// Get the path that will be expanded
 			TreePath treePath = evt.getPath();
@@ -469,14 +422,20 @@ public class GWASpiExplorerTree {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	private static List<OperationMetadata> getChildrenOperations(List<OperationMetadata> operations, OperationKey parentOpKey) {
+	/**
+	 * Extract operations from the given list that have the given parent as parent.
+	 * @param allOperations
+	 * @param parentOpKey
+	 * @return
+	 */
+	private static List<OperationMetadata> getChildrenOperations(List<OperationMetadata> allOperations, OperationKey parentOpKey) {
 
 		List<OperationMetadata> childrenOperations = new ArrayList<OperationMetadata>();
 
-		for (int i = 0; i < operations.size(); i++) {
-			OperationKey currentParentOPKey = operations.get(i).getParentOperationKey();
-			if (currentParentOPKey.equals(parentOpKey)) {
-				childrenOperations.add(operations.get(i));
+		for (OperationMetadata curOperation : allOperations) {
+			OperationKey currentOpParentOpKey = curOperation.getParentOperationKey();
+			if (currentOpParentOpKey.equals(parentOpKey)) {
+				childrenOperations.add(curOperation);
 			}
 		}
 
