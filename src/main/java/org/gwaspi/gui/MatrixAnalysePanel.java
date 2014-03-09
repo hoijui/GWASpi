@@ -80,8 +80,8 @@ public class MatrixAnalysePanel extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
-	private final MatrixKey parentMatrixKey;
-	private final OperationKey operationKey;
+//	private final MatrixKey parentMatrixKey;
+//	private final OperationKey operationKey;
 	private final OperationMetadata currentOP;
 	private final JButton btn_1_1;
 	private final JButton btn_1_2;
@@ -107,8 +107,8 @@ public class MatrixAnalysePanel extends JPanel {
 
 	public MatrixAnalysePanel(MatrixKey parentMatrixKey, OperationKey operationKey) throws IOException {
 
-		this.parentMatrixKey = parentMatrixKey;
-		this.operationKey = operationKey;
+//		this.parentMatrixKey = parentMatrixKey;
+//		this.operationKey = operationKey;
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 		if (operationKey != null) {
