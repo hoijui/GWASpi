@@ -170,7 +170,7 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_listStudyIdByParentMatrixIdParentOperationId");
+					"operationMetadata_listByStudyIdParentMatrixIdParentOperationId");
 			query.setParameter("studyId", parent.getStudyId());
 			query.setParameter("parentMatrixId", parent.getParentMatrixId());
 			query.setParameter("parentOperationId", parent.getId());
@@ -266,6 +266,7 @@ public class JPAOperationService implements OperationService {
 		return operationsMetadata;
 	}
 
+	@Override
 	public List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException {
 
 		List<OPType> operationTypes = new LinkedList<OPType>();
