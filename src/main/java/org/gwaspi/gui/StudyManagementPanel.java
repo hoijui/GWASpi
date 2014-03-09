@@ -349,8 +349,8 @@ public class StudyManagementPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			if (tbl_StudiesTable.getSelectedRow() != -1) {
 
+			if (tbl_StudiesTable.getSelectedRow() != -1) {
 				int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
 				int[] selectedStudyIds = new int[selectedStudyRows.length];
 				for (int i = 0; i < selectedStudyRows.length; i++) {
@@ -372,20 +372,6 @@ public class StudyManagementPanel extends JPanel {
 									deleteReport = true;
 								}
 								MultiOperations.deleteStudy(studyKey, deleteReport);
-
-	//							try {
-	//								StudyList.deleteStudy(studyKey, deleteReport);
-	//								try {
-	//									GWASpiExplorerPanel.getSingleton().pnl_Content = new StudyManagementPanel();
-	//									GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);
-	//									GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-	//								} catch (IOException ex) {
-	//									log.error(null, ex);
-	//								}
-	//
-	//							} catch (IOException ex) {
-	//								log.error(null, ex);
-	//							}
 							}
 						} else {
 							Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
