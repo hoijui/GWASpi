@@ -17,10 +17,12 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +57,12 @@ public class Threaded_Combi extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			OperationKey combiOpKey = OperationManager.performRawCombiTest(params);
 
-//			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
-//			if (assocOpId != OperationKey.NULL_ID) {
-//				new OutputAssociation(allelic, combi).writeReportsForAssociationData(assocOpId);
-//				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
-//			}
+			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
+			OperationKey testOpKey = combiOpKey;
+			if (testOpKey != null) {
+				new OutputTest(testOpKey, OPType.COMBI_ASSOC_TEST).writeReportsForTestData();
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
+			}
 		}
 	}
 }
