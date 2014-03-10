@@ -18,7 +18,7 @@
 package org.gwaspi.operations.allelicassociationtest;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 
 public interface AllelicAssociationTestsOperationDataSet extends CommonTestOperationDataSet<AllelicAssociationTestOperationEntry> {
@@ -31,9 +31,9 @@ public interface AllelicAssociationTestsOperationDataSet extends CommonTestOpera
 //	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [2]
 //	 * - Association.VAR_OP_MARKERS_OR
 //	 */
-//	void setORs(Collection<Double> markerORs);
+//	void setORs(List<Double> markerORs);
 
 	void addEntry(AllelicAssociationTestOperationEntry entry) throws IOException;
 
-	Collection<Double> getORs(int from, int to) throws IOException;
+	List<Double> getORs(int from, int to) throws IOException;
 }

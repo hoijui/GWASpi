@@ -19,7 +19,6 @@ package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -90,31 +89,31 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	}
 
 	@Override
-	public Collection<Double> getTs(int from, int to) throws IOException {
+	public List<Double> getTs(int from, int to) throws IOException {
 
-		Collection<Double> ts = new ArrayList<Double>(0);
+		List<Double> ts = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
 
 		return ts;
 	}
 
 	@Override
-	public Collection<Double> getPs(int from, int to) throws IOException {
+	public List<Double> getPs(int from, int to) throws IOException {
 
-		Collection<Double> ps = new ArrayList<Double>(0);
+		List<Double> ps = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
 
 		return ps;
 	}
 
 	@Override
-	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
-		Collection<Double> ts = getTs(from, to);
-		Collection<Double> ps = getPs(from, to);
+		List<Double> ts = getTs(from, to);
+		List<Double> ps = getPs(from, to);
 
-		Collection<TrendTestOperationEntry> entries
+		List<TrendTestOperationEntry> entries
 				= new ArrayList<TrendTestOperationEntry>(ts.size());
 		Iterator<Double> tsIt = ts.iterator();
 		Iterator<Double> psIt = ps.iterator();
