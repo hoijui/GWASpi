@@ -54,10 +54,12 @@ public class Threaded_Test extends CommonRunnable {
 		this.gwasParams = gwasParams;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_Test.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(censusOpKey.getParentMatrixKey());
