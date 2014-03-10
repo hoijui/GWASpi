@@ -101,7 +101,7 @@ public class OperationManager {
 		if (testType == OPType.TRENDTEST) {
 			operation = new OP_TrendTests(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
-			operation = new OP_AssociationTests(new AssociationTestOperationParams(excludeOperationKey, censusOpKey, testType));
+			operation = new OP_AssociationTests(new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey));
 		}
 
 		final OperationKey operationKey = performOperation(operation);

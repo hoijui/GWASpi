@@ -17,13 +17,14 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.operations.AbstractOperationParams;
 
 public class MarkersQAOperationParams extends AbstractOperationParams {
 
 	public MarkersQAOperationParams(DataSetKey parent, String name) {
-		super(parent, name);
+		super(OPType.MARKER_QA, parent, name);
 	}
 
 	public MarkersQAOperationParams(DataSetKey parent) {

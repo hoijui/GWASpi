@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.filter;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractOperationParams;
@@ -35,7 +36,7 @@ public class ByHardyWeinbergThresholdFilterOperationParams extends AbstractOpera
 	 * @param hardyWeinbergPValueThreshold
 	 */
 	public ByHardyWeinbergThresholdFilterOperationParams(OperationKey parent, String name, OperationKey hardyWeinbergOperationKey, double hardyWeinbergPValueThreshold) {
-		super(new DataSetKey(parent), name);
+		super(OPType.FILTER_BY_HW_THREASHOLD, new DataSetKey(parent), name);
 
 		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
 		this.hardyWeinbergPValueThreshold = hardyWeinbergPValueThreshold;

@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.trendtest;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractOperationParams;
@@ -25,14 +26,22 @@ public class TrendTestOperationParams extends AbstractOperationParams {
 
 	private final OperationKey markerCensusOpKey;
 
-	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
-		super(new DataSetKey(hardyWeinbergExcludeOpKey), name);
+	public TrendTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
+		super(type, new DataSetKey(hardyWeinbergExcludeOpKey), name);
 
 		this.markerCensusOpKey = markerCensusOpKey;
 	}
 
+	public TrendTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOpKey) {
+		this(type, hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
+	}
+
+	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
+		this(OPType.TRENDTEST, hardyWeinbergExcludeOpKey, name, markerCensusOpKey);
+	}
+
 	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOpKey) {
-		this(hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
+		this(OPType.TRENDTEST, hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
 	}
 
 	public OperationKey getMarkerCensus() {

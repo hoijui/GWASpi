@@ -17,6 +17,7 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
@@ -68,7 +69,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 			Boolean useThresholdCalibration,
 			String name)
 	{
-		super(new DataSetKey(qaMarkersOperationKey), name);
+		super(OPType.COMBI_ASSOC_TEST, new DataSetKey(qaMarkersOperationKey), name);
 
 		this.qaMarkersOperationKey = qaMarkersOperationKey;
 		this.encoder = (encoder == null)
