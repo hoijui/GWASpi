@@ -19,18 +19,26 @@ package org.gwaspi.operations;
 
 import java.util.Collections;
 import java.util.Set;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 
 public abstract class AbstractOperationParams implements OperationParams {
 
+	private final OPType type;
 	private DataSetKey parent;
 	private String name;
 
-	protected AbstractOperationParams(final DataSetKey parent, final String name) {
+	protected AbstractOperationParams(final OPType type, final DataSetKey parent, final String name) {
 
+		this.type = type;
 		this.parent = parent;
 		this.name = (name == null) ? getNameDefault() : name;
+	}
+
+	@Override
+	public OPType getType() {
+		return type;
 	}
 
 	@Override

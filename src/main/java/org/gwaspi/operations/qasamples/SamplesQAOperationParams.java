@@ -17,13 +17,14 @@
 
 package org.gwaspi.operations.qasamples;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.operations.AbstractOperationParams;
 
 public class SamplesQAOperationParams extends AbstractOperationParams {
 
 	public SamplesQAOperationParams(DataSetKey parent, String name) {
-		super(parent, name);
+		super(OPType.SAMPLE_QA, parent, name);
 	}
 
 	public SamplesQAOperationParams(DataSetKey parent) {

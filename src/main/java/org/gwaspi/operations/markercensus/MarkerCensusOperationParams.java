@@ -17,6 +17,7 @@
 package org.gwaspi.operations.markercensus;
 
 import java.io.File;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractOperationParams;
@@ -54,7 +55,7 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 			final double markerMissingRatio,
 			final File phenotypeFile)
 	{
-		super(parent, name);
+		super((phenotypeFile == null) ? OPType.MARKER_CENSUS_BY_AFFECTION : OPType.MARKER_CENSUS_BY_PHENOTYPE, parent, name);
 
 		this.sampleQAOpKey = sampleQAOpKey;
 		this.sampleMissingRatio = sampleMissingRatio;

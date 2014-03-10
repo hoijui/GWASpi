@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.hardyweinberg;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractOperationParams;
@@ -24,7 +25,7 @@ import org.gwaspi.operations.AbstractOperationParams;
 public class HardyWeinbergOperationParams extends AbstractOperationParams {
 
 	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey, String name) {
-		super(new DataSetKey(markerCensusOPKey), name);
+		super(OPType.HARDY_WEINBERG, new DataSetKey(markerCensusOPKey), name);
 	}
 
 	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey) {

@@ -22,25 +22,18 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputTest;
 
+/**
+ * Whether we are to perform allelic or genotypic association tests
+ * is indicated by the 'type' member.
+ */
 public class AssociationTestOperationParams extends TrendTestOperationParams {
 
-	/**
-	 * Whether we are to perform allelic or genotypic association tests.
-	 */
-	private final OPType type;
-
-	public AssociationTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOPKey, OPType type) {
-		super(hardyWeinbergExcludeOpKey, name, markerCensusOPKey);
-
-		this.type = type;
+	public AssociationTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOPKey) {
+		super(type, hardyWeinbergExcludeOpKey, name, markerCensusOPKey);
 	}
 
-	public AssociationTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOPKey, OPType type) {
-		this(hardyWeinbergExcludeOpKey, null, markerCensusOPKey, type);
-	}
-
-	public OPType getType() {
-		return type;
+	public AssociationTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOPKey) {
+		this(type, hardyWeinbergExcludeOpKey, null, markerCensusOPKey);
 	}
 
 	@Override
