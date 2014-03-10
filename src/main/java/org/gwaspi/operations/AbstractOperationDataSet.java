@@ -51,8 +51,8 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private final boolean markersOperationSet;
 //	private MatrixKey rdMatrixKey;
 //	private OperationKey rdOperationKey;
-	private MatrixKey origin;
-	private DataSetKey parent;
+	private final MatrixKey origin;
+	private final DataSetKey parent;
 	private Integer numMarkers;
 	private Integer numSamples;
 	private Integer numChromosomes;
