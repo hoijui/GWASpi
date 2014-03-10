@@ -53,7 +53,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 			throws IOException
 	{
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
-		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(markerOrigIndicesKeys.size()); // HACK
+		trendTestDataSet.setNumMarkers(markerOrigIndicesKeys.size());
 
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();

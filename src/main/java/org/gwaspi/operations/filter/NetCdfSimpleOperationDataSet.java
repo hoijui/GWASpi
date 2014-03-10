@@ -74,9 +74,8 @@ public class NetCdfSimpleOperationDataSet extends AbstractNetCdfOperationDataSet
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		DataSetKey parentDataSetKey = getParent();
 		return new OperationMetadata(
-				parentDataSetKey, // parent data set
+				getParent(), // parent data set
 				"Filtering_by_" + filterDescription, // friendly name
 				"Filters the markers and/or samples by " + filterDescription, // description
 				operationType, // operationType
