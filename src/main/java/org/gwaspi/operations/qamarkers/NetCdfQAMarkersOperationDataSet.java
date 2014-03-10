@@ -268,6 +268,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //		return censusAll;
 //	}
 
+	@Override
 	public List<Integer> getNumAAs(int from, int to) throws IOException {
 
 		List<Integer> numAAs = new ArrayList<Integer>(0);
@@ -276,6 +277,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return numAAs;
 	}
 
+	@Override
 	public List<Integer> getNumAas(int from, int to) throws IOException {
 
 		List<Integer> numAas = new ArrayList<Integer>(0);
@@ -284,6 +286,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return numAas;
 	}
 
+	@Override
 	public List<Integer> getNumaas(int from, int to) throws IOException {
 
 		List<Integer> numaas = new ArrayList<Integer>(0);
@@ -292,6 +295,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return numaas;
 	}
 
+	@Override
 	public List<Integer> getMissingCounts(int from, int to) throws IOException {
 
 		List<Integer> numMissings = new ArrayList<Integer>(0);
@@ -300,6 +304,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return numMissings;
 	}
 
+	@Override
 	public List<int[]> getAlleleCounts(int from, int to) throws IOException {
 
 //		List<Byte> appearingAllele = new ArrayList<Byte>(0);
@@ -317,6 +322,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return appearingAllelesCount;
 	}
 
+	@Override
 	public List<int[]> getGenotypeCounts(int from, int to) throws IOException {
 
 		List<int[]> appearingGenotypesCount = new ArrayList<int[]>(0);
@@ -426,18 +432,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return mismatchStates;
 	}
 
+	@Override
 	public List<Integer> getNumAAs() throws IOException {
 		return getNumAAs(-1, -1);
 	}
 
+	@Override
 	public List<Integer> getNumAas() throws IOException {
 		return getNumAas(-1, -1);
 	}
 
+	@Override
 	public List<Integer> getNumaas() throws IOException {
 		return getNumaas(-1, -1);
 	}
 
+	@Override
 	public List<Integer> getMissingCounts() throws IOException {
 		return getMissingCounts(-1, -1);
 	}
@@ -460,10 +470,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return missingRatios;
 	}
 
+	@Override
 	public List<int[]> getAlleleCounts() throws IOException {
 		return getAlleleCounts(-1, -1);
 	}
 
+	@Override
 	public List<int[]> getGenotypeCounts() throws IOException {
 		return getGenotypeCounts(-1, -1);
 	}
