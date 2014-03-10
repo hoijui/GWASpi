@@ -84,7 +84,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 
 	private String hardyWeinbergName;
-	private OperationKey markerCensusOperationKey;
 	private final Map<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffers;
 	private ArrayDouble.D1 netCdfPs;
 	private ArrayDouble.D1 netCdfObsHetzys;
@@ -94,7 +93,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		super(true, origin, parent, operationKey);
 
 		this.hardyWeinbergName = null;
-		this.markerCensusOperationKey = null;
 		this.writeBuffers = new EnumMap<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>>(HardyWeinbergOperationEntry.Category.class);
 		for (HardyWeinbergOperationEntry.Category category : HardyWeinbergOperationEntry.Category.values()) {
 			writeBuffers.put(category, new EntryBuffer<HardyWeinbergOperationEntry>());
@@ -150,11 +148,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	@Override
 	public void setHardyWeinbergName(String hardyWeinbergName) {
 		this.hardyWeinbergName = hardyWeinbergName;
-	}
-
-	@Override
-	public void setMarkerCensusOperationKey(OperationKey markerCensusOperationKey) {
-		this.markerCensusOperationKey = markerCensusOperationKey;
 	}
 
 	@Override
