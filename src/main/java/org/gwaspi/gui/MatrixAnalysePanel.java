@@ -68,6 +68,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.CombiTestParamsGUI;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -356,6 +357,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentMatrixKey);
 
@@ -367,11 +369,13 @@ public class MatrixAnalysePanel extends JPanel {
 						&& affectionStates.contains(Affection.AFFECTED))
 				{
 					List<OPType> necessaryOPs = new ArrayList<OPType>();
-					necessaryOPs.add(OPType.SAMPLE_QA);
 					necessaryOPs.add(OPType.MARKER_QA);
-					necessaryOPs.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
-					necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
-					necessaryOPs.add(OPType.HARDY_WEINBERG);
+					if (testType != OPType.COMBI_ASSOC_TEST) {
+						necessaryOPs.add(OPType.SAMPLE_QA);
+						necessaryOPs.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+						necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+						necessaryOPs.add(OPType.HARDY_WEINBERG);
+					}
 					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
 
 					// WHAT TO DO IF OPs ARE MISSING
@@ -381,7 +385,7 @@ public class MatrixAnalysePanel extends JPanel {
 								|| missingOPs.contains(OPType.MARKER_QA))
 						{
 							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrixKey);
+//							MultiOperations.doMatrixQAs(parentMatrixKey);
 							performTest = false;
 						} else if (missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
 								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE))
@@ -393,7 +397,7 @@ public class MatrixAnalysePanel extends JPanel {
 								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE)))
 						{
 							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(censusOPKey);
+//							MultiOperations.doHardyWeinberg(censusOPKey);
 							performTest = false;
 						}
 					}
@@ -405,28 +409,34 @@ public class MatrixAnalysePanel extends JPanel {
 							reProceed = false;
 						}
 
+						List<OperationKey> qaMarkersOffspringKeys = null;
 						OperationKey hwOPKey = null;
-						// GET HW OPERATION
-						List<OperationMetadata> hwOperations = OperationsList.getChildrenOperationsMetadata(censusOPKey, OPType.HARDY_WEINBERG);
-						for (OperationMetadata currentHWop : hwOperations) {
-							// REQUEST WHICH HW TO USE
-							// FIXME this looks strange.. just use the last one?
-							if (currentHWop != null) {
-								hwOPKey = OperationKey.valueOf(currentHWop);
-							} else {
-								reProceed = false;
+						if (testType == OPType.COMBI_ASSOC_TEST) {
+							List<OperationMetadata> qaMarkersOffspring
+									= OperationsList.getOffspringOperationsMetadata(parentMatrixKey, OPType.MARKER_QA);
+							qaMarkersOffspringKeys = new ArrayList<OperationKey>(qaMarkersOffspring.size());
+							for (OperationMetadata qaMarkersOp : qaMarkersOffspring) {
+								qaMarkersOffspringKeys.add(OperationKey.valueOf(qaMarkersOp));
+							}
+						} else {
+							// GET HW OPERATION
+							List<OperationMetadata> hwOperations = OperationsList.getChildrenOperationsMetadata(censusOPKey, OPType.HARDY_WEINBERG);
+							for (OperationMetadata currentHWop : hwOperations) {
+								// REQUEST WHICH HW TO USE
+								// FIXME this looks strange.. just use the last one?
+								if (currentHWop != null) {
+									hwOPKey = OperationKey.valueOf(currentHWop);
+								} else {
+									reProceed = false;
+								}
 							}
 						}
 
 						CombiTestOperationParams combiTestParams = null;
 						if (reProceed) {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
-								combiTestParams = new CombiTestOperationParams(
-//										parentMatrixKey,
-										censusOPKey//,
-//										hwOPKey
-										);
-								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams, null); // HACK FIXME for COMBI
+								combiTestParams = new CombiTestOperationParams(qaMarkersOffspringKeys.get(0));
+								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams, qaMarkersOffspringKeys); // HACK FIXME for COMBI
 								if (combiTestParams != null) {
 									gwasParams.setProceed(true);
 								}
@@ -439,12 +449,11 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 
-							if (reProceed && censusOPKey != null && hwOPKey != null) {
-
+							if (reProceed) {
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (testType == OPType.COMBI_ASSOC_TEST) {
 									MultiOperations.doCombiTest(combiTestParams);
-								} else {
+								} else if (censusOPKey != null && hwOPKey != null) {
 									MultiOperations.doTest(
 											censusOPKey,
 											hwOPKey,
@@ -478,11 +487,30 @@ public class MatrixAnalysePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				List<OPType> necessaryOPs = new ArrayList<OPType>();
 				necessaryOPs.add(OPType.SAMPLE_QA);
 				necessaryOPs.add(OPType.MARKER_QA);
 				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
+
+				final DataSetKey parentKey = new DataSetKey(parentMatrixKey);
+
+				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(parentKey, OPType.MARKER_QA);
+				if (qaMarkersOps.isEmpty()) {
+					Dialogs.showWarningDialogue("You must perform a Markers Quality Assurance before running a Marker Census operation!");
+					return;
+				}
+				final OperationKey qaMarkersOpKey = OperationKey.valueOf(qaMarkersOps.get(0));
+
+				List<OperationMetadata> qaSamplesOps = OperationsList.getChildrenOperationsMetadata(parentKey, OPType.SAMPLE_QA);
+				if (qaMarkersOps.isEmpty()) {
+					Dialogs.showWarningDialogue("You must perform a Samples Quality Assurance before running a Marker Census operation!");
+					return;
+				}
+				final OperationKey qaSamplesOpKey = OperationKey.valueOf(qaSamplesOps.get(0));
+
+				gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(parentKey, qaSamplesOpKey, qaMarkersOpKey));
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				if (choice == JOptionPane.NO_OPTION) {
@@ -490,13 +518,13 @@ public class MatrixAnalysePanel extends JPanel {
 					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
-						gwasParams = new MoreInfoForGtFreq().showMoreInfo();
+						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 						if (choice != JOptionPane.CANCEL_OPTION) {
 							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams = new MoreInfoForGtFreq().showMoreInfo();
+					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 					if (choice != JOptionPane.CANCEL_OPTION) {
 						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
@@ -521,7 +549,6 @@ public class MatrixAnalysePanel extends JPanel {
 
 				// <editor-fold defaultstate="expanded" desc="QA BLOCK">
 				if (gwasParams.isProceed() && missingOPs.size() > 0) {
-					gwasParams.setProceed(false);
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(parentMatrixKey);

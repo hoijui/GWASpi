@@ -57,16 +57,14 @@ public class MoreInfoForGtFreq extends JFrame {
 	private JTextField txtF_SMS;
 	private JTextField txtF_MHZ;
 	private JTextField txtF_SHZ;
-	private JFrame myFrame = new JFrame("GridBagLayout Test");
 	private JDialog dialog;
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
-	public GWASinOneGOParams showMoreInfo() {
+	public GWASinOneGOParams showMoreInfo(final GWASinOneGOParams gwasParams) {
 
 		gwasParams.setProceed(false);
 		// Create a modal dialog
-		dialog = new JDialog(myFrame, "Genotype freq. info", true);
+		dialog = new JDialog(new JFrame("GridBagLayout Test"), "Genotype freq. info", true);
 
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension screenSize = tk.getScreenSize();
@@ -79,16 +77,16 @@ public class MoreInfoForGtFreq extends JFrame {
 		myPane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		setConstraints(c, 0, 0, GridBagConstraints.CENTER);
-		myPane.add(getQuestionsPanel(), c);
+		myPane.add(createQuestionsPanel(), c);
 		setConstraints(c, 0, 1, GridBagConstraints.CENTER);
-		myPane.add(getFooterPanel(), c);
+		myPane.add(createFooterPanel(gwasParams), c);
 		dialog.pack();
 		dialog.setVisible(true);
 
 		return gwasParams;
 	}
 
-	private JPanel getQuestionsPanel() {
+	private JPanel createQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -182,7 +180,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return pnl_Questions;
 	}
 
-	private JPanel getFooterPanel() {
+	private JPanel createFooterPanel(final GWASinOneGOParams gwasParams) {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -192,7 +190,7 @@ public class MoreInfoForGtFreq extends JFrame {
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.GWASinOneGo));
 
-		btn_Go.setAction(new GoAction());
+		btn_Go.setAction(new GoAction(gwasParams));
 
 		btn_Cancel.setAction(new CancelAction());
 
@@ -215,8 +213,11 @@ public class MoreInfoForGtFreq extends JFrame {
 
 	private class GoAction extends AbstractAction {
 
-		GoAction() {
+		private final GWASinOneGOParams gwasParams;
 
+		GoAction(final GWASinOneGOParams gwasParams) {
+
+			this.gwasParams = gwasParams;
 			putValue(NAME, Text.All.go);
 		}
 
