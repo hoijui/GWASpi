@@ -36,6 +36,9 @@ import org.gwaspi.constants.cGlobal;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.reports.GenericReportGenerator;
@@ -306,8 +309,9 @@ public class Config {
 	}
 
 	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+
 		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
+		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
 
 		String lastMnhttThreshold = Config.getConfigValue(
 					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,

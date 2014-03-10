@@ -81,21 +81,10 @@ public class GWASpiPanel extends JPanel {
 	}
 
 	private void refreshContentPanel() {
+
 		try {
-			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
-			tree.setSelectionPath(null);
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tree.getRowCount(); i++) {
-					TreePath tp = tree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tree.getPathForRow(0);
-				tree.setSelectionPath(tp);
-			}
+			Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
+			GWASpiExplorerPanel.getSingleton().selectNode(lastSelectedNodeId);
 		} catch (IOException ex) {
 			log.warn(null, ex);
 		}
@@ -118,7 +107,7 @@ public class GWASpiPanel extends JPanel {
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
-		String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
+		Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
 
 		// Find out what paths are expanded
 		List<TreePath> expandedNodes = null;
@@ -148,18 +137,7 @@ public class GWASpiPanel extends JPanel {
 				}
 			}
 
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tmpTree.getRowCount(); i++) {
-					TreePath tp = tmpTree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tmpTree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tmpTree.getPathForRow(0);
-				tmpTree.setSelectionPath(tp);
-			}
+			GWASpiExplorerPanel.getSingleton().selectNode(lastSelectedNodeId);
 		} else { // HAPPENS AT INIT OF APPLICATION
 			int row = 0;
 			while (row < tmpTree.getRowCount()) {
@@ -167,18 +145,7 @@ public class GWASpiPanel extends JPanel {
 				row++;
 			}
 
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tmpTree.getRowCount(); i++) {
-					TreePath tp = tmpTree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tmpTree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tmpTree.getPathForRow(0);
-				tmpTree.setSelectionPath(tp);
-			}
+			GWASpiExplorerPanel.getSingleton().selectNode(lastSelectedNodeId);
 
 			GWASpiExplorerPanel.getSingleton().setAllNodesCollapsable();
 
