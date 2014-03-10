@@ -39,6 +39,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.GWASpiExplorerTree;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.slf4j.Logger;
@@ -191,22 +192,22 @@ public class GWASpiExplorerPanel extends JPanel {
 	public void refreshContentPanel() {
 
 		try {
-			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
-			tree.setSelectionPath(null);
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tree.getRowCount(); i++) {
-					TreePath tp = tree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tree.getPathForRow(0);
-				tree.setSelectionPath(tp);
-			}
+			Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
+			selectNode(lastSelectedNodeId);
 		} catch (IOException ex) {
 			log.warn(null, ex);
+		}
+	}
+
+	void selectNode(final int nodeId) {
+
+		tree.setSelectionPath(null);
+		if (nodeId == 0) {
+			TreePath tp = tree.getPathForRow(0);
+			tree.setSelectionPath(tp);
+		} else {
+			DefaultMutableTreeNode lastSelectedNode = GWASpiExplorerNodes.findTreeNode(nodeId);
+			tree.setSelectionPath(new TreePath(lastSelectedNode.getPath()));
 		}
 	}
 
@@ -227,7 +228,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
-		String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
+		Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
 
 		// Find out what paths are expanded
 		List<TreePath> expandedNodes = null;
@@ -257,18 +258,7 @@ public class GWASpiExplorerPanel extends JPanel {
 				}
 			}
 
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tmpTree.getRowCount(); i++) {
-					TreePath tp = tmpTree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tmpTree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tmpTree.getPathForRow(0);
-				tmpTree.setSelectionPath(tp);
-			}
+			selectNode(lastSelectedNodeId);
 		} else { // HAPPENS AT INIT OF APPLICATION
 			int row = 0;
 			while (row < tmpTree.getRowCount()) {
@@ -276,18 +266,7 @@ public class GWASpiExplorerPanel extends JPanel {
 				row++;
 			}
 
-			if (!lastSelectedNode.equals("0")) {
-				for (int i = 0; i < tmpTree.getRowCount(); i++) {
-					TreePath tp = tmpTree.getPathForRow(i);
-					Object tmpTP = tp.getLastPathComponent();
-					if (lastSelectedNode.equals(tmpTP.toString())) {
-						tmpTree.setSelectionPath(tp);
-					}
-				}
-			} else {
-				TreePath tp = tmpTree.getPathForRow(0);
-				tmpTree.setSelectionPath(tp);
-			}
+			selectNode(lastSelectedNodeId);
 
 			setAllNodesCollapsable();
 
