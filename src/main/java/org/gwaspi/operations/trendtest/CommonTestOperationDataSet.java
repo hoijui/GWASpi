@@ -18,11 +18,11 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface CommonTestOperationDataSet<ET extends TrendTestOperationEntry> extends OperationDataSet<ET> {
 
-	Collection<Double> getTs(int from, int to) throws IOException;
-	Collection<Double> getPs(int from, int to) throws IOException;
+	List<Double> getTs(int from, int to) throws IOException;
+	List<Double> getPs(int from, int to) throws IOException;
 }

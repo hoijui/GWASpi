@@ -18,7 +18,7 @@
 package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 
 public interface GenotypicAssociationTestsOperationDataSet extends CommonTestOperationDataSet<GenotypicAssociationTestOperationEntry> {
@@ -30,10 +30,10 @@ public interface GenotypicAssociationTestsOperationDataSet extends CommonTestOpe
 //	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [3]
 //	 * - Association.VAR_OP_MARKERS_OR2
 //	 */
-//	void setOR2s(Collection<Double> markerOR2s);
+//	void setOR2s(List<Double> markerOR2s);
 
 	void addEntry(GenotypicAssociationTestOperationEntry entry) throws IOException;
 
-	Collection<Double> getORs(int from, int to) throws IOException;
-	Collection<Double> getOR2s(int from, int to) throws IOException;
+	List<Double> getORs(int from, int to) throws IOException;
+	List<Double> getOR2s(int from, int to) throws IOException;
 }

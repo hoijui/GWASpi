@@ -19,7 +19,6 @@ package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -101,51 +100,51 @@ public class NetCdfGenotypicAssociationTestsOperationDataSet extends AbstractNet
 	}
 
 	@Override
-	public Collection<Double> getTs(int from, int to) throws IOException {
+	public List<Double> getTs(int from, int to) throws IOException {
 
-		Collection<Double> ts = new ArrayList<Double>(0);
+		List<Double> ts = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
 
 		return ts;
 	}
 
 	@Override
-	public Collection<Double> getPs(int from, int to) throws IOException {
+	public List<Double> getPs(int from, int to) throws IOException {
 
-		Collection<Double> ps = new ArrayList<Double>(0);
+		List<Double> ps = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
 
 		return ps;
 	}
 
 	@Override
-	public Collection<Double> getORs(int from, int to) throws IOException {
+	public List<Double> getORs(int from, int to) throws IOException {
 
-		Collection<Double> ors = new ArrayList<Double>(0);
+		List<Double> ors = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_OR, from, to, ors, null);
 
 		return ors;
 	}
 
 	@Override
-	public Collection<Double> getOR2s(int from, int to) throws IOException {
+	public List<Double> getOR2s(int from, int to) throws IOException {
 
-		Collection<Double> or2s = new ArrayList<Double>(0);
+		List<Double> or2s = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_OR2, from, to, or2s, null);
 
 		return or2s;
 	}
 
 	@Override
-	public Collection<GenotypicAssociationTestOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<GenotypicAssociationTestOperationEntry> getEntries(int from, int to) throws IOException {
 
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
-		Collection<Double> ts = getTs(from, to);
-		Collection<Double> ps = getPs(from, to);
-		Collection<Double> ors = getORs(from, to);
-		Collection<Double> or2s = getORs(from, to);
+		List<Double> ts = getTs(from, to);
+		List<Double> ps = getPs(from, to);
+		List<Double> ors = getORs(from, to);
+		List<Double> or2s = getORs(from, to);
 
-		Collection<GenotypicAssociationTestOperationEntry> entries
+		List<GenotypicAssociationTestOperationEntry> entries
 				= new ArrayList<GenotypicAssociationTestOperationEntry>(ts.size());
 		Iterator<Double> tsIt = ts.iterator();
 		Iterator<Double> psIt = ps.iterator();
