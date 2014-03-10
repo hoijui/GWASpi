@@ -17,12 +17,15 @@
 
 package org.gwaspi.model;
 
+import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -33,7 +36,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.CurrentMatrixPanel;
@@ -45,7 +47,10 @@ import org.gwaspi.gui.MatrixMarkerQAPanel;
 import org.gwaspi.gui.StudyManagementPanel;
 import org.gwaspi.gui.reports.ChartDefaultDisplay;
 import org.gwaspi.gui.reports.ManhattanChartDisplay;
+import org.gwaspi.gui.reports.Report_AnalysisAllelicTestImpl;
+import org.gwaspi.gui.reports.Report_AnalysisGenotypicTestImpl;
 import org.gwaspi.gui.reports.Report_AnalysisPanel;
+import org.gwaspi.gui.reports.Report_AnalysisTrendTestImpl;
 import org.gwaspi.gui.reports.Report_HardyWeinbergSummary;
 import org.gwaspi.gui.reports.Report_QAMarkersSummary;
 import org.gwaspi.gui.reports.Report_QASamplesSummary;
@@ -241,142 +246,130 @@ public class GWASpiExplorerTree {
 				parentElementInfo = (NodeElementInfo) parentElement;
 			}
 
-			if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY_MANAGEMENT)) {
-				try {
-					// We are in StudyList node
-					gwasPiExplorerPanel.setPnl_Content(new StudyManagementPanel());
-					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-				} catch (IOException ex) {
-					log.warn(null, ex);
-				}
-			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.STUDY)) {
-				try {
-					gwasPiExplorerPanel.setPnl_Content(new CurrentStudyPanel((StudyKey) currentElementInfo.getContentKey()));
-					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-				} catch (IOException ex) {
-					log.warn("Study: " + currentElementInfo.getContentKey(), ex);
-				}
-			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.SAMPLE_INFO)) {
-				try {
-					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel((StudyKey) parentElementInfo.getContentKey()));
-					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-				} catch (IOException ex) {
-					log.warn(null, ex);
-				}
-			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.MATRIX)) {
-				try {
-					// We are in MatrixItems node
-					tree.expandPath(treePath);
-					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel((MatrixKey) currentElementInfo.getContentKey()));
-					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-				} catch (IOException ex) {
-					log.warn(null, ex);
-				}
-			} else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
-				try {
-					if (parentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.OPERATION)) {
-						// Display SubOperation analysis panel
+			try {
+				JPanel newContent = null;
+				switch (currentElementInfo.getNodeType()) {
+					case STUDY_MANAGEMENT: {
+						newContent = new StudyManagementPanel();
+					} break;
+					case STUDY: {
+						newContent = new CurrentStudyPanel((StudyKey) currentElementInfo.getContentKey());
+					} break;
+					case SAMPLE_INFO: {
+						newContent = new Report_SampleInfoPanel((StudyKey) parentElementInfo.getContentKey());
+					} break;
+					case MATRIX: {
 						tree.expandPath(treePath);
-						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
-						OperationKey parentOPKey = (OperationKey) parentElementInfo.getContentKey();
-						OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
-						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG)) {
-							// Display HW Report
-							List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
-							if (reportsList.size() > 0) {
-								Report hwReport = reportsList.get(0);
-								String reportFile = hwReport.getFileName();
-								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getParentOperationKey(), reportFile));
-								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-							}
-						} else if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
-							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
-							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
-							// Display Trend Test Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else {
-							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
-							OperationKey operationKey = (OperationKey) currentElementInfo.getContentKey();
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentOPKey.getParentMatrixKey(), operationKey));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						}
-					} else { // FIXME unreachable!
-						// Display Operation
+						newContent = new CurrentMatrixPanel((MatrixKey) currentElementInfo.getContentKey());
+					} break;
+					case OPERATION: {
 						tree.expandPath(treePath);
-						OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
-						OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
-						if (currentOP.getOperationType().equals(OPType.MARKER_QA)) {
-							// Display MarkerQA panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(currentOP.getStudyKey(), currentOP.getParentMatrixId()), currentOP.getId()));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA)) {
-							// Display SampleQA Report
-							List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
-							if (reportsList.size() > 0) {
-								Report sampleQAReport = reportsList.get(0);
-								String reportFile = sampleQAReport.getFileName();
-								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getParentOperationKey(), reportFile));
-								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+						final OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
+						final OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
+						switch (currentOP.getType()) {
+							case HARDY_WEINBERG: {
+								// Display HW Report
+								List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
+								if (reportsList.size() > 0) {
+									Report hwReport = reportsList.get(0);
+									String reportFile = hwReport.getFileName();
+									newContent = new Report_HardyWeinbergSummary(hwReport.getParentOperationKey(), reportFile);
+								}
+							} break;
+							case ALLELICTEST: {
+								// Display Association Report
+								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
+							} break;
+							case GENOTYPICTEST: {
+								// Display Association Report
+								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
+							} break;
+							case TRENDTEST: {
+								// Display Trend Test Report
+								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
+							} break;
+							case MARKER_QA: {
+								// Display MarkerQA panel
+								newContent = new MatrixMarkerQAPanel(new MatrixKey(currentOP.getStudyKey(), currentOP.getParentMatrixId()), currentOP.getId());
+							} break;
+							case SAMPLE_QA: {
+								// Display SampleQA Report
+//								final List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
+//								if (reportsList.isEmpty()) {
+//									newContent = newErrorContent("No reports found for " + currentOPKey);
+//								} else {
+//									final Report sampleQAReport = reportsList.get(0);
+//									final String reportFile = sampleQAReport.getFileName();
+//									newContent = new Report_QASamplesSummary(sampleQAReport.getParentOperationKey(), reportFile);
+//								}
+								JPanel emptyPanel =  new JPanel();
+								emptyPanel.setLayout(new FlowLayout());
+								emptyPanel.add(new JLabel("Please select the report instead")); // HACK We do this, because we do not want to show the above (Report_QASamplesSummary), because it is already shown when selecting that report in the tree directly
+								newContent = emptyPanel;
+							} break;
+							default: {
+								if (parentElementInfo.getNodeType() == NodeElementInfo.NodeType.OPERATION) {
+									final OperationKey parentOPKey = (OperationKey) parentElementInfo.getContentKey();
+									newContent = new MatrixAnalysePanel(parentOPKey.getParentMatrixKey(), currentOPKey);
+								} else {
+									newContent = new MatrixAnalysePanel(currentOPKey.getParentMatrixKey(), currentOPKey);
+								}
 							}
-						} else {
-							// Display Operation analysis panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(currentOPKey.getParentMatrixKey(), currentOPKey));
-							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
+					} break;
+					case REPORT: {
+						// Display report summary
+						tree.expandPath(treePath);
+						final Report rp = ReportsList.getReport((ReportKey) currentElementInfo.getContentKey());
+						final String reportFile = rp.getFileName();
+						switch (rp.getReportType()) {
+							case SAMPLE_HTZYPLOT: {
+								newContent = new SampleQAHetzygPlotZoom(rp.getParentOperationKey());
+							} break;
+							case ALLELICTEST: {
+								newContent = new Report_AnalysisAllelicTestImpl(rp.getParentOperationKey(), reportFile, null);
+							} break;
+							case GENOTYPICTEST: {
+								newContent = new Report_AnalysisGenotypicTestImpl(rp.getParentOperationKey(), reportFile, null);
+							} break;
+							case TRENDTEST: {
+								newContent = new Report_AnalysisTrendTestImpl(rp.getParentOperationKey(), reportFile, null);
+							} break;
+							case QQPLOT: {
+								newContent = new ChartDefaultDisplay(reportFile, rp.getParentOperationKey());
+							} break;
+							case MANHATTANPLOT: {
+								newContent = new ManhattanChartDisplay(reportFile, rp.getParentOperationKey());
+							} break;
+							case MARKER_QA: {
+								newContent = new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationKey());
+							} break;
+							case SAMPLE_QA: {
+								newContent = new Report_QASamplesSummary(rp.getParentOperationKey(), reportFile);
+							} break;
+							case HARDY_WEINBERG: {
+								newContent = new Report_HardyWeinbergSummary(rp.getParentOperationKey(), reportFile);
+							} break;
+							default: {
+								log.warn("Not directly supported report type: " + rp.getReportType().name() + " - showing generic report info");
+								newContent = new Report_AnalysisPanel(rp.getParentMatrixKey(), rp.getParentOperationKey(), null);
+//								newContent = newErrorContent("Unsupported report type: " + rp.getReportType().name());
+							}
+						}
+					} break;
+					default: {
+						newContent = new IntroPanel();
 					}
-				} catch (IOException ex) {
-					log.warn(null, ex);
 				}
-			} // Reports Branch
-			else if (currentElementInfo.getNodeType().equals(NodeElementInfo.NodeType.REPORT)) {
-				try {
-					// Display report summary
-					tree.expandPath(treePath);
-					Report rp = ReportsList.getReport((ReportKey) currentElementInfo.getContentKey());
-					String reportFile = rp.getFileName();
-					if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationKey()));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-					if (rp.getReportType().equals(OPType.ALLELICTEST)) {
-						//gwasPiExplorerPanel.pnl_Content = new Report_AssociationSummary(rp.getId(), reportFile, rp.getParentOperationId(), null);
-						gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(rp.getParentMatrixKey(), rp.getParentOperationKey(), null));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-					if (rp.getReportType().equals(OPType.QQPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new ChartDefaultDisplay(reportFile, rp.getParentOperationKey()));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-					if (rp.getReportType().equals(OPType.MANHATTANPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new ManhattanChartDisplay(reportFile, rp.getParentOperationKey()));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-					if (rp.getReportType().equals(OPType.MARKER_QA)) {
-						gwasPiExplorerPanel.setPnl_Content(new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationKey()));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-//					if(rp.getReportType().equals(OPType.SAMPLE_QA.toString())){
-//						gwasPiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getId(), reportFile, rp.getParentOperationId());
-//						gwasPiExplorerPanel.scrl_Content.setViewportView(gwasPiExplorerPanel.pnl_Content);
-//					}
-					if (rp.getReportType().equals(OPType.HARDY_WEINBERG)) {
-						gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(rp.getParentOperationKey(), reportFile));
-						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-					}
-				} catch (IOException ex) {
-					log.warn(null, ex);
+				if (newContent == null) {
+					newContent = newErrorContent("No idea what I should show!");
 				}
-			} else {
-				gwasPiExplorerPanel.setPnl_Content(new IntroPanel());
+				gwasPiExplorerPanel.setPnl_Content(newContent);
 				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+			} catch (IOException ex) {
+				log.warn(null, ex);
 			}
+			gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 
 			// THIS IS TO AVOID RANDOM MONKEY CLICKER BUG
 			try {
@@ -388,6 +381,17 @@ public class GWASpiExplorerTree {
 			tree.setEnabled(true);
 		}
 	};
+
+	private static JPanel newErrorContent(String errorMessage) {
+
+		JPanel errorPanel =  new JPanel();
+		errorPanel.setLayout(new FlowLayout());
+		errorPanel.add(new JLabel(errorMessage));
+
+		log.error(errorMessage);
+
+		return errorPanel;
+	}
 
 	// PRE-EXPANSION/COLLAPSE LISTENER
 	private static class MyTreeWillExpandListener implements TreeWillExpandListener {
