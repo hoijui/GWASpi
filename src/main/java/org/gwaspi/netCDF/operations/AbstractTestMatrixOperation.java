@@ -66,7 +66,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		int resultOpId = OperationKey.NULL_ID;
 
 		SimpleOperationDataSet filteredOperationDataSet
-				= (SimpleOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerCensus());
+				= (SimpleOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getParent().getOperationParent());
 
 		// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 		if (!filteredOperationDataSet.isDataLeft()) {
