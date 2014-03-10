@@ -71,7 +71,6 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 		dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
 
 		dataSet.setHardyWeinbergName(getParams().getName());
-		dataSet.setMarkerCensusOperationKey(markerCensusOPKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
 		Collection<MarkerCensusOperationEntry> markersCensus = markerCensusOperationDataSet.getEntries();

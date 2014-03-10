@@ -52,8 +52,6 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 
 	void setHardyWeinbergName(String hwName);
 
-	void setMarkerCensusOperationKey(OperationKey markerCensusOPKey);
-
 	List<HardyWeinbergOperationEntry> getEntriesControl() throws IOException;
 	List<HardyWeinbergOperationEntry> getEntriesAlternate() throws IOException;
 
