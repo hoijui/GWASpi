@@ -110,7 +110,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
 
 		return new OperationMetadata(
-				new DataSetKey(markerCensusOPKey), // parent data set
+				getParent(), // parent data set
 				testName, // friendly name
 				testName + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + markerCensusOP.getDescription()

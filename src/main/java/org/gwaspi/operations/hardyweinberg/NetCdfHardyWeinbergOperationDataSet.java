@@ -135,7 +135,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		return new OperationMetadata(
-				new DataSetKey(markerCensusOperationKey), // parent data set
+				getParent(), // parent data set
 				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + getNumMarkers() + ""
