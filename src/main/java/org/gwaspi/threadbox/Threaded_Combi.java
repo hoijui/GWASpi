@@ -38,10 +38,12 @@ public class Threaded_Combi extends CommonRunnable {
 		this.params = params;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_Combi.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 //		List<Operation> operations = OperationsList.getOperationsList(params.getMatrixKey().getId());
