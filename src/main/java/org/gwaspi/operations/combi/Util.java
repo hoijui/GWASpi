@@ -278,8 +278,7 @@ public class Util {
 				String[] strValues = line.split("[ ]+");
 				if (transposed) {
 					if (matrix.isEmpty()) {
-						// initialize the rows
-						for (int svi = 0; svi < strValues.length; svi++) {
+						for (String strValue : strValues) {
 							matrix.add(new ArrayList<Double>());
 						}
 					}
@@ -288,8 +287,8 @@ public class Util {
 					}
 				} else {
 					List<Double> row = new ArrayList<Double>(strValues.length);
-					for (int svi = 0; svi < strValues.length; svi++) {
-						row.add(Double.parseDouble(strValues[svi]));
+					for (String strValue : strValues) {
+						row.add(Double.parseDouble(strValue));
 					}
 					matrix.add(row);
 				}
