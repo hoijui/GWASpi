@@ -61,7 +61,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
-	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 
 	public static CombiTestOperationSpy spy = null;
 
@@ -167,9 +166,9 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		LOG.info("Combi Association Test: start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder(), getParams().getWeightsFilterWidth());
+		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder());
 
-		// TODO sort the weights (should already be absolute?)
+		// TODO sort the weights (should already be absolute? .. hopefully not!)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
 
 		dataSet.setWeights(weights);
@@ -269,8 +268,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
-			GenotypeEncoder genotypeEncoder,
-			final int weightsFilterWidth)
+			GenotypeEncoder genotypeEncoder)
 			throws IOException
 	{
 		final int dSamples = markerKeys.size();
@@ -314,7 +312,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				encodedAffectionStates.values(),
 				libSvmParameters);
 
-		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, weightsFilterWidth);
+		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder);
 	}
 
 	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
@@ -612,26 +610,10 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 		return nonZeroAlphas;
 	}
 
-	/**
-	 * Apply a moving average filter (p-norm filter).
-	 * Basically "smoothes out the landscape".
-	 * @param weights
-	 * @param filterWidth
-	 * @return filtered weights
-	 */
-	private static List<Double> applyMovingAverageFilter(final List<Double> weights, final int filterWidth) {
-
-		List<Double> weightsFiltered = new ArrayList(weights);
-		Util.pNormFilter(weightsFiltered, filterWidth, WEIGHTS_MOVING_AVERAGE_FILTER_NORM);
-
-		return weightsFiltered;
-	}
-
 	private static List<Double> runSVM(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
-			GenotypeEncoder genotypeEncoder,
-			final int weightsFilterWidth)
+			GenotypeEncoder genotypeEncoder)
 	{
 		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
@@ -675,14 +657,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			spy.decodedWeightsCalculated(weights);
 		}
 
-		LOG.info("Combi Association Test: apply moving average filter (p-norm filter) on the weights");
-		List<Double> weightsFiltered = applyMovingAverageFilter(weights, weightsFilterWidth);
-
-		if (spy != null) {
-			spy.smoothedWeightsCalculated(weightsFiltered);
-		}
-		LOG.debug("Combi Association Test: filtered weights: " + weightsFiltered);
-
-		return weightsFiltered;
+		return weights;
 	}
 }
