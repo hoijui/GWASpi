@@ -358,7 +358,8 @@ public class cNetCDF {
 			MANHATTANPLOT,
 			QQPLOT,
 			FILTER_BY_VALID_AFFECTION,
-			FILTER_BY_HW_THREASHOLD;
+			FILTER_BY_HW_THREASHOLD,
+			FILTER_BY_WEIGHTS;
 
 			public static OPType compareTo(String str) {
 				try {
