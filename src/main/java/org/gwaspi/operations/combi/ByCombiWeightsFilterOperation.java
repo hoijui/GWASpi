@@ -24,16 +24,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCombiWeightsFilterOperationParams> {
+
+	private static final Logger LOG
+			= LoggerFactory.getLogger(ByCombiWeightsFilterOperation.class);
+
+	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 
 	public ByCombiWeightsFilterOperation(ByCombiWeightsFilterOperationParams params) {
 		super(params);
@@ -56,12 +58,26 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 				= (CombiTestOperationDataSet) getParentDataSetSource();
 
 		Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys = combiTestOperationDataSet.getMarkersKeysSource().getIndicesMap();
-		final List<Double> combiWeights = combiTestOperationDataSet.getWeights();
-		final List<Double> combiWeightsSorted = new ArrayList<Double>(combiWeights);
+		final List<Double> rawWeights = combiTestOperationDataSet.getWeights();
+
+		LOG.info("apply moving average filter (p-norm filter) on the weights");
+		List<Double> weightsFiltered = applyMovingAverageFilter(rawWeights, getParams().getWeightsFilterWidth());
+
+		if (CombiTestMatrixOperation.spy != null) {
+			CombiTestMatrixOperation.spy.smoothedWeightsCalculated(weightsFiltered);
+		}
+		LOG.debug("filtered weights: " + weightsFiltered);
+
+		List<Double> weightsAbsolute = new ArrayList<Double>(weightsFiltered.size());
+		for (Double wFiltered : weightsFiltered) {
+			weightsAbsolute.add(Math.abs(wFiltered));
+		}
+
+		final List<Double> combiWeightsSorted = new ArrayList<Double>(weightsAbsolute);
 		Collections.sort(combiWeightsSorted);
 		final double thresholdWeight = combiWeightsSorted.get(markersToKeep);
 
-		Iterator<Double> combiWeightsIt = combiWeights.iterator();
+		Iterator<Double> combiWeightsIt = rawWeights.iterator();
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
 			if (curCombiWeight > thresholdWeight) {
@@ -73,6 +89,21 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 		// we use all samples from the parent
 		filteredSampleOrigIndicesAndKeys.putAll(combiTestOperationDataSet.getSamplesKeysSource().getIndicesMap()); // XXX could be done more efficiently, without loading all the keys first, but by just signaling to the method caller, that we use all samples somehow
+	}
+
+	/**
+	 * Apply a moving average filter (p-norm filter).
+	 * Basically "smoothes out the landscape".
+	 * @param weights
+	 * @param filterWidth
+	 * @return filtered weights
+	 */
+	private static List<Double> applyMovingAverageFilter(final List<Double> weights, final int filterWidth) {
+
+		List<Double> weightsFiltered = new ArrayList(weights);
+		Util.pNormFilter(weightsFiltered, filterWidth, WEIGHTS_MOVING_AVERAGE_FILTER_NORM);
+
+		return weightsFiltered;
 	}
 
 	@Override
