@@ -44,7 +44,7 @@ public class ByHardyWeinbergThresholdFilterOperationParams extends AbstractOpera
 
 	@Override
 	protected String getNameDefault() {
-		return "Filter by Hardy & Weinberg P-value threshold";
+		return "Exclude by H&W P-val";
 	}
 
 	public OperationKey getHardyWeinbergOperationKey() {

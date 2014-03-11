@@ -25,6 +25,12 @@ public class Associations {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPIC TESTS">
+	public static enum ChocranArmitageTrendTestModel {
+		DOMINANT,
+		RECESSIVE,
+		CODOMINANT;
+	}
+
 	public static double calculateChocranArmitageTrendTest(
 			int caseAA,
 			int caseAa,
@@ -32,7 +38,7 @@ public class Associations {
 			int ctrlAA,
 			int ctrlAa,
 			int ctrlaa,
-			int model)
+			ChocranArmitageTrendTestModel model)
 	{
 		double caseTot = caseAA + caseAa + caseaa;
 		double ctrlTot = ctrlAA + ctrlAa + ctrlaa;
@@ -44,23 +50,23 @@ public class Associations {
 		// INIT MODEL WEIGHTS
 		int[] weights = new int[3];
 		switch (model) {
-			case 0: // DOMINANT
+			case DOMINANT:
 				weights[0] = 1;
 				weights[1] = 1;
 				weights[2] = 0;
 				break;
-			case 1: // RECESSIVE
+			case RECESSIVE:
 				weights[0] = 0;
 				weights[1] = 1;
 				weights[2] = 1;
 				break;
-			case 2: // CODOMINANT (ADDITIVE)
+			case CODOMINANT:
 				weights[0] = 0;
 				weights[1] = 1;
 				weights[2] = 2;
 				break;
 			default:
-				throw new IllegalArgumentException("model may only be in range [0, 2]");
+				throw new IllegalArgumentException("invalid Chocran-Armitage trend test model: " + model);
 		}
 
 		// CALCULATE TREND TEST
@@ -127,7 +133,7 @@ public class Associations {
 			expCntgTable[1][1] = (double) (obsCtrlRowTot * obsAaColTot) / totGT;
 			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
 
-			chiSQ = org.gwaspi.statistics.Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
+			chiSQ = Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
 		}
 		return chiSQ;
 	}

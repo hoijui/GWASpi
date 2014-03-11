@@ -24,14 +24,15 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
+import org.gwaspi.statistics.Associations;
+import org.gwaspi.statistics.Pvalue;
 
 /**
- * Performs the Cochran-Armitage Trend Test.
+ * Performs the Cochran-Armitage trend test.
  */
 public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
 
@@ -63,12 +64,15 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 			final Census caseCensus = caseMarkerCensusIt.next();
 			final Census ctrlCensus = ctrlMarkersCensusIt.next();
 
-			// COCHRAN ARMITAGE TREND TEST
-			double armitageT = org.gwaspi.statistics.Associations.calculateChocranArmitageTrendTest(
-					caseCensus.getAA(), caseCensus.getAa(), caseCensus.getaa(),
-					ctrlCensus.getAA(), ctrlCensus.getAa(), ctrlCensus.getaa(),
-					2); // Model 2, codominant
-			double armitagePval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(armitageT, 1);  // 1 Degree of freedom
+			final double armitageT = Associations.calculateChocranArmitageTrendTest(
+					caseCensus.getAA(),
+					caseCensus.getAa(),
+					caseCensus.getaa(),
+					ctrlCensus.getAA(),
+					ctrlCensus.getAa(),
+					ctrlCensus.getaa(),
+					Associations.ChocranArmitageTrendTestModel.CODOMINANT);
+			final double armitagePval = Pvalue.calculatePvalueFromChiSqr(armitageT, 1);
 
 			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(
 					markerKey,
