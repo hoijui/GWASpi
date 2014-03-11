@@ -22,6 +22,11 @@ public class Pvalue {
 	private Pvalue() {
 	}
 
+	/**
+	 * @param chiSqr X^2
+	 * @param df degrees of freedom
+	 * @return P-value
+	 */
 	public static double calculatePvalueFromChiSqr(double chiSqr, int df) {
 		if (df == 1) {
 			if (chiSqr < 1) {

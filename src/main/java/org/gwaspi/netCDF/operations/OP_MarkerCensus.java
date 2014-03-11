@@ -114,21 +114,21 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 
 		MarkerCensusOperationDataSet dataSet = generateFreshOperationDataSet();
 
+		final int numMySamples = wrSampleKeys.size();
+//		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
+
 		dataSet.setNumMarkers(dataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
-		dataSet.setNumSamples(wrSampleKeys.size());
-
-		final int numMySamples = wrSampleKeys.size();
-		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
+		dataSet.setNumSamples(numMySamples);
 
 		dataSet.setParams(getParams());
 
 		dataSet.setSamples(wrSampleKeys);
 
 		//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-		final List<Sex> samplesSex = new ArrayList<Sex>(wrSampleKeys.size());
-		final List<Affection> samplesAffection = new ArrayList<Affection>(wrSampleKeys.size());
-		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, samplesSex, samplesAffection);
+		final List<Sex> samplesSex = new ArrayList<Sex>(numMySamples);
+		final List<Affection> samplesAffection = new ArrayList<Affection>(numMySamples);
+		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
 
 		log.info("Start Census testing markers");
 
@@ -226,7 +226,10 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				allSamplesStatistics.getMinorAllele()};
 
 			dataSet.addEntry(new DefaultMarkerCensusOperationEntry(
-					markerKey, markerOrigIndex, majorAndMinorAlleles, censusFull));
+					markerKey,
+					markerOrigIndex,
+					majorAndMinorAlleles,
+					censusFull));
 		}
 		//</editor-fold>
 
@@ -431,15 +434,16 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		return samplesInfos;
 	}
 
-	private void fetchSampleInfo(
-			StudyKey studyKey,
-			DataSetSource dataSetSource,
-			List<Integer> toKeepSampleOrigIndices,
+	private static void fetchSampleInfo(
+			final StudyKey studyKey,
+			final DataSetSource dataSetSource,
+			final List<Integer> toKeepSampleOrigIndices,
+			final File phenoFile,
 			List<Sex> samplesSex,
 			List<Affection> samplesAffection)
 			throws IOException
 	{
-		if (getParams().getPhenotypeFile() == null) {
+		if (phenoFile == null) {
 			SamplesInfosSource samplesInfosSource = dataSetSource.getSamplesInfosSource();
 			Iterator<Integer> allSampleOrigIndicesIt = dataSetSource.getSamplesKeysSource().getIndices().iterator();
 			Iterator<Sex> allSexesIt = samplesInfosSource.getSexes().iterator();
@@ -456,7 +460,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		} else {
 			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOriginDataSetSource(), toKeepSampleOrigIndices);
 			SamplesInfosSource filteredStorageSamplesInfosSource = sampleIndicesFilteredData.getSamplesInfosSource();
-			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, getParams().getPhenotypeFile());
+			Map<SampleKey, SampleInfo> phenoFileSamplesInfos = readSampleInfosFromPhenoFile(studyKey, phenoFile);
 			for (SampleInfo storageSampleInfo : filteredStorageSamplesInfosSource) {
 				final SampleKey sampleKey = SampleKey.valueOf(storageSampleInfo);
 				SampleInfo sampleInfoToUse = phenoFileSamplesInfos.get(sampleKey);
