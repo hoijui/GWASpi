@@ -34,27 +34,13 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	private static final Logger LOG = LoggerFactory.getLogger(CombiTestOperationParams.class);
 
 	/**
-	 * This is our direct parent.
-	 */
-	private final OperationKey qaMarkersOperationKey;
-	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
 	private final GenotypeEncoder encoder;
 	/**
-	 * The filter-width of the moving average filter (p-norm-filter)
-	 * applied to the weights after SVM training.
-	 */
-	private Integer weightsFilterWidth;
-	/**
 	 * The number of total markers in the matrix we operate on, unfiltered.
 	 */
 	private Integer totalMarkers;
-	/**
-	 * How many markers to be left with,
-	 * after the filtering with the COMBI method.
-	 */
-	private final int markersToKeep;
 	/**
 	 * Whether to use resampling based threshold calibration.
 	 * This feature takes a lot of computation time!
@@ -71,18 +57,9 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	{
 		super(OPType.COMBI_ASSOC_TEST, new DataSetKey(qaMarkersOperationKey), name);
 
-		this.qaMarkersOperationKey = qaMarkersOperationKey;
 		this.encoder = (encoder == null)
 				? getEncoderDefault()
 				: encoder;
-		this.weightsFilterWidth = ((weightsFilterWidth == null)
-				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= getTotalMarkers()))
-				? getWeightsFilterWidthDefault()
-				: weightsFilterWidth;
-		this.markersToKeep = ((markersToKeep == null)
-				|| (markersToKeep <= 0) || (markersToKeep >= getTotalMarkers()))
-				? getMarkersToKeepDefault()
-				: markersToKeep;
 		this.useThresholdCalibration = (useThresholdCalibration == null)
 				? isUseThresholdCalibrationDefault()
 				: useThresholdCalibration;
@@ -100,7 +77,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 				);
 	}
 
-	private static int fetchTotalMarkers(DataSetKey parentKey) {
+	static int fetchTotalMarkers(DataSetKey parentKey) {
 
 		int total = -1;
 
@@ -117,8 +94,9 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		return total;
 	}
 
+	/** @deprecated */
 	public OperationKey getQAMarkerOperationKey() {
-		return qaMarkersOperationKey;
+		return getParent().getOperationParent();
 	}
 
 	public GenotypeEncoder getEncoder() {
@@ -129,21 +107,6 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		return GenotypicGenotypeEncoder.SINGLETON;
 	}
 
-	public int getWeightsFilterWidth() {
-		return weightsFilterWidth;
-	}
-
-	public int getWeightsFilterWidthDefault() {
-
-		// HACK review this mechanism with marius
-		return Math.min(35, Math.max(3,
-				(int) Math.ceil(getTotalMarkers() * 0.05)));
-	}
-
-	public int getMarkersToKeep() {
-		return markersToKeep;
-	}
-
 	public int getTotalMarkers() {
 
 		if (totalMarkers == null) {
@@ -151,10 +114,6 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		}
 
 		return totalMarkers;
-	}
-
-	public int getMarkersToKeepDefault() {
-		return (int) Math.ceil(getTotalMarkers() * 0.02);
 	}
 
 	public boolean isUseThresholdCalibration() {
