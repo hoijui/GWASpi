@@ -39,13 +39,16 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	 */
 	private final int markersToKeep;
 
-	public ByCombiWeightsFilterOperationParams(
+	ByCombiWeightsFilterOperationParams(
+			Integer totalMarkers,
 			OperationKey combiParentOpKey,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
 			String name)
 	{
 		super(OPType.FILTER_BY_WEIGHTS, new DataSetKey(combiParentOpKey), name);
+
+		this.totalMarkers = totalMarkers;
 
 		this.weightsFilterWidth = ((weightsFilterWidth == null)
 				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= getTotalMarkers()))
@@ -57,9 +60,28 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 				: markersToKeep;
 	}
 
+	public ByCombiWeightsFilterOperationParams(
+			OperationKey combiParentOpKey,
+			Integer weightsFilterWidth,
+			Integer markersToKeep,
+			String name)
+	{
+		this(null, combiParentOpKey, weightsFilterWidth, markersToKeep, name);
+	}
+
 	public ByCombiWeightsFilterOperationParams(OperationKey combiParentOpKey) {
 		this(
 				combiParentOpKey,
+				null,
+				null,
+				null
+		);
+	}
+
+	public ByCombiWeightsFilterOperationParams(int totalMarkers) {
+		this(
+				totalMarkers,
+				null,
 				null,
 				null,
 				null
@@ -86,8 +108,8 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 	public int getWeightsFilterWidthDefault() { // XXX review this mechanism with marius
 
-		return Math.min(35, Math.max(3,
-				(int) Math.ceil(getTotalMarkers() * 0.05)));
+		return Math.min(getTotalMarkers(), Math.min(35, Math.max(3,
+				(int) Math.ceil(getTotalMarkers() * 0.05))));
 	}
 
 	public int getMarkersToKeep() {
@@ -95,6 +117,8 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	}
 
 	public int getMarkersToKeepDefault() { // XXX review this mechanism with marius
-		return (int) Math.ceil(getTotalMarkers() * 0.02);
+
+		return Math.min(getTotalMarkers(), Math.min(20, Math.max(3,
+				(int) Math.ceil(getTotalMarkers() * 0.02))));
 	}
 }

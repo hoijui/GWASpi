@@ -36,6 +36,7 @@ import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.MatrixOperation;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 
 public class MultiOperations {
@@ -163,9 +164,11 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doCombiTest(final CombiTestOperationParams params) {
-
-		CommonRunnable task = new Threaded_Combi(params);
+	public static void doCombiTest(
+			final CombiTestOperationParams paramsTest,
+			final ByCombiWeightsFilterOperationParams paramsFilter)
+	{
+		CommonRunnable task = new Threaded_Combi(paramsTest, paramsFilter);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 //		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
@@ -174,7 +177,8 @@ public class MultiOperations {
 //		if (params.getMatrixKey().isSpecifiedByName()) {
 //			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
 //		}
-		Set<MatrixKey> participatingMatrices = params.getParticipatingMatrices();
+		Set<MatrixKey> participatingMatrices = paramsTest.getParticipatingMatrices();
+//		participatingMatrices.addAll(paramsFilter.getParticipatingMatrices());
 		for (MatrixKey participatingMatrix : participatingMatrices) {
 			lockProperties.getStudyIds().add(participatingMatrix.getStudyId());
 			lockProperties.getMatricesIds().add(participatingMatrix.getMatrixId());

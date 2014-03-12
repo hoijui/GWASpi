@@ -18,26 +18,42 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.operations.OP_MarkerCensus;
+import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.OP_QASamples;
+import org.gwaspi.netCDF.operations.OP_TrendTests;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
+import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
+import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_Combi extends CommonRunnable {
 
-	private final CombiTestOperationParams params;
+	private final CombiTestOperationParams paramsTest;
+	private final ByCombiWeightsFilterOperationParams paramsFilter;
 
-	public Threaded_Combi(CombiTestOperationParams params) {
+	public Threaded_Combi(
+			final CombiTestOperationParams paramsTest,
+			final ByCombiWeightsFilterOperationParams paramsFilter)
+	{
 		super(
 				"Combi Association Test",
 				"Combi Association Study",
-				"Combi Association Test on: " + params.getParent().toString(),
+				"Combi Association Test on: " + paramsTest.getParent().toString(),
 				"Combi Association Test");
 
-		this.params = params;
+		this.paramsTest = paramsTest;
+		this.paramsFilter = paramsFilter;
 	}
 
 	@Override
@@ -54,14 +70,42 @@ public class Threaded_Combi extends CommonRunnable {
 		// XXX TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 //		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
+		OperationKey combiTestOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey combiOpKey = OperationManager.performRawCombiTest(params);
+			combiTestOpKey = OperationManager.performRawCombiTest(paramsTest);
+		}
 
-			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			OperationKey testOpKey = combiOpKey;
-			if (testOpKey != null) {
-				new OutputTest(testOpKey, OPType.COMBI_ASSOC_TEST).writeReportsForTestData();
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
+		OperationKey combiFilterOpKey = null;
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			paramsFilter.setParent(new DataSetKey(combiTestOpKey));
+			combiFilterOpKey = OperationManager.performOperation(new ByCombiWeightsFilterOperation(paramsFilter));
+		}
+
+		OperationKey qaSamplesOpKey = null;
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			SamplesQAOperationParams samplesQAParams = new SamplesQAOperationParams(new DataSetKey(combiFilterOpKey));
+			qaSamplesOpKey = OperationManager.performOperation(new OP_QASamples(samplesQAParams));
+		}
+
+		OperationKey qaMarkersOpKey = null;
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			MarkersQAOperationParams markersQAParams = new MarkersQAOperationParams(new DataSetKey(combiFilterOpKey));
+			qaMarkersOpKey = OperationManager.performOperation(new OP_QAMarkers(markersQAParams));
+		}
+
+		OperationKey markerCensusOpKey = null;
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
+			markerCensusOpKey = OperationManager.performOperation(new OP_MarkerCensus(markerCensusParams));
+		}
+
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
+			OperationKey trendTestOpKey = OperationManager.performOperation(new OP_TrendTests(trendTestParams));
+
+			if (trendTestOpKey != null) {
+				new OutputTest(trendTestOpKey, OPType.COMBI_ASSOC_TEST).writeReportsForTestData();
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 			}
 		}
 	}

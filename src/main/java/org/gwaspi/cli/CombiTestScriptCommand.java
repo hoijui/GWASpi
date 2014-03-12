@@ -25,6 +25,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.GenotypeEncoder;
@@ -90,17 +91,20 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
 
-			CombiTestOperationParams params = new CombiTestOperationParams(
+			CombiTestOperationParams paramsTest = new CombiTestOperationParams(
 					qaMarkersOperationKey,
 					genotypeEncoder,
-					weightsFilterWidth,
-					markersToKeep,
 					useThresholdCalibration,
 					resultOperationName);
+			ByCombiWeightsFilterOperationParams paramsFilter = new ByCombiWeightsFilterOperationParams(
+					null,
+					weightsFilterWidth,
+					markersToKeep,
+					"Filter on " + resultOperationName);
 
 			// test block
 			System.out.println(Text.All.processing);
-			MultiOperations.doCombiTest(params);
+			MultiOperations.doCombiTest(paramsTest, paramsFilter);
 
 			return true;
 		}

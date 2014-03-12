@@ -66,6 +66,8 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParamsEditor;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.CombiTestParamsGUI;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
@@ -433,14 +435,20 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 
 						CombiTestOperationParams combiTestParams = null;
+						ByCombiWeightsFilterOperationParams combiFilterParams = null;
 						if (reProceed) {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
 								combiTestParams = new CombiTestOperationParams(qaMarkersOffspringKeys.get(0));
-								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams, qaMarkersOffspringKeys); // HACK FIXME for COMBI
+								combiTestParams = CombiTestParamsGUI.chooseParams(dialogParent, combiTestParams, qaMarkersOffspringKeys); // HACK FIXME for COMBI
 								if (combiTestParams != null) {
-									gwasParams.setProceed(true);
+									OperationMetadata testParentOperation = OperationsList.getOperationMetadata(combiTestParams.getParent().getOperationParent());
+									final int totalMarkers = testParentOperation.getNumMarkers();
+									combiFilterParams = new ByCombiWeightsFilterOperationParams(totalMarkers);
+									combiFilterParams = ByCombiWeightsFilterOperationParamsEditor.chooseParams(dialogParent, combiFilterParams, null); // HACK FIXME for COMBI
+									if (combiFilterParams != null) {
+										gwasParams.setProceed(true);
+									}
 								}
-//								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							} else {
 								gwasParams = new MoreAssocInfo().showMoreInfo();
 							}
@@ -452,7 +460,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed) {
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (testType == OPType.COMBI_ASSOC_TEST) {
-									MultiOperations.doCombiTest(combiTestParams);
+									MultiOperations.doCombiTest(combiTestParams, combiFilterParams);
 								} else if (censusOPKey != null && hwOPKey != null) {
 									MultiOperations.doTest(
 											censusOPKey,
