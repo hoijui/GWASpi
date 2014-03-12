@@ -45,7 +45,7 @@ public interface ProgressSource<ST> {
 	 * @return number of progress intervals produced,
 	 *   or <code>null</code>, if unknown.
 	 */
-	Integer getNumIntervalls();
+	Integer getNumIntervals();
 
 	void addProgressListener(ProgressListener lst);
 

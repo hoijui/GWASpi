@@ -42,7 +42,14 @@ public class DoubleProgressHandler extends AbstractProgressHandler<Double> {
 
 	protected void fireProgressHappened(Double currentState) {
 
-		final Double completionFraction = (currentState - startState) / difference;
+		final Double completionFraction;
+		if (endState == startState) {
+			// We have to handle this case (only one interval) separately,
+			// to prevent div-by-0 -> NaN.
+			completionFraction = (currentState == endState) ? 1.0 : 0.0; // XXX maybe this poses a problem, if the endState is actually reached, but the precise value is a tiny bit smaller then the expected end-state value
+		} else {
+			completionFraction = (double) Math.abs((currentState - startState) / difference);
+		}
 		fireProgressHappened(completionFraction, currentState);
 	}
 }
