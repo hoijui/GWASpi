@@ -43,7 +43,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 	@Override
 	public OPType getType() {
-		return OPType.FILTER_BY_HW_THREASHOLD;
+		return OPType.FILTER_BY_WEIGHTS;
 	}
 
 	@Override
