@@ -169,12 +169,13 @@ public class OperationFactory {
 					break;
 				case FILTER_BY_HW_THREASHOLD:
 				case FILTER_BY_VALID_AFFECTION:
+				case FILTER_BY_WEIGHTS:
 					operationDataSet = new NetCdfSimpleOperationDataSet(origin, parent, operationKey);
 					break;
-				default:
 				case SAMPLE_HTZYPLOT:
 				case MANHATTANPLOT:
 				case QQPLOT:
+				default:
 					throw new IllegalArgumentException("This operation type is invalid, or has no data-attached");
 			}
 		} else {
