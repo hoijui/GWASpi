@@ -19,7 +19,6 @@ package org.gwaspi.operations.combi;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.FlowLayout;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,8 +39,6 @@ import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
-import org.gwaspi.gui.utils.AbsolutePercentageComponent;
-import org.gwaspi.gui.utils.AbsolutePercentageModel;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
 import org.gwaspi.model.MatricesList;
@@ -61,9 +58,9 @@ public class CombiTestParamsGUI extends JPanel {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CombiTestParamsGUI.class);
 
-	public static final String TITLE = "Edit Combi-Test parameters";
+	public static final String TITLE = "Edit COMBI Test parameters";
 
-	private CombiTestOperationParams originalCombiTestParams;
+	private CombiTestOperationParams originalParams;
 
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
@@ -75,12 +72,6 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JPanel genotypeEncoderP;
 	private final JComboBox genotypeEncoderValue;
 	private final JCheckBox genotypeEncoderDefault;
-
-	private final JLabel weightsFilterWidthLabel;
-	private final AbsolutePercentageComponent weightsFilterWidthValue;
-
-	private final JLabel markersToKeepLabel;
-	private final AbsolutePercentageComponent markersToKeepValue;
 
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
@@ -94,7 +85,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public CombiTestParamsGUI() {
 
-		this.originalCombiTestParams = null;
+		this.originalParams = null;
 
 		// init the GUI components
 		this.parentMatrixLabel = new JLabel();
@@ -107,12 +98,6 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP = new JPanel();
 		this.genotypeEncoderValue = new JComboBox();
 		this.genotypeEncoderDefault = new JCheckBox();
-
-		this.weightsFilterWidthLabel = new JLabel();
-		this.weightsFilterWidthValue = new AbsolutePercentageComponent();
-
-		this.markersToKeepLabel = new JLabel();
-		this.markersToKeepValue = new AbsolutePercentageComponent();
 
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
@@ -138,11 +123,11 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
 		labelsAndComponents.put(qaMarkersOperationLabel, qaMarkersOperationValue);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
-		labelsAndComponents.put(weightsFilterWidthLabel, weightsFilterWidthValue);
-		labelsAndComponents.put(markersToKeepLabel, markersToKeepValue);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
-		createLayout(this, labelsAndComponents);
+		GroupLayout layout = new GroupLayout(this);
+		createLayout(layout, labelsAndComponents);
+		this.setLayout(layout);
 
 		FlowLayout contentPanelLayout = new FlowLayout();
 		contentPanelLayout.setAlignment(FlowLayout.LEADING);
@@ -161,12 +146,6 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
 		this.genotypeEncoderP.setLayout(contentPanelLayout);
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
-
-		this.weightsFilterWidthLabel.setText("weights filter kernel width");
-		this.weightsFilterWidthLabel.setLabelFor(this.weightsFilterWidthValue);
-
-		this.markersToKeepLabel.setText("number of markers to keep");
-		this.markersToKeepLabel.setLabelFor(this.markersToKeepValue);
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
@@ -191,8 +170,17 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public void setParentCandidates(List<OperationKey> parentCandidates) {
 
+		// reset from whatever was set before
 		OperationKey previouslySelected = (OperationKey) qaMarkersOperationValue.getSelectedItem();
 		qaMarkersOperationValue.removeAllItems();
+
+		if ((parentCandidates == null) || parentCandidates.isEmpty()) {
+			qaMarkersOperationValue.setEnabled(false);
+			return;
+		}
+
+		// set the new candidates
+		qaMarkersOperationValue.setEnabled(true);
 		for (OperationKey parentCandidate : parentCandidates) {
 			qaMarkersOperationValue.addItem(parentCandidate);
 		}
@@ -203,46 +191,25 @@ public class CombiTestParamsGUI extends JPanel {
 		qaMarkersOperationValue.setEditable(parentCandidates.size() > 1);
 	}
 
-	public void setCombiTestParams(CombiTestOperationParams combiTestParams) {
+	public void setCombiTestParams(CombiTestOperationParams params) {
 
-		this.originalCombiTestParams = combiTestParams;
+		this.originalParams = params;
 
-		final int totalMarkers = (combiTestParams.getTotalMarkers() < 1) ? 100000 : combiTestParams.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
-
-		qaMarkersOperationValue.setSelectedItem(combiTestParams.getQAMarkerOperationKey());
+		qaMarkersOperationValue.setSelectedItem(params.getQAMarkerOperationKey());
 
 		genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
-		genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
+		genotypeEncoderValue.setSelectedItem(params.getEncoder());
 		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		weightsFilterWidthValue.setModel(new AbsolutePercentageModel(
-				combiTestParams.getWeightsFilterWidth(),
-				combiTestParams.getWeightsFilterWidthDefault(),
-				totalMarkers,
-				1,
-				1,
-				totalMarkers - 1));
+		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
 
-		markersToKeepValue.setModel(new AbsolutePercentageModel(
-				combiTestParams.getMarkersToKeep(),
-				combiTestParams.getMarkersToKeepDefault(),
-				totalMarkers,
-				1,
-				1,
-				totalMarkers - 1));
-
-		useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
-
-		resultMatrixValue.setText(combiTestParams.getName());
-		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, combiTestParams.getNameDefault()));
+		resultMatrixValue.setText(params.getName());
+		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
 
 		validate();
 	}
 
-	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
-
-        GroupLayout layout = new GroupLayout(container);
-        container.setLayout(layout);
+	static void createLayout(GroupLayout layout, Map<JLabel, JComponent> labelsAndComponents) {
 
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
@@ -256,11 +223,11 @@ public class CombiTestParamsGUI extends JPanel {
 //			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
 			horizontalComponentsG.addComponent(labelAndComponent.getValue(), GroupLayout.Alignment.LEADING);
 		}
-        horizontalG.addGroup(horizontalLabelsG);
+		horizontalG.addGroup(horizontalLabelsG);
 		horizontalG.addGroup(horizontalComponentsG);
 		layout.setHorizontalGroup(horizontalG);
 
-        GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
+		GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
 			GroupLayout.ParallelGroup verticalLabelAndComponentG = layout.createParallelGroup();
 			verticalLabelAndComponentG.addComponent(labelAndComponent.getKey());
@@ -270,43 +237,41 @@ public class CombiTestParamsGUI extends JPanel {
 		layout.setVerticalGroup(verticalGroup);
 	}
 
-	public CombiTestOperationParams getCombiTestParams() {
+	public CombiTestOperationParams getParams() {
 
-		CombiTestOperationParams combiTestParams = new CombiTestOperationParams(
+		CombiTestOperationParams params = new CombiTestOperationParams(
 				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
-				(Integer) weightsFilterWidthValue.getValue(),
-				(Integer) markersToKeepValue.getValue(),
 				useThresholdCalibrationValue.isSelected(),
 				resultMatrixValue.getText()
 				);
 
-		return combiTestParams;
+		return params;
 	}
 
-	public static CombiTestOperationParams chooseCombiTestParams(Component parentComponent, CombiTestOperationParams combiTestParams, List<OperationKey> parentCandidates) {
+	public static CombiTestOperationParams chooseParams(Component parentComponent, CombiTestOperationParams paramsInitialValues, List<OperationKey> parentCandidates) {
 
-		CombiTestParamsGUI combiTestParamsGUI = new CombiTestParamsGUI();
-		combiTestParamsGUI.setParentCandidates(parentCandidates);
-		combiTestParamsGUI.setCombiTestParams(combiTestParams);
+		CombiTestParamsGUI paramsEditor = new CombiTestParamsGUI();
+		paramsEditor.setParentCandidates(parentCandidates);
+		paramsEditor.setCombiTestParams(paramsInitialValues);
 
 		int selectedValue = JOptionPane.showConfirmDialog(
 				parentComponent,
-				combiTestParamsGUI,
+				paramsEditor,
 				TITLE,
 				JOptionPane.OK_CANCEL_OPTION);
 
-		CombiTestOperationParams returnCombiTestParams;
+		CombiTestOperationParams returnParams;
 		if (selectedValue == JOptionPane.OK_OPTION) {
-			returnCombiTestParams = combiTestParamsGUI.getCombiTestParams();
+			returnParams = paramsEditor.getParams();
 		} else {
 //			// return the original parameters,
 //			// if the user clicked on the [Cancel] button
-//			returnCombiTestParams = combiTestParams;
-			returnCombiTestParams = null;
+//			returnParams = paramsInitialValues;
+			returnParams = null;
 		}
 
-		return returnCombiTestParams;
+		return returnParams;
 	}
 
 	public static void main(String[] args) {
@@ -320,8 +285,8 @@ public class CombiTestParamsGUI extends JPanel {
 			studiesLoop : for (StudyKey studyKey : studies) {
 				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
 				for (MatrixKey matrixKey : matrices) {
-					List<OperationMetadata> qaOperationsMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
-					for (OperationMetadata qaOperationsMetadata : qaOperationsMetadatas) {
+					List<OperationMetadata> parentCandidatesMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
+					for (OperationMetadata qaOperationsMetadata : parentCandidatesMetadatas) {
 						parentCandidates.add(OperationKey.valueOf(qaOperationsMetadata));
 					}
 				}
@@ -338,14 +303,11 @@ public class CombiTestParamsGUI extends JPanel {
 			parentOperationKey = parentCandidates.get(0);
 		}
 
-//		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
 		CombiTestOperationParams inputParams = new CombiTestOperationParams(
 				parentOperationKey,
 				NominalGenotypeEncoder.SINGLETON,
-				35, // weightsFIlterWidth
-				20, // markersToKeep
 				Boolean.TRUE, // useThresholdCalibration
 				"my name is... my name is... my name is ..");
-		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams, parentCandidates);
+		CombiTestOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
 	}
 }

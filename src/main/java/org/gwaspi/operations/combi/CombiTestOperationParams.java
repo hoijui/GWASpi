@@ -50,8 +50,6 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	public CombiTestOperationParams(
 			OperationKey qaMarkersOperationKey,
 			GenotypeEncoder encoder,
-			Integer weightsFilterWidth,
-			Integer markersToKeep,
 			Boolean useThresholdCalibration,
 			String name)
 	{
@@ -69,8 +67,6 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	{
 		this(
 				qaMarkersOperationKey,
-				null,
-				null,
 				null,
 				null,
 				null
