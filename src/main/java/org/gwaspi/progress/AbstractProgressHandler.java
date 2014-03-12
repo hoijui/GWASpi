@@ -24,16 +24,20 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 
 	private final List<ProgressListener> progressListeners;
 	private final String shortName;
-	private final Integer numIntervalls;
+	private final Integer numIntervals;
 	private long startTime;
 	private long endTime;
 	private int nextEventIndex;
 
-	protected AbstractProgressHandler(String shortName, Integer numIntervalls) {
+	protected AbstractProgressHandler(String shortName, Integer numIntervals) {
+
+		if (numIntervals <= 0) {
+			throw new IllegalStateException("a progress has to consist of one or more intervals (is " + numIntervals + ")");
+		}
 
 		this.progressListeners = new ArrayList<ProgressListener>(1);
 		this.shortName = shortName;
-		this.numIntervalls = numIntervalls;
+		this.numIntervals = numIntervals;
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
@@ -58,8 +62,8 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 	}
 
 	@Override
-	public Integer getNumIntervalls() {
-		return numIntervalls;
+	public Integer getNumIntervals() {
+		return numIntervals;
 	}
 
 	@Override

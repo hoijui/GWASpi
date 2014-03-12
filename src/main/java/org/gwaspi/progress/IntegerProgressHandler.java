@@ -23,7 +23,7 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 	private final Integer endState;
 
 	public IntegerProgressHandler(String shortName, Integer startState, Integer endState) {
-		super(shortName, Math.abs(endState - startState));
+		super(shortName, Math.abs(endState - startState) + 1);
 
 		this.startState = startState;
 		this.endState = endState;
@@ -48,7 +48,14 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 
 	protected void fireProgressHappened(Integer currentState) {
 
-		final Double completionFraction = (double) (currentState - startState) / getNumIntervalls();
+		final Double completionFraction;
+		if (endState == startState) {
+			// We have to handle this case (only one interval) separately,
+			// to prevent div-by-0 -> NaN.
+			completionFraction = (currentState == endState) ? 1.0 : 0.0;
+		} else {
+			completionFraction = (double) Math.abs((currentState - startState) / getNumIntervals());
+		}
 		fireProgressHappened(completionFraction, currentState);
 	}
 }

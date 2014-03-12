@@ -79,7 +79,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 
 		int numIntervalls = 0;
 		for (ProgressSource progressSource : subProgressSourcesAndWeights.keySet()) {
-			Integer numSubIntervalls = progressSource.getNumIntervalls();
+			Integer numSubIntervalls = progressSource.getNumIntervals();
 			if (numSubIntervalls == null) {
 				numSubIntervalls = 1;
 			}
