@@ -206,8 +206,11 @@ public class GWASpiExplorerPanel extends JPanel {
 			TreePath tp = tree.getPathForRow(0);
 			tree.setSelectionPath(tp);
 		} else {
-			DefaultMutableTreeNode lastSelectedNode = GWASpiExplorerNodes.findTreeNode(nodeId);
-			tree.setSelectionPath(new TreePath(lastSelectedNode.getPath()));
+			DefaultMutableTreeNode node = GWASpiExplorerNodes.findTreeNode(nodeId);
+			if (node == null) {
+				throw new IllegalArgumentException("Could not find node with ID: " + nodeId);
+			}
+			tree.setSelectionPath(new TreePath(node.getPath()));
 		}
 	}
 
@@ -258,7 +261,11 @@ public class GWASpiExplorerPanel extends JPanel {
 				}
 			}
 
-			selectNode(lastSelectedNodeId);
+			try {
+				selectNode(lastSelectedNodeId);
+			} catch (IllegalArgumentException ex) {
+				// ignore
+			}
 		} else { // HAPPENS AT INIT OF APPLICATION
 			int row = 0;
 			while (row < tmpTree.getRowCount()) {
@@ -266,7 +273,11 @@ public class GWASpiExplorerPanel extends JPanel {
 				row++;
 			}
 
-			selectNode(lastSelectedNodeId);
+			try {
+				selectNode(lastSelectedNodeId);
+			} catch (IllegalArgumentException ex) {
+				// ignore
+			}
 
 			setAllNodesCollapsable();
 
