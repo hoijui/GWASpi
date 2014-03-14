@@ -227,7 +227,6 @@
 					<showWarnings>true</showWarnings>
 					<compilerArguments>
 						<Xlint:unchecked/>
-						<bootclasspath>${env.JAVA6_HOME}/jre/lib/rt.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>
@@ -364,6 +363,38 @@
 			</dependencies>
 		</profile>
 
+		<profile>
+			<id>compileWithJava6</id>
+			<!--
+				NOTE
+				Make sure to set the environment variable JAVA6_HOME
+				to your JDK 1.6 HOME when using this profile.
+			-->
+			<properties>
+				<java.6.home>${env.JAVA6_HOME}</java.6.home>
+				<java.6.libs>${java.6.home}/jre/lib</java.6.libs>
+				<java.6.bootclasspath>${java.6.libs}/rt.jar${path.separator}${java.6.libs}/jce.jar</java.6.bootclasspath>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+							<encoding>${project.build.sourceEncoding}</encoding>
+							<showDeprecation>true</showDeprecation>
+							<showWarnings>true</showWarnings>
+							<compilerArguments>
+								<Xlint:unchecked/>
+								<bootclasspath>${java.6.bootclasspath}</bootclasspath>
+							</compilerArguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
