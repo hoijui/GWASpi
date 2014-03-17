@@ -37,7 +37,6 @@ import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
