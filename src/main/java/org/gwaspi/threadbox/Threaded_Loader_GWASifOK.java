@@ -20,7 +20,6 @@ package org.gwaspi.threadbox;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
@@ -89,7 +88,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			MatrixKey matrixKey = samplesReceiver.getResultMatrixKey();
 			samplesReceiver.done();
 			MultiOperations.printCompleted("Loading Genotypes");
-			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 			parent = new DataSetKey(matrixKey);
 		} else {
 			return;
