@@ -20,6 +20,7 @@ package org.gwaspi.datasource.netcdf;
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.KeyFactory;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesKeysSource;
@@ -31,18 +32,20 @@ public class NetCdfSamplesKeysSource extends AbstractNetCdfKeysSource<SampleKey>
 	private static final int DEFAULT_CHUNK_SIZE = 200;
 
 	private final StudyKey studyKey;
+	private SamplesKeysSource originSource;
 
-	private NetCdfSamplesKeysSource(StudyKey studyKey, NetcdfFile rdNetCdfFile, String varDimension, String varOriginalIndices, String varKeys) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, varDimension, varOriginalIndices, varKeys);
+	private NetCdfSamplesKeysSource(MatrixKey origin, StudyKey studyKey, NetcdfFile rdNetCdfFile, String varSamplesDimension, String varOriginalIndices, String varKeys) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, varSamplesDimension, varOriginalIndices, varKeys);
 
 		this.studyKey = studyKey;
+		this.originSource = null;
 	}
 
-	public static SamplesKeysSource createForMatrix(StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfSamplesKeysSource(studyKey, rdNetCdfFile, cNetCDF.Dimensions.DIM_SAMPLESET, null, cNetCDF.Variables.VAR_SAMPLE_KEY);
+	public static SamplesKeysSource createForMatrix(MatrixKey origin, StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfSamplesKeysSource(origin, studyKey, rdNetCdfFile, cNetCDF.Dimensions.DIM_SAMPLESET, null, cNetCDF.Variables.VAR_SAMPLE_KEY);
 	}
 
-	public static SamplesKeysSource createForOperation(StudyKey studyKey, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
+	public static SamplesKeysSource createForOperation(MatrixKey origin, StudyKey studyKey, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
 
 		final String varDimension;
 		final String varOriginalIndices;
@@ -57,7 +60,21 @@ public class NetCdfSamplesKeysSource extends AbstractNetCdfKeysSource<SampleKey>
 			varKeys = cNetCDF.Variables.VAR_OPSET;
 		}
 
-		return new NetCdfSamplesKeysSource(studyKey, rdNetCdfFile, varDimension, varOriginalIndices, varKeys);
+		return new NetCdfSamplesKeysSource(origin, studyKey, rdNetCdfFile, varDimension, varOriginalIndices, varKeys);
+	}
+
+	@Override
+	public SamplesKeysSource getOrigSource() throws IOException {
+
+		if (originSource == null) {
+			if (getOrigin() == null) {
+				originSource = this;
+			} else {
+				originSource = getOrigDataSetSource().getSamplesKeysSource();
+			}
+		}
+
+		return originSource;
 	}
 
 	@Override

@@ -17,13 +17,18 @@
 
 package org.gwaspi.datasource.filter;
 
+import java.io.IOException;
 import java.util.List;
-import org.gwaspi.model.GenotypesList;
-import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.datasource.netcdf.ListSource;
 
-public class IndicesFilteredMarkersGenotypesSource extends IndicesFilteredListSource<GenotypesList> implements MarkersGenotypesSource {
+public class IndicesFilteredListSource<T> extends IndicesFilteredList<T> implements ListSource<T> {
 
-	public IndicesFilteredMarkersGenotypesSource(final MarkersGenotypesSource wrapped, final List<Integer> includeIndices) {
+	public IndicesFilteredListSource(final ListSource<T> wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);
+	}
+
+	@Override
+	public ListSource<T> getOrigSource() throws IOException {
+		return ((ListSource<T>) getWrapped()).getOrigSource();
 	}
 }

@@ -397,7 +397,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 
 	@Column(
 		name       = "description",
-		length     = 511,
+		length     = 1023,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

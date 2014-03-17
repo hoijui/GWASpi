@@ -297,7 +297,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
-		return NetCdfMarkersGenotypesSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfMarkersGenotypesSource.createForMatrix(matrixKey, getReadNetCdfFile());
 	}
 
 	@Override
@@ -328,22 +328,22 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
-		return NetCdfChromosomesKeysSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfChromosomesKeysSource.createForMatrix(matrixKey, getReadNetCdfFile());
 	}
 
 	@Override
 	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
-		return NetCdfChromosomesInfosSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfChromosomesInfosSource.createForMatrix(matrixKey, getReadNetCdfFile());
 	}
 
 	@Override
 	public MarkersKeysSource getMarkersKeysSource() throws IOException {
-		return NetCdfMarkersKeysSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfMarkersKeysSource.createForMatrix(matrixKey, getReadNetCdfFile());
 	}
 
 	@Override
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
-		return NetCdfSamplesGenotypesSource.createForMatrix(getReadNetCdfFile());
+		return NetCdfSamplesGenotypesSource.createForMatrix(matrixKey, getReadNetCdfFile());
 	}
 
 	@Override
@@ -357,6 +357,6 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
 
 		ensureMatrixMetadata();
-		return NetCdfSamplesKeysSource.createForMatrix(matrixKey.getStudyKey(), getReadNetCdfFile());
+		return NetCdfSamplesKeysSource.createForMatrix(matrixKey, matrixKey.getStudyKey(), getReadNetCdfFile());
 	}
 }

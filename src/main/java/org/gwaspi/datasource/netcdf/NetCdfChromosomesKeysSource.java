@@ -23,6 +23,7 @@ import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomeKeyFactory;
 import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.KeyFactory;
+import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfChromosomesKeysSource extends AbstractNetCdfKeysSource<ChromosomeKey> implements ChromosomesKeysSource {
@@ -38,16 +39,34 @@ public class NetCdfChromosomesKeysSource extends AbstractNetCdfKeysSource<Chromo
 	private static final String varOriginalIndices = cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX;
 	private static final String varKeys = cNetCDF.Variables.VAR_CHR_IN_MATRIX;
 
-	private NetCdfChromosomesKeysSource(NetcdfFile rdNetCdfFile) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, varDimension, varOriginalIndices, varKeys);
+	private ChromosomesKeysSource originSource;
+
+	private NetCdfChromosomesKeysSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, varDimension, varOriginalIndices, varKeys);
+
+		this.originSource = null;
 	}
 
-	public static ChromosomesKeysSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfChromosomesKeysSource(rdNetCdfFile);
+	public static ChromosomesKeysSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfChromosomesKeysSource(origin, rdNetCdfFile);
 	}
 
-	public static ChromosomesKeysSource createForOperation(NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
-		return new NetCdfChromosomesKeysSource(rdNetCdfFile);
+	public static ChromosomesKeysSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
+		return new NetCdfChromosomesKeysSource(origin, rdNetCdfFile);
+	}
+
+	@Override
+	public ChromosomesKeysSource getOrigSource() throws IOException {
+
+		if (originSource == null) {
+			if (getOrigin() == null) {
+				originSource = this;
+			} else {
+				originSource = getOrigDataSetSource().getChromosomesKeysSource();
+			}
+		}
+
+		return originSource;
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import java.util.List;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.SamplesGenotypesSource;
 
-public class IndicesFilteredSamplesGenotypesSource extends IndicesFilteredList<GenotypesList> implements SamplesGenotypesSource {
+public class IndicesFilteredSamplesGenotypesSource extends IndicesFilteredListSource<GenotypesList> implements SamplesGenotypesSource {
 
 	public IndicesFilteredSamplesGenotypesSource(final SamplesGenotypesSource wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);

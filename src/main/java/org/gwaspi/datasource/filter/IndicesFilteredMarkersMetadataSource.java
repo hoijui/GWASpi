@@ -24,7 +24,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 
-public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredList<MarkerMetadata> implements MarkersMetadataSource {
+public class IndicesFilteredMarkersMetadataSource extends IndicesFilteredListSource<MarkerMetadata> implements MarkersMetadataSource {
 
 	private final DataSetSource dataSetSource;
 	private final MarkersMetadataSource wrapped;

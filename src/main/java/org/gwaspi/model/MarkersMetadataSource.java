@@ -19,11 +19,12 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 
 /**
  * TODO
  */
-public interface MarkersMetadataSource extends List<MarkerMetadata> {
+public interface MarkersMetadataSource extends ListSource<MarkerMetadata> {
 
 	MarkersKeysSource getKeysSource() throws IOException;
 
@@ -34,7 +35,7 @@ public interface MarkersMetadataSource extends List<MarkerMetadata> {
 	List<String> getAlleles() throws IOException;
 	List<String> getStrands() throws IOException;
 
-////	List<String> getMarkerIds(int from, int to) throws IOException;
+//	List<String> getMarkerIds(int from, int to) throws IOException;
 //	List<String> getRsIds(int from, int to) throws IOException;
 //	List<String> getChromosomes(int from, int to) throws IOException;
 //	List<Integer> getPositions(int from, int to) throws IOException;

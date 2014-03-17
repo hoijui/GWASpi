@@ -25,44 +25,40 @@ import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements MarkersGenotypesSource {
 
 	private final GenotypesListFactory genotyesListFactory;
+	private MarkersGenotypesSource originSource;
 
 	private static final int DEFAULT_CHUNK_SIZE = 200;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
-	private NetCdfMarkersGenotypesSource(NetcdfFile rdNetCdfFile) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
+	private NetCdfMarkersGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
 
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	private NetCdfMarkersGenotypesSource(
-			NetcdfFile rdNetCdfFile,
-			List<Integer> originalSamplesIndices,
-			List<Integer> originalMarkersIndices)
-			throws IOException
-	{
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_MARKERSET, originalMarkersIndices);
-
-		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalSamplesIndices);
+	public static MarkersGenotypesSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfMarkersGenotypesSource(origin, rdNetCdfFile);
 	}
 
-	public static MarkersGenotypesSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfMarkersGenotypesSource(rdNetCdfFile);
-	}
+	@Override
+	public MarkersGenotypesSource getOrigSource() throws IOException {
 
-	public static MarkersGenotypesSource createForOperation(
-			NetcdfFile rdNetCdfFile,
-			List<Integer> originalSamplesIndices,
-			List<Integer> originalMarkersIndices)
-			throws IOException
-	{
-		return new NetCdfMarkersGenotypesSource(rdNetCdfFile, originalSamplesIndices, originalMarkersIndices);
+		if (originSource == null) {
+			if (getOrigin() == null) {
+				originSource = this;
+			} else {
+				originSource = getOrigDataSetSource().getMarkersGenotypesSource();
+			}
+		}
+
+		return originSource;
 	}
 
 	@Override

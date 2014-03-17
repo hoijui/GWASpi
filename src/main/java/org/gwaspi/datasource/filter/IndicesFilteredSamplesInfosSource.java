@@ -26,7 +26,7 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 
-public class IndicesFilteredSamplesInfosSource extends IndicesFilteredList<SampleInfo> implements SamplesInfosSource {
+public class IndicesFilteredSamplesInfosSource extends IndicesFilteredListSource<SampleInfo> implements SamplesInfosSource {
 
 	private final DataSetSource dataSetSource;
 	private final SamplesInfosSource wrapped;

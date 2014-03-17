@@ -91,7 +91,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		NetcdfFile gwaspiStorageFile = NetcdfFile.open(loadDescription.getGtDirPath());
-		SamplesKeysSource samplesKeysSource = NetCdfSamplesKeysSource.createForMatrix(loadDescription.getStudyKey(), gwaspiStorageFile);
+		SamplesKeysSource samplesKeysSource = NetCdfSamplesKeysSource.createForMatrix(null, loadDescription.getStudyKey(), gwaspiStorageFile);
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;

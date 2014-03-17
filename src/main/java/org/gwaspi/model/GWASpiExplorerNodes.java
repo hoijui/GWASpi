@@ -243,20 +243,22 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="STUDY NODES">
 	public static void insertStudyNode(StudyKey studyKey) throws IOException {
 
-		try {
-			// GET STUDY
-			final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY_MANAGEMENT, null);
-			DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
+		if (StartGWASpi.guiMode) {
+			try {
+				// GET STUDY
+				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY_MANAGEMENT, null);
+				DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
 
-			if (parentNode == null) {
-				throw new IOException("failed to find parent node");
+				if (parentNode == null) {
+					throw new IOException("failed to find parent node");
+				}
+
+				Study study = StudyList.getStudy(studyKey);
+				DefaultMutableTreeNode newNode = createStudyTreeNode(study);
+				addNode(parentNode, newNode, true);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-
-			Study study = StudyList.getStudy(studyKey);
-			DefaultMutableTreeNode newNode = createStudyTreeNode(study);
-			addNode(parentNode, newNode, true);
-		} catch (IOException ex) {
-			log.error(null, ex);
 		}
 	}
 
@@ -316,36 +318,40 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="OPERATION NODES">
 	public static void insertOperationUnderMatrixNode(OperationKey operationKey) throws IOException {
 
-		try {
-			// GET MATRIX
-			final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.MATRIX, operationKey.getParentMatrixKey());
-			DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
+		if (StartGWASpi.guiMode) {
+			try {
+				// GET MATRIX
+				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.MATRIX, operationKey.getParentMatrixKey());
+				DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
 
-			if (parentNode == null) {
-				throw new IOException("failed to find parent node");
+				if (parentNode == null) {
+					throw new IOException("failed to find parent node");
+				}
+
+				DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
+				addNode(parentNode, newNode, true);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-
-			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
-			addNode(parentNode, newNode, true);
-		} catch (IOException ex) {
-			log.error(null, ex);
 		}
 	}
 
 	public static void insertSubOperationUnderOperationNode(OperationKey parentOpKey, OperationKey operationKey) throws IOException {
 
-		try {
-			final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, parentOpKey);
-			DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
+		if (StartGWASpi.guiMode) {
+			try {
+				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, parentOpKey);
+				DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
 
-			if (parentNode == null) {
-				throw new IOException("failed to find parent node");
+				if (parentNode == null) {
+					throw new IOException("failed to find parent node");
+				}
+
+				DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
+				addNode(parentNode, newNode, true);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-
-			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
-			addNode(parentNode, newNode, true);
-		} catch (IOException ex) {
-			log.error(null, ex);
 		}
 	}
 
@@ -410,7 +416,11 @@ public class GWASpiExplorerNodes {
 	{
 		final JTree tree = GWASpiExplorerPanel.getSingleton().getTree();
 
-		if (tree == null) {
+		if (parentNode == null) {
+			if (((NodeElementInfo) child.getUserObject()).getNodeType() != NodeElementInfo.NodeType.ROOT) {
+				throw new IllegalArgumentException("Code is faulty! Only the root may have a null parent.");
+			}
+		} else if (tree == null) {
 			// this happens during initial tree creation, on application startup
 			parentNode.add(child);
 		} else {

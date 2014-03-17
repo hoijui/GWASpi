@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.AbstractKeysSource;
 
-public class AbstractIndicesFilteredKeysSource<KT> extends IndicesFilteredList<KT> {
+public class AbstractIndicesFilteredKeysSource<KT> extends IndicesFilteredListSource<KT> {
 
 	private final AbstractKeysSource<KT> wrapped;
 

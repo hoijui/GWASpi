@@ -19,13 +19,14 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 
 /**
  * TODO
  */
-public interface SamplesInfosSource extends List<SampleInfo> {
+public interface SamplesInfosSource extends ListSource<SampleInfo> {
 
 	SamplesKeysSource getKeysSource() throws IOException;
 

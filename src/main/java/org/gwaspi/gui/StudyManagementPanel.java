@@ -49,6 +49,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
@@ -325,11 +326,11 @@ public class StudyManagementPanel extends JPanel {
 						study_description = "";
 					}
 
-					StudyList.insertNewStudy(new Study(study_name, study_description));
+					StudyKey newStudy = StudyList.insertNewStudy(new Study(study_name, study_description));
 					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
 					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-					//GWASpiExplorer.insertLatestStudyNode();
+					GWASpiExplorerNodes.insertStudyNode(newStudy);
 				} else {
 					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
 					lbl_NewStudyName.setForeground(Color.red);

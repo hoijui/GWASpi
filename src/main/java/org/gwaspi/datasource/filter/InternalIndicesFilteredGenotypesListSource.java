@@ -17,18 +17,20 @@
 
 package org.gwaspi.datasource.filter;
 
+import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 import org.gwaspi.model.CompactGenotypesList.SelectiveIndicesGenotypesListFactory;
 import org.gwaspi.model.GenotypesList;
 
-public class InternalIndicesFilteredGenotypesListSource extends AbstractList<GenotypesList> {
+public class InternalIndicesFilteredGenotypesListSource extends AbstractList<GenotypesList> implements ListSource<GenotypesList> {
 
-	private final List<GenotypesList> wrapped;
+	private final ListSource<GenotypesList> wrapped;
 	private final List<Integer> includeInternalIndices;
 	private final SelectiveIndicesGenotypesListFactory genotypesListFactory;
 
-	public InternalIndicesFilteredGenotypesListSource(final List<GenotypesList> wrapped, final List<Integer> includeInternalIndices) {
+	public InternalIndicesFilteredGenotypesListSource(final ListSource<GenotypesList> wrapped, final List<Integer> includeInternalIndices) {
 
 		this.wrapped = wrapped;
 		this.includeInternalIndices = includeInternalIndices;
@@ -41,6 +43,16 @@ public class InternalIndicesFilteredGenotypesListSource extends AbstractList<Gen
 
 	protected List<Integer> getIncludeInternalIndices() {
 		return includeInternalIndices;
+	}
+
+	@Override
+	public ListSource<GenotypesList> getOrigSource() throws IOException {
+		return wrapped.getOrigSource();
+	}
+
+	@Override
+	public List<GenotypesList> getRange(int from, int to) throws IOException {
+		return this.subList(from, to);
 	}
 
 	@Override

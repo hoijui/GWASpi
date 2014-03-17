@@ -25,7 +25,7 @@ import java.util.List;
  * TODO
  * @param <VT> list value type
  */
-public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> {
+public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> implements ListSource<VT> {
 
 	private final int chunkSize;
 	private int loadedChunkNumber;
@@ -46,13 +46,13 @@ public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> {
 
 		if (chunkNumber != loadedChunkNumber) {
 			try {
-//				if (index >= size()) {
-//					throw new IndexOutOfBoundsException();
-//				}
+				if (index >= sizeInternal()) {
+					throw new IndexOutOfBoundsException();
+				}
 				final int itemsBefore = chunkNumber * chunkSize;
 				final int itemsInAndAfter = sizeInternal() - itemsBefore;
 				final int curChunkSize = Math.min(chunkSize, itemsInAndAfter);
-				loadedChunk = getRange(itemsBefore, itemsBefore + curChunkSize - 1);
+				loadedChunk = getOrigSource().getRange(itemsBefore, itemsBefore + curChunkSize - 1);
 				loadedChunkNumber = chunkNumber;
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
@@ -74,6 +74,4 @@ public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> {
 	public int size() {
 		return sizeInternal();
 	}
-
-	protected abstract List<VT> getRange(int from, int to) throws IOException;
 }
