@@ -575,8 +575,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 					// NOTE We dismiss the y, which would be part of normal SVM,
 					// because we want the absolute sum (i forgot again why so :/ )
 //					final double y = ...;
-//					final double alphaYXi = - alpha * y * x; // XXX why here change sign again?!?!
-					final double alphaYXi = - alpha * x; // XXX why here change sign again?!?!
+//					final double alphaYXi = -alpha * y * x; // XXX why here change sign again?!?!
+					final double alphaYXi = -alpha * x; // XXX why here change sign again?!?!
 					weights[di] += alphaYXi;
 				}
 			}
