@@ -186,12 +186,6 @@ public class JPASampleInfoService implements SampleInfoService {
 		} finally {
 			close(em);
 		}
-                if (sampleInfo == null) {
-                    System.err.println("XXX searched sample key: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"");
-                    for (SampleKey curKey : getSampleKeys()) {
-                        System.err.println("XXX sample key in DB: \"" + curKey.getStudyId() + "\" / \"" + curKey.getSampleId() + "\" / \"" + curKey.getFamilyId() + "\"");
-                    }
-                }
 
 		return sampleInfo;
 	}
