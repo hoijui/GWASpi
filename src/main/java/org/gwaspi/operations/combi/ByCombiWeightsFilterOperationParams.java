@@ -69,6 +69,15 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 		this(null, combiParentOpKey, weightsFilterWidth, markersToKeep, name);
 	}
 
+	public ByCombiWeightsFilterOperationParams(
+			int totalMarkers,
+			Integer weightsFilterWidth,
+			Integer markersToKeep,
+			String name)
+	{
+		this(totalMarkers, null, weightsFilterWidth, markersToKeep, name);
+	}
+
 	public ByCombiWeightsFilterOperationParams(OperationKey combiParentOpKey) {
 		this(
 				combiParentOpKey,

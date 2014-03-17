@@ -23,6 +23,7 @@ import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
@@ -91,13 +92,15 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
 
+			final int totalMarkers = OperationsList.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
+
 			CombiTestOperationParams paramsTest = new CombiTestOperationParams(
 					qaMarkersOperationKey,
 					genotypeEncoder,
 					useThresholdCalibration,
 					resultOperationName);
 			ByCombiWeightsFilterOperationParams paramsFilter = new ByCombiWeightsFilterOperationParams(
-					null,
+					totalMarkers,
 					weightsFilterWidth,
 					markersToKeep,
 					"Filter on " + resultOperationName);
