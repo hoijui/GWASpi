@@ -58,10 +58,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		this.gwasParams = gwasParams;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_Loader_GWASifOK.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		LoadingNetCDFDataSetDestination samplesReceiver = new LoadingNetCDFDataSetDestination(loadDescription); // HACK FIXME
@@ -107,15 +109,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 				&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 		{
-			//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 			// GENOTYPE FREQ.
 			OperationKey censusOpKey = null;
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 			}
-
 			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
-			//</editor-fold>
 
 			Threaded_GWAS.performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
 		}
