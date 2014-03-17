@@ -165,7 +165,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpKey != null) {
-				new OutputTest(assocOpKey, testType).writeReportsForTestData();
+				new OutputTest(assocOpKey, testType, markersQAOpKey).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpKey);
 			}
 		}
@@ -190,7 +190,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendOpKey != null) {
-				new OutputTest(trendOpKey, OPType.TRENDTEST).writeReportsForTestData();
+				new OutputTest(trendOpKey, OPType.TRENDTEST, markersQAOpKey).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpKey);
 			}
 		}
