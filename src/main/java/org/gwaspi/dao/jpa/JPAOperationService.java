@@ -108,7 +108,7 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			operationMetadata = em.find(OperationMetadata.class, operationKey);
 		} catch (Exception ex) {
-			throw new IOException("Failed fetching a operation-metadata by id: " + operationKey, ex);
+			throw new IOException("Failed fetching operation-metadata by id: " + operationKey, ex);
 		} finally {
 			close(em);
 		}
