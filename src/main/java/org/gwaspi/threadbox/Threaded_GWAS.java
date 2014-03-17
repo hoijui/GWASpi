@@ -51,10 +51,12 @@ public class Threaded_GWAS extends CommonRunnable {
 		this.gwasParams = gwasParams;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_GWAS.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
