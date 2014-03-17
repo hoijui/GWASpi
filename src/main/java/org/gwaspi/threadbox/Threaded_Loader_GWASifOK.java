@@ -114,7 +114,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 			}
-			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
+			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
 
 			Threaded_GWAS.performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
 		}

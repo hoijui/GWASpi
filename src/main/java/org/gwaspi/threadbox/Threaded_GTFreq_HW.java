@@ -18,7 +18,9 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
@@ -53,7 +55,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 				&& (censusOpKey != null))
 		{
-			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
+			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 			OperationKey hwOpKey = OperationManager.performHardyWeinberg(params);
 		}
 	}

@@ -59,7 +59,8 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
 
-		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey);
+		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
+		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
 
 		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
 	}
@@ -124,14 +125,14 @@ public class Threaded_GWAS extends CommonRunnable {
 		return censusOpKey;
 	}
 
-	static OperationKey checkPerformHW(SwingWorkerItem thisSwi, OperationKey censusOpKey) throws Exception {
+	static OperationKey checkPerformHW(SwingWorkerItem thisSwi, OperationKey censusOpKey, final OperationKey markersQAOpKey) throws Exception {
 
 		// HW ON GENOTYPE FREQ.
 		OperationKey hwOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 				&& (censusOpKey != null))
 		{
-			final HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			final HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 			hwOpKey = OperationManager.performHardyWeinberg(params);
 		}
 

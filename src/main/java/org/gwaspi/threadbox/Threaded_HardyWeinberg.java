@@ -17,7 +17,10 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,9 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
-		Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
+
+		OperationMetadata censusOpMetadata = OperationsList.getOperationMetadata(censusOpKey);
+		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(censusOpMetadata.getParent(), OPType.MARKER_QA).get(0));
+		Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
 	}
 }

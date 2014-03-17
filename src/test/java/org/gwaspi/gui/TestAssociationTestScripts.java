@@ -165,7 +165,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
 			final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
 
-			final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier);
+			final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier, matrixMarkersQAOpKey);
 			final OperationKey hwOpKey = OperationManager.performHardyWeinberg(hardyWeinbergOperationParams);
 
 			final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);

@@ -24,16 +24,24 @@ import org.gwaspi.operations.AbstractOperationParams;
 
 public class HardyWeinbergOperationParams extends AbstractOperationParams {
 
-	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey, String name) {
+	private final OperationKey markersQAOpKey;
+
+	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey, String name, final OperationKey markersQAOpKey) {
 		super(OPType.HARDY_WEINBERG, new DataSetKey(markerCensusOPKey), name);
+
+		this.markersQAOpKey = markersQAOpKey;
 	}
 
-	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey) {
-		this(markerCensusOPKey, null);
+	public HardyWeinbergOperationParams(OperationKey markerCensusOPKey, final OperationKey markersQAOpKey) {
+		this(markerCensusOPKey, null, markersQAOpKey);
 	}
 
 	@Override
 	protected String getNameDefault() {
 		return "Hardy & Weinberg test operation (calculates P and Heterozygosity values)";
+	}
+
+	public OperationKey getMarkersQAOpKey() {
+		return markersQAOpKey;
 	}
 }
