@@ -56,7 +56,7 @@ public class OutputHardyWeinberg {
 	private OutputHardyWeinberg() {
 	}
 
-	public static void writeReportsForMarkersHWData(OperationKey operationKey) throws IOException {
+	public static void writeReportsForMarkersHWData(OperationKey operationKey, OperationKey qaMarkersOpKey) throws IOException {
 
 		OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
 
@@ -66,7 +66,7 @@ public class OutputHardyWeinberg {
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 
-		processSortedHardyWeinbergReport(operationKey, hwOutName);
+		processSortedHardyWeinbergReport(operationKey, hwOutName, qaMarkersOpKey);
 		ReportsList.insertRPMetadata(new Report(
 				"Hardy Weinberg Table",
 				hwOutName,
@@ -77,7 +77,7 @@ public class OutputHardyWeinberg {
 		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Report");
 	}
 
-	protected static void processSortedHardyWeinbergReport(OperationKey operationKey, String reportName) throws IOException {
+	protected static void processSortedHardyWeinbergReport(OperationKey operationKey, String reportName, OperationKey qaMarkersOpKey) throws IOException {
 
 		HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(operationKey);
 
@@ -125,20 +125,11 @@ public class OutputHardyWeinberg {
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 
 		// WRITE KNOWN ALLELES FROM QA
-		// get MARKER_QA Operation
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(rdOPMetadata.getParentMatrixKey());
-		OperationKey markersQAopKey = null;
-		for (int i = 0; i < operations.size(); i++) {
-			OperationMetadata op = operations.get(i);
-			if (op.getType().equals(OPType.MARKER_QA)) {
-				markersQAopKey = OperationKey.valueOf(op);
-			}
-		}
 		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
 
 
-		if (markersQAopKey != null) {
-			QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+		if (qaMarkersOpKey != null) {
+			QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(qaMarkersOpKey);
 			Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
 			Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 			Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);

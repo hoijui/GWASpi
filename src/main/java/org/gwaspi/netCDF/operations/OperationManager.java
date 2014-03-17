@@ -74,7 +74,7 @@ public class OperationManager {
 
 		final OperationKey operationKey = performOperation(operation);
 
-		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
+		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey, params.getMarkersQAOpKey());
 
 		return operationKey;
 	}
