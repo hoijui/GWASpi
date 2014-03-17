@@ -39,6 +39,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class Config {
 	public static final String PROPERTY_CURRENT_GWASPIDB_VERSION = "CURRENT_GWASPIDB_VERSION";
 
 	/** System wide preferences. */
-	private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
+	private static final Preferences prefs = Preferences.userNodeForPackage(Config.class);
 	/**
 	 * Per software (runtime-)instance preferences.
 	 * We use per-thread prefs, initialized with the values from the main thread
@@ -288,7 +289,8 @@ public class Config {
 
 		if (!derbyCenter.exists()) {
 			// STUDY_1 SPECIFIC DATA
-			StudyList.insertNewStudy(new Study("Study 1", "")); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
+			StudyKey newStudy = StudyList.insertNewStudy(new Study("Study 1", "")); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
+			GWASpiExplorerNodes.insertStudyNode(newStudy);
 		}
 
 		Utils.createFolder(dataDir.getPath(), "genotypes");

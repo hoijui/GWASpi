@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -74,6 +75,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 					studyKey = StudyList.insertNewStudy(new Study(
 							idValue/*.substring(10)*/,
 							"Study created by command-line interface"));
+					GWASpiExplorerNodes.insertStudyNode(studyKey);
 				} else {
 					throw new IOException("The Study-id must be an integer value of an existing Study, \"" + idValue + "\" is not so!");
 				}
@@ -84,6 +86,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 				StudyKey studyKey = StudyList.insertNewStudy(new Study(
 						idValue/*.substring(10)*/,
 						"Study created by command-line interface"));
+				GWASpiExplorerNodes.insertStudyNode(studyKey);
 				return studyKey;
 			} else {
 				throw new UnsupportedOperationException("Not yet implemented");
@@ -151,6 +154,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 					studyKey = StudyList.insertNewStudy(new Study(
 							studyIdStr/*.substring(10)*/,
 							"Study created by command-line interface"));
+					GWASpiExplorerNodes.insertStudyNode(studyKey);
 				}
 			} else {
 				System.out.println("The Study-id must be an integer value of an existing Study, \""+studyIdStr+"\" is not so!");

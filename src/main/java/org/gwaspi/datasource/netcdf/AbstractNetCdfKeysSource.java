@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.KeyFactory;
+import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
 
 public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSource<KT> {
@@ -31,8 +32,8 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 	private final String varOriginalIndices;
 	private final String varKeys;
 
-	public AbstractNetCdfKeysSource(NetcdfFile rdNetCdfFile, int chunkSize, String varDimension, String varOriginalIndices, String varKeys) {
-		super(rdNetCdfFile, chunkSize, varDimension);
+	public AbstractNetCdfKeysSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, String varDimension, String varOriginalIndices, String varKeys) {
+		super(origin, rdNetCdfFile, chunkSize, varDimension);
 
 		this.varOriginalIndices = varOriginalIndices;
 		this.varKeys = varKeys;
@@ -61,6 +62,7 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 		return getIndices(-1, -1);
 	}
 
+	@Override
 	public List<KT> getRange(int from, int to) throws IOException {
 
 		List<KT> entries;

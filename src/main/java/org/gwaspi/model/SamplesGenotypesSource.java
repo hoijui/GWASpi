@@ -17,7 +17,7 @@
 
 package org.gwaspi.model;
 
-import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 
 /**
  * Allows to read the genotypes matrix, sample by sample.
@@ -27,5 +27,5 @@ import java.util.List;
  * and some might be unbearably slow.
  */
 //public interface SamplesGenotypesSource extends Map<SampleKey, GenotypesList> {
-public interface SamplesGenotypesSource extends List<GenotypesList> {
+public interface SamplesGenotypesSource extends ListSource<GenotypesList> {
 }

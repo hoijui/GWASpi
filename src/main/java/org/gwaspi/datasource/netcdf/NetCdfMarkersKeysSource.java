@@ -23,21 +23,26 @@ import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerKeyFactory;
 import org.gwaspi.model.MarkersKeysSource;
+import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfMarkersKeysSource extends AbstractNetCdfKeysSource<MarkerKey> implements MarkersKeysSource {
 
 	private static final int DEFAULT_CHUNK_SIZE = 200;
 
-	public NetCdfMarkersKeysSource(NetcdfFile rdNetCdfFile, String varDimension, String varOriginalIndices, String varKeys) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, varDimension, varOriginalIndices, varKeys);
+	private MarkersKeysSource originSource;
+
+	public NetCdfMarkersKeysSource(MatrixKey origin, NetcdfFile rdNetCdfFile, String varMarkersDimension, String varOriginalIndices, String varKeys) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, varMarkersDimension, varOriginalIndices, varKeys);
+
+		this.originSource = null;
 	}
 
-	public static MarkersKeysSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfMarkersKeysSource(rdNetCdfFile, cNetCDF.Dimensions.DIM_MARKERSET, null, cNetCDF.Variables.VAR_MARKERSET);
+	public static MarkersKeysSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfMarkersKeysSource(origin, rdNetCdfFile, cNetCDF.Dimensions.DIM_MARKERSET, null, cNetCDF.Variables.VAR_MARKERSET);
 	}
 
-	public static MarkersKeysSource createForOperation(NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
+	public static MarkersKeysSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
 
 		final String varDimension;
 		final String varOriginalIndices;
@@ -52,7 +57,21 @@ public class NetCdfMarkersKeysSource extends AbstractNetCdfKeysSource<MarkerKey>
 			varKeys = cNetCDF.Variables.VAR_IMPLICITSET;
 		}
 
-		return new NetCdfMarkersKeysSource(rdNetCdfFile, varDimension, varOriginalIndices, varKeys);
+		return new NetCdfMarkersKeysSource(origin, rdNetCdfFile, varDimension, varOriginalIndices, varKeys);
+	}
+
+	@Override
+	public MarkersKeysSource getOrigSource() throws IOException {
+
+		if (originSource == null) {
+			if (getOrigin() == null) {
+				originSource = this;
+			} else {
+				originSource = getOrigDataSetSource().getMarkersKeysSource();
+			}
+		}
+
+		return originSource;
 	}
 
 	@Override

@@ -17,6 +17,7 @@
 
 package org.gwaspi.datasource.filter;
 
+import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
 
@@ -41,6 +42,10 @@ public class IndicesFilteredList<T> extends AbstractList<T> implements List<T> {
 
 	protected List<Integer> getIncludeIndices() {
 		return includeIndices;
+	}
+
+	public List<T> getRange(int from, int to) throws IOException {
+		return IndicesFilteredList.getWrappedRange(this, getIncludeIndices(), from, to);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomesInfosSource;
+import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<ChromosomeInfo> implements ChromosomesInfosSource {
@@ -35,20 +36,36 @@ public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<Chrom
 	private static final int DEFAULT_CHUNK_SIZE = 100;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
-	private NetCdfChromosomesInfosSource(NetcdfFile rdNetCdfFile) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_CHRSET);
+	private ChromosomesInfosSource originSource;
+
+	private NetCdfChromosomesInfosSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_CHRSET);
 	}
 
-	private NetCdfChromosomesInfosSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_CHRSET, originalIndices);
+	private NetCdfChromosomesInfosSource(MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_CHRSET, originalIndices);
 	}
 
-	public static ChromosomesInfosSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfChromosomesInfosSource(rdNetCdfFile);
+	public static ChromosomesInfosSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfChromosomesInfosSource(origin, rdNetCdfFile);
 	}
 
-	public static ChromosomesInfosSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfChromosomesInfosSource(rdNetCdfFile, originalIndices);
+	public static ChromosomesInfosSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfChromosomesInfosSource(origin, rdNetCdfFile, originalIndices);
+	}
+
+	@Override
+	public ChromosomesInfosSource getOrigSource() throws IOException {
+
+		if (originSource == null) {
+			if (getOrigin() == null) {
+				originSource = this;
+			} else {
+				originSource = getOrigDataSetSource().getChromosomesInfosSource();
+			}
+		}
+
+		return originSource;
 	}
 
 	@Override

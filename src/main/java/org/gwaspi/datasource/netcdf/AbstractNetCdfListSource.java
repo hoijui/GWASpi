@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -34,21 +37,37 @@ public abstract class AbstractNetCdfListSource<VT> extends AbstractOrigIndicesFi
 	private final String varNameDimension;
 	private Integer size;
 	private final NetcdfFile rdNetCdfFile;
+	private final MatrixKey origin;
+	private DataSetSource originDataSetSource;
 
-	private AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
+	private AbstractNetCdfListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
 		super(chunkSize, originalIndices);
 
 		this.varNameDimension = varNameDimension;
 		this.size = null;
+		this.origin = origin;
 		this.rdNetCdfFile = rdNetCdfFile;
 	}
 
-	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
-		this(rdNetCdfFile, chunkSize, null, varNameDimension);
+	AbstractNetCdfListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
+		this(origin, rdNetCdfFile, chunkSize, null, varNameDimension);
 	}
 
-	AbstractNetCdfListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension, List<Integer> originalIndices) {
-		this(rdNetCdfFile, chunkSize, originalIndices, varNameDimension);
+	AbstractNetCdfListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension, List<Integer> originalIndices) {
+		this(origin, rdNetCdfFile, chunkSize, originalIndices, varNameDimension);
+	}
+
+	protected MatrixKey getOrigin() {
+		return origin;
+	}
+
+	public DataSetSource getOrigDataSetSource() throws IOException {
+
+		if (originDataSetSource == null) {
+			originDataSetSource = MatrixFactory.generateMatrixDataSetSource(origin);
+		}
+
+		return originDataSetSource;
 	}
 
 	protected NetcdfFile getReadNetCdfFile() {

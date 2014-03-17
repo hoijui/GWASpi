@@ -17,7 +17,7 @@
 
 package org.gwaspi.model;
 
-import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 
 /**
  * Allows to read the genotypes matrix, marker by marker.
@@ -27,5 +27,5 @@ import java.util.List;
  * and some might be unbearably slow.
  */
 //public interface MarkersGenotypesSource extends Map<MarkerKey, GenotypesList> {
-public interface MarkersGenotypesSource extends List<GenotypesList> {
+public interface MarkersGenotypesSource extends ListSource<GenotypesList> {
 }

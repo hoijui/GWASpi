@@ -101,6 +101,7 @@ public class GWASpiExplorerTree {
 				NodeElementInfo.NodeType.ROOT,
 				Text.App.appName,
 				null));
+		GWASpiExplorerNodes.addNode(null, top, false);
 		growTree(top);
 
 		// Create a tree that allows one selection at a time.

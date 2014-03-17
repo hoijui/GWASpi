@@ -17,10 +17,10 @@
 
 package org.gwaspi.model;
 
-import java.util.List;
+import org.gwaspi.datasource.netcdf.ListSource;
 
 /**
  * TODO
  */
-public interface ChromosomesInfosSource extends List<ChromosomeInfo> {
+public interface ChromosomesInfosSource extends ListSource<ChromosomeInfo> {
 }

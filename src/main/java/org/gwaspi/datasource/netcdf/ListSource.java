@@ -15,36 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import org.gwaspi.datasource.netcdf.ListSource;
 
 /**
  * TODO
- * @param <VT> value type
+ * @param <VT> list value type
  */
-public interface AbstractKeysSource<VT> extends ListSource<VT> {
+public interface ListSource<VT> extends List<VT> {
 
-	/**
-	 * Returns the indices of the elements in the original matrix
-	 * @return original indices
-	 * @throws IOException implementation dependent
-	 */
-	List<Integer> getIndices() throws IOException;
+	ListSource<VT> getOrigSource() throws IOException;
 
-	/**
-	 * Returns the indices of the elements in the original matrix
-	 * @param from
-	 * @param to
-	 * @return original indices
-	 * @throws IOException implementation dependent
-	 */
-	List<Integer> getIndices(int from, int to) throws IOException;
-
-	Map<Integer, VT> getIndicesMap() throws IOException;
-
-	Map<Integer, VT> getIndicesMap(int from, int to) throws IOException;
+	List<VT> getRange(int from, int to) throws IOException;
 }
