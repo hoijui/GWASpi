@@ -94,7 +94,7 @@ public class Threaded_Test extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (testOpKey != null) {
-				new OutputTest(testOpKey, testType).writeReportsForTestData();
+				new OutputTest(testOpKey, testType, markersQAOpKey).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 			}
 		}

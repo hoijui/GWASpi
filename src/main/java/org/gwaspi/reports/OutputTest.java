@@ -56,15 +56,17 @@ public class OutputTest {
 	private static final Logger log = LoggerFactory.getLogger(OutputTest.class);
 
 	private final OperationKey testOpKey;
+	private final OperationKey qaMarkersOpKey;
 	private final OPType testType;
 	private final String testName;
 	private final int qqPlotDof;
 	private final String header;
 
-	public OutputTest(OperationKey testOpKey, OPType testType) {
+	public OutputTest(OperationKey testOpKey, OPType testType, OperationKey qaMarkersOpKey) {
 
 		this.testOpKey = testOpKey;
 		this.testType = testType;
+		this.qaMarkersOpKey = qaMarkersOpKey;
 
 		final String headerBase = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele";
 		switch (testType) {
@@ -90,6 +92,10 @@ public class OutputTest {
 		this.testName = createTestName(testType);
 	}
 
+	public OutputTest(OperationKey testOpKey, OperationKey qaMarkersOpKey) throws IOException {
+		this(testOpKey, OperationsList.getOperationMetadata(testOpKey).getOperationType(), qaMarkersOpKey);
+	}
+
 	public static String createTestName(OPType testType) {
 
 		final String testName;
@@ -111,10 +117,6 @@ public class OutputTest {
 		}
 
 		return testName;
-	}
-
-	public OutputTest(OperationKey testOpKey) throws IOException {
-		this(testOpKey, OperationsList.getOperationMetadata(testOpKey).getOperationType());
 	}
 
 	public void writeReportsForTestData() throws IOException {
@@ -251,24 +253,24 @@ public class OutputTest {
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		// get MARKER_QA Operation
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(rdOPMetadata.getParentMatrixKey());
-		OperationKey markersQAopKey = null;
-		for (int i = 0; i < operations.size(); i++) {
-			OperationMetadata op = operations.get(i);
-			if (op.getType().equals(OPType.MARKER_QA)) {
-				markersQAopKey = OperationKey.valueOf(op);
-			}
-		}
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
-		List<Byte> knownMinorAlleles = (List) qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1); // HACK might not be a List!
-		List<Byte> knownMajorAlleles = (List) qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1); // HACK might not be a List!
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(qaMarkersOpKey);
+		List<Integer> qaMarkersOrigIndices = qaMarkersOperationDataSet.getMarkersKeysSource().getIndices();
+		List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
+		List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();
+		int qaMarkersOrigIndicescurIndex = 0;
 		List<String> sortedMarkerAlleles = new ArrayList<String>(sortedOrigIndices.size());
 		for (Integer origIndices : sortedOrigIndices) {
-			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
-			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
+			while (qaMarkersOrigIndices.get(qaMarkersOrigIndicescurIndex) < origIndices) {
+				qaMarkersOrigIndicescurIndex++;
+			}
+			if (qaMarkersOrigIndices.get(qaMarkersOrigIndicescurIndex) != origIndices) {
+				throw new IllegalArgumentException("The supplied QA Markers operation does not contain all the required markers");
+			}
+			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(qaMarkersOrigIndicescurIndex);
+			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(qaMarkersOrigIndicescurIndex);
 			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
 			sortedMarkerAlleles.add(concatenatedValue);
+			qaMarkersOrigIndicescurIndex++;
 		}
 		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
 

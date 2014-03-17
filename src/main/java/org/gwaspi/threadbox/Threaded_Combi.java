@@ -104,7 +104,7 @@ public class Threaded_Combi extends CommonRunnable {
 			OperationKey trendTestOpKey = OperationManager.performOperation(new OP_TrendTests(trendTestParams));
 
 			if (trendTestOpKey != null) {
-				new OutputTest(trendTestOpKey, OPType.COMBI_ASSOC_TEST).writeReportsForTestData();
+				new OutputTest(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 			}
 		}
