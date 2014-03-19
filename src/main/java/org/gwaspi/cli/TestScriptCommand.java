@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
@@ -31,6 +32,14 @@ import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
 
 class TestScriptCommand extends AbstractScriptCommand {
+
+	private static final List<OPType> QA_OPERATION_TYPES;
+	static {
+		List<OPType> qaOpTypes = new ArrayList<OPType>();
+		qaOpTypes.add(OPType.SAMPLE_QA);
+		qaOpTypes.add(OPType.MARKER_QA);
+		QA_OPERATION_TYPES = qaOpTypes;
+	}
 
 	private final OPType testType;
 
@@ -108,17 +117,7 @@ class TestScriptCommand extends AbstractScriptCommand {
 			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get("discard-marker-HW-treshold")));
 			gwasParams.setProceed(true);
 
-			List<OPType> necessaryOPs = new ArrayList<OPType>();
-			necessaryOPs.add(OPType.SAMPLE_QA);
-			necessaryOPs.add(OPType.MARKER_QA);
-			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
-
-			// QA block
-			if (gwasParams.isProceed() && missingOPs.size() > 0) {
-				gwasParams.setProceed(false);
-				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(matrixKey);
-			}
+			ensureMatrixQAs(matrixKey, gwasParams);
 
 			// test block
 			if (gwasParams.isProceed()) {
@@ -133,5 +132,18 @@ class TestScriptCommand extends AbstractScriptCommand {
 		}
 
 		return false;
+	}
+
+	static void ensureMatrixQAs(final MatrixKey matrixKey, final GWASinOneGOParams gwasParams) {
+
+		final DataSetKey abstractMatrixKey = new DataSetKey(matrixKey);
+
+		final List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(QA_OPERATION_TYPES, abstractMatrixKey, true);
+
+		if (gwasParams.isProceed() && missingOPs.size() > 0) {
+			gwasParams.setProceed(false);
+			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
+			MultiOperations.doMatrixQAs(abstractMatrixKey);
+		}
 	}
 }

@@ -42,8 +42,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
-import org.gwaspi.gui.CurrentStudyPanel;
-import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.LoadDataPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
@@ -114,7 +113,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
 
-		btn_Back.setAction(new BackAction(studyKey));
+		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInforeport));
 
@@ -213,6 +212,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 		TableRowSorter sorter = new TableRowSorter(model) {
 			Comparator<Object> comparator = new Comparator<Object>() {
+				@Override
 				public int compare(Object o1, Object o2) {
 					try {
 						Double d1 = Double.parseDouble(o1.toString());
@@ -322,28 +322,6 @@ public class Report_SampleInfoPanel extends JPanel {
 			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private final StudyKey studyKey;
-
-		BackAction(StudyKey studyKey) {
-
-			this.studyKey = studyKey;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}

@@ -51,11 +51,12 @@ import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.MatrixMarkerQAPanel;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -223,7 +224,8 @@ public class Report_QAMarkersSummary extends JPanel {
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
 
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
-		btn_Back.setAction(new BackAction(operationKey));
+
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
@@ -332,6 +334,7 @@ public class Report_QAMarkersSummary extends JPanel {
 //						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
+							@Override
 							public int compare(Object o1, Object o2) {
 								try {
 									Double d1 = Double.parseDouble(o1.toString());
@@ -380,28 +383,6 @@ public class Report_QAMarkersSummary extends JPanel {
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private final OperationKey operationKey;
-
-		BackAction(OperationKey operationKey) throws IOException {
-
-			this.operationKey = operationKey;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(operationKey.getParentMatrixKey(), operationKey.getId()));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}

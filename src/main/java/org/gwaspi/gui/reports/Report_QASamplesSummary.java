@@ -52,11 +52,13 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -83,18 +85,18 @@ public class Report_QASamplesSummary extends JPanel {
 			Text.Reports.smplHetzyRat};
 
 	// Variables declaration - do not modify
-	private File reportFile;
-	private OperationKey operationKey;
-	private JButton btn_Get;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JLabel lbl_suffix1;
-	private JPanel pnl_Summary;
-	private JScrollPane scrl_ReportTable;
-	private JTable tbl_ReportTable;
-	private JTextField txt_NRows;
+	private final File reportFile;
+	private final OperationKey operationKey;
+	private final JButton btn_Get;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JPanel pnl_Footer;
+	private final JLabel lbl_suffix1;
+	private final JPanel pnl_Summary;
+	private final JScrollPane scrl_ReportTable;
+	private final JTable tbl_ReportTable;
+	private final JTextField txt_NRows;
 	// End of variables declaration
 
 	public Report_QASamplesSummary(final OperationKey operationKey, final String qaFileName) {
@@ -236,7 +238,7 @@ public class Report_QASamplesSummary extends JPanel {
 				},
 				new String[]{"", "", "", ""}));
 		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), qaFileName, tbl_ReportTable, txt_NRows));
-		btn_Back.setAction(new Report_Analysis.BackAction(this.operationKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(this.operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
 		loadReportAction.actionPerformed(null);
@@ -327,6 +329,7 @@ public class Report_QASamplesSummary extends JPanel {
 //						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
+							@Override
 							public int compare(Object o1, Object o2) {
 								try {
 									Double d1 = Double.parseDouble(o1.toString());

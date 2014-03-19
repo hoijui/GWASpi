@@ -52,7 +52,7 @@ public class PreferencesPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(PreferencesPanel.class);
 
-	private Preferences prefs = Preferences.userNodeForPackage(Config.class);
+	private final Preferences prefs;
 	// Variables declaration - do not modify
 	private JButton btn_Back;
 	private JButton btn_Reset;
@@ -65,11 +65,34 @@ public class PreferencesPanel extends JPanel {
 	private ResetPreferencesAction resetPreferencesAction;
 	// End of variables declaration
 
+	private static class PreferencesTableModel extends DefaultTableModel {
+
+		private static final String[] COLUMN_NAMES
+				= new String[] {Text.App.propertyName, Text.App.propertyValue};
+		private static final boolean[] CAN_EDIT = new boolean[] {false, true};
+		private static final Object[][] DATA
+				= new Object[][] {
+					{null, null},
+					{null, null},
+					{null, null},
+					{null, null}
+				};
+
+		PreferencesTableModel() {
+			super(DATA, COLUMN_NAMES);
+		}
+
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			return CAN_EDIT[columnIndex];
+		}
+	}
 	/**
 	 * Creates new form IntroPanel
 	 */
 	public PreferencesPanel() {
 
+		prefs = Preferences.userNodeForPackage(Config.class);
 		prefBackup = new LinkedList<String[]>();
 		initGui();
 	}
@@ -86,10 +109,7 @@ public class PreferencesPanel extends JPanel {
 		tbl_PreferencesTable = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
-				if (col == 0) {
-					return false; //Renders column 0 uneditable.
-				}
-				return true;
+				return (col != 0); // mRenders column 0 uneditable.
 			}
 		};
 		tbl_PreferencesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
@@ -101,26 +121,10 @@ public class PreferencesPanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.App.propertiesPaths, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 
-		tbl_PreferencesTable.setModel(new DefaultTableModel(
-				new Object[][]{
-					{null, null},
-					{null, null},
-					{null, null},
-					{null, null}
-				},
-				new String[]{Text.App.propertyName, Text.App.propertyValue}) {
-			boolean[] canEdit = new boolean[]{
-				false, true
-			};
-
-					@Override
-			public boolean isCellEditable(int rowIndex, int columnIndex) {
-				return canEdit[columnIndex];
-			}
-		});
+		tbl_PreferencesTable.setModel(new PreferencesTableModel());
 		scrl_PreferencesTable.setViewportView(tbl_PreferencesTable);
 
-		btn_Back.setAction(new BackAction());
+		btn_Back.setAction(new StudyManagementPanel.BackAction());
 
 		resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
 		btn_Reset.setAction(resetPreferencesAction);
@@ -187,8 +191,8 @@ public class PreferencesPanel extends JPanel {
 
 	private static class SavePreferencesAction extends AbstractAction {
 
-		private JTable preferencesTable;
-		private Action resetPreferencesAction;
+		private final JTable preferencesTable;
+		private final Action resetPreferencesAction;
 
 		SavePreferencesAction(JTable preferencesTable, Action resetPreferencesAction) {
 
@@ -199,30 +203,33 @@ public class PreferencesPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			boolean proceed = true;
 			preferencesTable.editCellAt(0, 0); //commit edited changes by chnaging the focus of table
 
 			//<editor-fold defaultstate="expanded" desc="VALIDATION">
 			for (int i = 0; i < preferencesTable.getRowCount(); i++) {
-				if (preferencesTable.getValueAt(i, 0).toString().toLowerCase().contains("dir")) {
-					File path = new File(preferencesTable.getValueAt(i, 1).toString());
+				final String selectedPropertyName = preferencesTable.getValueAt(i, 0).toString();
+				final String selectedPropertyValue = preferencesTable.getValueAt(i, 1).toString();
+				if (selectedPropertyName.toLowerCase().contains("dir")) {
+					File path = new File(selectedPropertyValue);
 					if (!path.exists()) {
 						proceed = false;
-						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + Text.App.appName + " to fail!\nPlease fix broken path: " + preferencesTable.getValueAt(i, 1).toString());
+						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + Text.App.appName + " to fail!\nPlease fix broken path: " + selectedPropertyValue);
 						resetPreferencesAction.actionPerformed(null);
 					}
-				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_DOT")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_BCKG")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_DOT")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_2SIGMA")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD"))
+				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_BCKG")
+						|| selectedPropertyName.equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
+						|| selectedPropertyName.equals("CHART_MANHATTAN_PLOT_DOT")
+						|| selectedPropertyName.equals("CHART_QQ_PLOT_BCKG")
+						|| selectedPropertyName.equals("CHART_QQ_PLOT_DOT")
+						|| selectedPropertyName.equals("CHART_QQ_PLOT_2SIGMA")
+						|| selectedPropertyName.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
+						|| selectedPropertyName.equals("CHART_SAMPLEQA_MISSING_THRESHOLD"))
 				{
 					// Check if it is a valid color setting,
 					// and issue a warning if not.
-					String[] tmp = preferencesTable.getValueAt(i, 1).toString().split(",");
+					String[] tmp = selectedPropertyValue.split(",");
 					if (tmp.length == 3) {
 						try {
 							int redInt = Integer.parseInt(tmp[0]);
@@ -238,38 +245,38 @@ public class PreferencesPanel extends JPanel {
 								blueInt = blueInt % 255;
 							}
 						} catch (Exception ex) {
-							String warningText = Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+							String warningText = Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName;
 							log.warn(warningText, ex);
 							Dialogs.showWarningDialogue(warningText);
 							proceed = false;
 						}
 					} else {
-						Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+						Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName);
 						proceed = false;
 					}
-				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
+				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
 					try {
-						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+						double tmpNb = Double.parseDouble(selectedPropertyValue);
 					} catch (Exception ex) {
-						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + selectedPropertyName;
 						log.warn(warningText, ex);
 						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
-				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
+				} else if (selectedPropertyName.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
 					try {
-						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+						double tmpNb = Double.parseDouble(selectedPropertyValue);
 					} catch (Exception ex) {
-						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + selectedPropertyName;
 						log.warn(warningText, ex);
 						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
-				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
+				} else if (selectedPropertyName.equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
 					try {
-						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+						double tmpNb = Double.parseDouble(selectedPropertyValue);
 					} catch (Exception ex) {
-						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + selectedPropertyName;
 						log.warn(warningText, ex);
 						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
@@ -281,8 +288,10 @@ public class PreferencesPanel extends JPanel {
 				Integer decision = Dialogs.showConfirmDialogue("Do you really want to change the current preference values?\nDoing so may cause breakage if the data expected (databases, genotypes...) is not available at the new paths.");
 				if ((decision == JOptionPane.YES_OPTION) && proceed) {
 					for (int i = 0; i < preferencesTable.getRowCount(); i++) {
+						final String selectedPropertyName = preferencesTable.getValueAt(i, 0).toString();
+						final String selectedPropertyValue = preferencesTable.getValueAt(i, 1).toString();
 						try {
-							Config.setConfigValue(preferencesTable.getValueAt(i, 0).toString(), preferencesTable.getValueAt(i, 1).toString());
+							Config.setConfigValue(selectedPropertyName, selectedPropertyValue);
 						} catch (IOException ex) {
 							log.error(null, ex);
 						}
@@ -295,9 +304,9 @@ public class PreferencesPanel extends JPanel {
 
 	private static class ResetPreferencesAction extends AbstractAction {
 
-		private List<String[]> prefBackup;
-		private JTable preferencesTable;
-		private Preferences prefs;
+		private final List<String[]> prefBackup;
+		private final JTable preferencesTable;
+		private final Preferences prefs;
 
 		ResetPreferencesAction(List<String[]> prefBackup, JTable preferencesTable, Preferences prefs) {
 
@@ -352,8 +361,8 @@ public class PreferencesPanel extends JPanel {
 
 	private static class ChangeDataDirAction extends AbstractAction {
 
-		private JTable preferencesTable;
-		private Action resetPreferencesAction;
+		private final JTable preferencesTable;
+		private final Action resetPreferencesAction;
 
 		ChangeDataDirAction(JTable preferencesTable, Action resetPreferencesAction) {
 
@@ -427,20 +436,6 @@ public class PreferencesPanel extends JPanel {
 					}
 				}
 			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		BackAction() {
-
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
-			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
 }

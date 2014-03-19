@@ -26,7 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -45,6 +47,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -57,6 +60,7 @@ import org.gwaspi.gui.utils.MoreInfoForGtFreq;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -83,8 +87,6 @@ public class MatrixAnalysePanel extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
-//	private final MatrixKey parentMatrixKey;
-//	private final OperationKey operationKey;
 	private final OperationMetadata currentOP;
 	private final JButton btn_1_1;
 	private final JButton btn_1_2;
@@ -108,16 +110,18 @@ public class MatrixAnalysePanel extends JPanel {
 	private final Action gwasInOneGoAction;
 	// End of variables declaration
 
-	public MatrixAnalysePanel(MatrixKey parentMatrixKey, OperationKey operationKey) throws IOException {
+	public MatrixAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
-//		this.parentMatrixKey = parentMatrixKey;
-//		this.operationKey = operationKey;
-		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+//		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
-		if (operationKey != null) {
-			currentOP = OperationsList.getOperationMetadata(operationKey);
+		final DataSetKey parent;
+		if (observedElementKey.isOperation()) {
+			currentOP = OperationsList.getOperationMetadata(observedElementKey.getOperationParent());
+			parent = currentOP.getParent();
 		} else {
 			currentOP = null;
+			parent = null;
 		}
 
 		pnl_MatrixDesc = new JPanel();
@@ -156,7 +160,7 @@ public class MatrixAnalysePanel extends JPanel {
 		btn_1_5 = new JButton();
 		btn_1_6 = new JButton();
 
-		gwasInOneGoAction = new GwasInOneGoAction(parentMatrixKey, gwasParams);
+		gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams);
 		gwasInOneGoAction.setEnabled(currentOP == null);
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.analyseData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
@@ -165,26 +169,26 @@ public class MatrixAnalysePanel extends JPanel {
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
 		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		if (operationKey != null) {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getFriendlyName() + ", " + Text.Operation.operationId + ": " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(currentOP.getDescription().toString());
+		final String title;
+		if (observedElementKey.isOperation()) {
+			title
+					= Text.Operation.operation + ": " + observedElementMetadata.getFriendlyName()
+					+ ", " + Text.Operation.operationId + ": " + observedElementMetadata.getDataSetKey().getOperationParent().getId();
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + matrixMetadata.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(matrixMetadata.getDescription().toString());
+			title
+					= Text.Matrix.matrix + ": " + observedElementMetadata.getFriendlyName()
+					+ ", " + "MatrixID" + ": " + observedElementMetadata.getDataSetKey().getMatrixParent().getMatrixId();
 		}
+		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_Description.setText(observedElementMetadata.getDescription().toString());
 
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
-		Collection<OperationMetadata> tableMatrix;
-		if (currentOP != null) {
-			tableMatrix = OperationsList.getSelfAndOffspringOperationsMetadata(operationKey);
-		} else {
-			tableMatrix = OperationsList.getOffspringOperationsMetadata(parentMatrixKey);
-		}
-
-		tbl_MatrixOperations.setModel(new OperationsTableModel(tableMatrix));
+//		final Collection<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(observedElementKey);
+		final Collection<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
+		tbl_MatrixOperations.setModel(new OperationsTableModel(subOperations));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setAction(new DeleteOperationAction(operationKey, this, parentMatrixKey, tbl_MatrixOperations));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_MatrixOperations));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
@@ -215,17 +219,17 @@ public class MatrixAnalysePanel extends JPanel {
 
 		btn_1_1.setAction(gwasInOneGoAction);
 
-		Action genFreqAndHWAction = new GenFreqAndHWAction(parentMatrixKey, gwasParams);
+		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams);
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
+		btn_1_3.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
 
-		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
+		btn_1_4.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
 
-		btn_1_5.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.TRENDTEST));
+		btn_1_5.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST));
 
-		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
+		btn_1_6.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
@@ -264,7 +268,7 @@ public class MatrixAnalysePanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrixKey, currentOP));
+		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
@@ -317,16 +321,16 @@ public class MatrixAnalysePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static class AssociationTestsAction extends AbstractAction {
 
-		private final MatrixKey parentMatrixKey;
+		private final DataSetKey parentKey;
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
 		private final OPType testType;
 		private final String testName;
 		private final Component dialogParent;
 
-		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
+		AssociationTestsAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
 
-			this.parentMatrixKey = parentMatrixKey;
+			this.parentKey = parentKey;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
 			this.testType = testType;
@@ -337,7 +341,7 @@ public class MatrixAnalysePanel extends JPanel {
 			putValue(NAME, testNameHtml);
 		}
 
-		public static OperationKey evaluateCensusOPId(OperationMetadata currentOP, MatrixKey parentMatrixKey) throws IOException {
+		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey parentKey) throws IOException {
 
 			int censusOPId = OperationKey.NULL_ID;
 
@@ -345,26 +349,26 @@ public class MatrixAnalysePanel extends JPanel {
 				censusOPId = currentOP.getId();
 			} else {
 				// REQUEST WHICH CENSUS TO USE
-				List<String> censusTypes = new ArrayList<String>();
-				censusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-				censusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentMatrixKey, censusTypes, Text.Operation.GTFreqAndHW);
+				List<OPType> censusTypes = new ArrayList<OPType>();
+				censusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+				censusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentKey, censusTypes, Text.Operation.GTFreqAndHW);
 				if (markerCensusOP != null) {
 					censusOPId = markerCensusOP.getId();
 				}
 			}
 
-			return new OperationKey(parentMatrixKey, censusOPId);
+			return new OperationKey(parentKey.getOrigin(), censusOPId);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentMatrixKey);
+				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentKey);
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
-				Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(new DataSetKey(parentMatrixKey));
+				Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentKey);
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(Affection.UNAFFECTED)
@@ -378,7 +382,7 @@ public class MatrixAnalysePanel extends JPanel {
 						necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
 						necessaryOPs.add(OPType.HARDY_WEINBERG);
 					}
-					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
+					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, false); // FIXME some of the operatiosn (the QA ones at least) shoudl be direct children!
 
 					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
@@ -415,7 +419,7 @@ public class MatrixAnalysePanel extends JPanel {
 						OperationKey hwOPKey = null;
 						if (testType == OPType.COMBI_ASSOC_TEST) {
 							List<OperationMetadata> qaMarkersOffspring
-									= OperationsList.getOffspringOperationsMetadata(parentMatrixKey, OPType.MARKER_QA);
+									= OperationsList.getOffspringOperationsMetadata(parentKey, OPType.MARKER_QA);
 							qaMarkersOffspringKeys = new ArrayList<OperationKey>(qaMarkersOffspring.size());
 							for (OperationMetadata qaMarkersOp : qaMarkersOffspring) {
 								qaMarkersOffspringKeys.add(OperationKey.valueOf(qaMarkersOp));
@@ -483,12 +487,12 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class GenFreqAndHWAction extends AbstractAction {
 
-		private final MatrixKey parentMatrixKey;
+		private final DataSetKey parentKey;
 		private GWASinOneGOParams gwasParams;
 
-		GenFreqAndHWAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams) {
+		GenFreqAndHWAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams) {
 
-			this.parentMatrixKey = parentMatrixKey;
+			this.parentKey = parentKey;
 			this.gwasParams = gwasParams;
 			putValue(NAME, Text.Operation.htmlGTFreqAndHW);
 		}
@@ -500,9 +504,7 @@ public class MatrixAnalysePanel extends JPanel {
 				List<OPType> necessaryOPs = new ArrayList<OPType>();
 				necessaryOPs.add(OPType.SAMPLE_QA);
 				necessaryOPs.add(OPType.MARKER_QA);
-				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
-
-				final DataSetKey parentKey = new DataSetKey(parentMatrixKey);
+				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, true);
 
 				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(parentKey, OPType.MARKER_QA);
 				if (qaMarkersOps.isEmpty()) {
@@ -559,13 +561,13 @@ public class MatrixAnalysePanel extends JPanel {
 				if (gwasParams.isProceed() && missingOPs.size() > 0) {
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(parentMatrixKey);
+					MultiOperations.doMatrixQAs(parentKey);
 				}
 				// </editor-fold>
 
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
-				gwasParams.getMarkerCensusOperationParams().setParent(new DataSetKey(parentMatrixKey));
+				gwasParams.getMarkerCensusOperationParams().setParent(parentKey);
 				MultiOperations.doGTFreqDoHW(gwasParams);
 			}
 			// </editor-fold>
@@ -577,17 +579,14 @@ public class MatrixAnalysePanel extends JPanel {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	public static class DeleteOperationAction extends AbstractAction implements ListSelectionListener {
 
-		private final OperationKey currentlySelectedOPKey;
 		private final MatrixKey parentMatrixKey;
 		private final JTable matrixOperationsTable;
 		private final Component dialogParent;
 
-		DeleteOperationAction(OperationKey currentlySelectedOPKey, Component dialogParent, MatrixKey parentMatrixKey, JTable matrixOperationsTable) {
+		DeleteOperationAction(Component dialogParent, MatrixKey parentMatrixKey, JTable matrixOperationsTable) {
 
-			this.currentlySelectedOPKey = currentlySelectedOPKey; // NOTE this might be null
 			this.parentMatrixKey = parentMatrixKey;
 			this.dialogParent = dialogParent;
 			this.matrixOperationsTable = matrixOperationsTable;
@@ -598,47 +597,77 @@ public class MatrixAnalysePanel extends JPanel {
 
 		@Override
 		public void valueChanged(ListSelectionEvent evt) {
-			setEnabled(!this.matrixOperationsTable.getSelectionModel().isSelectionEmpty());
+
+			final boolean enable = !matrixOperationsTable.getSelectionModel().isSelectionEmpty();
+
+			setEnabled(enable);
+			if (enable) {
+				putValue(SHORT_DESCRIPTION, "Delete the selected operations");
+				putValue(LONG_DESCRIPTION, "Delete the selected operations and optionally also all associated report data");
+			} else {
+				putValue(SHORT_DESCRIPTION, "Please select the operation(s) to be delete");
+				putValue(LONG_DESCRIPTION, null);
+			}
+
+			final String name;
+			if (matrixOperationsTable.getSelectedRowCount() > 1) {
+				name = Text.Operation.deleteOperation + "s";
+			} else {
+				name = Text.Operation.deleteOperation;
+			}
+			putValue(NAME, name);
+		}
+
+		private Map<Integer, OperationKey> getSelectedOperations() {
+
+			final int[] selectedTableRows = matrixOperationsTable.getSelectedRows();
+			final Map<Integer, OperationKey> selectedTableRowAndOperations = new LinkedHashMap<Integer, OperationKey>(selectedTableRows.length);
+			for (int soi = selectedTableRows.length - 1; soi >= 0; soi--) {
+				final int selectedTableRow = selectedTableRows[soi];
+				final int operationId = (Integer) matrixOperationsTable.getModel().getValueAt(selectedTableRow, 0);
+				selectedTableRowAndOperations.put(selectedTableRow, new OperationKey(parentMatrixKey, operationId));
+			}
+
+			return selectedTableRowAndOperations;
+		}
+
+		private void deleteOperations(Map<Integer, OperationKey> operationsToDelete, boolean deleteReports) throws IOException {
+
+			OperationKey operationKey = null;
+			OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
+			for (Map.Entry<Integer, OperationKey> selectedOperation : operationsToDelete.entrySet()) {
+				operationKey = selectedOperation.getValue();
+				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+				if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
+					MultiOperations.deleteOperation(
+							operationKey,
+							deleteReports);
+					tableModel.removeRow(selectedOperation.getKey());
+
+					//OperationManager.deleteOperationAndChildren(parentMatrixKey.getStudyKey(), opId, deleteReport);
+				} else {
+					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+				}
+			}
+
+//			if (currentlySelectedOPKey == operationKey) {
+//				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+//			}
+			GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			int[] selectedOPs = matrixOperationsTable.getSelectedRows();
-			if (selectedOPs.length > 0) {
+
+			Map<Integer, OperationKey> selectedOperations = getSelectedOperations();
+			if (!selectedOperations.isEmpty()) {
 				try {
-					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
+					final int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
-						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-						OperationKey operationKey = null;
-						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
-							OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
-							for (int i = selectedOPs.length - 1; i >= 0; i--) {
-								int tmpOPRow = selectedOPs[i];
-								int operationId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
-								operationKey = new OperationKey(parentMatrixKey, operationId);
-								// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
-									if (option == JOptionPane.YES_OPTION) {
-										boolean deleteReport = false;
-										if (deleteReportOption == JOptionPane.YES_OPTION) {
-											deleteReport = true;
-										}
-										MultiOperations.deleteOperation(
-												operationKey,
-												deleteReport);
-										tableModel.removeRow(selectedOPs[i]);
-
-										//OperationManager.deleteOperationAndChildren(parentMatrixKey.getStudyKey(), opId, deleteReport);
-									}
-								} else {
-									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
-								}
-							}
-
-							if (currentlySelectedOPKey == operationKey) {
-								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-							}
-							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
+						final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+						if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+							final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+							deleteOperations(selectedOperations, deleteReports);
 						}
 					}
 				} catch (IOException ex) {
@@ -650,12 +679,12 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class GwasInOneGoAction extends AbstractAction {
 
-		private final MatrixKey parentMatrixKey;
+		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
 
-		GwasInOneGoAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams) {
+		GwasInOneGoAction(DataSetKey observedElementKey, GWASinOneGOParams gwasParams) {
 
-			this.parentMatrixKey = parentMatrix;
+			this.observedElementKey = observedElementKey;
 			this.gwasParams = gwasParams;
 			setEnabled(false);
 			putValue(NAME, Text.Operation.gwasInOneGo);
@@ -665,28 +694,29 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-//				List<String> blackListOPsAL = new ArrayList<String>();
-//				blackListOPsAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-
 				List<OPType> necessaryOPs = new ArrayList<OPType>();
 				necessaryOPs.add(OPType.SAMPLE_QA);
 				necessaryOPs.add(OPType.MARKER_QA);
-				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
+				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, observedElementKey, true);
 
-				MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+				DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				ImportFormat technology = null;
+				if (observedElementMetadata instanceof MatrixMetadata) {
+					technology = ((MatrixMetadata) observedElementMetadata).getTechnology();
+				}
 				if (choice == JOptionPane.NO_OPTION) { // BY EXTERNAL PHENOTYPE FILE
 					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
-						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(matrixMetadata.getTechnology().toString());
+						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
 						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(matrixMetadata.getTechnology().toString());
+					gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
 					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
@@ -700,7 +730,7 @@ public class MatrixAnalysePanel extends JPanel {
 				if (gwasParams.isProceed() && missingOPs.size() > 0) {
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(parentMatrixKey);
+					MultiOperations.doMatrixQAs(observedElementKey);
 				}
 
 				// GWAS BLOCK
@@ -712,12 +742,12 @@ public class MatrixAnalysePanel extends JPanel {
 					log.info(Text.All.processing);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 					// use Sample Info affection state from the DB
-					Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(new DataSetKey(parentMatrixKey));
+					Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(observedElementKey);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 					if (affectionStates.contains(Affection.UNAFFECTED)
 							&& affectionStates.contains(Affection.AFFECTED))
 					{
-						gwasParams.getMarkerCensusOperationParams().setParent(new DataSetKey(parentMatrixKey));
+						gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
 						MultiOperations.doGWASwithAlterPhenotype(gwasParams);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
@@ -733,37 +763,24 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 	}
 
-	private static class BackAction extends AbstractAction {
+	public static class BackAction extends AbstractAction {
 
-		private final MatrixKey parentMatrix;
-		private final OperationMetadata currentOP;
+		private final DataSetKey parentElementKey;
 
-		BackAction(MatrixKey parentMatrix, OperationMetadata currentOP) {
+		public BackAction(DataSetKey parentElementKey) {
 
-			this.parentMatrix = parentMatrix;
-			this.currentOP = currentOP;
+			this.parentElementKey = parentElementKey;
+			final boolean hasParent = (parentElementKey != null);
+			if (!hasParent) {
+				putValue(SHORT_DESCRIPTION, "There is no parent");
+			}
+			setEnabled(hasParent);
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				if (currentOP != null && currentOP.getParentOperationId() != -1) {
-					GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(currentOP.getStudyKey(), currentOP.getParentMatrixId()), OperationKey.valueOf(currentOP)));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-				} else if (currentOP != null) {
-					GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-				} else {
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			GWASpiExplorerPanel.getSingleton().selectNode(parentElementKey);
 		}
 	}
-	//</editor-fold>
 }

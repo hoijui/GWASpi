@@ -38,6 +38,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -96,38 +97,44 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, List<String> filterOpTypes, String title) throws IOException {
-		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
+	public static OperationMetadata showOperationCombo(DataSetKey parentKey, List<OPType> filterOpTypes, String title) throws IOException {
 
-		if (!operationsList.isEmpty()) {
-			List<String> operationsNames = new ArrayList<String>();
-			List<OperationMetadata> operations = new ArrayList<OperationMetadata>();
-			for (int i = 0; i < operationsList.size(); i++) {
-				OperationMetadata op = operationsList.get(i);
-				if (filterOpTypes.contains(op.getOperationType().toString())) {
+		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentKey);
+
+		return showOperationCombo(operations, filterOpTypes, title);
+	}
+
+	public static OperationMetadata showOperationCombo(List<OperationMetadata> operations, List<OPType> filterOpTypes, String title) throws IOException {
+
+		OperationMetadata selectedOP = null;
+
+		if (!operations.isEmpty()) {
+			List<String> operationNames = new ArrayList<String>();
+			List<OperationMetadata> filteredOperations = new ArrayList<OperationMetadata>();
+			for (OperationMetadata op : operations) {
+				if (filterOpTypes.contains(op.getOperationType())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
 					sb.append(op.getId());
 					sb.append(" - ");
 					sb.append(op.getFriendlyName());
-					operationsNames.add(sb.toString());
-					operations.add(op);
+					operationNames.add(sb.toString());
+					filteredOperations.add(op);
 				}
 			}
 
-			if (!operations.isEmpty()) {
+			if (!filteredOperations.isEmpty()) {
 				String selectedRow = (String) JOptionPane.showInputDialog(
 						null,
 						"Choose " + title + " to use...",
 						"Available Operations",
 						JOptionPane.QUESTION_MESSAGE,
 						null,
-						operationsNames.toArray(new Object[operationsNames.size()]),
+						operationNames.toArray(new Object[operationNames.size()]),
 						0);
 
 				if (selectedRow != null) {
-					selectedOP = operations.get(operationsNames.indexOf(selectedRow));
+					selectedOP = filteredOperations.get(operationNames.indexOf(selectedRow));
 				}
 			}
 		}

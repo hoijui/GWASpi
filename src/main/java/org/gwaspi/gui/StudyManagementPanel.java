@@ -64,21 +64,20 @@ public class StudyManagementPanel extends JPanel {
 			= LoggerFactory.getLogger(StudyManagementPanel.class);
 
 	// Variables declaration
-	private Study study;
-	private JButton btn_AddStudy;
-	private JButton btn_DeleteStudy;
-	private JLabel lbl_Desc;
-	private JLabel lbl_NewStudyName;
-	private JPanel pnl_StudiesTable;
-	private JPanel pnl_StudyDesc;
-	private JPanel pnl_Footer;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JScrollPane scrl_Desc;
-	private JScrollPane scrl_StudiesTable;
-	private JTable tbl_StudiesTable;
-	private JTextArea txtA_Desc;
-	private JTextField txtF_NewStudyName;
+	private final JButton btn_AddStudy;
+	private final JButton btn_DeleteStudy;
+	private final JLabel lbl_Desc;
+	private final JLabel lbl_NewStudyName;
+	private final JPanel pnl_StudiesTable;
+	private final JPanel pnl_StudyDesc;
+	private final JPanel pnl_Footer;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JScrollPane scrl_Desc;
+	private final JScrollPane scrl_StudiesTable;
+	private final JTable tbl_StudiesTable;
+	private final JTextArea txtA_Desc;
+	private final JTextField txtF_NewStudyName;
 	// End of variables declaration
 
 	private static final class StudyTableModel extends AbstractTableModel {
@@ -317,6 +316,7 @@ public class StudyManagementPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				String study_name = txtF_NewStudyName.getText();
 				if (!study_name.isEmpty()) {
@@ -327,10 +327,8 @@ public class StudyManagementPanel extends JPanel {
 					}
 
 					StudyKey newStudy = StudyList.insertNewStudy(new Study(study_name, study_description));
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 					GWASpiExplorerNodes.insertStudyNode(newStudy);
+					GWASpiExplorerPanel.getSingleton().selectNode(newStudy);
 				} else {
 					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
 					lbl_NewStudyName.setForeground(Color.red);
@@ -388,18 +386,16 @@ public class StudyManagementPanel extends JPanel {
 		}
 	}
 
-	private static class BackAction extends AbstractAction {
+	public static class BackAction extends AbstractAction {
 
-		BackAction() {
+		public BackAction() {
 
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
-			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+			GWASpiExplorerPanel.getSingleton().selectNode(0);
 		}
 	}
 }

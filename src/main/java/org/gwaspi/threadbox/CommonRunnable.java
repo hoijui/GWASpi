@@ -65,16 +65,16 @@ public abstract class CommonRunnable implements Runnable {
 			runInternal(thisSwi);
 
 			// FINISH OFF
-			if (!thisSwi.getQueueState().equals(QueueState.ABORT)) {
-				MultiOperations.printFinished("Performing " + taskDescription);
-				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
-			} else {
+			if (thisSwi.getQueueState().equals(QueueState.ABORT)) {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
 				getLog().info("Process Name: " + thisSwi.getTask().getTaskName());
 				getLog().info("Process Launch Time: " + thisSwi.getLaunchTime());
 				getLog().info("");
 				getLog().info("");
+			} else {
+				MultiOperations.printFinished("Performing " + taskDescription);
+				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
 			}
 
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not

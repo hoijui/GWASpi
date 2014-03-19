@@ -52,6 +52,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
@@ -495,7 +496,7 @@ public class MatrixExtractPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrixKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey)));
 
 		btn_Go.setAction(new ExtractAction());
 
@@ -737,27 +738,6 @@ public class MatrixExtractPanel extends JPanel {
 				} catch (IOException ex) {
 					log.error("Failed to create list of marker IDs", ex);
 				}
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private final MatrixKey parentMatrix;
-
-		BackAction(MatrixKey parentMatrix) {
-
-			this.parentMatrix = parentMatrix;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}

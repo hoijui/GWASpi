@@ -205,44 +205,33 @@ public class OperationManager {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
-	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, MatrixKey matrixKey) {
-
-		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
+	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOpTypes, DataSetKey rootKey, boolean childrenOnly) {
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
-
-			for (OperationMetadata operation : chkOperations) {
-				OPType type = operation.getOperationType();
-				if (necessaryOPs.contains(type)) {
-					missingOPs.remove(type);
-				}
+			final List<OperationMetadata> presentOperations;
+			if (childrenOnly) {
+				presentOperations = OperationsList.getChildrenOperationsMetadata(rootKey);
+			} else {
+				presentOperations = OperationsList.getOffspringOperationsMetadata(rootKey);
 			}
+
+			return checkForNecessaryOperations(necessaryOpTypes, presentOperations);
 		} catch (IOException ex) {
 			log.error(null, ex);
+			return necessaryOpTypes;
 		}
-
-		return missingOPs;
 	}
 
-	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOPs, MatrixKey matrixKey, int opId) {
+	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOpTypes, List<OperationMetadata> operations) {
 
-		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
+		List<OPType> missingOpTypes = new ArrayList<OPType>(necessaryOpTypes);
 
-		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
-
-			for (OperationMetadata operation : chkOperations) {
-				// Check if current operation is from parent matrix or parent operation
-				int parentOperationId = operation.getParentOperationId();
-				if ((parentOperationId == -1) || (parentOperationId == opId)) {
-					missingOPs.remove(operation.getOperationType());
-				}
-			}
-		} catch (IOException ex) {
-			log.error(null, ex);
+		for (OperationMetadata operation : operations) {
+			// Remove this operations type as a necessity, if it is one
+			missingOpTypes.remove(operation.getType());
 		}
-		return missingOPs;
+
+		return missingOpTypes;
 	}
 
 	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, MatrixKey matrixKey) {

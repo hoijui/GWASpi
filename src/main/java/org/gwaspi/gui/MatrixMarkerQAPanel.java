@@ -37,13 +37,13 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
@@ -64,7 +64,6 @@ public class MatrixMarkerQAPanel extends JPanel {
 	private final JPanel pnl_MatrixDesc;
 	private final JScrollPane scrl_MatrixDesc;
 	private final JTextArea txtA_Description;
-	private final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
 	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int opId) throws IOException {
@@ -147,8 +146,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		//</editor-fold>
 
-		Action backAction = new BackAction(parentMatrixKey);
-		backAction.setEnabled(currentOP != null);
+		Action backAction = new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey));
 		btn_Back.setAction(backAction);
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
@@ -236,28 +234,6 @@ public class MatrixMarkerQAPanel extends JPanel {
 				} else {
 					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private final MatrixKey parentMatrixKey;
-
-		BackAction(MatrixKey parentMatrixKey) {
-
-			this.parentMatrixKey = parentMatrixKey;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrixKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

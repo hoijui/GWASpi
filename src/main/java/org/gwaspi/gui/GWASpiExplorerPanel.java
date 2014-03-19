@@ -39,9 +39,14 @@ import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.GWASpiExplorerTree;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.ReportKey;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,6 +217,39 @@ public class GWASpiExplorerPanel extends JPanel {
 			}
 			tree.setSelectionPath(new TreePath(node.getPath()));
 		}
+	}
+
+	public void selectNode(final Object nodeKey) {
+
+		final int nodeId;
+		if (nodeKey == null) {
+			nodeId = 0;
+		} else if (nodeKey instanceof Integer) {
+			nodeId = (Integer) nodeKey;
+		} else if (nodeKey instanceof StudyKey) {
+			nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY, (StudyKey) nodeKey);
+		} else if (nodeKey instanceof DataSetKey) {
+			final DataSetKey dataSetKey = (DataSetKey) nodeKey;
+			if (dataSetKey.isMatrix()) {
+				nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.MATRIX, dataSetKey.getMatrixParent());
+			} else {
+				nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, dataSetKey.getOperationParent());
+			}
+		} else if (nodeKey instanceof MatrixKey) {
+			nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.MATRIX, (MatrixKey) nodeKey);
+		} else if (nodeKey instanceof OperationKey) {
+			nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, (OperationKey) nodeKey);
+		} else if (nodeKey instanceof ReportKey) {
+			nodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.REPORT, (ReportKey) nodeKey);
+		} else {
+			throw new UnsupportedOperationException("(coding error) No support for selecting an elemnt of type " + nodeKey.getClass().getName());
+		}
+
+		selectNode(nodeId);
+	}
+
+	public void selectNodeStudyManagement() {
+		selectNode(NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY_MANAGEMENT, null));
 	}
 
 	public void updateTreePanel(boolean refreshContentPanel) throws IOException {
