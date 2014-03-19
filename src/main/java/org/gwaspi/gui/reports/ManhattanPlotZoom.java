@@ -108,13 +108,11 @@ public final class ManhattanPlotZoom extends JPanel {
 	private long startPhysPos;
 	private long requestedSetSize;
 	private long requestedPosWindow;
-	//private int sliderSize;
 	private XYDataset initXYDataset;
 	private JFreeChart zoomChart;
 	private ChartPanel zoomPanel;
 	private double threshold;
 	private Color manhattan_back;
-	private Color manhattan_backalt;
 	private Color manhattan_dot;
 	// Variables declaration - do not modify
 	private JButton btn_Back;
@@ -127,10 +125,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	private JComboBox cmb_SearchDB;
 	private JPanel pnl_Footer;
 	private JPanel pnl_FooterGroup1;
-	//private JPanel pnl_Tracker;
 	private JScrollPane scrl_Chart;
 	private ManhattanChartDisplay parent;
-	//private JSlider slid_Tracker;
 	// End of variables declaration
 
 	public ManhattanPlotZoom(
@@ -218,8 +214,6 @@ public final class ManhattanPlotZoom extends JPanel {
 				startPhysPos,
 				toUseRequestedPosWindow);
 
-//		slid_Tracker = new JSlider();
-
 		zoomChart = createChart(initXYDataset, currentChr);
 		zoomPanel = new ChartPanel(zoomChart);
 		zoomPanel.setInitialDelay(10);
@@ -242,7 +236,7 @@ public final class ManhattanPlotZoom extends JPanel {
 //				double chartY = rangeAxis.java2DToValue(p.getY(), dataArea,
 //						rangeAxisEdge);
 				try {
-					if (LinksExternalResouces.checkIfRsNecessary(cmb_SearchDB.getSelectedIndex())) { //THE SELECTED EXTERNAL RESOURCE NEEDS RSID INFO
+					if (LinksExternalResouces.checkIfRsNecessary(cmb_SearchDB.getSelectedIndex())) { // THE SELECTED EXTERNAL RESOURCE NEEDS RSID INFO
 						String tooltip = zoomPanel.getToolTipText(event.getTrigger());
 						if (tooltip == null || tooltip.isEmpty()) { //CHECK IF THERE IS AN RSID
 							Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
@@ -298,14 +292,11 @@ public final class ManhattanPlotZoom extends JPanel {
 		btn_Reset = new JButton();
 		btn_Back = new JButton();
 		btn_Back2 = new JButton();
-//		pnl_Tracker = new JPanel();
-//		slid_Tracker = new JSlider();
 
 		String titlePlot = ": " + origMarkerKey.toString() + " - Chr" + currentChr;
 		if (origMarkerKey == null) {
 			titlePlot = ": Chr" + currentChr + " - Pos: " + startPhysPos + " to " + (startPhysPos + requestedPosWindow);
 		}
-
 
 		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, "Manhattan Plot Navigator" + titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
@@ -338,7 +329,6 @@ public final class ManhattanPlotZoom extends JPanel {
 				.addContainerGap()
 				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
-
 		// </editor-fold>
 
 		String lblChr = "Chr ";
@@ -686,6 +676,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		 */
 		@Override
 		public String generateLabel(XYDataset dataset, int series, int item) {
+
 			String rsLabel = null;
 			Number pValue = dataset.getYValue(series, item);
 			int position = (int) dataset.getXValue(series, item);
@@ -695,9 +686,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				chrPos.append("_");
 				chrPos.append(position);
 				if (pV < this.threshold) {
-
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
-
 					//result = value.toString().substring(0, 4); // could apply formatting here
 				}
 				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerKey)) {
@@ -711,21 +700,6 @@ public final class ManhattanPlotZoom extends JPanel {
 	// </editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	private void actionSlide() {
-//		if (slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-MARKERS_NUM_DEFAULT)){
-//			indexPosition=sliderSize-MARKERS_NUM_DEFAULT;
-//		} else {
-//			indexPosition=slid_Tracker.getValue();
-//		}
-//		GWASpiExplorerPanel.getSingleton().pnl_Content = new ManhattanPlotZoom(opId,
-//				 origChr,
-//				 origMarkerId,
-//				 indexPosition,
-//				 MARKERS_NUM_DEFAULT,
-//				 txt_NRows);
-//		GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);
-	}
-
 	private class ResetAction extends AbstractAction {
 
 		private final OperationKey operationKey;
