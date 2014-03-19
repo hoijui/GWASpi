@@ -117,7 +117,26 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin) throws IOException {
+	public List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root) throws IOException {
+
+		if (root.isMatrix()) {
+			return getOffspringOperationsMetadata(root.getMatrixParent());
+		} else {
+			return getOffspringOperationsMetadata(root.getOperationParent());
+		}
+	}
+
+	@Override
+	public List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root, OPType type) throws IOException {
+
+		if (root.isMatrix()) {
+			return getOffspringOperationsMetadata(root.getMatrixParent(), type);
+		} else {
+			return getOffspringOperationsMetadata(root.getOperationParent(), type);
+		}
+	}
+
+	private List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -126,8 +145,8 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixId");
-			query.setParameter("studyId", origin.getStudyId());
-			query.setParameter("parentMatrixId", origin.getMatrixId());
+			query.setParameter("studyId", root.getStudyId());
+			query.setParameter("parentMatrixId", root.getMatrixId());
 			operationsMetadata = query.getResultList();
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
@@ -138,8 +157,7 @@ public class JPAOperationService implements OperationService {
 		return operationsMetadata;
 	}
 
-	@Override
-	public List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin, OPType opType) throws IOException {
+	private List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -148,8 +166,8 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixIdOperationType");
-			query.setParameter("studyId", origin.getStudyId());
-			query.setParameter("parentMatrixId", origin.getMatrixId());
+			query.setParameter("studyId", root.getStudyId());
+			query.setParameter("parentMatrixId", root.getMatrixId());
 			query.setParameter("operationType", opType);
 			operations = query.getResultList();
 		} catch (Exception ex) {
@@ -161,8 +179,45 @@ public class JPAOperationService implements OperationService {
 		return operations;
 	}
 
-	@Override
-	public List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
+	private List<OperationMetadata> getOffspringOperationsMetadata(OperationKey root) throws IOException {
+
+		List<OperationMetadata> offspringOperations = Collections.EMPTY_LIST;
+
+		List<OperationKey> possibleParents = new LinkedList<OperationKey>();
+		possibleParents.add(root);
+		while (!possibleParents.isEmpty()) {
+			OperationKey possibleParent = possibleParents.remove(0);
+			final List<OperationMetadata> childrenOperations = getChildrenOperationsMetadata(possibleParent);
+			offspringOperations.addAll(childrenOperations);
+			for (OperationMetadata childOperation : childrenOperations) {
+				possibleParents.add(OperationKey.valueOf(childOperation));
+			}
+		}
+
+		return offspringOperations;
+	}
+
+	private List<OperationMetadata> getOffspringOperationsMetadata(OperationKey root, OPType type) throws IOException {
+
+		List<OperationMetadata> offspringOperations = Collections.EMPTY_LIST;
+
+		List<OperationKey> possibleParents = new LinkedList<OperationKey>();
+		possibleParents.add(root);
+		while (!possibleParents.isEmpty()) {
+			OperationKey possibleParent = possibleParents.remove(0);
+			final List<OperationMetadata> childrenOperations = getChildrenOperationsMetadata(possibleParent);
+			for (OperationMetadata childOperation : childrenOperations) {
+				if (childOperation.getType() == type) {
+					offspringOperations.add(childOperation);
+				}
+				possibleParents.add(OperationKey.valueOf(childOperation));
+			}
+		}
+
+		return offspringOperations;
+	}
+
+	private List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -184,8 +239,7 @@ public class JPAOperationService implements OperationService {
 		return operations;
 	}
 
-	@Override
-	public List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
+	private List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -234,36 +288,6 @@ public class JPAOperationService implements OperationService {
 		} else {
 			return getChildrenOperationsMetadata(parent.getOperationParent(), opType);
 		}
-	}
-
-	@Override
-	public List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey rootOperationKey) throws IOException {
-
-		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery(
-					"operationMetadata_listByStudyIdParentMatrixIdOperationId");
-			query.setParameter("studyId", rootOperationKey.getStudyId());
-			query.setParameter("parentMatrixId", rootOperationKey.getParentMatrixId());
-			query.setParameter("operationId", rootOperationKey.getId());
-			operationsMetadata = query.getResultList();
-
-			query = em.createNamedQuery(
-					"operationMetadata_listByStudyIdParentMatrixIdParentOperationId");
-			query.setParameter("studyId", rootOperationKey.getStudyId());
-			query.setParameter("parentMatrixId", rootOperationKey.getParentMatrixId());
-			query.setParameter("parentOperationId", rootOperationKey.getId());
-			operationsMetadata.addAll(query.getResultList());
-		} catch (Exception ex) {
-			LOG.error("Failed fetching operation-metadata", ex);
-		} finally {
-			close(em);
-		}
-
-		return operationsMetadata;
 	}
 
 	@Override

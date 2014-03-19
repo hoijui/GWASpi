@@ -18,6 +18,7 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
@@ -61,31 +62,45 @@ public class OperationsList {
 	}
 
 	/**
-	 * @see OperationService#getOffspringOperationsMetadata(MatrixKey)
+	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey)
 	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(origin);
+	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root) throws IOException {
+		return getOperationService().getOffspringOperationsMetadata(new DataSetKey(root));
 	}
 
 	/**
-	 * @see OperationService#getOffspringOperationsMetadata(MatrixKey, OPType)
+	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey, OPType)
 	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey origin, OPType opType) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(origin, opType);
+	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root, OPType opType) throws IOException {
+		return getOperationService().getOffspringOperationsMetadata(new DataSetKey(root), opType);
 	}
 
 	/**
-	 * @see OperationService#getChildrenOperationsMetadata(OperationKey)
+	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey)
+	 */
+	public static List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root) throws IOException {
+		return getOperationService().getOffspringOperationsMetadata(root);
+	}
+
+	/**
+	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey, OPType)
+	 */
+	public static List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root, OPType opType) throws IOException {
+		return getOperationService().getOffspringOperationsMetadata(root, opType);
+	}
+
+	/**
+	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey)
 	 */
 	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(parent);
+		return getOperationService().getChildrenOperationsMetadata(new DataSetKey(parent));
 	}
 
 	/**
-	 * @see OperationService#getChildrenOperationsMetadata(OperationKey, OPType)
+	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey, OPType)
 	 */
 	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(parent, opType);
+		return getOperationService().getChildrenOperationsMetadata(new DataSetKey(parent), opType);
 	}
 
 	/**
@@ -105,8 +120,14 @@ public class OperationsList {
 	/**
 	 * @see OperationService#getSelfAndOffspringOperationsMetadata(OperationKey)
 	 */
-	public static List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey rootOperationKey) throws IOException {
-		return getOperationService().getSelfAndOffspringOperationsMetadata(rootOperationKey);
+	public static List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey root) throws IOException {
+
+		final List<OperationMetadata> offspring = getOffspringOperationsMetadata(new DataSetKey(root));
+		final List<OperationMetadata> selfAndOffspring = new ArrayList<OperationMetadata>(1 + offspring.size());
+		selfAndOffspring.add(getOperationMetadata(root));
+		selfAndOffspring.addAll(offspring);
+
+		return selfAndOffspring;
 	}
 
 	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
