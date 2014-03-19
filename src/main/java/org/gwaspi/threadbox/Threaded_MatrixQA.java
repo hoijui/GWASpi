@@ -45,10 +45,12 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		this.matrixKey = matrixKey;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_MatrixQA.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		List<OPType> necessaryOPs = new ArrayList<OPType>();

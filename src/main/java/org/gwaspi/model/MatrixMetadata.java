@@ -395,21 +395,25 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 	}
 
 	@Transient
+	@Override
 	public DataSetKey getDataSetKey() {
 		return new DataSetKey(getKey());
 	}
 
 	@Transient
+	@Override
 	public boolean isOrigin() {
 		return true;
 	}
 
 	@Transient
+	@Override
 	public MatrixKey getOrigin() {
 		return getKey();
 	}
 
 	@Transient
+	@Override
 	public DataSetKey getParent() {
 		return null;
 	}
@@ -431,6 +435,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 	}
 
 	@Transient
+	@Override
 	public StudyKey getStudyKey() {
 		return key.getStudyKey();
 	}
@@ -447,6 +452,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getFriendlyName() {
 		return friendlyName;
 	}
@@ -468,6 +474,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getSimpleName() {
 		return simpleName;
 	}
@@ -528,6 +535,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public int getNumMarkers() {
 		return numMarkers;
 	}
@@ -543,6 +551,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public int getNumSamples() {
 		return numSamples;
 	}
@@ -558,6 +567,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public int getNumChromosomes() {
 		return numChromosomes;
 	}
@@ -589,6 +599,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -667,6 +678,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public Date getCreationDate() {
 		return (creationDate == null) ? null : (Date) creationDate.clone();
 	}
