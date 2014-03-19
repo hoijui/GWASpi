@@ -201,7 +201,7 @@ public class Text {
 		public static final String viewReportSummary = "View Report Summary";
 		public static final String report = "Report";
 		public static final String summary = "Summary";
-		public static final String confirmDelete = "Should corresponding Report and Chart files in 'reports' folder be deleted as well?";
+		public static final String confirmDelete = "Should the corresponding Report and Chart files in 'reports' folder be deleted as well?";
 		public static final String selectSaveMode = "Choose report to be saved";
 		public static final String completeReport = "Complete Report";
 		public static final String currentReportView = "Current Report View";
