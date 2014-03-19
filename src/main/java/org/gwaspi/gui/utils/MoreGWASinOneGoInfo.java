@@ -38,7 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -81,17 +81,17 @@ public class MoreGWASinOneGoInfo extends JFrame {
 	private JComboBox cmb_Strand;
 	private JLabel lbl_GTCode;
 	private JComboBox cmb_GTCode;
-	private JFrame myFrame = new JFrame("GridBagLayout Test");
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private JDialog dialog;
-	private String format = "";
+	private final JFrame myFrame = new JFrame("GridBagLayout Test");
+	private final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private ImportFormat format;
 	// End of variables declaration
 
-	public GWASinOneGOParams showMoreInfo(String _format) {
+	public GWASinOneGOParams showMoreInfo(ImportFormat format) {
 		// Create a modal dialog
 		gwasParams.setProceed(false);
 		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
-		format = _format;
+		this.format = format;
 
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension screenSize = tk.getScreenSize();
@@ -189,7 +189,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		lbl_Strand.setText("  " + Text.Dialog.strand);
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
 
-		switch (cImport.ImportFormat.compareTo(format)) {
+		switch (format) {
 			case BEAGLE:
 				cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
 				cmb_Chromosome.setSelectedIndex(0);
@@ -267,6 +267,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 //		});
 
 		txtF_HW_free.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				rdioB_HW_free.setEnabled(true);
 			}

@@ -33,7 +33,9 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -67,7 +69,7 @@ public class ChartDefaultDisplay extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="">
 		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath));
 
-		btn_Back.setAction(new Report_Analysis.BackAction(operationKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);

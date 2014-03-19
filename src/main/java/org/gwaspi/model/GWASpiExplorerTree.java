@@ -271,7 +271,7 @@ public class GWASpiExplorerTree {
 							case HARDY_WEINBERG: {
 								// Display HW Report
 								List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
-								if (reportsList.size() > 0) {
+								if (!reportsList.isEmpty()) {
 									Report hwReport = reportsList.get(0);
 									String reportFile = hwReport.getFileName();
 									newContent = new Report_HardyWeinbergSummary(hwReport.getParentOperationKey(), reportFile);
@@ -309,12 +309,7 @@ public class GWASpiExplorerTree {
 								newContent = emptyPanel;
 							} break;
 							default: {
-								if (parentElementInfo.getNodeType() == NodeElementInfo.NodeType.OPERATION) {
-									final OperationKey parentOPKey = (OperationKey) parentElementInfo.getContentKey();
-									newContent = new MatrixAnalysePanel(parentOPKey.getParentMatrixKey(), currentOPKey);
-								} else {
-									newContent = new MatrixAnalysePanel(currentOPKey.getParentMatrixKey(), currentOPKey);
-								}
+								newContent = new MatrixAnalysePanel(new DataSetKey(currentOPKey)); // XXX this does not make much sense, does it?
 							}
 						}
 					} break;

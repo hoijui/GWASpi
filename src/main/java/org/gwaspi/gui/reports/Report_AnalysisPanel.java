@@ -34,8 +34,10 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -61,10 +63,13 @@ public class Report_AnalysisPanel extends JPanel {
 
 	public Report_AnalysisPanel(final MatrixKey parentMatrixKey, final OperationKey operationKey, final Integer nRows) throws IOException {
 
+		final DataSetKey parent;
 		if (operationKey != null) {
 			currentOP = OperationsList.getOperationMetadata(operationKey);
+			parent = currentOP.getParent();
 		} else {
 			currentOP = null;
+			parent = null;
 		}
 
 		pnl_OperationDesc = new JPanel();
@@ -130,7 +135,7 @@ public class Report_AnalysisPanel extends JPanel {
 		pnl_Report = pnl_ReportTmp;
 		pnl_Report.setBorder(BorderFactory.createTitledBorder("Report"));
 
-		btn_Back.setAction(new BackAction());
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(parent));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(null)); // FIXME no help implemented yet
 
@@ -158,7 +163,6 @@ public class Report_AnalysisPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="expanded" desc="METHODS">
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private final MatrixKey parentMatrixKey;
@@ -192,21 +196,4 @@ public class Report_AnalysisPanel extends JPanel {
 			}
 		}
 	}
-
-	private static class BackAction extends AbstractAction {
-
-		BackAction() {
-
-			putValue(NAME, Text.All.Back);
-
-			putValue(SHORT_DESCRIPTION, "Not yet implemented in code");
-			setEnabled(false);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			throw new UnsupportedOperationException("Not yet implemented!"); // TODO
-		}
-	}
-	//</editor-fold>
 }

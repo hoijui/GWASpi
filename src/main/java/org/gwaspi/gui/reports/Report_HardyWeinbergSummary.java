@@ -51,10 +51,12 @@ import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.slf4j.Logger;
@@ -201,7 +203,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new Report_Analysis.BackAction(operationKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 
@@ -357,6 +359,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 //						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
+							@Override
 							public int compare(Object o1, Object o2) {
 								try {
 									Double d1 = Double.parseDouble(o1.toString());

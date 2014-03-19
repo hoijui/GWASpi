@@ -44,10 +44,8 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -63,7 +61,6 @@ public final class ManhattanChartDisplay extends JPanel {
 	private JPanel pnl_Chart;
 	private JPanel pnl_Footer;
 	private JScrollPane scrl_Chart;
-//	private ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
 	private final JLabel label;
 	private boolean fired;
 	private JButton btn_Save;
@@ -145,7 +142,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="">
 		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath));
 
-		btn_Back.setAction(new BackToTableAction(operationKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -343,29 +340,6 @@ public final class ManhattanChartDisplay extends JPanel {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} catch (Exception ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class BackToTableAction extends AbstractAction {
-
-		private final OperationKey operationKey;
-
-		BackToTableAction(OperationKey operationKey) {
-
-			this.operationKey = operationKey;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), operationKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
 				log.error(null, ex);
 			}
 		}

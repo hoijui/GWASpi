@@ -307,13 +307,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			GWASpiExplorerPanel.getSingleton().selectNodeStudyManagement();
 		}
 	}
 }

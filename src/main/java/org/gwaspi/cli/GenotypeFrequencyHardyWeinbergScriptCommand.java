@@ -19,16 +19,12 @@ package org.gwaspi.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 
@@ -101,17 +97,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			gwasParams.setFriendlyName(gtFrqName);
 			gwasParams.setProceed(true);
 
-			List<OPType> necessaryOPs = new ArrayList<OPType>();
-			necessaryOPs.add(OPType.SAMPLE_QA);
-			necessaryOPs.add(OPType.MARKER_QA);
-			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
-
-			// QA block
-			if (gwasParams.isProceed() && missingOPs.size() > 0) {
-				gwasParams.setProceed(false);
-				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(matrixKey);
-			}
+			TestScriptCommand.ensureMatrixQAs(matrixKey, gwasParams);
 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {

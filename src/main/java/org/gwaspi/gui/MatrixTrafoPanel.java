@@ -47,6 +47,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -251,7 +252,7 @@ public class MatrixTrafoPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrixKey));
+		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixTranslate));
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
@@ -427,27 +428,6 @@ public class MatrixTrafoPanel extends JPanel {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	private static class BackAction extends AbstractAction {
-
-		private final MatrixKey parentMatrix;
-
-		BackAction(MatrixKey parentMatrix) {
-
-			this.parentMatrix = parentMatrix;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
 	private String checkNewMatrixData() {
 
 		String study_name = txt_NewMatrixName.getText().trim();

@@ -32,17 +32,16 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_MatrixQA extends CommonRunnable {
 
-	private final MatrixKey matrixKey;
+	private final DataSetKey parentKey;
 
-	public Threaded_MatrixQA(MatrixKey matrixKey)
-	{
+	public Threaded_MatrixQA(final DataSetKey parentKey) {
 		super(
 				"Matrix QA & Reports",
 				"Matrix Quality Control",
-				"Matrix QA & Reports on Matrix ID: " + matrixKey.getMatrixId(),
-				"Matrix Quality Control");
+				"Matrix QA & Reports on: " + parentKey.toString(),
+				"Matrix Quality Control"); // NOTE actually: Quality Assurance
 
-		this.matrixKey = matrixKey;
+		this.parentKey = parentKey;
 	}
 
 	@Override
@@ -53,19 +52,16 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OPType> necessaryOPs = new ArrayList<OPType>();
-		necessaryOPs.add(OPType.SAMPLE_QA);
-		necessaryOPs.add(OPType.MARKER_QA);
-		List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
+		List<OPType> necessaryOpTypes = new ArrayList<OPType>();
+		necessaryOpTypes.add(OPType.SAMPLE_QA);
+		necessaryOpTypes.add(OPType.MARKER_QA);
+		List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOpTypes, parentKey, true);
 
-		if (missingOPs.size() > 0) {
-			if (missingOPs.contains(OPType.SAMPLE_QA)) {
-				OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
-			}
-			if (missingOPs.contains(OPType.MARKER_QA)) {
-				OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(new MarkersQAOperationParams(new DataSetKey(matrixKey))));
-			}
-			MultiOperations.printCompleted("Matrix Quality Control");
+		if (missingOPs.contains(OPType.SAMPLE_QA)) {
+			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(new SamplesQAOperationParams(parentKey)));
+		}
+		if (missingOPs.contains(OPType.MARKER_QA)) {
+			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(new MarkersQAOperationParams(parentKey)));
 		}
 	}
 }

@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -199,6 +198,7 @@ public class LoadDataPanel extends JPanel {
 
 		cmb_Format.setModel(new DefaultComboBoxModel(importFormatsList.toArray()));
 		cmb_Format.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				formatAction.actionPerformed(evt);
 			}
@@ -305,9 +305,9 @@ public class LoadDataPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
+		btn_Back.setAction(new BackAction(studyKey));
 
-		btn_Go.setAction(new LoadDataPanel.LoadGenotypesAction());
+		btn_Go.setAction(new LoadGenotypesAction());
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.loadGts));
 
@@ -627,7 +627,7 @@ public class LoadDataPanel extends JPanel {
 
 						if (performGwasInOneGo == JOptionPane.YES_OPTION) {
 							// ASK MORE QUESTIONS
-							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(cmb_Format.getSelectedItem().toString());
+							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo((ImportFormat) cmb_Format.getSelectedItem());
 							if (gwasParams.isProceed()) {
 								gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 							}
@@ -890,11 +890,11 @@ public class LoadDataPanel extends JPanel {
 	}
 	//</editor-fold>
 
-	private static class BackAction extends AbstractAction {
+	public static class BackAction extends AbstractAction {
 
 		private final StudyKey studyKey;
 
-		BackAction(StudyKey studyKey) {
+		public BackAction(StudyKey studyKey) {
 
 			this.studyKey = studyKey;
 			putValue(NAME, Text.All.Back);
@@ -902,12 +902,7 @@ public class LoadDataPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			GWASpiExplorerPanel.getSingleton().selectNode(studyKey);
 		}
 	}
 }

@@ -56,15 +56,16 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	//<editor-fold defaultstate="expanded" desc="LOADERS">
-	/** SAMPLES QA */
-	public static void doMatrixQAs(final MatrixKey matrixKey) {
+	public static void doMatrixQAs(final DataSetKey parentKey) {
 
-		CommonRunnable task = new Threaded_MatrixQA(matrixKey);
+		CommonRunnable task = new Threaded_MatrixQA(parentKey);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyKey().getId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		lockProperties.getStudyIds().add(parentKey.getOrigin().getStudyKey().getId());
+		lockProperties.getMatricesIds().add(parentKey.getOrigin().getMatrixId());
+		if (parentKey.isOperation()) {
+			lockProperties.getOperationsIds().add(parentKey.getOperationParent().getId());
+		}
 
 		queueTask(task, lockProperties);
 	}
@@ -87,7 +88,6 @@ public class MultiOperations {
 
 		queueTask(task, lockProperties);
 	}
-	//</editor-fold>
 
 	private static TaskLockProperties createTaskLockProperties(
 			final DataSetKey parent)

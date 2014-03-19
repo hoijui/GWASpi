@@ -43,6 +43,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -85,6 +86,7 @@ public class CurrentMatrixPanel extends JPanel {
 	public CurrentMatrixPanel(MatrixKey matrixKey) throws IOException {
 
 		matrix = matrixKey;
+		final DataSetKey abstractMatrix = new DataSetKey(matrixKey);
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 
 		pnl_MatrixDesc = new JPanel();
@@ -259,14 +261,14 @@ public class CurrentMatrixPanel extends JPanel {
 
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
-		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(null, this, matrix, tbl_MatrixOperations));
-		btn_Operation1_1.setAction(new AnalyseDataAction(matrix));
+		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(this, matrix, tbl_MatrixOperations));
+		btn_Operation1_1.setAction(new AnalyseDataAction(abstractMatrix));
 		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
 		btn_Operation1_4.setAction(new ExportMatrixAction(matrix));
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
 		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
-		btn_Back.setAction(new BackAction(matrix));
+		btn_Back.setAction(new LoadDataPanel.BackAction(matrix.getStudyKey()));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 	}
 
@@ -316,19 +318,20 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class AnalyseDataAction extends AbstractAction {
 
-		private final MatrixKey matrix;
+		private final DataSetKey parentKey;
 
-		AnalyseDataAction(MatrixKey matrix) {
+		AnalyseDataAction(final DataSetKey parentKey) {
 
-			this.matrix = matrix;
+			this.parentKey = parentKey;
 			putValue(NAME, Text.Operation.analyseData);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix, null));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(parentKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -477,28 +480,6 @@ public class CurrentMatrixPanel extends JPanel {
 				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private final MatrixKey matrix;
-
-		BackAction(MatrixKey matrix) {
-
-			this.matrix = matrix;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(matrix.getStudyKey()));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}
