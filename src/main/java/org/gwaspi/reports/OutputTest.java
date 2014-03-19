@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.gwaspi.constants.cExport;
@@ -221,6 +222,19 @@ public class OutputTest {
 		}
 	}
 
+	private static int[] createOrigIndexToQaMarkersIndexLookupTable(QAMarkersOperationDataSet qaMarkersOperationDataSet) throws IOException {
+
+		final List<Integer> qaMarkersOrigIndices = qaMarkersOperationDataSet.getMarkersKeysSource().getIndices();
+		final int[] origIndexToQaMarkersIndexLookupTable = new int[qaMarkersOperationDataSet.getOriginDataSetSource().getNumMarkers()];
+		Arrays.fill(origIndexToQaMarkersIndexLookupTable, -1);
+		int qaMarkersIndex = 0;
+		for (Integer qaMarkersOrigIndex : qaMarkersOrigIndices) {
+			origIndexToQaMarkersIndexLookupTable[qaMarkersOrigIndex] = qaMarkersIndex++;
+		}
+
+		return origIndexToQaMarkersIndexLookupTable;
+	}
+
 	private void createSortedAssociationReport(String reportName) throws IOException {
 
 		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationFactory.generateOperationDataSet(testOpKey);
@@ -253,24 +267,20 @@ public class OutputTest {
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(qaMarkersOpKey);
-		List<Integer> qaMarkersOrigIndices = qaMarkersOperationDataSet.getMarkersKeysSource().getIndices();
-		List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
-		List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();
-		int qaMarkersOrigIndicescurIndex = 0;
-		List<String> sortedMarkerAlleles = new ArrayList<String>(sortedOrigIndices.size());
-		for (Integer origIndices : sortedOrigIndices) {
-			while (qaMarkersOrigIndices.get(qaMarkersOrigIndicescurIndex) < origIndices) {
-				qaMarkersOrigIndicescurIndex++;
-			}
-			if (qaMarkersOrigIndices.get(qaMarkersOrigIndicescurIndex) != origIndices) {
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(qaMarkersOpKey);
+		final int[] origIndexToQaMarkersIndexLookupTable = createOrigIndexToQaMarkersIndexLookupTable(qaMarkersOperationDataSet);
+		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
+		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();
+		final List<String> sortedMarkerAlleles = new ArrayList<String>(sortedOrigIndices.size());
+		for (Integer sortedOrigIndex : sortedOrigIndices) {
+			final int qaMarkersIndex = origIndexToQaMarkersIndexLookupTable[sortedOrigIndex];
+			if (qaMarkersIndex < 0) {
 				throw new IllegalArgumentException("The supplied QA Markers operation does not contain all the required markers");
 			}
-			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(qaMarkersOrigIndicescurIndex);
-			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(qaMarkersOrigIndicescurIndex);
+			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(qaMarkersIndex);
+			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(qaMarkersIndex);
 			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
 			sortedMarkerAlleles.add(concatenatedValue);
-			qaMarkersOrigIndicescurIndex++;
 		}
 		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
 
