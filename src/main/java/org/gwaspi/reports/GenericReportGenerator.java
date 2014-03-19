@@ -342,7 +342,7 @@ public class GenericReportGenerator {
 
 		Double stopValue = expChiSqrDist.get(N - 1);
 		Double currentValue = 0d;
-		List<Double[]> boundaryAL = new ArrayList<Double[]>();
+		List<Double[]> boundary = new ArrayList<Double[]>();
 		while (currentValue <= stopValue) {
 			String l = inputBufferReader.readLine();
 			if (l == null) {
@@ -354,7 +354,7 @@ public class GenericReportGenerator {
 			slice[1] = Double.parseDouble(cVals[1]);
 			slice[2] = Double.parseDouble(cVals[2]);
 			currentValue = slice[1];
-			boundaryAL.add(slice);
+			boundary.add(slice);
 		}
 		inputBufferReader.close();
 		//</editor-fold>
@@ -374,8 +374,8 @@ public class GenericReportGenerator {
 		//constant chi-square boundaries
 		XYSeries seriesLower = new XYSeries("2σ boundary");
 		XYSeries seriesUpper = new XYSeries("");
-		for (int i = 0; i < boundaryAL.size(); i++) {
-			Double[] slice = boundaryAL.get(i);
+		for (int i = 0; i < boundary.size(); i++) {
+			Double[] slice = boundary.get(i);
 			seriesUpper.add(slice[1], slice[0]);
 			seriesLower.add(slice[1], slice[2]);
 		}
