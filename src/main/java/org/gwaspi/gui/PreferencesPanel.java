@@ -109,7 +109,7 @@ public class PreferencesPanel extends JPanel {
 		tbl_PreferencesTable = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
-				return (col != 0); // mRenders column 0 uneditable.
+				return (col != 0); // Renders column 0 uneditable.
 			}
 		};
 		tbl_PreferencesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
