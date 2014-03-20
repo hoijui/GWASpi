@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
 public class CurrentStudyPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(CurrentStudyPanel.class);
-	private static final Color DANGER_RED = new Color(242, 138, 121);
-	private static final int GAP = 18;
-	private static final int GAP_SMALL = 5;
+	static final Color DANGER_RED = new Color(242, 138, 121);
+	static final int GAP = 18;
+	static final int GAP_SMALL = 5;
 
 	// Variables declaration // TODO remove all of these comments
 	// End of variables declaration

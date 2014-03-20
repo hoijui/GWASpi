@@ -17,12 +17,13 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -30,8 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
@@ -40,7 +39,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
@@ -60,28 +58,7 @@ public class CurrentMatrixPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(CurrentMatrixPanel.class);
 
-	// Variables declaration
 	private final MatrixKey matrix;
-	private final JButton btn_Back;
-	private final JButton btn_DeleteMatrix;
-	private final JButton btn_DeleteOperation;
-	private final JButton btn_Help;
-	private final JButton btn_Operation1_1;
-	private final JButton btn_Operation1_2;
-	private final JButton btn_Operation1_3;
-	private final JButton btn_Operation1_4;
-	private final JButton btn_Operation1_5;
-	private final JButton btn_Operation1_6;
-	private final JButton btn_SaveDesc;
-	private final JPanel pnl_Spacer;
-	private final JPanel pnl_Buttons;
-	private final JPanel pnl_MatrixDesc;
-	private final JPanel pnl_NewOperation;
-	private final JScrollPane scrl_MatrixDesc;
-	private final JScrollPane scrl_MatrixOperations;
-	private final JTable tbl_MatrixOperations;
-	private final JTextArea txtA_MatrixDesc;
-	// End of variables declaration
 
 	public CurrentMatrixPanel(MatrixKey matrixKey) throws IOException {
 
@@ -89,179 +66,80 @@ public class CurrentMatrixPanel extends JPanel {
 		final DataSetKey abstractMatrix = new DataSetKey(matrixKey);
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 
-		pnl_MatrixDesc = new JPanel();
-		scrl_MatrixDesc = new JScrollPane();
-		txtA_MatrixDesc = new JTextArea();
-		btn_DeleteMatrix = new JButton();
-		btn_SaveDesc = new JButton();
-		scrl_MatrixOperations = new JScrollPane();
-		tbl_MatrixOperations = new MatrixTable();
-		tbl_MatrixOperations.setDefaultRenderer(Object.class, new RowRendererDefault());
+		JPanel pnl_desc = new JPanel();
+		JScrollPane scrl_desc = new JScrollPane();
+		JTextArea txtA_desc = new JTextArea();
+		final String title
+				= Text.Matrix.currentMatrix + " " + matrixMetadata.getFriendlyName()
+				+ ", " + Text.Matrix.matrixID
+				+ ": mx" + matrix.getMatrixId(); // NOI18N
+		pnl_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(title));
+		txtA_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
+		txtA_desc.setColumns(20);
+		txtA_desc.setRows(5);
+		txtA_desc.setText(matrixMetadata.getDescription());
+		scrl_desc.setViewportView(txtA_desc);
+		pnl_desc.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
+		JButton btn_Delete = new JButton();
+		JButton btn_SaveDesc = new JButton();
+		JPanel pnl_StudyDescButtons = GWASpiExplorerPanel.createButtonsPanel(
+				new JComponent[] {btn_Delete},
+				new JComponent[] {btn_SaveDesc});
+		pnl_desc.add(scrl_desc, BorderLayout.CENTER);
+		pnl_desc.add(pnl_StudyDescButtons, BorderLayout.SOUTH);
 
-		btn_DeleteOperation = new JButton();
-		pnl_NewOperation = new JPanel();
-		btn_Operation1_1 = new JButton();
-		btn_Operation1_2 = new JButton();
-		btn_Operation1_3 = new JButton();
-		btn_Operation1_4 = new JButton();
-		btn_Operation1_5 = new JButton();
-		btn_Operation1_6 = new JButton();
-		pnl_Spacer = new JPanel();
-		pnl_Buttons = new JPanel();
-		btn_Back = new JButton();
-		btn_Help = new JButton();
+		JPanel pnl_MatrixTable = new JPanel();
+		JScrollPane scrl_MatrixTable = new JScrollPane();
+		JTable tbl_OperationsTable = new MatrixTable();
+		JButton btn_DeleteOperation = new JButton();
+		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
+		tbl_OperationsTable.setModel(new OperationsTableModel(OperationsList.getOffspringOperationsMetadata(matrixKey)));
+		tbl_OperationsTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		scrl_MatrixTable.setViewportView(tbl_OperationsTable);
+		btn_DeleteOperation.setBackground(CurrentStudyPanel.DANGER_RED);
+		pnl_MatrixTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
+		pnl_MatrixTable.add(scrl_MatrixTable, BorderLayout.CENTER);
+		JPanel pnl_MatrixTableButtons = GWASpiExplorerPanel.createButtonsPanel(btn_DeleteOperation);
+		pnl_MatrixTable.add(pnl_MatrixTableButtons, BorderLayout.SOUTH);
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.matrix)); // NOI18N
+		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
+		JButton btn_Operation1_1 = new JButton();
+		JButton btn_Operation1_2 = new JButton();
+		JButton btn_Operation1_3 = new JButton();
+		JButton btn_Operation1_4 = new JButton();
+		JButton btn_Operation1_5 = new JButton();
+		JButton btn_Operation1_6 = new JButton();
+		btn_Operation1_1.setMargin(bigButtonInsets);
+		btn_Operation1_2.setMargin(bigButtonInsets);
+		btn_Operation1_3.setMargin(bigButtonInsets);
+		btn_Operation1_4.setMargin(bigButtonInsets);
+		btn_Operation1_5.setMargin(bigButtonInsets);
+		btn_Operation1_6.setMargin(bigButtonInsets);
+		JPanel pnl_matrixOperations = GWASpiExplorerPanel.createButtonsPanel(
+				new JComponent[] {btn_Operation1_1, btn_Operation1_2, btn_Operation1_3, btn_Operation1_4, btn_Operation1_5, btn_Operation1_6},
+				new JComponent[] {});
+		pnl_matrixOperations.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.newOperation)); // NOI18N
 
-		pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.currentMatrix + " " + matrixMetadata.getFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId())); // NOI18N
-		txtA_MatrixDesc.setColumns(20);
-		txtA_MatrixDesc.setRows(5);
-		txtA_MatrixDesc.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.All.description)); // NOI18N
-		txtA_MatrixDesc.setDocument(new LimitedLengthDocument(1999));
-		txtA_MatrixDesc.setText(matrixMetadata.getDescription());
-		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
-
-		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOffspringOperationsMetadata(matrixKey)));
-		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-
-		pnl_NewOperation.setBorder(GWASpiExplorerPanel.createRegularTitledBorder( Text.Operation.newOperation)); // NOI18N
-
-		// <editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESCRIPTION">
-		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
-		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
-		pnl_MatrixDescLayout.setHorizontalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_MatrixOperations, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
-				.addComponent(scrl_MatrixDesc, GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(btn_DeleteMatrix, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 265, Short.MAX_VALUE)
-				.addComponent(btn_SaveDesc))
-				.addComponent(btn_DeleteOperation, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap()));
-
-
-		pnl_MatrixDescLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_DeleteMatrix, btn_DeleteOperation, btn_SaveDesc});
-
-		pnl_MatrixDescLayout.setVerticalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(scrl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_SaveDesc)
-				.addComponent(btn_DeleteMatrix))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(scrl_MatrixOperations, GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_DeleteOperation)
-				.addContainerGap()));
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
-		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
-		pnl_Buttons.setLayout(pnl_ButtonsLayout);
-		pnl_ButtonsLayout.setHorizontalGroup(
-				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(btn_Operation1_1, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(btn_Operation1_2, GroupLayout.PREFERRED_SIZE, 151, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(btn_Operation1_3, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(btn_Operation1_4, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(btn_Operation1_5, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(20, Short.MAX_VALUE)));
-
-
-		pnl_ButtonsLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Operation1_1, btn_Operation1_2, btn_Operation1_3, btn_Operation1_4});
-
-		pnl_ButtonsLayout.setVerticalGroup(
-				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
-				.addGap(12, 12, 12)
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Operation1_1, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_Operation1_2, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_Operation1_3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_Operation1_4, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_Operation1_5, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
-
-		pnl_ButtonsLayout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_Operation1_1, btn_Operation1_2, btn_Operation1_3, btn_Operation1_4});
-
-
-		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
-		pnl_Spacer.setLayout(pnl_SpacerLayout);
-		pnl_SpacerLayout.setHorizontalGroup(
-				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 0, Short.MAX_VALUE));
-		pnl_SpacerLayout.setVerticalGroup(
-				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 77, Short.MAX_VALUE));
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW OPERATION">
-		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
-		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
-		pnl_NewOperationLayout.setHorizontalGroup(
-				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Buttons, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addContainerGap()));
-		pnl_NewOperationLayout.setVerticalGroup(
-				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
-				.addGroup(pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Buttons, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap()));
-		//</editor-fold>
-
+		JButton btn_Help = new JButton();
+		JButton btn_Back = new JButton();
 		JPanel pnl_Footer = GWASpiExplorerPanel.createButtonsPanel(
 				new JComponent[] {btn_Back},
 				new JComponent[] {btn_Help});
 
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_NewOperation, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixDesc, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap())
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGap(8, 8, 8)))));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_MatrixDesc, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_NewOperation, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap()));
-		// </editor-fold>
+		JPanel pnl_Bottom = new JPanel();
+		pnl_Bottom.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_Bottom.add(pnl_matrixOperations, BorderLayout.NORTH);
+		pnl_Bottom.add(pnl_Footer, BorderLayout.SOUTH);
 
-		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
-		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
-		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(this, matrix, tbl_MatrixOperations));
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.matrix)); // NOI18N
+		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		this.add(pnl_desc, BorderLayout.NORTH);
+		this.add(pnl_MatrixTable, BorderLayout.CENTER);
+		this.add(pnl_Bottom, BorderLayout.SOUTH);
+
+		btn_Delete.setAction(new DeleteMatrixAction(matrix, this));
+		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_desc));
+		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(this, matrix, tbl_OperationsTable));
 		btn_Operation1_1.setAction(new AnalyseDataAction(abstractMatrix));
 		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
