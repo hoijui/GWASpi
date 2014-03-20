@@ -19,6 +19,8 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -29,9 +31,9 @@ public interface ReportService {
 
 	Report getReport(ReportKey reportKey) throws IOException;
 
-	List<Report> getReports(MatrixKey parentMatrixKey) throws IOException;
+	List<Report> getReports(DataSetKey parentKey) throws IOException;
 
-	List<Report> getReports(OperationKey parentOperationKey) throws IOException;
+	List<Report> getReports(DataSetKey parentKey, OPType reportType) throws IOException;
 
 	String getReportNamePrefix(OperationMetadata op); // TODO move somewhere else
 
