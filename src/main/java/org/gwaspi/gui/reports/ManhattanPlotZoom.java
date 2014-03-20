@@ -238,7 +238,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				try {
 					if (LinksExternalResouces.checkIfRsNecessary(cmb_SearchDB.getSelectedIndex())) { // THE SELECTED EXTERNAL RESOURCE NEEDS RSID INFO
 						String tooltip = zoomPanel.getToolTipText(event.getTrigger());
-						if (tooltip == null || tooltip.isEmpty()) { //CHECK IF THERE IS AN RSID
+						if (tooltip == null || tooltip.isEmpty()) { // CHECK IF THERE IS AN RSID
 							Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
 						} else {
 							String rsId = tooltip.substring(6, tooltip.indexOf('<', 6));
@@ -541,7 +541,6 @@ public final class ManhattanPlotZoom extends JPanel {
 		// Set dot shape of the currently appended Series
 		renderer.setSeriesShape(0, new Rectangle2D.Double(0.0, 0.0, 2, 2));
 
-
 		renderer.setSeriesVisibleInLegend(0, false);
 
 		NumberAxis positionAxis = (NumberAxis) plot.getDomainAxis();
@@ -555,7 +554,6 @@ public final class ManhattanPlotZoom extends JPanel {
 		positionAxis.setAxisLineVisible(true);
 		positionAxis.setTickLabelsVisible(true);
 		positionAxis.setTickMarksVisible(true);
-
 
 		// ADD INVERSE LOG(10) Y AXIS
 		LogAxis logPAxis = new LogAxis("P value");
@@ -756,6 +754,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				List<Report> reportsList = ReportsList.getReportsList(testOpKey);
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(testOpKey.getParentMatrixKey(), testOpKey, nRows));
