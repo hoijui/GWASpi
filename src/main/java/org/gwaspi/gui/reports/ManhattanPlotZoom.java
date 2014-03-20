@@ -777,13 +777,10 @@ public final class ManhattanPlotZoom extends JPanel {
 
 			try {
 				parent.setFired(false);
-				List<Report> reportsList = ReportsList.getReportsList(testOpKey);
+				List<Report> manhattenPlotReports = ReportsList.getReportsList(new DataSetKey(testOpKey), OPType.MANHATTANPLOT);
 				String reportFile = "";
-				for (int i = 0; i < reportsList.size(); i++) {
-					OPType reportType = reportsList.get(i).getReportType();
-					if (reportType.equals(OPType.MANHATTANPLOT)) {
-						reportFile = reportsList.get(i).getFileName();
-					}
+				if (!manhattenPlotReports.isEmpty()) {
+					reportFile = manhattenPlotReports.get(0).getFileName();
 				}
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(reportFile, testOpKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
