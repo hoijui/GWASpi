@@ -306,6 +306,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			// Goto Trafo Pane
 			try {
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix));
@@ -418,10 +419,6 @@ public class CurrentMatrixPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			try {
-			} catch (Exception ex) {
-				log.error(null, ex);
-			}
 			throw new UnsupportedOperationException("Not yet implemented!"); // TODO implement!
 		}
 	}
@@ -440,6 +437,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				MatrixMetadata matrixMetadataById = MatricesList.getMatrixMetadataById(matrixKey);
 				matrixMetadataById.setDescription(matrixDesc.getText());
@@ -464,17 +462,14 @@ public class CurrentMatrixPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+
+			// TODO test if the deleted item is required for a queued worker
 			if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
-
-						boolean deleteReport = false;
-						if (deleteReportOption == JOptionPane.YES_OPTION) {
-							deleteReport = true;
-						}
+						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
 						MultiOperations.deleteMatrix(matrixKey, deleteReport);
 					}
 				}
