@@ -18,6 +18,7 @@
 package org.gwaspi.dao.jpa;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -26,6 +27,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -113,8 +115,7 @@ public class JPAReportService implements ReportService {
 		return report;
 	}
 
-	@Override
-	public List<Report> getReports(MatrixKey parentMatrixKey) throws IOException {
+	private List<Report> getReports(MatrixKey parentMatrixKey) throws IOException {
 
 		List<Report> reports = Collections.EMPTY_LIST;
 
@@ -137,8 +138,7 @@ public class JPAReportService implements ReportService {
 		return reports;
 	}
 
-	@Override
-	public List<Report> getReports(OperationKey parentOperationKey) throws IOException {
+	private List<Report> getReports(OperationKey parentOperationKey) throws IOException {
 
 		List<Report> reports = Collections.EMPTY_LIST;
 
@@ -160,6 +160,33 @@ public class JPAReportService implements ReportService {
 		}
 
 		return reports;
+	}
+
+	@Override
+	public List<Report> getReports(DataSetKey parentKey) throws IOException {
+
+		List<Report> reports;
+		if (parentKey.isMatrix()) {
+			reports = getReports(parentKey.getMatrixParent());
+		} else {
+			reports = getReports(parentKey.getOperationParent());
+		}
+
+		return reports;
+	}
+
+	@Override
+	public List<Report> getReports(DataSetKey parentKey, OPType reportType) throws IOException {
+
+		List<Report> reports = getReports(parentKey);
+		List<Report> filteredReports = new ArrayList<Report>();
+		for (Report report : reports) {
+			if (report.getReportType() == reportType) {
+				filteredReports.add(report);
+			}
+		}
+
+		return filteredReports;
 	}
 
 	@Override

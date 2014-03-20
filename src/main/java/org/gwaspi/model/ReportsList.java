@@ -19,6 +19,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.dao.jpa.JPAReportService;
 
@@ -49,12 +50,22 @@ public class ReportsList {
 		return getReportService().getReport(reportKey);
 	}
 
+	/** @deprecated use {@link #getReportsList(DataSetKey)} instead */
 	public static List<Report> getReportsList(MatrixKey parentMatrixKey) throws IOException {
-		return getReportService().getReports(parentMatrixKey);
+		return getReportService().getReports(new DataSetKey(parentMatrixKey));
 	}
 
+	/** @deprecated use {@link #getReportsList(DataSetKey)} instead */
 	public static List<Report> getReportsList(OperationKey parentOperationKey) throws IOException {
-		return getReportService().getReports(parentOperationKey);
+		return getReportService().getReports(new DataSetKey(parentOperationKey));
+	}
+
+	public static List<Report> getReportsList(DataSetKey parentKey) throws IOException {
+		return getReportService().getReports(parentKey);
+	}
+
+	public static List<Report> getReportsList(DataSetKey parentKey, OPType reportType) throws IOException {
+		return getReportService().getReports(parentKey, reportType);
 	}
 
 	public static String getReportNamePrefix(OperationMetadata op) {
