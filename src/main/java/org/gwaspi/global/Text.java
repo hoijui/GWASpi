@@ -265,6 +265,7 @@ public class Text {
 	public static class Operation {
 
 		public static final String operation = "Operation";
+		public static final String operations = "Operations";
 		public static final String newOperation = "New Operation";
 		public static final String analyseData = "Analyse Data";
 		public static final String generateReports = "Generate Reports";
