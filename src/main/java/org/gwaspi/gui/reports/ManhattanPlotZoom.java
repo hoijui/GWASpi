@@ -52,6 +52,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -99,9 +100,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	private final OperationKey testOpKey;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
-	private MarkerKey origMarkerKey;
+	private final MarkerKey origMarkerKey;
 	private final ChromosomeKey origChr;
-	private MarkerKey currentMarkerKey;
 	private final ChromosomeKey currentChr;
 	private final Integer nRows;
 	private long centerPhysPos;
@@ -139,6 +139,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	{
 		this.parent = parent;
 		this.testOpKey = operationKey;
+		this.origMarkerKey = null;
 		this.currentChr = chr;
 		this.origChr = chr;
 		this.nRows = nRows;
@@ -153,14 +154,13 @@ public final class ManhattanPlotZoom extends JPanel {
 	public ManhattanPlotZoom(
 			OperationKey testOpKey,
 			ChromosomeKey chr,
-			MarkerKey markerId,
+			MarkerKey markerKey,
 			long centerPhysPos,
 			long requestedSetSize,
 			Integer nRows)
 	{
 		this.testOpKey = testOpKey;
-		this.currentMarkerKey = markerId;
-		this.origMarkerKey = markerId;
+		this.origMarkerKey = markerKey;
 		this.currentChr = chr;
 		this.origChr = chr;
 		this.nRows = nRows;
@@ -203,7 +203,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			toUseMarkerKey = null;
 			toUseRequestedPosWindow = requestedPosWindow;
 		} else {
-			toUseMarkerKey = currentMarkerKey;
+			toUseMarkerKey = origMarkerKey;
 			toUseRequestedPosWindow = requestedSetSize; // XXX should this be requestedPosWindow instead?
 		}
 		initXYDataset = GenericReportGenerator.getManhattanZoomByChrAndPos(
@@ -293,9 +293,11 @@ public final class ManhattanPlotZoom extends JPanel {
 		btn_Back = new JButton();
 		btn_Back2 = new JButton();
 
-		String titlePlot = ": " + origMarkerKey.toString() + " - Chr" + currentChr;
+		final String titlePlot;
 		if (origMarkerKey == null) {
 			titlePlot = ": Chr" + currentChr + " - Pos: " + startPhysPos + " to " + (startPhysPos + requestedPosWindow);
+		} else {
+			titlePlot = ": " + origMarkerKey.toString() + " - Chr" + currentChr;
 		}
 
 		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, "Manhattan Plot Navigator" + titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
