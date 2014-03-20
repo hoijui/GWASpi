@@ -17,23 +17,20 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -41,12 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -86,29 +79,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
-	// Variables declaration - do not modify
 	private final OperationMetadata currentOP;
-	private final JButton btn_1_1;
-	private final JButton btn_1_2;
-	private final JButton btn_1_3;
-	private final JButton btn_1_4;
-	private final JButton btn_1_5;
-	private final JButton btn_1_6;
-	private final JButton btn_Back;
-	private final JButton btn_DeleteOperation;
-	private final JButton btn_Help;
-	private final JPanel pnl_Spacer;
-	private final JPanel pnl_NewOperation;
-	private final JPanel pnl_Buttons;
-	private final JPanel pnl_Footer;
-	private final JPanel pnl_MatrixDesc;
-	private final JScrollPane scrl_MatrixDesc;
-	private final JScrollPane scrl_MatrixOperations;
-	private final JTable tbl_MatrixOperations;
-	private final JTextArea txtA_Description;
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private final Action gwasInOneGoAction;
-	// End of variables declaration
 
 	public MatrixAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
@@ -124,51 +95,16 @@ public class MatrixAnalysePanel extends JPanel {
 			parent = null;
 		}
 
-		pnl_MatrixDesc = new JPanel();
-		scrl_MatrixDesc = new JScrollPane();
-		txtA_Description = new JTextArea();
-		scrl_MatrixOperations = new JScrollPane();
-		tbl_MatrixOperations = new JTable() {
-			@Override
-			public boolean isCellEditable(int row, int col) {
-				return false; //Renders column 0 uneditable.
-			}
-
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
-				Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-				if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-					JComponent jc = (JComponent) c;
-					jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
-				}
-				return c;
-			}
-		};
-		tbl_MatrixOperations.setDefaultRenderer(Object.class, new RowRendererDefault());
-
-		btn_DeleteOperation = new JButton();
-		pnl_Footer = new JPanel();
-		btn_Back = new JButton();
-		btn_Help = new JButton();
-		pnl_Spacer = new JPanel();
-		pnl_Buttons = new JPanel();
-		pnl_NewOperation = new JPanel();
-		btn_1_1 = new JButton();
-		btn_1_2 = new JButton();
-		btn_1_3 = new JButton();
-		btn_1_4 = new JButton();
-		btn_1_5 = new JButton();
-		btn_1_6 = new JButton();
-
-		gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams);
+		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+		Action gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams);
 		gwasInOneGoAction.setEnabled(currentOP == null);
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.analyseData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+//		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(observedElementKey);
+		final List<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
 
-		txtA_Description.setColumns(20);
-		txtA_Description.setRows(5);
-		txtA_Description.setEditable(false);
-		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		JPanel pnl_desc = new JPanel();
+		JScrollPane scrl_desc = new JScrollPane();
+		JTextArea txtA_desc = new JTextArea();
 		final String title;
 		if (observedElementKey.isOperation()) {
 			title
@@ -179,143 +115,80 @@ public class MatrixAnalysePanel extends JPanel {
 					= Text.Matrix.matrix + ": " + observedElementMetadata.getFriendlyName()
 					+ ", " + "MatrixID" + ": " + observedElementMetadata.getDataSetKey().getMatrixParent().getMatrixId();
 		}
-		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		txtA_Description.setText(observedElementMetadata.getDescription().toString());
+		pnl_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(title));
+		txtA_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
+		txtA_desc.setColumns(20);
+		txtA_desc.setRows(5);
+		txtA_desc.setText(observedElementMetadata.getDescription());
+		scrl_desc.setViewportView(txtA_desc);
+		pnl_desc.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
+		pnl_desc.add(scrl_desc, BorderLayout.CENTER);
 
-		scrl_MatrixDesc.setViewportView(txtA_Description);
+		JPanel pnl_operationsTable = new JPanel();
+		JScrollPane scrl_operationsTable = new JScrollPane();
+		JTable tbl_operationsTable = new MatrixTable();
+		JButton btn_DeleteOperation = new JButton();
+		pnl_operationsTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
+		tbl_operationsTable.setModel(new OperationsTableModel(subOperations));
+		tbl_operationsTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		scrl_operationsTable.setViewportView(tbl_operationsTable);
+		btn_DeleteOperation.setBackground(CurrentStudyPanel.DANGER_RED);
+		pnl_operationsTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
+		pnl_operationsTable.add(scrl_operationsTable, BorderLayout.CENTER);
+		JPanel pnl_MatrixTableButtons = GWASpiExplorerPanel.createButtonsPanel(btn_DeleteOperation);
+		pnl_operationsTable.add(pnl_MatrixTableButtons, BorderLayout.SOUTH);
 
-//		final Collection<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(observedElementKey);
-		final Collection<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
-		tbl_MatrixOperations.setModel(new OperationsTableModel(subOperations));
-		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_MatrixOperations));
+		JButton btn_1_1 = new JButton();
+		JButton btn_1_2 = new JButton();
+		JButton btn_1_3 = new JButton();
+		JButton btn_1_4 = new JButton();
+		JButton btn_1_5 = new JButton();
+		JButton btn_1_6 = new JButton();
+		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
+		btn_1_1.setMargin(bigButtonInsets);
+		btn_1_2.setMargin(bigButtonInsets);
+		btn_1_3.setMargin(bigButtonInsets);
+		btn_1_4.setMargin(bigButtonInsets);
+		btn_1_5.setMargin(bigButtonInsets);
+		btn_1_6.setMargin(bigButtonInsets);
+		JPanel pnl_NewOperation = new JPanel();
+		pnl_NewOperation.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.newOperation));
+		pnl_NewOperation.setLayout(new GridLayout(0, 3, 18, 18));
+		pnl_NewOperation.add(btn_1_1);
+		pnl_NewOperation.add(btn_1_3);
+		pnl_NewOperation.add(btn_1_5);
+		pnl_NewOperation.add(btn_1_2);
+		pnl_NewOperation.add(btn_1_4);
+		pnl_NewOperation.add(btn_1_6);
 
-		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
-		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
-		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
-		pnl_MatrixDescLayout.setHorizontalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_MatrixDesc, GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
-				.addComponent(scrl_MatrixOperations, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
-				.addComponent(btn_DeleteOperation, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap()));
-		pnl_MatrixDescLayout.setVerticalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(scrl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scrl_MatrixOperations, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_DeleteOperation)
-				.addContainerGap()));
-		//</editor-fold>
+		JButton btn_Help = new JButton();
+		JButton btn_Back = new JButton();
+		JPanel pnl_Footer = GWASpiExplorerPanel.createButtonsPanel(
+				new JComponent[] {btn_Back},
+				new JComponent[] {btn_Help});
 
-		pnl_NewOperation.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.newOperation, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_NewOperation.setMaximumSize(new Dimension(32767, 100));
-		pnl_NewOperation.setPreferredSize(new Dimension(926, 100));
+		JPanel pnl_Bottom = new JPanel();
+		pnl_Bottom.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_Bottom.add(pnl_NewOperation, BorderLayout.NORTH);
+		pnl_Bottom.add(pnl_Footer, BorderLayout.SOUTH);
 
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Operation.analyseData)); // NOI18N
+		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		this.add(pnl_desc, BorderLayout.NORTH);
+		this.add(pnl_operationsTable, BorderLayout.CENTER);
+		this.add(pnl_Bottom, BorderLayout.SOUTH);
+
+		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_operationsTable));
 		btn_1_1.setAction(gwasInOneGoAction);
-
 		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams);
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
-
 		btn_1_3.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
-
 		btn_1_4.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
-
 		btn_1_5.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST));
-
 		btn_1_6.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
-		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
-		pnl_Spacer.setLayout(pnl_SpacerLayout);
-		pnl_SpacerLayout.setHorizontalGroup(
-				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 46, Short.MAX_VALUE));
-		pnl_SpacerLayout.setVerticalGroup(
-				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 124, Short.MAX_VALUE));
-
-		pnl_Buttons.setLayout(new GridLayout(0, 3, 18, 18));
-		pnl_Buttons.add(btn_1_1);
-		pnl_Buttons.add(btn_1_3);
-		pnl_Buttons.add(btn_1_5);
-		pnl_Buttons.add(btn_1_2);
-		pnl_Buttons.add(btn_1_4);
-		pnl_Buttons.add(btn_1_6);
-
-		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
-		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
-		pnl_NewOperationLayout.setHorizontalGroup(
-				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Buttons, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addContainerGap()));
-		pnl_NewOperationLayout.setVerticalGroup(
-				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
-				.addGroup(pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Buttons, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap()));
-		//</editor-fold>
-
 		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
-		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
-		pnl_Footer.setLayout(pnl_FooterLayout);
-		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 565, Short.MAX_VALUE)
-				.addComponent(btn_Help)
-				.addContainerGap()));
-
-		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
-		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(53, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Back)
-				.addComponent(btn_Help))));
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_NewOperation, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addGap(0, 0, 0)));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_NewOperation, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addContainerGap()));
-		//</editor-fold>
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
