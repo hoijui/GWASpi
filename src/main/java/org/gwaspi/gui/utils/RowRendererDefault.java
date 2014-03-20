@@ -39,8 +39,6 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 	private static final URL ICON_PATH_QUERY_DB = RowRendererDefault.class.getResource("/img/icon/arrow_20x20.png");
 	private static final URL ICON_PATH_ABORT    = RowRendererDefault.class.getResource("/img/icon/abort_16x16.png");
 	private static final URL ICON_PATH_NO_ABORT = RowRendererDefault.class.getResource("/img/icon/abort-grey_16x16.png");
-	private static List<SwingWorkerItem> swAL  = SwingWorkerItemList.getItems();
-	private static List<SwingDeleterItem> sdAL = SwingDeleterItemList.getItems();
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
@@ -76,10 +74,12 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
 			QueueState queueState;
-			if (swAL.size() > row) {
-				queueState = swAL.get(row).getQueueState();
+			List<SwingWorkerItem> swingWorkers  = SwingWorkerItemList.getItems();
+			if (swingWorkers.size() > row) {
+				queueState = swingWorkers.get(row).getQueueState();
 			} else {
-				queueState = sdAL.get(row - swAL.size()).getQueueState();
+				List<SwingDeleterItem> swingDeleters = SwingDeleterItemList.getItems();
+				queueState = swingDeleters.get(row - swingWorkers.size()).getQueueState();
 			}
 
 			if (column == 0 || column == 1) {
