@@ -108,7 +108,7 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 	@Override
 	protected String getNameDefault() {
-		return "Exclude by COMBI weight";
+		return "Exclude by low COMBI weight";
 	}
 
 	public int getWeightsFilterWidth() {

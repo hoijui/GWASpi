@@ -108,6 +108,6 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 	@Override
 	protected String getFilterDescription() {
-		return "Removes all markers that have a Hardy & Weinberg P-value smaller then a given threshold.";
+		return "Removes all markers that have a COMBI weight smaller then a given threshold.";
 	}
 }
