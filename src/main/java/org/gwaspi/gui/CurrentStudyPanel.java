@@ -65,16 +65,16 @@ public class CurrentStudyPanel extends JPanel {
 
 		Study study = StudyList.getStudy(studyKey);
 
-		JPanel pnl_StudyDesc = new JPanel();
-		JScrollPane scrl_Desc = new JScrollPane();
-		JTextArea txtA_StudyDesc = new JTextArea();
-		pnl_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(createTitle(study)));
-		txtA_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
-		txtA_StudyDesc.setColumns(20);
-		txtA_StudyDesc.setRows(5);
-		txtA_StudyDesc.setText(study.getDescription());
-		scrl_Desc.setViewportView(txtA_StudyDesc);
-		pnl_StudyDesc.setLayout(new BorderLayout(GAP, GAP_SMALL));
+		JPanel pnl_desc = new JPanel();
+		JScrollPane scrl_desc = new JScrollPane();
+		JTextArea txtA_desc = new JTextArea();
+		pnl_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(createTitle(study)));
+		txtA_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
+		txtA_desc.setColumns(20);
+		txtA_desc.setRows(5);
+		txtA_desc.setText(study.getDescription());
+		scrl_desc.setViewportView(txtA_desc);
+		pnl_desc.setLayout(new BorderLayout(GAP, GAP_SMALL));
 		JButton btn_DeleteStudy = new JButton();
 		JButton btn_LoadGenotypes = new JButton();
 		JButton btn_UpdateSampleInfo = new JButton();
@@ -82,8 +82,8 @@ public class CurrentStudyPanel extends JPanel {
 		JPanel pnl_StudyDescButtons = GWASpiExplorerPanel.createButtonsPanel(
 				new JComponent[] {btn_DeleteStudy},
 				new JComponent[] {btn_LoadGenotypes, btn_UpdateSampleInfo, btn_SaveDesc});
-		pnl_StudyDesc.add(scrl_Desc, BorderLayout.CENTER);
-		pnl_StudyDesc.add(pnl_StudyDescButtons, BorderLayout.SOUTH);
+		pnl_desc.add(scrl_desc, BorderLayout.CENTER);
+		pnl_desc.add(pnl_StudyDescButtons, BorderLayout.SOUTH);
 
 		JPanel pnl_MatrixTable = new JPanel();
 		JScrollPane scrl_MatrixTable = new JScrollPane();
@@ -107,11 +107,11 @@ public class CurrentStudyPanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.study)); // NOI18N
 		this.setLayout(new BorderLayout(GAP, GAP));
-		this.add(pnl_StudyDesc, BorderLayout.NORTH);
+		this.add(pnl_desc, BorderLayout.NORTH);
 		this.add(pnl_MatrixTable, BorderLayout.CENTER);
 		this.add(pnl_Footer, BorderLayout.SOUTH);
 
-		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_StudyDesc));
+		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_desc));
 		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
 		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study));
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));

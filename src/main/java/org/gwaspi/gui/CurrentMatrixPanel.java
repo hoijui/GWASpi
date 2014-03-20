@@ -66,6 +66,9 @@ public class CurrentMatrixPanel extends JPanel {
 		final DataSetKey abstractMatrix = new DataSetKey(matrixKey);
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 
+//		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(abstractMatrix);
+		final List<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(abstractMatrix);
+
 		JPanel pnl_desc = new JPanel();
 		JScrollPane scrl_desc = new JScrollPane();
 		JTextArea txtA_desc = new JTextArea();
@@ -88,27 +91,27 @@ public class CurrentMatrixPanel extends JPanel {
 		pnl_desc.add(scrl_desc, BorderLayout.CENTER);
 		pnl_desc.add(pnl_StudyDescButtons, BorderLayout.SOUTH);
 
-		JPanel pnl_MatrixTable = new JPanel();
-		JScrollPane scrl_MatrixTable = new JScrollPane();
+		JPanel pnl_operationsTable = new JPanel();
+		JScrollPane scrl_operationsTable = new JScrollPane();
 		JTable tbl_OperationsTable = new MatrixTable();
 		JButton btn_DeleteOperation = new JButton();
-		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
-		tbl_OperationsTable.setModel(new OperationsTableModel(OperationsList.getOffspringOperationsMetadata(matrixKey)));
+		pnl_operationsTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
+		tbl_OperationsTable.setModel(new OperationsTableModel(subOperations));
 		tbl_OperationsTable.setDefaultRenderer(Object.class, new RowRendererDefault());
-		scrl_MatrixTable.setViewportView(tbl_OperationsTable);
+		scrl_operationsTable.setViewportView(tbl_OperationsTable);
 		btn_DeleteOperation.setBackground(CurrentStudyPanel.DANGER_RED);
-		pnl_MatrixTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
-		pnl_MatrixTable.add(scrl_MatrixTable, BorderLayout.CENTER);
+		pnl_operationsTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
+		pnl_operationsTable.add(scrl_operationsTable, BorderLayout.CENTER);
 		JPanel pnl_MatrixTableButtons = GWASpiExplorerPanel.createButtonsPanel(btn_DeleteOperation);
-		pnl_MatrixTable.add(pnl_MatrixTableButtons, BorderLayout.SOUTH);
+		pnl_operationsTable.add(pnl_MatrixTableButtons, BorderLayout.SOUTH);
 
-		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
 		JButton btn_Operation1_1 = new JButton();
 		JButton btn_Operation1_2 = new JButton();
 		JButton btn_Operation1_3 = new JButton();
 		JButton btn_Operation1_4 = new JButton();
 		JButton btn_Operation1_5 = new JButton();
 		JButton btn_Operation1_6 = new JButton();
+		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
 		btn_Operation1_1.setMargin(bigButtonInsets);
 		btn_Operation1_2.setMargin(bigButtonInsets);
 		btn_Operation1_3.setMargin(bigButtonInsets);
@@ -134,7 +137,7 @@ public class CurrentMatrixPanel extends JPanel {
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.matrix)); // NOI18N
 		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
 		this.add(pnl_desc, BorderLayout.NORTH);
-		this.add(pnl_MatrixTable, BorderLayout.CENTER);
+		this.add(pnl_operationsTable, BorderLayout.CENTER);
 		this.add(pnl_Bottom, BorderLayout.SOUTH);
 
 		btn_Delete.setAction(new DeleteMatrixAction(matrix, this));
