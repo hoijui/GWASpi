@@ -61,11 +61,6 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	}
 
 	@Override
-	public boolean isCreatingResultMatrix() {
-		return true;
-	}
-
-	@Override
 	public OperationParams getParams() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

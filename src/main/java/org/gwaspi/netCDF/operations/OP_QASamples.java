@@ -36,6 +36,19 @@ import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 
 public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Samples Quality Assurance",
+					"Samples Quality Assurance"); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				OP_QASamples.class,
+				OPERATION_TYPE_INFO);
+	}
+
 	public OP_QASamples(SamplesQAOperationParams params) {
 		super(params);
 	}

@@ -27,11 +27,13 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperation;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
+import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
@@ -101,7 +103,13 @@ public class OperationManager {
 		if (testType == OPType.TRENDTEST) {
 			operation = new OP_TrendTests(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
-			operation = new OP_AssociationTests(new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey));
+			final AssociationTestOperationParams params
+					= new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey);
+			if (testType == OPType.ALLELICTEST) {
+				operation = new AllelicAssociationTestOperation(params);
+			} else {
+				operation = new GenotypicAssociationTestOperation(params);
+			}
 		}
 
 		final OperationKey operationKey = performOperation(operation);

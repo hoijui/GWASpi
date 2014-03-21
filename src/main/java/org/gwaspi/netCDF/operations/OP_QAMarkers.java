@@ -38,6 +38,19 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
 public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Markers Quality Assurance",
+					"Markers Quality Assurance"); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				OP_QAMarkers.class,
+				OPERATION_TYPE_INFO);
+	}
+
 	public OP_QAMarkers(MarkersQAOperationParams params) {
 		super(params);
 	}

@@ -54,6 +54,18 @@ public class MatrixTranslator implements MatrixOperation {
 //	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
 //	private final Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap;
 //	private final Map<SampleKey, ?> rdSampleSetMap;
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					true,
+					Text.Trafo.translateMatrix,
+					Text.Trafo.translateMatrix); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				MatrixTranslator.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	private final DataSetSource dataSetSource;
 	private final DataSetDestination dataSetDestination;
@@ -67,11 +79,6 @@ public class MatrixTranslator implements MatrixOperation {
 		this.dataSetSource = dataSetSource;
 		this.dataSetDestination = dataSetDestination;
 		this.translateBySamples = true;
-	}
-
-	@Override
-	public boolean isCreatingResultMatrix() {
-		return true;
 	}
 
 	@Override
@@ -250,6 +257,7 @@ public class MatrixTranslator implements MatrixOperation {
 			return translate(sampleGenotypes);
 		}
 
+		@Override
 		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
 			return translate(markerGenotypes);
 		}

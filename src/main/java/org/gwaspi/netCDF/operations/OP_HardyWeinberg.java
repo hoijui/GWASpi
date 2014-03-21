@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
@@ -37,6 +38,19 @@ import org.slf4j.LoggerFactory;
 public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					Text.Operation.hardyWeiberg,
+					Text.Operation.hardyWeiberg); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				OP_HardyWeinberg.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	public OP_HardyWeinberg(HardyWeinbergOperationParams params) {
 		super(params);

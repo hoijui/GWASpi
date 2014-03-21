@@ -58,6 +58,19 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Marker Census",
+					"Marker Census (== Genotypes frequencies)"); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				OP_MarkerCensus.class,
+				OPERATION_TYPE_INFO);
+	}
+
 	public OP_MarkerCensus(final MarkerCensusOperationParams params) {
 		super(params);
 	}
