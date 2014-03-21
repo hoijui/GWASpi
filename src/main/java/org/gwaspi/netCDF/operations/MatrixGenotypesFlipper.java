@@ -44,6 +44,19 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					true,
+					Text.Trafo.flipStrand,
+					Text.Trafo.flipStrand); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				MatrixGenotypesFlipper.class,
+				OPERATION_TYPE_INFO);
+	}
+
 	private final DataSetSource dataSetSource;
 	private final DataSetDestination dataSetDestination;
 	private final File flipperFile;
@@ -63,11 +76,6 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		this.dataSetDestination = dataSetDestination;
 		this.flipperFile = flipperFile;
 		this.markersToFlip = loadMarkerKeys(this.flipperFile);
-	}
-
-	@Override
-	public boolean isCreatingResultMatrix() {
-		return true;
 	}
 
 	@Override

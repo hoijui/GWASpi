@@ -39,6 +39,9 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.AbstractOperation;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.IntegerProgressHandler;
@@ -59,6 +62,19 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"COMBI Test",
+					"Assigns a weight to each marker, rating its ability to predict the affection"); // FIXME TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				CombiTestMatrixOperation.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
 

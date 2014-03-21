@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.operations.OperationParams;
 
 public interface MatrixOperation<PT extends OperationParams> {
@@ -44,13 +45,6 @@ public interface MatrixOperation<PT extends OperationParams> {
 	 * @return this operations parameters; may be <code>null</code>
 	 */
 	PT getParams();
-
-	/**
-	 * Returns whether this creates a matrix or an operation as result.
-	 * @return <code>true</code> if this creates a matrix,
-	 *   <code>true</code> if this creates an operation
-	 */
-	boolean isCreatingResultMatrix();
 
 	/**
 	 * Execute this operation.

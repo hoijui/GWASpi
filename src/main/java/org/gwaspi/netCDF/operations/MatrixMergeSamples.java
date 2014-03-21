@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
@@ -36,6 +37,19 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					true,
+					Text.Trafo.mergeSamplesOnly,
+					Text.Trafo.mergeMethodSampleJoin);
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				MatrixMergeSamples.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	/**
 	 * This constructor to join 2 Matrices.

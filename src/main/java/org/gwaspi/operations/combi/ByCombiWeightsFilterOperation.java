@@ -26,6 +26,9 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,19 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(ByCombiWeightsFilterOperation.class);
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Filter markers by COMBI weights threshold",
+					"Filter markers by COMBI weights threshold"); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				ByCombiWeightsFilterOperation.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 

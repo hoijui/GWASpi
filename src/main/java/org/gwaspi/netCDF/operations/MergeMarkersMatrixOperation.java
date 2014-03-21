@@ -32,6 +32,20 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					true,
+					Text.Trafo.mergeMarkersOnly,
+					Text.Trafo.mergeMethodMarkerJoin);
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				MergeMarkersMatrixOperation.class,
+				OPERATION_TYPE_INFO);
+	}
+
+
 	public MergeMarkersMatrixOperation(
 			DataSetSource dataSetSource1,
 			DataSetSource dataSetSource2,
@@ -52,14 +66,11 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		// Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		SamplesKeysSource sampleKeys = dataSetSource1.getSamplesKeysSource();
 
-		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
-		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
-
 		mergeMatrices(
 				wrSampleSetMap,
 				sampleKeys,
-				humanReadableMethodName,
-				methodDescription);
+				OPERATION_TYPE_INFO.getName(),
+				OPERATION_TYPE_INFO.getDescription());
 
 		return Integer.MIN_VALUE;
 	}

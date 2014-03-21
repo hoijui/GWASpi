@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataSet;
@@ -35,6 +36,19 @@ import org.gwaspi.statistics.Pvalue;
  * Performs the Cochran-Armitage trend test.
  */
 public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					Text.Operation.trendTest,
+					Text.Operation.trendTest); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				OP_QASamples.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	public OP_TrendTests(final TrendTestOperationParams params) {
 		super(params);

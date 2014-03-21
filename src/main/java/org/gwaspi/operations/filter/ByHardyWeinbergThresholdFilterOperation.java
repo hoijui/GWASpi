@@ -26,11 +26,26 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 
 public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Filter by Hardy&Weinberg threshold",
+					"Filter by Hardy&Weinberg threshold"); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				ByHardyWeinbergThresholdFilterOperation.class,
+				OPERATION_TYPE_INFO);
+	}
 
 	public ByHardyWeinbergThresholdFilterOperation(ByHardyWeinbergThresholdFilterOperationParams params) {
 		super(params);

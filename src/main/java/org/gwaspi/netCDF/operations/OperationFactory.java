@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -44,6 +45,9 @@ import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 
 public class OperationFactory {
+
+	private static final Map<Class<? extends MatrixOperation>, OperationTypeInfo> operationTypeInfos
+			= new HashMap<Class<? extends MatrixOperation>, OperationTypeInfo>();
 
 	private OperationFactory() {}
 
@@ -114,6 +118,13 @@ public class OperationFactory {
 //	public OperationMetadata getResultOPMetadata() {
 //		return opMetaData;
 //	}
+	public static void registerOperationTypeInfo(final Class<? extends MatrixOperation> type, final OperationTypeInfo info) {
+		operationTypeInfos.put(type, info);
+	}
+
+	public static OperationTypeInfo getOperationTypeInfo(final Class<? extends MatrixOperation> type) {
+		return operationTypeInfos.get(type);
+	}
 
 	/**
 	 * Creates a new OperationDataSet for the specified type.

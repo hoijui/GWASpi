@@ -61,6 +61,19 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					true, // XXX We might want to change this in the future, as this could be converted to create only an operation, instead of a full new matrix
+					Text.Trafo.extractData,
+					Text.Trafo.extractToNewMatrix); // TODO We need a more elaborate description of this operation!
+	static {
+		// NOTE When converting to OSGi, this would be done in bundle init,
+		//   or by annotations.
+		OperationFactory.registerOperationTypeInfo(
+				MatrixDataExtractor.class,
+				OPERATION_TYPE_INFO);
+	}
+
 	private MatrixKey rdMatrixKey;
 	/**
 	 * All the criteria to pick markers, including the directly supplied ones,
@@ -302,11 +315,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 		this.fullSampleCriteria = new HashSet();
 		this.fullSampleCriteria.addAll(sampleCriteria);
 		this.fullSampleCriteria.addAll(parseSamplePickerFile(samplePickerFile, samplePickCase, samplePickerVar, rdMatrixKey.getStudyKey()));
-	}
-
-	@Override
-	public boolean isCreatingResultMatrix() {
-		return true; // XXX We might want to change this in the future, as this could be converted to create only an operation, instead of a full new matrix
 	}
 
 	public static Collection<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {

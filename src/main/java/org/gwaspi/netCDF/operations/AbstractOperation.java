@@ -64,11 +64,6 @@ public abstract class AbstractOperation<DST extends OperationDataSet, PT extends
 		return params;
 	}
 
-	@Override
-	public boolean isCreatingResultMatrix() {
-		return false;
-	}
-
 	public abstract OPType getType();
 
 	protected DataSetKey getParentKey() {

@@ -300,9 +300,9 @@ public class Text {
 		public static final String qaData = "QA Data";
 		public static final String confirmDelete1 = "Do you really want to delete the selected Operation(s)?";
 		public static final String confirmDelete2 = "?\nThis action cannot be undone!";
-//		public static final String allelicAssocTest = "Allelic Association Test";
-//		public static final String genoAssocTest = "Genotypic Association Test";
-//		public static final String trendTest = "Cochran-Armitage Trend Test";
+		public static final String allelicAssocTest = "Allelic Association Test";
+		public static final String genoAssocTest = "Genotypic Association Test";
+		public static final String trendTest = "Cochran-Armitage Trend Test";
 		public static final String chosePhenotype = "Affection or Phenotype File";
 		public static final String genotypeFreqAndHW = "Do you want to use current Case/Conrol Affection info from the Samples DB\nor update the Samples DB Affection from an external Sample Info file?";
 		public static final String htmlCurrentAffectionFromDB = "<html><div align='center'> Current Case/Control <br> Affection from DB </div></html>";
