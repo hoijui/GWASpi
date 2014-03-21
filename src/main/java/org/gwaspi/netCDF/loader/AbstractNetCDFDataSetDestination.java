@@ -448,6 +448,11 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		}
 
 		NetCdfUtils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, sampleIndex);
+
+		final int numSamples = matrixMetadata.getNumSamples();
+		if ((sampleIndex == 0) || ((sampleIndex % 100) == 0) || ((sampleIndex  + 1) == numSamples)) {
+			log.info("Stored sample genotype-lists: {} / {}", sampleIndex + 1, numSamples);
+		}
 	}
 
 	@Override
@@ -467,6 +472,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			int[] origin = new int[] {0, (curAllelesMarkerIndex - hyperSlabRows), 0}; // 0, 0, 0 for 1st marker; 0, 1, 0 for 2nd marker ...
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+				log.info("Stored marker genotype-lists: {} / {}", curAllelesMarkerIndex + 1, matrixMetadata.getNumMarkers());
 			} catch (InvalidRangeException ex) {
 				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 			}
@@ -488,7 +494,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 //			log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
-				log.info("Processed markers: " + curAllelesMarkerIndex);
+				log.info("Stored marker genotype-lists: {} / {}", curAllelesMarkerIndex + 1, matrixMetadata.getNumMarkers());
 			} catch (InvalidRangeException ex) {
 				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 			}
