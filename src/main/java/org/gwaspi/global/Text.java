@@ -279,10 +279,6 @@ public class Text {
 		public static final String GTFreqAndHW = "Genotype freq. & Hardy-Weingerg QA";
 		public static final String GTFreqAndHWFriendlyName = "Type in a name for this Genotype frequency count";
 		public static final String htmlPerformHW = "<html><div align='center'>Perfom Hardy-Weinberg equilibrium test<div></html>";
-		//public static final String htmlAllelicAssocTest = "<html><div align='center'>Perform Allelic, Genotypic &<br>Armitage Trend Tests<div></html>";
-//		public static final String htmlAllelicAssocTest = "<html><div align='center'>Allelic Association Test<div></html>";
-//		public static final String htmlGenotypicTest = "<html><div align='center'>Genotypic Association Test<div></html>";
-//		public static final String htmlTrendTest = "<html><div align='center'>Cochran-Armitage Trend Test<div></html>";
 		public static final String htmlBlank = "<html><div align='center'><div></html>";
 		public static final String warnQABeforeAnything = "You must perform a Samples & Markers Quality Assurance before making a GWAS!";
 		public static final String warnOperationsMissing = "Some neccesary previous Operations are missing!";

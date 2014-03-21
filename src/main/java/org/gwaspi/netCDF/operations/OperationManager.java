@@ -23,7 +23,6 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -51,7 +50,6 @@ public class OperationManager {
 	private OperationManager() {
 	}
 
-	//<editor-fold defaultstate="expanded" desc="MATRIX CENSUS">
 	public static OperationKey censusCleanMatrixMarkers(
 			final MarkerCensusOperationParams params)
 			throws IOException
@@ -80,9 +78,7 @@ public class OperationManager {
 
 		return operationKey;
 	}
-	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static OperationKey performCleanTests(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
@@ -116,43 +112,6 @@ public class OperationManager {
 
 		return operationKey;
 	}
-
-//	public static OperationKey performCombiTestPackage(CombiTestParams params)
-//			throws IOException
-//	{
-//		OperationKey parent = params.getParentKey().getOperationParent();
-//
-//		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(parent);
-//		OPType parentType = ancestorOperationTypes.get(ancestorOperationTypes.size() - 1);
-//
-//		// TODO
-//		// - run "hardy weinberg" & "exclude by hardy weinberg", if none is in the ancestry
-//		// - run "filter by valid" affection, if none is in the ancestry
-//		// - run QA markers operation, and use it as the direct parent,
-//		//   if the given parent is not already a QA markers operation
-//		if (!ancestorOperationTypes.contains(OPType.HARDY_WEINBERG)) {
-//			if (parentType != OPType.MARKER_CENSUS_BY_AFFECTION
-//					&& parentType != OPType.MARKER_CENSUS_BY_PHENOTYPE)
-//			{
-//				censusCleanMatrixMarkers(null, parent, parent, markerMissingRatio, true, sampleMissingRatio, sampleHetzygRatio, null)
-//			}
-//			perfo
-//			params.getParentKey().
-//		}
-//
-//		MatrixOperation operation = new CombiTestMatrixOperation(params);
-//
-//		final int resultOpId;
-//		if (operation.isValid()) {
-//			resultOpId = operation.processMatrix();
-//		} else {
-//			resultOpId = Integer.MIN_VALUE;
-//		}
-//
-//		final OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
-//
-//		return operationKey;
-//	}
 
 	public static OperationKey performRawCombiTest(CombiTestOperationParams params)
 			throws IOException
@@ -188,7 +147,6 @@ public class OperationManager {
 
 		return resultOperationKey;
 	}
-	//</editor-fold>
 
 	public static OperationKey performQASamplesOperationAndCreateReports(
 			OP_QASamples operation)
@@ -212,7 +170,6 @@ public class OperationManager {
 		return markersQAOpKey;
 	}
 
-	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOpTypes, DataSetKey rootKey, boolean childrenOnly) {
 
 		try {
@@ -241,48 +198,4 @@ public class OperationManager {
 
 		return missingOpTypes;
 	}
-
-	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, MatrixKey matrixKey) {
-
-		List<OPType> nonoOPs = new ArrayList<OPType>();
-
-		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
-
-			for (OperationMetadata operation : chkOperations) {
-				OPType type = operation.getOperationType();
-				if (blackListOPs.contains(type)) {
-					nonoOPs.add(type);
-				}
-			}
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
-
-		return nonoOPs;
-	}
-
-	/**
-	 * @deprected unused
-	 */
-	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, OperationKey operationKey) {
-
-		List<OPType> nonoOPs = new ArrayList<OPType>();
-
-		try {
-			List<OperationMetadata> chkOperations = OperationsList.getChildrenOperationsMetadata(operationKey);
-
-			for (OperationMetadata operation : chkOperations) {
-				OPType type = operation.getOperationType();
-				if (blackListOPs.contains(type)) {
-					nonoOPs.add(type);
-				}
-			}
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
-
-		return nonoOPs;
-	}
-	//</editor-fold>
 }
