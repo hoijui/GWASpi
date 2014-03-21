@@ -44,16 +44,6 @@ public class MatrixTranslator implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
-//	private final MatrixKey rdMatrixKey;
-//	private final int wrMatrixId;
-//	private final String wrMatrixFriendlyName;
-//	private final String wrMatrixDescription;
-//	private final MatrixMetadata rdMatrixMetadata;
-//	private final MarkerSet rdMarkerSet;
-//	private final SampleSet rdSampleSet;
-//	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
-//	private final Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap;
-//	private final Map<SampleKey, ?> rdSampleSetMap;
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					true,
