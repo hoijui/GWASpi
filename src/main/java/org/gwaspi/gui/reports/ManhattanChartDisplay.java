@@ -48,7 +48,7 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,7 +228,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			Map<ChromosomeKey, ChromosomeInfo> chromosomes = OperationFactory.extractChromosomeKeysAndInfos(operationKey);
+			Map<ChromosomeKey, ChromosomeInfo> chromosomes = OperationManager.extractChromosomeKeysAndInfos(operationKey);
 			chromosomeKeys = new ArrayList<ChromosomeKey>(chromosomes.keySet());
 			chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomes.values());
 
