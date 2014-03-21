@@ -275,8 +275,8 @@ public class Text {
 		public static final String infoPhenotypeCensus = "Next you must provide a file specifying the Phenotype status of every Sample.";
 		public static final String htmlAffectionCensus = "<html><div align='center'>Genotypes freq. based on Affection status<div></html>";
 		public static final String htmlPhenoMatrixCensus = "<html><div align='center'>Genotypes freq. based on Phenotype DB<div></html>";
-		public static final String htmlGTFreqAndHW = "<html><div align='center'>Genotype freq. & Hardy-Weingerg QA<div></html>";
-		public static final String GTFreqAndHW = "Genotype freq. & Hardy-Weingerg QA";
+		public static final String htmlGTFreqAndHW = "<html><div align='center'>Genotype freq. & Hardy-Weinberg QA<div></html>";
+		public static final String GTFreqAndHW = "Genotype freq. & Hardy-Weinberg QA";
 		public static final String GTFreqAndHWFriendlyName = "Type in a name for this Genotype frequency count";
 		public static final String htmlPerformHW = "<html><div align='center'>Perfom Hardy-Weinberg equilibrium test<div></html>";
 		public static final String htmlBlank = "<html><div align='center'><div></html>";
@@ -301,8 +301,8 @@ public class Text {
 		public static final String trendTest = "Cochran-Armitage Trend Test";
 		public static final String chosePhenotype = "Affection or Phenotype File";
 		public static final String genotypeFreqAndHW = "Do you want to use current Case/Conrol Affection info from the Samples DB\nor update the Samples DB Affection from an external Sample Info file?";
-		public static final String htmlCurrentAffectionFromDB = "<html><div align='center'> Current Case/Control <br> Affection from DB </div></html>";
-		public static final String htmlAffectionFromFile = "<html><div align='center'> Update Case/Control <br> Affection from File </div></html>";
+		public static final String htmlCurrentAffectionFromDB = "<html><div align='center'>Current Case/Control <br> Affection from DB </div></html>";
+		public static final String htmlAffectionFromFile = "<html><div align='center'>Update Case/Control <br> Affection from File </div></html>";
 		public static final String addPhenotypes = "Add Phenotypes";
 		public static final String gwasInOneGo = "GWAS In One Go";
 		public static final String performAllelicTests = "Allelic tests";
