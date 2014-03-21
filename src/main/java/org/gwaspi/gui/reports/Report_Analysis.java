@@ -79,7 +79,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -375,7 +375,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected abstract Object[] parseRow(String[] cVals);
 
 	protected final void initChrSetInfo() throws IOException {
-		chrSetInfoMap = OperationFactory.extractChromosomeKeysAndInfos(testOpKey);
+		chrSetInfoMap = OperationManager.extractChromosomeKeysAndInfos(testOpKey);
 	}
 
 	private void actionLoadReport() {
