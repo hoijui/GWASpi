@@ -32,23 +32,23 @@ public class Associations {
 	}
 
 	public static double calculateChocranArmitageTrendTest(
-			int caseAA,
-			int caseAa,
-			int caseaa,
-			int ctrlAA,
-			int ctrlAa,
-			int ctrlaa,
-			ChocranArmitageTrendTestModel model)
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa,
+			final ChocranArmitageTrendTestModel model)
 	{
-		double caseTot = caseAA + caseAa + caseaa;
-		double ctrlTot = ctrlAA + ctrlAa + ctrlaa;
-		double AATot = caseAA + ctrlAA;
-		double AaTot = caseAa + ctrlAa;
-		double aaTot = caseaa + ctrlaa;
-		double N = caseTot + ctrlTot;
+		final double caseTot = caseAA + caseAa + caseaa;
+		final double ctrlTot = ctrlAA + ctrlAa + ctrlaa;
+		final double AATot = caseAA + ctrlAA;
+		final double AaTot = caseAa + ctrlAa;
+		final double aaTot = caseaa + ctrlaa;
+		final double N = caseTot + ctrlTot;
 
-		// INIT MODEL WEIGHTS
-		int[] weights = new int[3];
+		// initialzie the model weights
+		final int[] weights = new int[3];
 		switch (model) {
 			case DOMINANT:
 				weights[0] = 1;
@@ -69,19 +69,17 @@ public class Associations {
 				throw new IllegalArgumentException("invalid Chocran-Armitage trend test model: " + model);
 		}
 
-		// CALCULATE TREND TEST
-		double trendTest = weights[0] * ((ctrlTot / N) * caseAA
-				- (caseTot / N) * ctrlAA)
-				+ weights[1] * ((ctrlTot / N) * caseAa
-				- (caseTot / N) * ctrlAa)
-				+ weights[2] * ((ctrlTot / N) * caseaa
-				- (caseTot / N) * ctrlaa);
+		// calculate trend-test
+		final double trendTest
+				= weights[0] * ((ctrlTot / N) * caseAA - (caseTot / N) * ctrlAA)
+				+ weights[1] * ((ctrlTot / N) * caseAa - (caseTot / N) * ctrlAa)
+				+ weights[2] * ((ctrlTot / N) * caseaa - (caseTot / N) * ctrlaa);
 
 
-		// CALCULATE VARIANCE
-		double trendTestVar = caseTot
-				* ctrlTot
-				* ((((Math.pow(weights[0], 2) * (AATot * (N - AATot)))
+		// calculate variance
+		final double trendTestVar
+				= caseTot * ctrlTot * (
+				(((Math.pow(weights[0], 2) * (AATot * (N - AATot)))
 				+ (Math.pow(weights[1], 2) * (AaTot * (N - AaTot)))
 				+ (Math.pow(weights[2], 2) * (aaTot * (N - aaTot))))
 				- (2 * ((weights[0] * weights[1] * AATot * AaTot)
@@ -89,24 +87,24 @@ public class Associations {
 				/ Math.pow(N, 3));
 
 
-		// CALCULATE TREND TEST CHI-SQR
-		double trendTestChiSqr = Math.pow(trendTest, 2) / trendTestVar;
+		// calculate trend-test _X^2
+		final double trendTestChiSqr = Math.pow(trendTest, 2) / trendTestVar;
 
 		return trendTestChiSqr;
 	}
 
 	public static double calculateGenotypicAssociationChiSquare(
-			int obsCaseAA,
-			int obsCaseAa,
-			int obsCaseaa,
-			int caseTot,
-			int obsCtrlAA,
-			int obsCtrlAa,
-			int obsCtrlaa,
-			int ctrlTot)
+			final int obsCaseAA,
+			final int obsCaseAa,
+			final int obsCaseaa,
+			final int caseTot,
+			final int obsCtrlAA,
+			final int obsCtrlAa,
+			final int obsCtrlaa,
+			final int ctrlTot)
 	{
-		int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
-		double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 
 		obsCntgTable[0][0] = obsCaseAA;
 		obsCntgTable[1][0] = obsCaseAa;
@@ -116,14 +114,14 @@ public class Associations {
 		obsCntgTable[1][1] = obsCtrlAa;
 		obsCntgTable[2][1] = obsCtrlaa;
 
-		int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
-		int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
-		int obsAAColTot = obsCaseAA + obsCtrlAA;
-		int obsAaColTot = obsCaseAa + obsCtrlAa;
-		int obsaaColTot = obsCaseaa + obsCtrlaa;
-		int totGT = obsCaseRowTot + obsCtrlRowTot;
+		final int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
+		final int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
+		final int obsAAColTot = obsCaseAA + obsCtrlAA;
+		final int obsAaColTot = obsCaseAa + obsCtrlAa;
+		final int obsaaColTot = obsCaseaa + obsCtrlaa;
+		final int totGT = obsCaseRowTot + obsCtrlRowTot;
 
-		double chiSQ = 0;
+		final double chiSQ;
 		if (totGT != 0) {
 			expCntgTable[0][0] = (double) (obsCaseRowTot * obsAAColTot) / totGT;
 			expCntgTable[1][0] = (double) (obsCaseRowTot * obsAaColTot) / totGT;
@@ -134,60 +132,74 @@ public class Associations {
 			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
 
 			chiSQ = Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
+		} else {
+			chiSQ = 0;
 		}
+
 		return chiSQ;
 	}
 
+	/**
+	 * Calculate genotypic association odds ratios.
+	 *             Genotypes
+	 *             AA        Aa       aa
+	 * Cases       caseAA    caseAa   caseaa
+	 * Controls    ctrlAA    ctrlAa   ctrlaa
+	 *
+	 * There are three sets of odds.
+	 * The odds of being a case, given the genotype AA are a/d,
+	 * for Aa they are b/e, and for aa, they are c/f.
+	 * These odds can be compared to one another.
+	 * So the odds ratio comparing Aa to aa is,
+	 * <code>OR10 = (caseAa/ctrlAa) / (caseaa/ctrlaa) = caseAa*ctrlaa/caseaa*ctrlAa</code>,
+	 * and that comparing AA to aa is,
+	 * <code>OR20 = (caseAA/ctrlAA) / (caseaa/ctrlaa) = caseAA*ctrlaa/caseaa*ctrlAA</code>.
+	 *
+	 * @param caseAA
+	 * @param caseAa
+	 * @param caseaa
+	 * @param ctrlAA
+	 * @param ctrlAa
+	 * @param ctrlaa
+	 * @return double[2] {OR10, OR20}
+	 */
 	public static double[] calculateGenotypicAssociationOR(
-			int caseAA,
-			int caseAa,
-			int caseaa,
-			int ctrlAA,
-			int ctrlAa,
-			int ctrlaa)
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa)
 	{
-//					Genotypes
-//					AA        Aa       aa
-//		Cases       caseAA    caseAa   caseaa
-//		Controls    ctrlAA    ctrlAa   ctrlaa
-//
-//		There are three sets of odds.
-//		The odds of being a case, given the genotype AA are a/d, for Aa they are b/e, and for aa, they are c/f.
-//		These odds can be compared to one another. So the odds ratio comparing Aa to aa is,
-//
-//		OR10 = (caseAa/ctrlAa) / (caseaa/ctrlaa) = caseAa*ctrlaa/caseaa*ctrlAa,
-//
-//		and that comparing AA to aa is,
-//
-//		OR20 = (caseAA/ctrlAA) / (caseaa/ctrlaa) = caseAA*ctrlaa/caseaa*ctrlAA.
+		final double[] oddsRatio = new double[2]; // ORAAaa, ORAaaa
 
-		double[] oddsRatio = new double[2]; // ORAAaa, ORAaaa
 		oddsRatio[0] = (double) (caseAa * ctrlaa) / (caseaa * ctrlAa);  // ORAAaa
 		oddsRatio[1] = (double) (caseAA * ctrlaa) / (caseaa * ctrlAA);  // ORAaaa
+
 		return oddsRatio;
 	}
 
 	public static float calculateGenotypicFisherExactTest(
-			int sampleNb,
-			int obsCaseAA,
-			int obsCaseAa,
-			int obsCaseaa,
-			int caseTot,
-			int obsCtrlAA,
-			int obsCtrlAa,
-			int obsCtrlaa,
-			int ctrlTot)
+			final int sampleNb,
+			final int obsCaseAA,
+			final int obsCaseAa,
+			final int obsCaseaa,
+			final int caseTot,
+			final int obsCtrlAA,
+			final int obsCtrlAa,
+			final int obsCtrlaa,
+			final int ctrlTot)
 	{
 		// TODO implement Fisher's exact test
-		int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
-		int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
-		int obsAAColTot = obsCaseAA + obsCtrlAA;
-		int obsAaColTot = obsCaseAa + obsCtrlAa;
-		int obsaaColTot = obsCaseaa + obsCtrlaa;
-		int totGT = obsCaseRowTot + obsCtrlRowTot;
+		final int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
+		final int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
+		final int obsAAColTot = obsCaseAA + obsCtrlAA;
+		final int obsAaColTot = obsCaseAa + obsCtrlAa;
+		final int obsaaColTot = obsCaseaa + obsCtrlaa;
+		final int totGT = obsCaseRowTot + obsCtrlRowTot;
 
-		BigInteger rowBang = StatisticsUtils.factorial(BigInteger.valueOf(obsCaseRowTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlRowTot)));
-		BigInteger colBang = StatisticsUtils.factorial(BigInteger.valueOf(obsAAColTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsAaColTot))).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsaaColTot)));
+		final BigInteger rowBang = StatisticsUtils.factorial(BigInteger.valueOf(obsCaseRowTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlRowTot)));
+		final BigInteger colBang = StatisticsUtils.factorial(BigInteger.valueOf(obsAAColTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsAaColTot))).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsaaColTot)));
 		BigInteger denomBang = StatisticsUtils.factorial(BigInteger.valueOf(totGT)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseAA)));
 		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseAa)));
 		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseaa)));
@@ -204,18 +216,18 @@ public class Associations {
 
 	//<editor-fold defaultstate="expanded" desc="ALLELIC TESTS">
 	public static double calculateAllelicAssociationChiSquare(
-			int sampleNb,
-			int obsCaseAA,
-			int obsCaseAa,
-			int obsCaseaa,
-			int caseTot,
-			int obsCtrlAA,
-			int obsCtrlAa,
-			int obsCtrlaa,
-			int ctrlTot)
+			final int sampleNb,
+			final int obsCaseAA,
+			final int obsCaseAa,
+			final int obsCaseaa,
+			final int caseTot,
+			final int obsCtrlAA,
+			final int obsCtrlAa,
+			final int obsCtrlaa,
+			final int ctrlTot)
 	{
-		int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
-		double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 
 		obsCntgTable[0][0] = obsCaseAA;
 		obsCntgTable[1][0] = obsCaseAa;
@@ -225,15 +237,15 @@ public class Associations {
 		obsCntgTable[1][1] = obsCtrlAa;
 		obsCntgTable[2][1] = obsCtrlaa;
 
-		int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
-		int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
-		int totGT = obsCaseRowTot + obsCtrlRowTot;
+		final int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
+		final int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
+		final int totGT = obsCaseRowTot + obsCtrlRowTot;
 
-		int obsAAColTot = obsCaseAA + obsCtrlAA;
-		int obsAaColTot = obsCaseAa + obsCtrlAa;
-		int obsaaColTot = obsCaseaa + obsCtrlaa;
+		final int obsAAColTot = obsCaseAA + obsCtrlAA;
+		final int obsAaColTot = obsCaseAa + obsCtrlAa;
+		final int obsaaColTot = obsCaseaa + obsCtrlaa;
 
-		double chiSQ = Double.NaN;
+		final double chiSQ;
 		if (totGT != 0) {
 			expCntgTable[0][0] = (double) (obsCaseRowTot * obsAAColTot) / totGT;
 			expCntgTable[1][0] = (double) (obsCaseRowTot * obsAaColTot) / totGT;
@@ -244,37 +256,52 @@ public class Associations {
 			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
 
 			chiSQ = Chisquare.calculateAllelicAssociationChiSquare(obsCntgTable, expCntgTable);
+		} else {
+			chiSQ = Double.NaN;
 		}
+
 		return chiSQ;
 	}
 
+	/**
+	 * Calculates the allelic association adds ratio.
+	 * 1) Check if any value is 0
+	 * 	=> YES: OR = NaN
+	 * 	=> NO
+	 *                A       a
+	 *     Cases      caseA   casea
+	 *     Controls   ctrlA   ctrla
+	 *
+	 * 	  OR = caseA*ctrla/casea*ctrlA,
+	 *
+	 * 2) If OR is < 1
+	 *  => OR = 1/OR
+	 *
+	 * @param caseAA
+	 * @param caseAa
+	 * @param caseaa
+	 * @param ctrlAA
+	 * @param ctrlAa
+	 * @param ctrlaa
+	 * @return
+	 */
 	public static double calculateAllelicAssociationOR(
-			int caseAA,
-			int caseAa,
-			int caseaa,
-			int ctrlAA,
-			int ctrlAa,
-			int ctrlaa)
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa)
 	{
-//		1) Check if any value is 0
-//			=> YES: OR = NaN
-//			=> NO
-//						  A           a
-//			  Cases       caseA	casea
-//			  Controls    ctrlA	ctrla
-//
-//			  OR=caseA*ctrla/casea*ctrlA,
-//
-//		2) If OR is < 1
-//			=> OR = 1/OR
+		final double oddsRatio;
 
-		double oddsRatio = Double.NaN;
-
-		double numerator = ((2 * caseaa) + caseAa) * ((2 * ctrlAA) + ctrlAa);
-		double denominator = ((2 * caseAA) + caseAa) * ((2 * ctrlaa) + ctrlAa);
+		final double numerator = ((2 * caseaa) + caseAa) * ((2 * ctrlAA) + ctrlAa);
+		final double denominator = ((2 * caseAA) + caseAa) * ((2 * ctrlaa) + ctrlAa);
 
 		if (denominator != 0.0) {
 			oddsRatio = numerator / denominator;
+		} else {
+			oddsRatio = Double.NaN;
 		}
 
 		return oddsRatio;
