@@ -59,7 +59,7 @@ public class GWASpiExplorerNodes {
 		private final int parentNodeId;
 		private final NodeType nodeType;
 		private final String nodeName;
-		/** This may contain a StudyKey, MatrixKey, OperationKey, ReportKey, ... */
+		/** This may contain a {@link StudyKey}, {@link MatrixKey}, {@link OperationKey}, {@link ReportKey}, ... */
 		private final Object contentKey;
 		private boolean collapsable;
 
