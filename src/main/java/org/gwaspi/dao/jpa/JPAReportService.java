@@ -31,7 +31,6 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportKey;
 import org.slf4j.Logger;
@@ -202,24 +201,6 @@ public class JPAReportService implements ReportService {
 
 		prefix.append("_").append(op.getOperationType().toString()).append("-");
 		prefix.append(op.getId());
-
-		// Get Genotype Freq. assigned name. Pry out the part inserted by user only
-		try {
-			final OPType operationType = op.getOperationType();
-			if (operationType.equals(OPType.ALLELICTEST)
-					|| operationType.equals(OPType.GENOTYPICTEST)
-					|| operationType.equals(OPType.TRENDTEST))
-			{
-				OperationMetadata parentOp = OperationsList.getOperationMetadata(op.getParentOperationKey());
-				String[] tmp = parentOp.getFriendlyName().split("-", 2);
-				tmp = tmp[1].split("using");
-				prefix.append("_");
-				prefix.append(org.gwaspi.global.Utils.stripNonAlphaNumericDashUndscr(tmp[0].trim()));
-				prefix.append("_");
-			}
-		} catch (IOException ex) {
-			LOG.error(null, ex);
-		}
 
 		return prefix.toString();
 	}
