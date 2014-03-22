@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -204,19 +205,40 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 	}
 
-	void selectNode(final int nodeId) {
+	private TreePath getPathForNode(final int nodeId) {
 
-		tree.setSelectionPath(null);
+		final TreePath path;
 		if (nodeId == 0) {
-			TreePath tp = tree.getPathForRow(0);
-			tree.setSelectionPath(tp);
+			path = tree.getPathForRow(0);
 		} else {
 			DefaultMutableTreeNode node = GWASpiExplorerNodes.findTreeNode(nodeId);
 			if (node == null) {
 				throw new IllegalArgumentException("Could not find node with ID: " + nodeId);
 			}
-			tree.setSelectionPath(new TreePath(node.getPath()));
+			path = new TreePath(node.getPath());
 		}
+
+		return path;
+	}
+
+	void selectNode(final int nodeId) {
+
+		tree.setSelectionPath(null);
+		tree.setSelectionPath(getPathForNode(nodeId));
+	}
+
+	public void setNodeSelected(final int nodeId, final boolean select) {
+
+		final TreePath nodePath = getPathForNode(nodeId);
+
+		List<TreePath> selectionPaths = new ArrayList<TreePath>(Arrays.asList(tree.getSelectionPaths()));
+		final boolean isSelected = selectionPaths.contains(nodePath);
+		if (select && !isSelected) {
+			selectionPaths.add(nodePath);
+		} else if (!select && isSelected) {
+			selectionPaths.remove(nodePath);
+		}
+		tree.setSelectionPaths(selectionPaths.toArray(new TreePath[selectionPaths.size()]));
 	}
 
 	public void selectNode(final Object nodeKey) {
