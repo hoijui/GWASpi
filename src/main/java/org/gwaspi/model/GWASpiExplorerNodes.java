@@ -80,7 +80,12 @@ public class GWASpiExplorerNodes {
 		}
 
 		public static int createUniqueId(NodeType nodeType, Object contentKey) {
-			return (nodeType + " " + contentKey).hashCode();
+
+			int hash = 41 * nodeType.hashCode();
+			if (contentKey != null) {
+				hash += contentKey.hashCode();
+			}
+			return hash;
 		}
 
 		@Override
