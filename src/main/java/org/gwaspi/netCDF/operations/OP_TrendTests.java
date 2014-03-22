@@ -31,11 +31,15 @@ import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Performs the Cochran-Armitage trend test.
  */
 public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
+
+	private final Logger log = LoggerFactory.getLogger(OP_TrendTests.class);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -72,6 +76,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
+		boolean nonInformativeMarkers = false;
 		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
 			final Integer origIndex = caseMarkerOrigIndexKey.getKey();
 			final MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
@@ -86,6 +91,10 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 					ctrlCensus.getAa(),
 					ctrlCensus.getaa(),
 					Associations.ChocranArmitageTrendTestModel.CODOMINANT);
+			if (Double.isNaN(armitageT)) {
+				nonInformativeMarkers = true;
+			}
+
 			final double armitagePval = Pvalue.calculatePvalueFromChiSqr(armitageT, 1);
 
 			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(
@@ -93,6 +102,9 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 					origIndex,
 					armitageT,
 					armitagePval));
+		}
+		if (nonInformativeMarkers) {
+			log.warn("There were markers baring no information (all genotypes are equal). You may consider first filtering them out.");
 		}
 	}
 }
