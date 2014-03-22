@@ -444,6 +444,7 @@ public class GWASpiExplorerNodes {
 
 		NodeElementInfo toBeDeletedNodeInfo = (NodeElementInfo) toBeDeleted.getUserObject();
 		final int toBeDeletedNodeId = toBeDeletedNodeInfo.getNodeId();
+		GWASpiExplorerPanel.getSingleton().setNodeSelected(toBeDeletedNodeId, false);
 
 		DefaultTreeModel treeModel = (DefaultTreeModel) GWASpiExplorerPanel.getSingleton().getTree().getModel();
 		treeModel.removeNodeFromParent(toBeDeleted);
