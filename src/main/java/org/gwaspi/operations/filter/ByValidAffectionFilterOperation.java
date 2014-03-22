@@ -66,6 +66,7 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 		// we use all markers from the parent
 		filteredMarkerOrigIndicesAndKeys.putAll(parentDataSetSource.getMarkersKeysSource().getIndicesMap());
 
+		// ... but only the samples with a valid affection
 		SamplesKeysSource samplesKeysSource = parentDataSetSource.getSamplesKeysSource();
 		List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 		Iterator<Map.Entry<Integer, SampleKey>> samplesIt
