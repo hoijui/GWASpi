@@ -40,7 +40,7 @@ import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -71,7 +71,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				CombiTestMatrixOperation.class,
 				OPERATION_TYPE_INFO);
 	}
@@ -145,10 +145,10 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 //		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
-////				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
+////				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(params.getCensusOperationKey());
 //				= (MarkerCensusOperationDataSet) parentDataSetSource;
 		QAMarkersOperationDataSet parentQAMarkersOperationDataSet
-//				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(params.getCensusOperationKey());
+//				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(params.getCensusOperationKey());
 				= (QAMarkersOperationDataSet) parentDataSetSource;
 
 		CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();

@@ -52,7 +52,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				MatrixGenotypesFlipper.class,
 				OPERATION_TYPE_INFO);
 	}

@@ -39,7 +39,7 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperationEntry;
@@ -237,7 +237,7 @@ public class OutputTest {
 
 	private void createSortedAssociationReport(String reportName) throws IOException {
 
-		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationFactory.generateOperationDataSet(testOpKey);
+		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationManager.generateOperationDataSet(testOpKey);
 		List<? extends TrendTestOperationEntry> testOperationEntries = (List) testOperationDataSet.getEntries(); // HACK This might not be a List!
 		Collections.sort(testOperationEntries, new TrendTestOperationEntry.PValueComparator());
 
@@ -267,7 +267,7 @@ public class OutputTest {
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(qaMarkersOpKey);
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(qaMarkersOpKey);
 		final int[] origIndexToQaMarkersIndexLookupTable = createOrigIndexToQaMarkersIndexLookupTable(qaMarkersOperationDataSet);
 		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
 		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();

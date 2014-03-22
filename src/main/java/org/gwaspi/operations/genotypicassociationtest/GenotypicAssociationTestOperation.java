@@ -20,7 +20,7 @@ package org.gwaspi.operations.genotypicassociationtest;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OP_AssociationTests;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 
 public class GenotypicAssociationTestOperation extends OP_AssociationTests {
@@ -33,7 +33,7 @@ public class GenotypicAssociationTestOperation extends OP_AssociationTests {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				GenotypicAssociationTestOperation.class,
 				OPERATION_TYPE_INFO);
 	}

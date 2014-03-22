@@ -381,8 +381,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 //
 //			opMetaData = OperationsList.getOperation(resultOperationKey);
 //
-//			operationFactory = createOperationFactory();
-//			wrNcFile = operationFactory.getNetCDFHandler();
+//			OperationManager = createOperationManager();
+//			wrNcFile = OperationManager.getNetCDFHandler();
 			writeNcFile = generateNetCdfHandler(operationMetadata);
 			writeNcFile.create();
 			log.trace("Done creating netCDF handle: " + writeNcFile.toString());

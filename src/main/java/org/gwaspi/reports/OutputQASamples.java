@@ -35,7 +35,7 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
 import org.slf4j.Logger;
@@ -106,7 +106,7 @@ public class OutputQASamples {
 
 		String sep = cExport.separator_REPORTS;
 
-		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(samplesQAopKey);
+		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
 		List<QASamplesOperationEntry> qaSamplesOperationEntries = (List<QASamplesOperationEntry>) qaSamplesOperationDataSet.getEntries(); // HACK This might not be a List!
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 

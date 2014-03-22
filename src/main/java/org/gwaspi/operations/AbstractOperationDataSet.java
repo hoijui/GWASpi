@@ -37,7 +37,7 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +159,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		if (parent.isMatrix()) {
 			dataSetSource = MatrixFactory.generateMatrixDataSetSource(parent.getMatrixParent());
 		} else {
-			dataSetSource = OperationFactory.generateOperationDataSet(parent.getOperationParent());
+			dataSetSource = OperationManager.generateOperationDataSet(parent.getOperationParent());
 		}
 
 		return dataSetSource;

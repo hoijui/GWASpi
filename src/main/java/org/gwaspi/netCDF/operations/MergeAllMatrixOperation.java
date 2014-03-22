@@ -42,7 +42,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				MergeAllMatrixOperation.class,
 				OPERATION_TYPE_INFO);
 	}

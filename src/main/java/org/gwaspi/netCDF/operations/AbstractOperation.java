@@ -76,7 +76,7 @@ public abstract class AbstractOperation<DST extends OperationDataSet, PT extends
 		if (parent.isMatrix()) {
 			parentDataSetSource = MatrixFactory.generateMatrixDataSetSource(parent.getMatrixParent());
 		} else {
-			parentDataSetSource = OperationFactory.generateOperationDataSet(parent.getOperationParent());
+			parentDataSetSource = OperationManager.generateOperationDataSet(parent.getOperationParent());
 		}
 
 		return parentDataSetSource;
@@ -103,7 +103,7 @@ public abstract class AbstractOperation<DST extends OperationDataSet, PT extends
 
 	protected DST generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet = (DST) OperationFactory.generateOperationDataSet(getType(), getParentMatrixKey(), parent);
+		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getType(), getParentMatrixKey(), parent);
 
 		return operationDataSet;
 	}

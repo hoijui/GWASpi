@@ -66,7 +66,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				OP_MarkerCensus.class,
 				OPERATION_TYPE_INFO);
 	}
@@ -265,8 +265,8 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			Map<Integer, Object> excludeMarkersValue)
 			throws IOException
 	{
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerQAOpKey());
-		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getSampleQAOpKey());
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(getParams().getMarkerQAOpKey());
+		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(getParams().getSampleQAOpKey());
 
 		final int excludedMarkerNb;
 		if (excludeMarkersOrigIndexAndKey != null) {

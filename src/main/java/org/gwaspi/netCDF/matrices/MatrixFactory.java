@@ -23,7 +23,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.datasource.netcdf.NetCDFDataSetSource;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 
 public class MatrixFactory {
 
@@ -48,7 +48,7 @@ public class MatrixFactory {
 			if (dataSetKey.isMatrix()) {
 				return generateMatrixDataSetSource(dataSetKey.getMatrixParent());
 			} else {
-				return OperationFactory.generateOperationDataSet(dataSetKey.getOperationParent());
+				return OperationManager.generateOperationDataSet(dataSetKey.getOperationParent());
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
