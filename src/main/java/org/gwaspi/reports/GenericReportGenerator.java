@@ -44,7 +44,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
@@ -124,7 +124,7 @@ public class GenericReportGenerator {
 //			hetzyThreshold = 0.5 / snpNumber;  // (0.05 / 10^6 SNPs => 5*10^(-7))
 //		}
 
-		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationManager.generateOperationDataSet(testOpKey);
 		Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
 		Iterator<MarkerKey> testOpMarkerKeysIt = testOpMarkers.values().iterator();
 		Collection<Double> ps = testOpDS.getPs(-1, -1);
@@ -288,7 +288,7 @@ public class GenericReportGenerator {
 
 	private static List<Double> assembleQQPlotData(OperationKey testOpKey) throws IOException {
 
-		CommonTestOperationDataSet testOpDS = (CommonTestOperationDataSet) OperationFactory.generateOperationDataSet(testOpKey);
+		CommonTestOperationDataSet testOpDS = (CommonTestOperationDataSet) OperationManager.generateOperationDataSet(testOpKey);
 		Collection<Double> chiSqrVals = testOpDS.getTs(-1, -1);
 		List<Double> obsChiSqrVals = new ArrayList<Double>(chiSqrVals.size());
 		for (Double chiSqr : chiSqrVals) {
@@ -446,7 +446,7 @@ public class GenericReportGenerator {
 			DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
 			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 
-			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationManager.generateOperationDataSet(testOpKey);
 			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
 			Iterator<Double> psIt = testOpDS.getPs(-1, -1).iterator();
 			markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(testOpMarkers.size());
@@ -526,7 +526,7 @@ public class GenericReportGenerator {
 ////			OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
 //
 //			DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
-//			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+//			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationManager.generateOperationDataSet(testOpKey);
 //			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 //			Map<MarkerKey, Object[]> markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
 //			for (MarkerMetadata markerMetadata : markersMetadatasSource) {
@@ -698,7 +698,7 @@ public class GenericReportGenerator {
 
 		XYDataset resultXYDataset;
 
-		QASamplesOperationDataSet qaSamplesOpDS = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(operationKey);
+		QASamplesOperationDataSet qaSamplesOpDS = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(operationKey);
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
 

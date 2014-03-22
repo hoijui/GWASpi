@@ -27,7 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				ByCombiWeightsFilterOperation.class,
 				OPERATION_TYPE_INFO);
 	}

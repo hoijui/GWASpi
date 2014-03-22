@@ -66,7 +66,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		int resultOpId = OperationKey.NULL_ID;
 
 		SimpleOperationDataSet filteredOperationDataSet
-				= (SimpleOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getParent().getOperationParent());
+				= (SimpleOperationDataSet) OperationManager.generateOperationDataSet(getParams().getParent().getOperationParent());
 
 		// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 		if (!filteredOperationDataSet.isDataLeft()) {
@@ -75,7 +75,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		}
 
 		MarkerCensusOperationDataSet markerCensusOperationDataSet
-				= (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(getParams().getMarkerCensus());
+				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(getParams().getMarkerCensus());
 
 		AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) generateFreshOperationDataSet();
 
@@ -163,7 +163,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		int totalMarkerNb = 0;
 
 		if (hwOPKey != null) {
-			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(hwOPKey);
+			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet = (HardyWeinbergOperationDataSet) OperationManager.generateOperationDataSet(hwOPKey);
 
 			Collection<HardyWeinbergOperationEntry> hwEntriesControl = hardyWeinbergOperationDataSet.getEntriesControl();
 			totalMarkerNb = hwEntriesControl.size();

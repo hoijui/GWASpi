@@ -69,7 +69,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				MatrixDataExtractor.class,
 				OPERATION_TYPE_INFO);
 	}

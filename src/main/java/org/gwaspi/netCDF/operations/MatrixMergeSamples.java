@@ -46,7 +46,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				MatrixMergeSamples.class,
 				OPERATION_TYPE_INFO);
 	}

@@ -52,7 +52,7 @@ public class MatrixTranslator implements MatrixOperation {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				MatrixTranslator.class,
 				OPERATION_TYPE_INFO);
 	}

@@ -27,7 +27,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
@@ -42,7 +42,7 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				ByHardyWeinbergThresholdFilterOperation.class,
 				OPERATION_TYPE_INFO);
 	}
@@ -69,7 +69,7 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 		final double hwPValueThreshold = getParams().getHardyWeinbergPValueThreshold();
 
 		HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
-				= (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(hwOpKey);
+				= (HardyWeinbergOperationDataSet) OperationManager.generateOperationDataSet(hwOpKey);
 
 		Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
 		List<HardyWeinbergOperationEntry> hwEntriesControl = hardyWeinbergOperationDataSet.getEntriesControl();

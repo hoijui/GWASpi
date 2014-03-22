@@ -46,7 +46,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				OP_QAMarkers.class,
 				OPERATION_TYPE_INFO);
 	}

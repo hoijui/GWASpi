@@ -47,7 +47,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				OP_HardyWeinberg.class,
 				OPERATION_TYPE_INFO);
 	}
@@ -77,7 +77,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 		int resultOpId;
 
 		final OperationKey markerCensusOPKey = getParams().getParent().getOperationParent();
-		MarkerCensusOperationDataSet markerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
+		MarkerCensusOperationDataSet markerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(markerCensusOPKey);
 
 		HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
 		dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());

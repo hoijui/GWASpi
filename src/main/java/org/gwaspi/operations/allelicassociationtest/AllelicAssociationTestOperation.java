@@ -20,7 +20,7 @@ package org.gwaspi.operations.allelicassociationtest;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OP_AssociationTests;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 
@@ -34,7 +34,7 @@ public class AllelicAssociationTestOperation extends OP_AssociationTests {
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationFactory.registerOperationTypeInfo(
+		OperationManager.registerOperationTypeInfo(
 				AllelicAssociationTestOperation.class,
 				OPERATION_TYPE_INFO);
 	}

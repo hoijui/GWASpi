@@ -39,7 +39,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,7 +201,7 @@ class BeagleFormatter implements Formatter {
 			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;
 			Map<MarkerKey, Byte> opQaMarkersAllelesMin = null;
 			if (markersQAopKey != null) {
-				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
 				Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
 				Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 				Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);

@@ -39,7 +39,7 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class OutputQAMarkers {
 
 	private static void createSortedMarkerMissingnessReport(OperationKey markersQAopKey, String reportName) throws IOException {
 
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
 		Collection<Double> missingRatios = qaMarkersOperationDataSet.getMissingRatio();
 		Map<Integer, Double> unsortedOrigIndexMissingRatios = new LinkedHashMap<Integer, Double>(missingRatios.size());
 		Iterator<Double> missingRatiosIt = missingRatios.iterator();
@@ -193,7 +193,7 @@ public class OutputQAMarkers {
 
 	private static void createMarkerMismatchReport(OperationKey markersQAopKey, String reportName) throws IOException {
 
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
 		Collection<Boolean> mismatchStates = qaMarkersOperationDataSet.getMismatchStates();
 		Map<Integer, Boolean> unsortedOrigIndexMismatchStates = new LinkedHashMap<Integer, Boolean>(mismatchStates.size());
 		Iterator<Boolean> mismatchStatesIt = mismatchStates.iterator();
