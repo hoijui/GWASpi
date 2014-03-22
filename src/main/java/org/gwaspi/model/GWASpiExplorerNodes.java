@@ -440,14 +440,17 @@ public class GWASpiExplorerNodes {
 		return child;
 	}
 
-	public static DefaultMutableTreeNode deleteNode(DefaultMutableTreeNode child) {
+	public static DefaultMutableTreeNode deleteNode(DefaultMutableTreeNode toBeDeleted) {
+
+		NodeElementInfo toBeDeletedNodeInfo = (NodeElementInfo) toBeDeleted.getUserObject();
+		final int toBeDeletedNodeId = toBeDeletedNodeInfo.getNodeId();
 
 		DefaultTreeModel treeModel = (DefaultTreeModel) GWASpiExplorerPanel.getSingleton().getTree().getModel();
-		treeModel.removeNodeFromParent(child);
+		treeModel.removeNodeFromParent(toBeDeleted);
 
-		nodeIdToNode.remove(((NodeElementInfo) child.getUserObject()).getNodeId());
+		nodeIdToNode.remove(toBeDeletedNodeId);
 
-		return child;
+		return toBeDeleted;
 	}
 	//</editor-fold>
 }
