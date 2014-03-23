@@ -34,19 +34,24 @@ import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.RawMarkerCensusStatistics;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -62,27 +67,22 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 			= new DefaultOperationTypeInfo(
 					false,
 					"Marker Census",
-					"Marker Census (== Genotypes frequencies)"); // TODO We need a more elaborate description of this operation!
-	static {
+					"Marker Census (== Genotypes frequencies)", // TODO We need a more elaborate description of this operation!
+					OPType.MARKER_CENSUS_BY_AFFECTION);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				OP_MarkerCensus.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				OP_MarkerCensus.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfMarkerCensusOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public OP_MarkerCensus(final MarkerCensusOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-
-		if (getParams().getPhenotypeFile() == null) {
-			return OPType.MARKER_CENSUS_BY_PHENOTYPE;
-		} else {
-			return OPType.MARKER_CENSUS_BY_AFFECTION;
-		}
 	}
 
 	@Override

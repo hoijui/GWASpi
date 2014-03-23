@@ -50,6 +50,7 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.MatrixOperationFactory;
 import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +66,13 @@ public class MatrixDataExtractor implements MatrixOperation {
 			= new DefaultOperationTypeInfo(
 					true, // XXX We might want to change this in the future, as this could be converted to create only an operation, instead of a full new matrix
 					Text.Trafo.extractData,
-					Text.Trafo.extractToNewMatrix); // TODO We need a more elaborate description of this operation!
+					Text.Trafo.extractToNewMatrix,
+					null);
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				MatrixDataExtractor.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new MatrixOperationFactory(
+				MatrixDataExtractor.class, OPERATION_TYPE_INFO));
 	}
 
 	private MatrixKey rdMatrixKey;

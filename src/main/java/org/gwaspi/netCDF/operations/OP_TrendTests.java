@@ -24,9 +24,13 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
+import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.statistics.Associations;
@@ -45,22 +49,22 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.trendTest,
-					Text.Operation.trendTest); // TODO We need a more elaborate description of this operation!
-	static {
+					Text.Operation.trendTest, // TODO We need a more elaborate description of this operation!
+					OPType.TRENDTEST);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				OP_QASamples.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				OP_TrendTests.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfTrendTestOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public OP_TrendTests(final TrendTestOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.TRENDTEST;
 	}
 
 	@Override

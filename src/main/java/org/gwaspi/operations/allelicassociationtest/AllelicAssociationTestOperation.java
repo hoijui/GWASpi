@@ -17,11 +17,18 @@
 
 package org.gwaspi.operations.allelicassociationtest;
 
+import java.io.IOException;
+import java.util.Map;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OP_AssociationTests;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 
 public class AllelicAssociationTestOperation extends OP_AssociationTests {
@@ -30,13 +37,18 @@ public class AllelicAssociationTestOperation extends OP_AssociationTests {
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.allelicAssocTest,
-					Text.Operation.allelicAssocTest); // TODO We need a more elaborate description of this operation!
-	static {
+					Text.Operation.allelicAssocTest, // TODO We need a more elaborate description of this operation!
+					OPType.ALLELICTEST);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				AllelicAssociationTestOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				AllelicAssociationTestOperation.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfAllelicAssociationTestsOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public AllelicAssociationTestOperation(final AssociationTestOperationParams params) {

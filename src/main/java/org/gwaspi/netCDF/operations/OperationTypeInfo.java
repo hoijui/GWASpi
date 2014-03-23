@@ -17,6 +17,8 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+
 /**
  * Contains info about one type of operation.
  * This information is static for the operation type,
@@ -45,4 +47,9 @@ public interface OperationTypeInfo {
 	 * @see #getName()
 	 */
 	String getDescription();
+
+	/**
+	 * @deprecated
+	 */
+	OPType getType();
 }

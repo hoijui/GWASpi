@@ -38,22 +38,17 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 			= new DefaultOperationTypeInfo(
 					false,
 					"Filter by Hardy&Weinberg threshold",
-					"Filter by Hardy&Weinberg threshold"); // TODO We need a more elaborate description of this operation!
-	static {
+					"Filter by Hardy&Weinberg threshold", // TODO We need a more elaborate description of this operation!
+					OPType.FILTER_BY_HW_THREASHOLD);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				ByHardyWeinbergThresholdFilterOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new SimpleOperationFactory(
+				ByHardyWeinbergThresholdFilterOperation.class, OPERATION_TYPE_INFO));
 	}
 
 	public ByHardyWeinbergThresholdFilterOperation(ByHardyWeinbergThresholdFilterOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.FILTER_BY_HW_THREASHOLD;
 	}
 
 	@Override

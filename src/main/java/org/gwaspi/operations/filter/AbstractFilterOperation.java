@@ -84,7 +84,7 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		dataSet.setType(getType());
+		dataSet.setType(getParams().getType());
 		dataSet.setFilterDescription(getFilterDescription());
 
 		dataSet.setNumMarkers(filteredMarkerOrigIndicesAndKeys.size());
@@ -100,5 +100,4 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 
 		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 	}
-
 }

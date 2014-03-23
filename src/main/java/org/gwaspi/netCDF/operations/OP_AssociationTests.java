@@ -40,15 +40,6 @@ public abstract class OP_AssociationTests extends AbstractTestMatrixOperation<Co
 		super(params);
 	}
 
-	@Override
-	public OPType getType() {
-		return getParams().getType();
-	}
-
-	private boolean isAllelic() {
-		return (getType() == OPType.ALLELICTEST);
-	}
-
 	/**
 	 * Performs the Allelic or Genotypic Association Tests.
 	 * @param dataSet
@@ -84,7 +75,7 @@ public abstract class OP_AssociationTests extends AbstractTestMatrixOperation<Co
 			final int ctrlaa = ctrlCensus.getaa();
 			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			if (isAllelic()) {
+			if (getParams().getType() == OPType.ALLELICTEST) {
 				// allelic test
 				final int sampleNb = caseTot + ctrlTot;
 

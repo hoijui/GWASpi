@@ -30,6 +30,7 @@ import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
+import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,24 +43,19 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			= new DefaultOperationTypeInfo(
 					false,
 					"Filter markers by COMBI weights threshold",
-					"Filter markers by COMBI weights threshold"); // TODO We need a more elaborate description of this operation!
-	static {
+					"Filter markers by COMBI weights threshold", // TODO We need a more elaborate description of this operation!
+					OPType.FILTER_BY_WEIGHTS);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				ByCombiWeightsFilterOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new SimpleOperationFactory(
+				ByCombiWeightsFilterOperation.class, OPERATION_TYPE_INFO));
 	}
 
 	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 
 	public ByCombiWeightsFilterOperation(ByCombiWeightsFilterOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.FILTER_BY_WEIGHTS;
 	}
 
 	@Override

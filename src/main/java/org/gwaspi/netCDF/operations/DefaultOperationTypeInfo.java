@@ -17,20 +17,25 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+
 public class DefaultOperationTypeInfo implements OperationTypeInfo {
 
 	private final boolean creatingMatrix;
 	private final String name;
 	private final String description;
+	private final OPType type;
 
 	public DefaultOperationTypeInfo(
 			boolean creatingMatrix,
 			String name,
-			String description)
+			String description,
+			OPType type)
 	{
 		this.creatingMatrix = creatingMatrix;
 		this.name = name;
 		this.description = description;
+		this.type = type;
 	}
 
 	@Override
@@ -46,5 +51,10 @@ public class DefaultOperationTypeInfo implements OperationTypeInfo {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public OPType getType() {
+		return type;
 	}
 }
