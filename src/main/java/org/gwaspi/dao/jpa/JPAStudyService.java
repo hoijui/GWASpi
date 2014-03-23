@@ -28,6 +28,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfoList;
@@ -208,11 +209,12 @@ public class JPAStudyService implements StudyService {
 		} finally {
 			close(em);
 		}
-		List<MatrixKey> matrixList = MatricesList.getMatrixList(studyKey);
+		List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
 
-		for (int i = 0; i < matrixList.size(); i++) {
+		for (MatrixKey toBeDeletedMatrix : matrices) {
 			try {
-				MatricesList.deleteMatrix(matrixList.get(i), deleteReports);
+				MatricesList.deleteMatrix(toBeDeletedMatrix, deleteReports);
+				GWASpiExplorerNodes.deleteMatrixNode(toBeDeletedMatrix);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 				LOG.warn(null, ex);
