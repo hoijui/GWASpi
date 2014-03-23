@@ -17,11 +17,18 @@
 
 package org.gwaspi.operations.genotypicassociationtest;
 
+import java.io.IOException;
+import java.util.Map;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OP_AssociationTests;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.OperationDataSet;
 
 public class GenotypicAssociationTestOperation extends OP_AssociationTests {
 
@@ -29,13 +36,18 @@ public class GenotypicAssociationTestOperation extends OP_AssociationTests {
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.genoAssocTest,
-					Text.Operation.genoAssocTest); // TODO We need a more elaborate description of this operation!
-	static {
+					Text.Operation.genoAssocTest, // TODO We need a more elaborate description of this operation!
+					OPType.GENOTYPICTEST);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				GenotypicAssociationTestOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				GenotypicAssociationTestOperation.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfGenotypicAssociationTestsOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public GenotypicAssociationTestOperation(final AssociationTestOperationParams params) {

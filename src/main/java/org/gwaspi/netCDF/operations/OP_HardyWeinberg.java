@@ -19,16 +19,21 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
+import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
 import org.gwaspi.statistics.StatisticsUtils;
@@ -43,22 +48,22 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.hardyWeiberg,
-					Text.Operation.hardyWeiberg); // TODO We need a more elaborate description of this operation!
-	static {
+					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
+					OPType.HARDY_WEINBERG);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				OP_HardyWeinberg.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				OP_HardyWeinberg.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfHardyWeinbergOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public OP_HardyWeinberg(HardyWeinbergOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.HARDY_WEINBERG;
 	}
 
 	@Override

@@ -22,15 +22,20 @@ import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qasamples.DefaultQASamplesOperationEntry;
+import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 
@@ -40,22 +45,22 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, S
 			= new DefaultOperationTypeInfo(
 					false,
 					"Samples Quality Assurance",
-					"Samples Quality Assurance"); // TODO We need a more elaborate description of this operation!
-	static {
+					"Samples Quality Assurance", // TODO We need a more elaborate description of this operation!
+					OPType.SAMPLE_QA);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				OP_QASamples.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				OP_QASamples.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public OP_QASamples(SamplesQAOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.SAMPLE_QA;
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.MatrixOperationFactory;
 
 public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
@@ -38,13 +39,13 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 			= new DefaultOperationTypeInfo(
 					true,
 					Text.Trafo.mergeAll,
-					Text.Trafo.mergeMethodMergeAll);
+					Text.Trafo.mergeMethodMergeAll,
+					null);
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				MergeAllMatrixOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new MatrixOperationFactory(
+				MergeAllMatrixOperation.class, OPERATION_TYPE_INFO));
 	}
 
 	public MergeAllMatrixOperation(

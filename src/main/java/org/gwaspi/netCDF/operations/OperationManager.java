@@ -19,10 +19,12 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -35,26 +37,20 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.OperationFactory;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperation;
-import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
-import org.gwaspi.operations.combi.NetCdfCombiTestOperationDataSet;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
-import org.gwaspi.operations.filter.NetCdfSimpleOperationDataSet;
+import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
-import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
-import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
-import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
-import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
-import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
@@ -67,18 +63,47 @@ public class OperationManager {
 
 	private static final Logger log = LoggerFactory.getLogger(OperationManager.class);
 
-	private static final Map<Class<? extends MatrixOperation>, OperationTypeInfo> operationTypeInfos
-			= new HashMap<Class<? extends MatrixOperation>, OperationTypeInfo>();
+	private static final Map<Class<? extends MatrixOperation>, OperationFactory> operationTypeToFactory
+			= new HashMap<Class<? extends MatrixOperation>, OperationFactory>();
+	private static final Map<OPType, Class<? extends MatrixOperation>> oldToNewType
+			= new EnumMap<OPType, Class<? extends MatrixOperation>>(OPType.class);
+
+	static {
+		OP_QAMarkers.register();
+		OP_QASamples.register();
+		OP_HardyWeinberg.register();
+		OP_MarkerCensus.register();
+		OP_TrendTests.register();
+		ByHardyWeinbergThresholdFilterOperation.register();
+		ByValidAffectionFilterOperation.register();
+		ByCombiWeightsFilterOperation.register();
+		CombiTestMatrixOperation.register();
+	}
 
 	private OperationManager() {
 	}
 
-	public static void registerOperationTypeInfo(final Class<? extends MatrixOperation> type, final OperationTypeInfo info) {
-		operationTypeInfos.put(type, info);
+	public static void registerOperationFactory(final OperationFactory operationFactory) {
+
+		final Class<? extends MatrixOperation> type = operationFactory.getType();
+		if (operationTypeToFactory.containsKey(type)) {
+			throw new IllegalStateException("Operation factory type registered more then once: " + type.getCanonicalName());
+		}
+		operationTypeToFactory.put(type, operationFactory);
+		oldToNewType.put(operationFactory.getTypeInfo().getType(), type);
+	}
+
+	private static OperationFactory getOperationFactory(final Class<? extends MatrixOperation> type) {
+		return operationTypeToFactory.get(type);
 	}
 
 	public static OperationTypeInfo getOperationTypeInfo(final Class<? extends MatrixOperation> type) {
-		return operationTypeInfos.get(type);
+		return getOperationFactory(type).getTypeInfo();
+	}
+
+	private static final Map<String, Object> FACTORY_DEFAULT_PROPERTIES = new HashMap<String, Object>();
+	static {
+		FACTORY_DEFAULT_PROPERTIES.put(OperationFactory.PROPERTY_NAME_TYPE, AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
 	}
 
 	/**
@@ -89,66 +114,34 @@ public class OperationManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey origin, DataSetKey parent) throws IOException {
-		return generateOperationDataSet(operationType, null, origin, parent);
+	public static OperationDataSet generateOperationDataSet(final OPType type, MatrixKey origin, DataSetKey parent) throws IOException {
+		return generateOperationDataSet(oldToNewType.get(type), origin, parent);
+	}
+	public static OperationDataSet generateOperationDataSet(final Class<? extends MatrixOperation> type, MatrixKey origin, DataSetKey parent) throws IOException {
+		return generateOperationDataSet(type, null, origin, parent, FACTORY_DEFAULT_PROPERTIES);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
 
 		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(operationKey);
-		OPType operationType = operationMetadata.getOperationType();
+		OPType oldType = operationMetadata.getOperationType();
+		final Class<? extends MatrixOperation> type = oldToNewType.get(oldType);
 
-		return generateOperationDataSet(operationType, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent());
+		return generateOperationDataSet(type, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent(), FACTORY_DEFAULT_PROPERTIES);
 	}
 
-	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey, MatrixKey origin, DataSetKey parent) throws IOException {
+	private static OperationDataSet generateOperationDataSet(final Class<? extends MatrixOperation> type, OperationKey operationKey, MatrixKey origin, DataSetKey parent, Map<String, Object> properties) throws IOException {
 
-		AbstractOperationDataSet operationDataSet;
-
-		boolean useNetCdf = true;
-		if (useNetCdf) {
-			switch (operationType) {
-				case SAMPLE_QA:
-					operationDataSet = new NetCdfQASamplesOperationDataSet(origin, parent, operationKey);
-					break;
-				case MARKER_QA:
-					operationDataSet = new NetCdfQAMarkersOperationDataSet(origin, parent, operationKey);
-					break;
-				case MARKER_CENSUS_BY_AFFECTION:
-				case MARKER_CENSUS_BY_PHENOTYPE:
-					operationDataSet = new NetCdfMarkerCensusOperationDataSet(origin, parent, operationKey);
-					break;
-				case HARDY_WEINBERG:
-					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(origin, parent, operationKey);
-					break;
-				case ALLELICTEST:
-					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(origin, parent, operationKey);
-					break;
-				case GENOTYPICTEST:
-					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(origin, parent, operationKey);
-					break;
-				case COMBI_ASSOC_TEST:
-					operationDataSet = new NetCdfCombiTestOperationDataSet(origin, parent, operationKey);
-					break;
-				case TRENDTEST:
-					operationDataSet = new NetCdfTrendTestOperationDataSet(origin, parent, operationKey);
-					break;
-				case FILTER_BY_HW_THREASHOLD:
-				case FILTER_BY_VALID_AFFECTION:
-				case FILTER_BY_WEIGHTS:
-					operationDataSet = new NetCdfSimpleOperationDataSet(origin, parent, operationKey);
-					break;
-				case SAMPLE_HTZYPLOT:
-				case MANHATTANPLOT:
-				case QQPLOT:
-				default:
-					throw new IllegalArgumentException("This operation type is invalid, or has no data-attached");
-			}
-		} else {
-			throw new UnsupportedOperationException("Not yet implemented!");
+		final OperationFactory operationFactory = getOperationFactory(type);
+		if (operationFactory == null) {
+			throw new IllegalArgumentException("No operation factory registered for this type: " + type);
 		}
 
-		return operationDataSet;
+		if (operationKey == null) {
+			return operationFactory.generateWriteOperationDataSet(parent, properties);
+		} else {
+			return operationFactory.generateReadOperationDataSet(operationKey, parent, properties);
+		}
 	}
 
 	public static OperationKey censusCleanMatrixMarkers(

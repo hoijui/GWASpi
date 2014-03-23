@@ -18,7 +18,6 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
@@ -64,8 +63,6 @@ public abstract class AbstractOperation<DST extends OperationDataSet, PT extends
 		return params;
 	}
 
-	public abstract OPType getType();
-
 	protected DataSetKey getParentKey() {
 		return parent;
 	}
@@ -103,7 +100,7 @@ public abstract class AbstractOperation<DST extends OperationDataSet, PT extends
 
 	protected DST generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getType(), getParentMatrixKey(), parent);
+		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent);
 
 		return operationDataSet;
 	}

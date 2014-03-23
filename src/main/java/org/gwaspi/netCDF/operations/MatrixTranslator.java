@@ -36,6 +36,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.MatrixOperationFactory;
 import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +49,13 @@ public class MatrixTranslator implements MatrixOperation {
 			= new DefaultOperationTypeInfo(
 					true,
 					Text.Trafo.translateMatrix,
-					Text.Trafo.translateMatrix); // TODO We need a more elaborate description of this operation!
+					Text.Trafo.translateMatrix, // TODO We need a more elaborate description of this operation!
+					null);
 	static {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				MatrixTranslator.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new MatrixOperationFactory(
+				MatrixTranslator.class, OPERATION_TYPE_INFO));
 	}
 
 	private final DataSetSource dataSetSource;

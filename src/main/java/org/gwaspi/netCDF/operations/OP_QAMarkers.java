@@ -23,17 +23,22 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
 import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
+import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
 public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
@@ -42,22 +47,22 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 			= new DefaultOperationTypeInfo(
 					false,
 					"Markers Quality Assurance",
-					"Markers Quality Assurance"); // TODO We need a more elaborate description of this operation!
-	static {
+					"Markers Quality Assurance", // TODO We need a more elaborate description of this operation!
+					OPType.MARKER_QA);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				OP_QAMarkers.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				OP_QAMarkers.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	public OP_QAMarkers(MarkersQAOperationParams params) {
 		super(params);
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.MARKER_QA;
 	}
 
 	@Override

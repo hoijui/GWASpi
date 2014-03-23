@@ -31,10 +31,12 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
@@ -42,7 +44,9 @@ import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.PerTimeIntervalFilteredProgressListener;
@@ -67,13 +71,18 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			= new DefaultOperationTypeInfo(
 					false,
 					"COMBI Test",
-					"Assigns a weight to each marker, rating its ability to predict the affection"); // FIXME TODO We need a more elaborate description of this operation!
-	static {
+					"Assigns a weight to each marker, rating its ability to predict the affection", // FIXME TODO We need a more elaborate description of this operation!
+					OPType.COMBI_ASSOC_TEST);
+	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationTypeInfo(
-				CombiTestMatrixOperation.class,
-				OPERATION_TYPE_INFO);
+		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
+				CombiTestMatrixOperation.class, OPERATION_TYPE_INFO) {
+					@Override
+					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new NetCdfCombiTestOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
+				});
 	}
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
@@ -88,11 +97,6 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 		this.valid = null;
 		this.problemDescription = null;
-	}
-
-	@Override
-	public OPType getType() {
-		return OPType.COMBI_ASSOC_TEST;
 	}
 
 	@Override
