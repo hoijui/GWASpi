@@ -40,7 +40,7 @@ import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 
-public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
+public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -60,7 +60,7 @@ public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationData
 				});
 	}
 
-	public QAMarkersOperation(MarkersQAOperationParams params) {
+	public QAMarkersOperation(QAMarkersOperationParams params) {
 		super(params);
 	}
 
