@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -42,7 +41,9 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.LoadDataPanel;
+import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
@@ -99,24 +100,17 @@ public class Report_SampleInfoPanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, "Study Samples Info", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder("Study Samples Info")); // NOI18N
 
 		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
+				new Object[][] {
 					{null, null, null, "Go!"}
 				},
-				new String[]{"", "", "", "", ""}));
+				new String[] {"", "", "", "", ""}));
 		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-
-		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
-
-		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInforeport));
-
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -129,16 +123,13 @@ public class Report_SampleInfoPanel extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
 				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
 		pnl_FooterLayout.setVerticalGroup(
 				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Save)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help)));
-
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT">
@@ -161,6 +152,10 @@ public class Report_SampleInfoPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
+		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
+		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInfoReport));
+
 		actionLoadReport();
 	}
 
@@ -169,11 +164,9 @@ public class Report_SampleInfoPanel extends JPanel {
 		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 
 		// Getting data from file and subdividing to series all points by chromosome
-		List<Object[]> tableRows = new ArrayList<Object[]>();
-		int id = 1;
+		Object[][] tableMatrix = new Object[allSamplesFromPool.size()][COLUMNS.length];
+		int id = 0;
 		for (SampleInfo sampleInfo : allSamplesFromPool) {
-			Object[] row = new Object[COLUMNS.length];
-
 			String familyId = sampleInfo.getFamilyId();
 			String sampleId = sampleInfo.getSampleId();
 			String fatherId = sampleInfo.getFatherId();
@@ -185,26 +178,19 @@ public class Report_SampleInfoPanel extends JPanel {
 			String disease = sampleInfo.getDisease();
 			String population = sampleInfo.getPopulation();
 
-			row[0] = id;
-			row[1] = familyId;
-			row[2] = sampleId;
-			row[3] = fatherId;
-			row[4] = motherId;
-			row[5] = sex;
-			row[6] = affection;
-			row[7] = age;
-			row[8] = category;
-			row[9] = disease;
-			row[10] = population;
-
-			tableRows.add(row);
+			tableMatrix[id][0] = id + 1;
+			tableMatrix[id][1] = familyId;
+			tableMatrix[id][2] = sampleId;
+			tableMatrix[id][3] = fatherId;
+			tableMatrix[id][4] = motherId;
+			tableMatrix[id][5] = sex;
+			tableMatrix[id][6] = affection;
+			tableMatrix[id][7] = age;
+			tableMatrix[id][8] = category;
+			tableMatrix[id][9] = disease;
+			tableMatrix[id][10] = population;
 
 			id++;
-		}
-
-		Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
-		for (int i = 0; i < tableRows.size(); i++) {
-			tableMatrix[i] = tableRows.get(i);
 		}
 
 		TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
@@ -279,12 +265,13 @@ public class Report_SampleInfoPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/sampleInfo.txt");
 				FileWriter writer = new FileWriter(newFile);
 
 				StringBuilder tableData = new StringBuilder();
-				//HEADER
+				// HEADER
 				for (int k = 0; k < reportTable.getColumnCount(); k++) {
 					tableData.append(reportTable.getColumnName(k));
 					if (k != reportTable.getColumnCount() - 1) {

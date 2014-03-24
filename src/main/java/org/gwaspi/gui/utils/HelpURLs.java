@@ -84,7 +84,7 @@ public class HelpURLs {
 		public static final String hwReport = "?page_id=347";
 		public static final String assocReport = "?page_id=349";
 		public static final String markerQAreport = "?page_id=345";
-		public static final String sampleInforeport = "?page_id=343";
+		public static final String sampleInfoReport = "?page_id=343";
 
 		private QryURL() {
 		}
