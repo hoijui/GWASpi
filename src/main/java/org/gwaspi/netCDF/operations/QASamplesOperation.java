@@ -39,7 +39,7 @@ import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 
-public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
+public class QASamplesOperation extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -51,7 +51,7 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, S
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				OP_QASamples.class, OPERATION_TYPE_INFO) {
+				QASamplesOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -59,7 +59,7 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet, S
 				});
 	}
 
-	public OP_QASamples(SamplesQAOperationParams params) {
+	public QASamplesOperation(SamplesQAOperationParams params) {
 		super(params);
 	}
 
