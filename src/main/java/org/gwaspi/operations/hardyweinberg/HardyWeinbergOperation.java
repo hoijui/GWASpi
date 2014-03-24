@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -25,15 +25,14 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.operations.AbstractOperation;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
-import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
 import org.gwaspi.statistics.StatisticsUtils;
