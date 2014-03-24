@@ -286,8 +286,7 @@ public class Report_SampleInfoPanel extends JPanel {
 					tableData = new StringBuilder();
 
 					for (int colNb = 0; colNb < reportTable.getModel().getColumnCount(); colNb++) {
-						String curVal = (String) reportTable.getValueAt(rowNb, colNb);
-
+						Object curVal = reportTable.getValueAt(rowNb, colNb);
 						if (curVal == null) {
 							curVal = "";
 						}
