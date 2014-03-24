@@ -48,8 +48,8 @@ import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperat
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
-import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperation;
-import org.gwaspi.operations.filter.ByHardyWeinbergThresholdFilterOperationParams;
+import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperation;
+import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
