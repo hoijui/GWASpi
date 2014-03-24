@@ -22,7 +22,7 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OP_MarkerCensus;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.QAMarkersOperation;
 import org.gwaspi.netCDF.operations.QASamplesOperation;
 import org.gwaspi.netCDF.operations.TrendTestsOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -90,7 +90,7 @@ public class Threaded_Combi extends CommonRunnable {
 		OperationKey qaMarkersOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MarkersQAOperationParams markersQAParams = new MarkersQAOperationParams(new DataSetKey(combiFilterOpKey));
-			qaMarkersOpKey = OperationManager.performOperation(new OP_QAMarkers(markersQAParams));
+			qaMarkersOpKey = OperationManager.performOperation(new QAMarkersOperation(markersQAParams));
 		}
 
 		OperationKey markerCensusOpKey = null;

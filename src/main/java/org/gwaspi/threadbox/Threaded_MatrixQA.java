@@ -22,7 +22,7 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.QAMarkersOperation;
 import org.gwaspi.netCDF.operations.QASamplesOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
@@ -61,7 +61,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 			OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new SamplesQAOperationParams(parentKey)));
 		}
 		if (missingOPs.contains(OPType.MARKER_QA)) {
-			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(new MarkersQAOperationParams(parentKey)));
+			OperationManager.performQAMarkersOperationAndCreateReports(new QAMarkersOperation(new MarkersQAOperationParams(parentKey)));
 		}
 	}
 }

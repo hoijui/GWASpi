@@ -176,7 +176,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 //				throw new IOException("More then 2 known alleles ("
 //						+ alleleCounts.size() + ")");
 			} else {
-				OP_QAMarkers.extractMajorAndMinorAllele(alleleCounts, allSamplesStatistics);
+				QAMarkersOperation.extractMajorAndMinorAllele(alleleCounts, allSamplesStatistics);
 
 				// We clone here, as we want to use the same major
 				// and minor alleles already extracted.
@@ -185,30 +185,30 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				MarkerAlleleAndGTStatistics hwSamplesStatistics = allSamplesStatistics.clone();
 
 				// all samples
-				OP_QAMarkers.extractContingency(
+				QAMarkersOperation.extractContingency(
 						alleleValueToOrdinalLookupTable,
 						rawMarkerCensusStatistics.getGtOrdinalCounts(),
 						allSamplesStatistics);
 
 				// case/affected samples
-				OP_QAMarkers.extractContingency(
+				QAMarkersOperation.extractContingency(
 						alleleValueToOrdinalLookupTable,
 						rawMarkerCensusStatistics.getCaseGtOrdinalCounts(),
 						caseSamplesStatistics);
 
 				// control/unaffected samples
-				OP_QAMarkers.extractContingency(
+				QAMarkersOperation.extractContingency(
 						alleleValueToOrdinalLookupTable,
 						rawMarkerCensusStatistics.getControlGtOrdinalCounts(),
 						ctrlSamplesStatistics);
 
 				// hardy&weinberg relevant samples
-				OP_QAMarkers.extractContingency(
+				QAMarkersOperation.extractContingency(
 						alleleValueToOrdinalLookupTable,
 						rawMarkerCensusStatistics.getHardyWeinbergGtOrdinalCounts(),
 						hwSamplesStatistics);
 
-				OP_QAMarkers.leaveNoSingleZeroAlleleBehind(allSamplesStatistics);
+				QAMarkersOperation.leaveNoSingleZeroAlleleBehind(allSamplesStatistics);
 
 				censusFull = new CensusFull(
 						new Census(
