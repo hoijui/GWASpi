@@ -31,7 +31,7 @@ import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
-import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
+import org.gwaspi.operations.qasamples.QASamplesOperationParams;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		OperationKey qaSamplesOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			SamplesQAOperationParams samplesQAParams = new SamplesQAOperationParams(new DataSetKey(combiFilterOpKey));
+			QASamplesOperationParams samplesQAParams = new QASamplesOperationParams(new DataSetKey(combiFilterOpKey));
 			qaSamplesOpKey = OperationManager.performOperation(new QASamplesOperation(samplesQAParams));
 		}
 

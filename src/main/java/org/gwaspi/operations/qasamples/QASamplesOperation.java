@@ -39,7 +39,7 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 
-public class QASamplesOperation extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
+public class QASamplesOperation extends AbstractOperation<QASamplesOperationDataSet, QASamplesOperationParams> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -59,7 +59,7 @@ public class QASamplesOperation extends AbstractOperation<QASamplesOperationData
 				});
 	}
 
-	public QASamplesOperation(SamplesQAOperationParams params) {
+	public QASamplesOperation(QASamplesOperationParams params) {
 		super(params);
 	}
 
