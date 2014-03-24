@@ -59,9 +59,9 @@ import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationDataSet, MarkerCensusOperationParams> {
+public class MarkerCensusOperation extends AbstractOperation<MarkerCensusOperationDataSet, MarkerCensusOperationParams> {
 
-	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
+	private final Logger log = LoggerFactory.getLogger(MarkerCensusOperation.class);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -73,7 +73,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				OP_MarkerCensus.class, OPERATION_TYPE_INFO) {
+				MarkerCensusOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfMarkerCensusOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -81,7 +81,7 @@ public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationData
 				});
 	}
 
-	public OP_MarkerCensus(final MarkerCensusOperationParams params) {
+	public MarkerCensusOperation(final MarkerCensusOperationParams params) {
 		super(params);
 	}
 
