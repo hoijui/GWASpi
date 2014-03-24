@@ -31,7 +31,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.QAMarkersOperation;
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;

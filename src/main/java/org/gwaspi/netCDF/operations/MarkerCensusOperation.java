@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
