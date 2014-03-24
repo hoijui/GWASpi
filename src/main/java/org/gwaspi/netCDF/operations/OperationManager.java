@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
 import java.io.IOException;
 import java.util.ArrayList;
