@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations.qasamples;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -31,13 +31,13 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.netCDF.operations.AbstractOperation;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.qasamples.DefaultQASamplesOperationEntry;
-import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
-import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
-import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
 
 public class QASamplesOperation extends AbstractOperation<QASamplesOperationDataSet, SamplesQAOperationParams> {
 

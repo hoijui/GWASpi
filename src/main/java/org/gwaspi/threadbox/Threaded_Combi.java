@@ -23,7 +23,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.MarkerCensusOperation;
 import org.gwaspi.netCDF.operations.QAMarkersOperation;
-import org.gwaspi.netCDF.operations.QASamplesOperation;
+import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
