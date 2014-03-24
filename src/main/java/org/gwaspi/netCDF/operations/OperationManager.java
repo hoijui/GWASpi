@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -73,7 +72,7 @@ public class OperationManager {
 		OP_QASamples.register();
 		OP_HardyWeinberg.register();
 		OP_MarkerCensus.register();
-		OP_TrendTests.register();
+		TrendTestsOperation.register();
 		ByHardyWeinbergThresholdFilterOperation.register();
 		ByValidAffectionFilterOperation.register();
 		ByCombiWeightsFilterOperation.register();
@@ -191,7 +190,7 @@ public class OperationManager {
 		// run the test
 		final MatrixOperation operation;
 		if (testType == OPType.TRENDTEST) {
-			operation = new OP_TrendTests(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
+			operation = new TrendTestsOperation(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
 			final AssociationTestOperationParams params
 					= new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey);
