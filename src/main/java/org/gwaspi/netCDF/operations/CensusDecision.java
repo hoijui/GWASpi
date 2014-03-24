@@ -26,7 +26,7 @@ public enum CensusDecision {
 	CountMalesNonAutosomally,
 	CountFemalesNonAutosomally;
 
-	static CensusDecision getDecisionByChrAndSex(final String chr, final Sex sex) {
+	public static CensusDecision getDecisionByChrAndSex(final String chr, final Sex sex) {
 
 		final CensusDecision decision;
 

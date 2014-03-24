@@ -26,7 +26,7 @@ import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.netCDF.operations.MatrixTranslatorNetCDFDataSetDestination;
-import org.gwaspi.netCDF.operations.QAMarkersOperation;
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;

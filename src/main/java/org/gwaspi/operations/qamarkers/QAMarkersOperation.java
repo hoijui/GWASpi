@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -26,20 +26,19 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
-import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.qamarkers.RawMarkerAlleleAndGTStatistics;
 import org.gwaspi.model.SampleInfo.Sex;
+import org.gwaspi.netCDF.operations.AbstractOperation;
+import org.gwaspi.netCDF.operations.CensusDecision;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
-import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
-import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
-import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
 public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
 
@@ -256,7 +255,7 @@ public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationData
 				markerAlleleAndGTStatistics);
 	}
 
-	static void extractContingency(
+	public static void extractContingency(
 			final int[] alleleValueToOrdinal,
 			final float[][] knownGTsOrdinalTable,
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
@@ -286,7 +285,7 @@ public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationData
 		}
 	}
 
-	static void leaveNoSingleZeroAlleleBehind(
+	public static void leaveNoSingleZeroAlleleBehind(
 			final MarkerAlleleAndGTStatistics markerAlleleAndGTStatistics)
 	{
 		if (markerAlleleAndGTStatistics.getMajorAllele() == AlleleByte._0_VALUE
