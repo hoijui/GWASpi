@@ -53,6 +53,7 @@ public class OutputQASamples {
 	}
 
 	public static boolean writeReportsForQASamplesData(OperationKey sampleQAOpKey, boolean newReport) throws IOException {
+
 		OperationMetadata op = OperationsList.getOperationMetadata(sampleQAOpKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
@@ -71,7 +72,6 @@ public class OutputQASamples {
 					sampleQAOpKey,
 					"Sample Missingness Table",
 					op.getStudyKey()));
-
 			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 		}
 
@@ -85,11 +85,9 @@ public class OutputQASamples {
 				sampleQAOpKey,
 				"Sample Heterozygosity vs Missingness Plot",
 				op.getStudyKey()));
-
-		org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
+		org.gwaspi.global.Utils.sysoutCompleted("Sample Heterozygosity QA Report");
 //			}
 //		}
-
 
 		return true;
 	}

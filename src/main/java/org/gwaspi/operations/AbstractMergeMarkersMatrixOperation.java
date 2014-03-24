@@ -173,7 +173,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 		dataSetDestination.done();
 
-		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
+		org.gwaspi.global.Utils.sysoutCompleted("Merging into to new Matrix");
 	}
 
 	protected void writeGenotypesMeta(

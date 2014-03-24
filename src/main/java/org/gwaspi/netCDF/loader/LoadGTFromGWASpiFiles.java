@@ -323,7 +323,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				loadDescription.getFriendlyName(),
 				loadDescription.getDescription());
 
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
+		org.gwaspi.global.Utils.sysoutCompleted("Loading Genotypes");
 
 		return result;
 	}

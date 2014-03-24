@@ -133,7 +133,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 		dataSetDestination.done();
 
-		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
+		org.gwaspi.global.Utils.sysoutCompleted("Merging into to new Matrix");
 
 		return resultMatrixId;
 	}
