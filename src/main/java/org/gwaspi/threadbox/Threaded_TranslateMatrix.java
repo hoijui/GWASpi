@@ -30,7 +30,7 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
-import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
+import org.gwaspi.operations.qasamples.QASamplesOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +90,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			return resultOperationKeys;
 		}
-		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
+		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new QASamplesOperationParams(new DataSetKey(matrixKey))));
 
 		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			return resultOperationKeys;

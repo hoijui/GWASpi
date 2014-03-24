@@ -26,7 +26,7 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
-import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
+import org.gwaspi.operations.qasamples.QASamplesOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOpTypes, parentKey, true);
 
 		if (missingOPs.contains(OPType.SAMPLE_QA)) {
-			OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new SamplesQAOperationParams(parentKey)));
+			OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new QASamplesOperationParams(parentKey)));
 		}
 		if (missingOPs.contains(OPType.MARKER_QA)) {
 			OperationManager.performQAMarkersOperationAndCreateReports(new QAMarkersOperation(new QAMarkersOperationParams(parentKey)));
