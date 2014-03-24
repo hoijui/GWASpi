@@ -68,7 +68,7 @@ public class OperationManager {
 			= new EnumMap<OPType, Class<? extends MatrixOperation>>(OPType.class);
 
 	static {
-		OP_QAMarkers.register();
+		QAMarkersOperation.register();
 		QASamplesOperation.register();
 		OP_HardyWeinberg.register();
 		OP_MarkerCensus.register();
@@ -253,7 +253,7 @@ public class OperationManager {
 	}
 
 	public static OperationKey performQAMarkersOperationAndCreateReports(
-			OP_QAMarkers operation)
+			QAMarkersOperation operation)
 			throws IOException
 	{
 		OperationKey markersQAOpKey = performOperation(operation);

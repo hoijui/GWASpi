@@ -31,7 +31,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.QAMarkersOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
@@ -177,7 +177,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
 
 			final MarkersQAOperationParams markersQAOperationParams = new MarkersQAOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
-			final OP_QAMarkers qaMarkersOperation = new OP_QAMarkers(markersQAOperationParams);
+			final QAMarkersOperation qaMarkersOperation = new QAMarkersOperation(markersQAOperationParams);
 			parentQaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
 		} else {
 			parentQaMarkersOpKey = matrixMarkersQAOpKey;

@@ -41,7 +41,7 @@ import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 
-public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
+public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationDataSet, MarkersQAOperationParams> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -53,7 +53,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				OP_QAMarkers.class, OPERATION_TYPE_INFO) {
+				QAMarkersOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -61,7 +61,7 @@ public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet, M
 				});
 	}
 
-	public OP_QAMarkers(MarkersQAOperationParams params) {
+	public QAMarkersOperation(MarkersQAOperationParams params) {
 		super(params);
 	}
 
