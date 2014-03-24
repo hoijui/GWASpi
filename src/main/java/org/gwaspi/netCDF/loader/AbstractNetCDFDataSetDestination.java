@@ -529,7 +529,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			throw new IOException(ex);
 		}
 
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
+		org.gwaspi.global.Utils.sysoutCompleted("Loading Genotypes");
 	}
 
 	protected abstract GenotypeEncoding getGuessedGTCode();

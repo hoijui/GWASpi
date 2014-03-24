@@ -153,7 +153,7 @@ public class PlinkBinaryFormatter implements Formatter {
 				markerIndex++;
 			}
 
-			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + bimFile.getAbsolutePath());
+			org.gwaspi.global.Utils.sysoutCompleted("Exporting BIM file to " + bimFile.getAbsolutePath());
 		} finally {
 			if (bimBW != null) {
 				bimBW.close();
@@ -233,7 +233,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			// WRITE LAST BITES TO FILE
 			bedBW.write(wrBytes, 0, byteCount);
 
-			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + bedFile.getAbsolutePath());
+			org.gwaspi.global.Utils.sysoutCompleted("Exporting BED file to " + bedFile.getAbsolutePath());
 		} finally {
 			if (bedBW != null) {
 				bedBW.close();
@@ -294,7 +294,7 @@ public class PlinkBinaryFormatter implements Formatter {
 				}
 			}
 
-			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting FAM file to " + famFile.getAbsolutePath());
+			org.gwaspi.global.Utils.sysoutCompleted("Exporting FAM file to " + famFile.getAbsolutePath());
 		} finally {
 			if (tfamBW != null) {
 				tfamBW.close();
