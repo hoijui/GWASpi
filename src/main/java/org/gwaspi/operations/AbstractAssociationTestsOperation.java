@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.Iterator;

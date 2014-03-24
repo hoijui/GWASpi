@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 

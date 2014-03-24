@@ -36,7 +36,7 @@ import javax.swing.JTextField;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -23,7 +23,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.datasource.netcdf.NetCDFDataSetSource;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 
 public class MatrixFactory {
 

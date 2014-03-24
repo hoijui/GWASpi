@@ -22,7 +22,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.MatrixOperation;
+import org.gwaspi.operations.MatrixOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

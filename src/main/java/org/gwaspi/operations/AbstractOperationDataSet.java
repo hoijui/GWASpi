@@ -37,7 +37,7 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

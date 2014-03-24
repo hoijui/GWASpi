@@ -56,7 +56,7 @@ import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

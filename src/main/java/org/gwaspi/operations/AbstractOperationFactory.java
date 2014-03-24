@@ -17,8 +17,8 @@
 
 package org.gwaspi.operations;
 
-import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.OperationTypeInfo;
 
 public abstract class AbstractOperationFactory implements OperationFactory {
 

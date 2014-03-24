@@ -25,7 +25,7 @@ import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;

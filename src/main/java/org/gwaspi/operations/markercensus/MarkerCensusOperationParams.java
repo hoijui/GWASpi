@@ -23,7 +23,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractOperationParams;
 
 /**
- * Parameters for the {@link org.gwaspi.netCDF.operations.OP_MarkerCensus}.
+ * Parameters for the {@link org.gwaspi.operations.OP_MarkerCensus}.
  */
 public class MarkerCensusOperationParams extends AbstractOperationParams {
 

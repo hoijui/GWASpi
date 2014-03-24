@@ -34,7 +34,7 @@
 //import org.gwaspi.model.SampleInfo;
 //import org.gwaspi.model.SampleInfoList;
 //import org.gwaspi.model.SampleKey;
-//import org.gwaspi.netCDF.operations.MarkerOperationSet;
+//import org.gwaspi.operations.MarkerOperationSet;
 //import ucar.ma2.InvalidRangeException;
 //import ucar.nc2.NetcdfFile;
 //

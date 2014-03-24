@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;

@@ -22,7 +22,7 @@ import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 

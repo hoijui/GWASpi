@@ -34,8 +34,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.MatrixOperation;
+import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 

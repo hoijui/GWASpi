@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.NetCdfUtils;
 
 /**
  * A simple, ArrayList based implementation of GenotypesList.
