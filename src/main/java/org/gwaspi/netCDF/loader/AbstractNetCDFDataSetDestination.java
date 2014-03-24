@@ -450,7 +450,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		NetCdfUtils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, sampleIndex);
 
 		final int numSamples = matrixMetadata.getNumSamples();
-		if ((sampleIndex == 0) || ((sampleIndex % 100) == 0) || ((sampleIndex  + 1) == numSamples)) {
+		if ((sampleIndex == 0) || ((sampleIndex + 1 % 100) == 0) || ((sampleIndex  + 1) == numSamples)) {
 			log.info("Stored sample genotype-lists: {} / {}", sampleIndex + 1, numSamples);
 		}
 	}
