@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.filter;
+package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -29,8 +29,8 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.filter.AbstractFilterOperation;
+import org.gwaspi.operations.filter.SimpleOperationFactory;
 
 public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
 
