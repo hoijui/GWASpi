@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.operations.trendtest.TrendTestOperation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -72,7 +73,7 @@ public class OperationManager {
 		QASamplesOperation.register();
 		HardyWeinbergOperation.register();
 		MarkerCensusOperation.register();
-		TrendTestsOperation.register();
+		TrendTestOperation.register();
 		ByHardyWeinbergThresholdFilterOperation.register();
 		ByValidAffectionFilterOperation.register();
 		ByCombiWeightsFilterOperation.register();
@@ -190,7 +191,7 @@ public class OperationManager {
 		// run the test
 		final MatrixOperation operation;
 		if (testType == OPType.TRENDTEST) {
-			operation = new TrendTestsOperation(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
+			operation = new TrendTestOperation(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
 		} else {
 			final AssociationTestOperationParams params
 					= new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey);

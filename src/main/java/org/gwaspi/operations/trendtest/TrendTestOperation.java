@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -27,12 +27,12 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
-import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
-import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
-import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Performs the Cochran-Armitage trend test.
  */
-public class TrendTestsOperation extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
+public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
 
-	private final Logger log = LoggerFactory.getLogger(TrendTestsOperation.class);
+	private final Logger log = LoggerFactory.getLogger(TrendTestOperation.class);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -55,7 +55,7 @@ public class TrendTestsOperation extends AbstractTestMatrixOperation<TrendTestOp
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				TrendTestsOperation.class, OPERATION_TYPE_INFO) {
+				TrendTestOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfTrendTestOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -63,7 +63,7 @@ public class TrendTestsOperation extends AbstractTestMatrixOperation<TrendTestOp
 				});
 	}
 
-	public TrendTestsOperation(final TrendTestOperationParams params) {
+	public TrendTestOperation(final TrendTestOperationParams params) {
 		super(params);
 	}
 
