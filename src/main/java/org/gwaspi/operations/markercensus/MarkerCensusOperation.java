@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.operations.markercensus;
 
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import java.io.BufferedReader;
@@ -46,14 +46,14 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.operations.AbstractOperation;
+import org.gwaspi.netCDF.operations.CensusDecision;
+import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
+import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
-import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
-import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
-import org.gwaspi.operations.markercensus.RawMarkerCensusStatistics;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
