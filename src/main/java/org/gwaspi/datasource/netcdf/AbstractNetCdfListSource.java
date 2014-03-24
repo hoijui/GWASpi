@@ -24,7 +24,7 @@ import org.gwaspi.global.Extractor;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.NetCdfUtils;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 

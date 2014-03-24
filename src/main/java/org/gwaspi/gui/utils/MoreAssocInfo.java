@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.gwaspi.global.Text;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -22,11 +22,11 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.operations.MatrixMergeSamples;
-import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.netCDF.operations.MergeAllMatrixOperation;
-import org.gwaspi.netCDF.operations.MergeMarkersMatrixOperation;
-import org.gwaspi.netCDF.operations.MergeMatrixNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixMergeSamples;
+import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.MergeAllMatrixOperation;
+import org.gwaspi.operations.MergeMarkersMatrixOperation;
+import org.gwaspi.operations.MergeMatrixNetCDFDataSetDestination;
 
 public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 

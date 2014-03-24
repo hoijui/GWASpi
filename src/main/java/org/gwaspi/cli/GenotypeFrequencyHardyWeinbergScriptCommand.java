@@ -24,7 +24,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 

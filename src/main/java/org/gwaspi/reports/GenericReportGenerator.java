@@ -44,7 +44,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationEntry;

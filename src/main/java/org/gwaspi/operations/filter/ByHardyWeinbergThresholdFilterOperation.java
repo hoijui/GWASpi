@@ -26,9 +26,9 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 

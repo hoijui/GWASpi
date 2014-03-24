@@ -39,7 +39,7 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

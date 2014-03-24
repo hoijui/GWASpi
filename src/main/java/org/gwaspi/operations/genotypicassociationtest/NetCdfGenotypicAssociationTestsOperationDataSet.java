@@ -28,7 +28,7 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;

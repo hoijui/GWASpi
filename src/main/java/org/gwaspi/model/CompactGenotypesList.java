@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.NetCdfUtils;
 
 /**
  * A memory efficient implementation of GenotypesList.

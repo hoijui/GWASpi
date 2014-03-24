@@ -27,9 +27,9 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.netCDF.operations.OperationTypeInfo;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 
 public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByValidAffectionFilterOperationParams> {
 

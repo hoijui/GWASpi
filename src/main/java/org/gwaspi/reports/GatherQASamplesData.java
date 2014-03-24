@@ -24,7 +24,7 @@ package org.gwaspi.reports;
 //import org.gwaspi.model.OperationMetadata;
 //import org.gwaspi.model.OperationsList;
 //import org.gwaspi.model.SampleKey;
-//import org.gwaspi.netCDF.operations.SampleOperationSet;
+//import org.gwaspi.operations.SampleOperationSet;
 //import ucar.nc2.NetcdfFile;
 
 public class GatherQASamplesData {

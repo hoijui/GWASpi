@@ -39,7 +39,7 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperationEntry;

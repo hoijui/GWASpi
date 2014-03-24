@@ -162,7 +162,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
 			samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
-//					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
+//					org.gwaspi.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
 
 			sampleIndex++;
 			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {

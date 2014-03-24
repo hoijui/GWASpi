@@ -27,8 +27,8 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
 
 class TestScriptCommand extends AbstractScriptCommand {

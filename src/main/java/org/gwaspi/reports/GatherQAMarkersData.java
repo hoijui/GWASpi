@@ -24,7 +24,7 @@ package org.gwaspi.reports;
 //import org.gwaspi.model.OperationKey;
 //import org.gwaspi.model.OperationMetadata;
 //import org.gwaspi.model.OperationsList;
-//import org.gwaspi.netCDF.operations.MarkerOperationSet;
+//import org.gwaspi.operations.MarkerOperationSet;
 //import ucar.nc2.NetcdfFile;
 
 public class GatherQAMarkersData {

@@ -21,8 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
-import org.gwaspi.netCDF.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixGenotypesFlipper;
+import org.gwaspi.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
