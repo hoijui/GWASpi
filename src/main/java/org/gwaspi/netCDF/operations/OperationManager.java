@@ -70,7 +70,7 @@ public class OperationManager {
 	static {
 		QAMarkersOperation.register();
 		QASamplesOperation.register();
-		OP_HardyWeinberg.register();
+		HardyWeinbergOperation.register();
 		MarkerCensusOperation.register();
 		TrendTestsOperation.register();
 		ByHardyWeinbergThresholdFilterOperation.register();
@@ -163,7 +163,7 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		final MatrixOperation operation = new OP_HardyWeinberg(params);
+		final MatrixOperation operation = new HardyWeinbergOperation(params);
 
 		final OperationKey operationKey = performOperation(operation);
 

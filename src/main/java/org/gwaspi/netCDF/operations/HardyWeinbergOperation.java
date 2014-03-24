@@ -40,9 +40,9 @@ import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
+public class HardyWeinbergOperation extends AbstractOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
 
-	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
+	private final Logger log = LoggerFactory.getLogger(HardyWeinbergOperation.class);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -54,7 +54,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				OP_HardyWeinberg.class, OPERATION_TYPE_INFO) {
+				HardyWeinbergOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfHardyWeinbergOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -62,7 +62,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 				});
 	}
 
-	public OP_HardyWeinberg(HardyWeinbergOperationParams params) {
+	public HardyWeinbergOperation(HardyWeinbergOperationParams params) {
 		super(params);
 	}
 
