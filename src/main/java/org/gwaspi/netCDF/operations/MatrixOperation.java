@@ -18,7 +18,6 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.operations.OperationParams;
 
 public interface MatrixOperation<PT extends OperationParams> {
