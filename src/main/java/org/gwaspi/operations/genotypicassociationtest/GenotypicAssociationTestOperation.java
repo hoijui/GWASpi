@@ -24,13 +24,13 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.DefaultOperationTypeInfo;
-import org.gwaspi.netCDF.operations.OP_AssociationTests;
+import org.gwaspi.netCDF.operations.AbstractAssociationTestsOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 
-public class GenotypicAssociationTestOperation extends OP_AssociationTests {
+public class GenotypicAssociationTestOperation extends AbstractAssociationTestsOperation {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
