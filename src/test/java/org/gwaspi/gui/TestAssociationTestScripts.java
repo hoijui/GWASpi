@@ -44,7 +44,7 @@ import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -176,7 +176,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
 			final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
 
-			final MarkersQAOperationParams markersQAOperationParams = new MarkersQAOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
+			final QAMarkersOperationParams markersQAOperationParams = new QAMarkersOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
 			final QAMarkersOperation qaMarkersOperation = new QAMarkersOperation(markersQAOperationParams);
 			parentQaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
 		} else {
