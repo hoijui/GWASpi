@@ -27,7 +27,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.netCDF.operations.MatrixTranslatorNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
-import org.gwaspi.netCDF.operations.OP_QASamples;
+import org.gwaspi.netCDF.operations.QASamplesOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.MarkersQAOperationParams;
 import org.gwaspi.operations.qasamples.SamplesQAOperationParams;
@@ -90,7 +90,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			return resultOperationKeys;
 		}
-		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
+		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new SamplesQAOperationParams(new DataSetKey(matrixKey))));
 
 		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			return resultOperationKeys;

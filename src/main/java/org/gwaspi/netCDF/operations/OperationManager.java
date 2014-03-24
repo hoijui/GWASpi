@@ -69,7 +69,7 @@ public class OperationManager {
 
 	static {
 		OP_QAMarkers.register();
-		OP_QASamples.register();
+		QASamplesOperation.register();
 		OP_HardyWeinberg.register();
 		OP_MarkerCensus.register();
 		TrendTestsOperation.register();
@@ -242,7 +242,7 @@ public class OperationManager {
 	}
 
 	public static OperationKey performQASamplesOperationAndCreateReports(
-			OP_QASamples operation)
+			QASamplesOperation operation)
 			throws IOException
 	{
 		OperationKey samplesQAOpKey = performOperation(operation);
