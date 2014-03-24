@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Performs the Cochran-Armitage trend test.
  */
-public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
+public class TrendTestsOperation extends AbstractTestMatrixOperation<TrendTestOperationDataSet, TrendTestOperationParams> {
 
-	private final Logger log = LoggerFactory.getLogger(OP_TrendTests.class);
+	private final Logger log = LoggerFactory.getLogger(TrendTestsOperation.class);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -55,7 +55,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				OP_TrendTests.class, OPERATION_TYPE_INFO) {
+				TrendTestsOperation.class, OPERATION_TYPE_INFO) {
 					@Override
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfTrendTestOperationDataSet(parent.getOrigin(), parent, operationKey);
@@ -63,7 +63,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperatio
 				});
 	}
 
-	public OP_TrendTests(final TrendTestOperationParams params) {
+	public TrendTestsOperation(final TrendTestOperationParams params) {
 		super(params);
 	}
 

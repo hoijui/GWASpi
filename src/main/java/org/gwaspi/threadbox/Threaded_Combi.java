@@ -24,7 +24,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OP_MarkerCensus;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
-import org.gwaspi.netCDF.operations.OP_TrendTests;
+import org.gwaspi.netCDF.operations.TrendTestsOperation;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
@@ -101,7 +101,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
-			OperationKey trendTestOpKey = OperationManager.performOperation(new OP_TrendTests(trendTestParams));
+			OperationKey trendTestOpKey = OperationManager.performOperation(new TrendTestsOperation(trendTestParams));
 
 			if (trendTestOpKey != null) {
 				new OutputTest(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey).writeReportsForTestData();
