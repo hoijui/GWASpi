@@ -34,9 +34,9 @@ import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 
-public abstract class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestOperationDataSet, AssociationTestOperationParams> {
+public abstract class AbstractAssociationTestsOperation extends AbstractTestMatrixOperation<CommonTestOperationDataSet, AssociationTestOperationParams> {
 
-	public OP_AssociationTests(final AssociationTestOperationParams params) {
+	public AbstractAssociationTestsOperation(final AssociationTestOperationParams params) {
 		super(params);
 	}
 
