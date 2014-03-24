@@ -71,7 +71,7 @@ public class OperationManager {
 		QAMarkersOperation.register();
 		QASamplesOperation.register();
 		OP_HardyWeinberg.register();
-		OP_MarkerCensus.register();
+		MarkerCensusOperation.register();
 		TrendTestsOperation.register();
 		ByHardyWeinbergThresholdFilterOperation.register();
 		ByValidAffectionFilterOperation.register();
@@ -150,7 +150,7 @@ public class OperationManager {
 		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
 
-		final MatrixOperation operation = new OP_MarkerCensus(params);
+		final MatrixOperation operation = new MarkerCensusOperation(params);
 
 		final OperationKey operationKey = performOperation(operation);
 

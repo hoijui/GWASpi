@@ -21,7 +21,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.OP_MarkerCensus;
+import org.gwaspi.netCDF.operations.MarkerCensusOperation;
 import org.gwaspi.netCDF.operations.QAMarkersOperation;
 import org.gwaspi.netCDF.operations.QASamplesOperation;
 import org.gwaspi.netCDF.operations.TrendTestsOperation;
@@ -96,7 +96,7 @@ public class Threaded_Combi extends CommonRunnable {
 		OperationKey markerCensusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
-			markerCensusOpKey = OperationManager.performOperation(new OP_MarkerCensus(markerCensusParams));
+			markerCensusOpKey = OperationManager.performOperation(new MarkerCensusOperation(markerCensusParams));
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
