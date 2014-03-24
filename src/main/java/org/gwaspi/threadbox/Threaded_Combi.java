@@ -21,7 +21,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.MarkerCensusOperation;
+import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;

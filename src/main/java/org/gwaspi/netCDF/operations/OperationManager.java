@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
