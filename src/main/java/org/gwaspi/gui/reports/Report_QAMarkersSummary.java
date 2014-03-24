@@ -18,7 +18,6 @@
 package org.gwaspi.gui.reports;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -33,7 +32,6 @@ import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -44,7 +42,6 @@ import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -84,15 +81,16 @@ public class Report_QAMarkersSummary extends JPanel {
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QAMarkersSummary(final StudyKey studyKey, final String _qaFileName, OperationKey operationKey) throws IOException {
+	public Report_QAMarkersSummary(final StudyKey studyKey, final String qaFileName, OperationKey operationKey) throws IOException {
 
 		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
+		final boolean missingness = reportName.contains("Missingness");
 
 		String tmpQaValue = "Mismatching";
 		String nRowsSuffix = "Markers";
-		if (reportName.contains("Missingness")) {
+		if (missingness) {
 			tmpQaValue = "Missing Ratio";
 			nRowsSuffix = "Markers by most significant Missing Ratios";
 		}
@@ -104,7 +102,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + _qaFileName);
+		reportFile = new File(reportPath + qaFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
@@ -135,9 +133,9 @@ public class Report_QAMarkersSummary extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + reportName, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Reports.report + ": " + reportName)); // NOI18N
 
-		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
+		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText(nRowsSuffix);
@@ -216,21 +214,21 @@ public class Report_QAMarkersSummary extends JPanel {
 		txt_NRows.setValue(Integer.valueOf(100));
 
 		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
+				new Object[][] {
 					{null, null, null, "Go!"}
 				},
-				new String[]{"", "", "", ""}));
+				new String[] {"", "", "", ""}));
 
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
 
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, qaFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
+				final int key = e.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
 					loadReportAction.actionPerformed(null);
 				}
