@@ -19,7 +19,6 @@ package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +58,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
 
+	private ArrayByte.D1 netCdfMismatchStates;
 	private ArrayByte.D1 netCdfMajorAlleles;
 	private ArrayDouble.D1 netCdfMajorAllelesFrequencies;
 	private ArrayByte.D1 netCdfMinorAlleles;
@@ -121,7 +121,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		genotypesSpace.add(genotypesStrideDim);
 
 		// Define OP Variables
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.BYTE, markersSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, DataType.INT, markersSpace);
@@ -204,11 +204,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public List<Boolean> getMismatchStates(int from, int to) throws IOException {
 
-		Collection<Integer> mismatchIntegerStates = new ArrayList<Integer>(0);
+		List<Byte> mismatchIntegerStates = new ArrayList<Byte>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
 
 		List<Boolean> mismatchStates = new ArrayList<Boolean>(0);
-		for (Integer mismatchIntegerState : mismatchIntegerStates) {
+		for (Byte mismatchIntegerState : mismatchIntegerStates) {
 			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 		}
 
@@ -485,9 +485,10 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 		int[] origin = new int[] {alreadyWritten};
 		int[] origin2D = new int[] {alreadyWritten, 0};
-		if (netCdfMajorAlleles == null) {
+		if (netCdfMismatchStates == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
+			netCdfMismatchStates = new ArrayByte.D1(writeBuffer.size());
 			netCdfMajorAlleles = new ArrayByte.D1(writeBuffer.size());
 			netCdfMajorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
 			netCdfMinorAlleles = new ArrayByte.D1(writeBuffer.size());
@@ -499,7 +500,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfNumMissing = new ArrayInt.D1(writeBuffer.size());
 			netCdfAllelesCount = new ArrayInt.D2(writeBuffer.size(), AlleleCounts.values().length);
 			netCdfGenotypesCount = new ArrayInt.D2(writeBuffer.size(), GenotypeCounts.values().length);
-		} else if (writeBuffer.size() < netCdfMajorAlleles.getShape()[0]) {
+		} else if (writeBuffer.size() < netCdfMismatchStates.getShape()[0]) {
 			// we end up here at the end of the processing, if, for example,
 			// we have a buffer size of 10, but only 7 items are left to be written
 			List<Range> reducedRange1D = new ArrayList<Range>(1);
@@ -508,6 +509,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			reducedRange2D.add(new Range(writeBuffer.size()));
 			reducedRange2D.add(null); // use full range
 			try {
+				netCdfMismatchStates = (ArrayByte.D1) netCdfMismatchStates.sectionNoReduce(reducedRange1D);
 				netCdfMajorAlleles = (ArrayByte.D1) netCdfMajorAlleles.sectionNoReduce(reducedRange1D);
 				netCdfMajorAllelesFrequencies = (ArrayDouble.D1) netCdfMajorAllelesFrequencies.sectionNoReduce(reducedRange1D);
 				netCdfMinorAlleles = (ArrayByte.D1) netCdfMinorAlleles.sectionNoReduce(reducedRange1D);
@@ -525,6 +527,10 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		}
 		int index = 0;
 		for (QAMarkersOperationEntry entry : writeBuffer) {
+			netCdfMismatchStates.setByte(netCdfMismatchStates.getIndex().set(index),
+					entry.getMismatchState()
+							? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
+							: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
 			netCdfMajorAlleles.setByte(netCdfMajorAlleles.getIndex().set(index), entry.getMajorAllele());
 			netCdfMajorAllelesFrequencies.setDouble(netCdfMajorAllelesFrequencies.getIndex().set(index), entry.getMajorAlleleFrequency());
 			netCdfMinorAlleles.setByte(netCdfMinorAlleles.getIndex().set(index), entry.getMinorAllele());
@@ -548,6 +554,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			index++;
 		}
 		try {
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, origin, netCdfMismatchStates);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
