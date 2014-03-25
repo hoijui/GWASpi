@@ -86,7 +86,7 @@ public class OutputQAMarkers {
 	private static void createSortedMarkerMissingnessReport(OperationKey markersQAopKey, String reportName) throws IOException {
 
 		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
-		Collection<Double> missingRatios = qaMarkersOperationDataSet.getMissingRatio();
+		List<Double> missingRatios = qaMarkersOperationDataSet.getMissingRatio();
 		Map<Integer, Double> unsortedOrigIndexMissingRatios = new LinkedHashMap<Integer, Double>(missingRatios.size());
 		Iterator<Double> missingRatiosIt = missingRatios.iterator();
 		for (int origIndex = 0; origIndex < missingRatios.size(); origIndex++) {
@@ -107,7 +107,7 @@ public class OutputQAMarkers {
 				sortedOrigIndexMissingRatioIt.remove();
 			}
 		}
-		Collection<Integer> sortedMarkerOrigIndices = sortedOrigIndexMissingRatios.keySet();
+		Collection<Integer> sortedMarkerOrigIndices = sortedOrigIndexMissingRatios.keySet(); // XXX maybe put into a List? (cause it needs to be ordered anyway)
 
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 

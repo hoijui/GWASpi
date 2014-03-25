@@ -127,7 +127,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace); // use VAR_OP_MARKERS_NUM_MISSING instead
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
@@ -218,8 +218,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public List<Double> getMissingRatio(int from, int to) throws IOException {
 
-		List<Double> missingRatios = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, from, to, missingRatios, null);
+		List<Integer> missingCounts = getMissingCounts(-1, -1);
+		List<Double> missingRatios = new ArrayList<Double>(missingCounts.size());
+		final double numSamples = getNumSamples();
+		for (Integer missingCount : missingCounts) {
+			missingRatios.add(missingCount / numSamples);
+		}
 
 		return missingRatios;
 	}
@@ -454,20 +458,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public List<Double> getMissingRatio() throws IOException {
-
-		List<Double> missingRatios = getMissingRatio(-1, -1);
-//		// EXCLUDE MARKER BY MISSING RATIO
-//		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat
-//				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-//		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
-//			MarkerKey key = entry.getKey();
-//			Double value = entry.getValue();
-//			if (value > markerMissingRatio) {
-//				excludeMarkerSetMap.put(key, value);
-//			}
-//		}
-
-		return missingRatios;
+		return getMissingRatio(-1, -1);
 	}
 
 	@Override
