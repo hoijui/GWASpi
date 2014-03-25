@@ -29,9 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -265,23 +263,22 @@ public class Report_QASamplesSummary extends JPanel {
 			BufferedReader inputBufferReader = null;
 			try {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
-					int getRowsNb = Integer.parseInt(nRows.getText());
+					final int getRowsNb = Integer.parseInt(nRows.getText());
 
 					inputFileReader = new FileReader(reportFile);
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRows = new ArrayList<Object[]>();
+					Object[][] tableMatrix = new Object[getRowsNb][COLUMNS.length];
 					// read but ignore the header
 					/*String header = */inputBufferReader.readLine();
-					int count = 0;
-					while (count < getRowsNb) {
+					int rowIndex = 0;
+					while (rowIndex < getRowsNb) {
 						String l = inputBufferReader.readLine();
 						if (l == null) {
 							break;
 						}
 						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-						Object[] row = new Object[cVals.length];
 
 						String familyId = cVals[0];
 						String sampleId = cVals[1];
@@ -299,26 +296,20 @@ public class Report_QASamplesSummary extends JPanel {
 							hetzyRat = cVals[11] != null ? Double.parseDouble(cVals[11]) : Double.NaN;
 						}
 
-						row[0] = familyId;
-						row[1] = sampleId;
-						row[2] = fatherId;
-						row[3] = motherId;
-						row[4] = sex;
-						row[5] = affection;
-						row[6] = age;
-						row[7] = category;
-						row[8] = disease;
-						row[9] = population;
-						row[10] = missRat;
-						row[11] = hetzyRat;
+						tableMatrix[rowIndex][0] = familyId;
+						tableMatrix[rowIndex][1] = sampleId;
+						tableMatrix[rowIndex][2] = fatherId;
+						tableMatrix[rowIndex][3] = motherId;
+						tableMatrix[rowIndex][4] = sex;
+						tableMatrix[rowIndex][5] = affection;
+						tableMatrix[rowIndex][6] = age;
+						tableMatrix[rowIndex][7] = category;
+						tableMatrix[rowIndex][8] = disease;
+						tableMatrix[rowIndex][9] = population;
+						tableMatrix[rowIndex][10] = missRat;
+						tableMatrix[rowIndex][11] = hetzyRat;
 
-						tableRows.add(row);
-						count++;
-					}
-
-					Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
-					for (int i = 0; i < tableRows.size(); i++) {
-						tableMatrix[i] = tableRows.get(i);
+						rowIndex++;
 					}
 
 					TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
@@ -413,6 +404,7 @@ public class Report_QASamplesSummary extends JPanel {
 		}
 
 		private void actionSaveReportViewAs() {
+
 			FileWriter writer = null;
 			try {
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + nRows.getText() + "rows_" + chartPath);
