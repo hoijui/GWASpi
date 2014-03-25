@@ -96,7 +96,7 @@ public class OutputQASamples {
 
 		@Override
 		public int compare(QASamplesOperationEntry entry1, QASamplesOperationEntry entry2) {
-			return (int) Math.signum(entry1.getMissingRatio() - entry2.getMissingRatio());
+			return (int) Math.signum(entry2.getMissingRatio() - entry1.getMissingRatio());
 		}
 	}
 
