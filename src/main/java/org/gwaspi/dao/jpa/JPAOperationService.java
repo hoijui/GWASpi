@@ -181,7 +181,7 @@ public class JPAOperationService implements OperationService {
 
 	private List<OperationMetadata> getOffspringOperationsMetadata(OperationKey root) throws IOException {
 
-		List<OperationMetadata> offspringOperations = Collections.EMPTY_LIST;
+		List<OperationMetadata> offspringOperations = new LinkedList<OperationMetadata>();
 
 		List<OperationKey> possibleParents = new LinkedList<OperationKey>();
 		possibleParents.add(root);
@@ -199,7 +199,7 @@ public class JPAOperationService implements OperationService {
 
 	private List<OperationMetadata> getOffspringOperationsMetadata(OperationKey root, OPType type) throws IOException {
 
-		List<OperationMetadata> offspringOperations = Collections.EMPTY_LIST;
+		List<OperationMetadata> offspringOperations = new LinkedList<OperationMetadata>();
 
 		List<OperationKey> possibleParents = new LinkedList<OperationKey>();
 		possibleParents.add(root);
