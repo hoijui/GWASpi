@@ -133,7 +133,7 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 		this.size = originalGenotypes.size();
 		this.possibleGenotypes = Collections.unmodifiableSet(new LinkedHashSet<byte[]>(possibleGenotypes));
 		this.genotypeSize = calcGenotypeBits(possibleGenotypes.size());
-		final byte tmpMove = (byte) (8 - this.genotypeSize);
+//		final byte tmpMove = (byte) (8 - this.genotypeSize);
 		this.compactGenotypeMask = calcByteBitMask((byte) genotypeSize);
 //		this.encodingTable = new byte[this.genotypeSize];
 		this.encodingTable = new HashMap<Integer, Byte>(possibleGenotypes.size());
