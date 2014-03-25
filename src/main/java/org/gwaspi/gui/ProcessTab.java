@@ -20,7 +20,6 @@ package org.gwaspi.gui;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -45,7 +44,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
@@ -87,7 +85,7 @@ public class ProcessTab extends JPanel {
 		txtA_ProcessLog = new JTextArea();
 		btn_Save = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Processes.processes, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
 		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
 		pnl_Logo.setMaximumSize(new Dimension(100, 100));
@@ -125,7 +123,7 @@ public class ProcessTab extends JPanel {
 		pnl_OrverviewLayout.linkSize(SwingConstants.VERTICAL, new Component[]{pnl_Logo, scrl_Overview});
 		//</editor-fold>
 
-		pnl_ProcessLog.setBorder(BorderFactory.createTitledBorder(null, Text.Processes.processLog, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ProcessLog.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Processes.processLog)); // NOI18N
 
 		txtA_ProcessLog.setColumns(20);
 		txtA_ProcessLog.setRows(5);
@@ -209,7 +207,7 @@ public class ProcessTab extends JPanel {
 				public void mouseClicked(MouseEvent e) {
 					int rowIndex = tmpTable.getSelectedRow();
 					int colIndex = tmpTable.getSelectedColumn();
-					if (colIndex == 7) {    //Abort
+					if (colIndex == 7) { // Abort
 						if (rowIndex < SwingWorkerItemList.size()) {
 							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
 						} else {
@@ -223,7 +221,7 @@ public class ProcessTab extends JPanel {
 
 			tmpTable.setModel(new DefaultTableModel(
 					buildProcessTableModel(),
-					new String[]{
+					new String[] {
 						Text.Processes.id,
 						Text.Study.studyID,
 						Text.Processes.processeName,
@@ -244,14 +242,14 @@ public class ProcessTab extends JPanel {
 
 	private Object[][] buildProcessTableModel() {
 
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
-		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getItems();
+		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
+		List<SwingDeleterItem> swingDeleterItems = SwingDeleterItemList.getItems();
 
-		Object[][] spreadSheet = new Object[swingWorkerItemsAL.size() + swingDeleterItemsAL.size()][8];
+		Object[][] spreadSheet = new Object[swingWorkerItems.size() + swingDeleterItems.size()][8];
 		int count = 0;
-		for (int i = count; i < swingWorkerItemsAL.size(); i++) {
+		for (SwingWorkerItem swingWorkerItem : swingWorkerItems) {
 			StringBuilder studyIdsStr = new StringBuilder();
-			for (Integer studyId : swingWorkerItemsAL.get(i).getParentStudyIds()) {
+			for (Integer studyId : swingWorkerItem.getParentStudyIds()) {
 				studyIdsStr.append(", ");
 				studyIdsStr.append(studyId.toString());
 			}
@@ -261,27 +259,27 @@ public class ProcessTab extends JPanel {
 				studyIdsStr.delete(0, 2); // delete the first ", "
 			}
 
-			spreadSheet[i][0] = i;
-			spreadSheet[i][1] = studyIdsStr.toString();
-			spreadSheet[i][2] = swingWorkerItemsAL.get(i).getTask().getTaskName() != null ? swingWorkerItemsAL.get(i).getTask().getTaskName() : " - ";
-			spreadSheet[i][3] = swingWorkerItemsAL.get(i).getLaunchTime() != null ? swingWorkerItemsAL.get(i).getLaunchTime() : " - ";
-			spreadSheet[i][4] = swingWorkerItemsAL.get(i).getStartTime() != null ? swingWorkerItemsAL.get(i).getStartTime() : " - ";
-			spreadSheet[i][5] = swingWorkerItemsAL.get(i).getEndTime() != null ? swingWorkerItemsAL.get(i).getEndTime() : " - ";
-			spreadSheet[i][6] = swingWorkerItemsAL.get(i).getQueueState() != null ? swingWorkerItemsAL.get(i).getQueueState() : " - ";
-			spreadSheet[i][7] = " ";
+			spreadSheet[count][0] = count;
+			spreadSheet[count][1] = studyIdsStr.toString();
+			spreadSheet[count][2] = swingWorkerItem.getTask().getTaskName() != null ? swingWorkerItem.getTask().getTaskName() : " - ";
+			spreadSheet[count][3] = swingWorkerItem.getLaunchTime() != null ? swingWorkerItem.getLaunchTime() : " - ";
+			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? swingWorkerItem.getStartTime() : " - ";
+			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? swingWorkerItem.getEndTime() : " - ";
+			spreadSheet[count][6] = swingWorkerItem.getQueueState() != null ? swingWorkerItem.getQueueState() : " - ";
+			spreadSheet[count][7] = " ";
 
 			count++;
 		}
 
-		for (int i = 0; i < swingDeleterItemsAL.size(); i++) {
-
-			spreadSheet[count][0] = "Del_" + i;
-			spreadSheet[count][1] = swingDeleterItemsAL.get(i).getStudyKey();
-			spreadSheet[count][2] = swingDeleterItemsAL.get(i).getDescription() != null ? swingDeleterItemsAL.get(i).getDescription() : " - ";
-			spreadSheet[count][3] = swingDeleterItemsAL.get(i).getLaunchTime() != null ? swingDeleterItemsAL.get(i).getLaunchTime() : " - ";
-			spreadSheet[count][4] = swingDeleterItemsAL.get(i).getStartTime() != null ? swingDeleterItemsAL.get(i).getStartTime() : " - ";
-			spreadSheet[count][5] = swingDeleterItemsAL.get(i).getEndTime() != null ? swingDeleterItemsAL.get(i).getEndTime() : " - ";
-			spreadSheet[count][6] = swingDeleterItemsAL.get(i).getQueueState() != null ? swingDeleterItemsAL.get(i).getQueueState() : " - ";
+		int deleteIndex = 0;
+		for (SwingDeleterItem swingDeleterItem : swingDeleterItems) {
+			spreadSheet[count][0] = "Del_" + deleteIndex++;
+			spreadSheet[count][1] = swingDeleterItem.getStudyKey();
+			spreadSheet[count][2] = swingDeleterItem.getDescription() != null ? swingDeleterItem.getDescription() : " - ";
+			spreadSheet[count][3] = swingDeleterItem.getLaunchTime() != null ? swingDeleterItem.getLaunchTime() : " - ";
+			spreadSheet[count][4] = swingDeleterItem.getStartTime() != null ? swingDeleterItem.getStartTime() : " - ";
+			spreadSheet[count][5] = swingDeleterItem.getEndTime() != null ? swingDeleterItem.getEndTime() : " - ";
+			spreadSheet[count][6] = swingDeleterItem.getQueueState() != null ? swingDeleterItem.getQueueState() : " - ";
 			spreadSheet[count][7] = " ";
 
 			count++;
