@@ -145,7 +145,7 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_MINALLELEFRQ = "OP_marker_minallelefrq";
 		public static final String VAR_OP_MARKERS_MAJALLELES = "OP_marker_majalleles";
 		public static final String VAR_OP_MARKERS_MAJALLELEFRQ = "OP_marker_majallelefrq";
-		public static final String VAR_OP_MARKERS_MISSINGRAT = "OP_markers_missingrat";
+//		public static final String VAR_OP_MARKERS_MISSINGRAT = "OP_markers_missingrat";
 		public static final String VAR_OP_MARKERS_MISMATCHSTATE = "OP_markers_mismatchstate";
 		public static final String VAR_OP_SAMPLES_MISSINGRAT = "OP_sample_missingrat";
 		public static final String VAR_OP_SAMPLES_MISSINGCOUNT = "OP_sample_missingcount";
@@ -222,8 +222,8 @@ public class cNetCDF {
 		public static final String DEFAULT_AFFECTION = "Affection";
 		public static final String DEFAULT_EXTPHENOTYPE = "External_Phenotype";
 		public static final String DEFAULT_HW = "Hardy-Weinberg";
-		public static final int DEFAULT_MISMATCH_YES = 1;
-		public static final int DEFAULT_MISMATCH_NO = 0;
+		public static final byte DEFAULT_MISMATCH_YES = 1;
+		public static final byte DEFAULT_MISMATCH_NO = 0;
 		public static final boolean MISMATCH_YES = true;
 		public static final boolean MISMATCH_NO = false;
 
