@@ -109,11 +109,11 @@ public class SwingDeleterItem {
 		if (description == null) {
 			StringBuilder sb = new StringBuilder();
 			if (getStudyKey() != null) {
-				sb.append("Delete Study (ID): ").append(getStudyKey());
+				sb.append("Delete Study: ").append(getStudyKey().toRawIdString());
 			} else if (getMatrixKey() != null) {
-				sb.append("Delete Matrix (ID): ").append(getMatrixKey());
+				sb.append("Delete Matrix: ").append(getMatrixKey().toRawIdString());
 			} else if (getOperationKey() != null) {
-				sb.append("Delete Operation (ID): ").append(getOperationKey());
+				sb.append("Delete Operation: ").append(getOperationKey().toRawIdString());
 			}
 			description = sb.toString();
 		}
