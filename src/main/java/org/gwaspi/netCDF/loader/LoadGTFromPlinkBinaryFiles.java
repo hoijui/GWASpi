@@ -173,9 +173,6 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 					log.info("End of File", ex);
 					break;
 				}
-				if (rowCounter % 10000 == 0) {
-					log.info("Processed markers: " + rowCounter);
-				}
 				rowCounter++;
 			}
 		} else {
