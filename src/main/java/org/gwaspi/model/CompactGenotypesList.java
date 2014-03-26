@@ -184,9 +184,8 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 				// we need the next byte too
 				compactGenotypes.put(curByte);
 				curByte = 0x00;
-				curByte += compactForm << (firstBitIndex - 8);
+				curByte += compactForm >> (8 - firstBitIndex);
 				firstBitIndex -= 8;
-				unstoredData = false;
 			}
 //			gti++;
 			firstBitIndex += this.genotypeSize;
@@ -298,7 +297,7 @@ try {
 		compactValue = (byte) ((storedByte & 0xFF) >>> firstBitLocalIndex); // XXX Java fail!
 		if ((firstBitLocalIndex + genotypeSize - 1) > 7) {
 			storedByte = compactGenotypes.get(firstByteIndex + 1);
-			compactValue += (storedByte & 0xFF) >>> (firstBitLocalIndex - 8);
+			compactValue += (storedByte & 0xFF) << (8 - firstBitLocalIndex);
 		}
 		compactValue &= compactGenotypeMask;
 //		System.err.println(index + "\t" + byteToBitString(compactValue) + " " + firstBitLocalIndex);
