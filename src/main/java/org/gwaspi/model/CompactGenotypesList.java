@@ -166,21 +166,29 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 		// Indicates whether there is data in curByte
 		// that is not yet stored in compactGenotypes.
 		boolean unstoredData = false;
+//		int gti = 0;
 		for (byte[] originalGenotype : originalGenotypes) {
 			int gtHashCode = Genotype.hashCode(originalGenotype);
 			compactForm = this.encodingTable.get(gtHashCode);
+//			{
+//				System.err.println(gti + "\t" + byteToBitString(compactForm) + " " + firstBitIndex);
+//				final byte[] decoded = this.decodingTable[compactForm];
+//				if (originalGenotype[0] != decoded[0] || originalGenotype[1] != decoded[1]) {
+//					throw new RuntimeException("");
+//				}
+//			}
 			curByte += compactForm << firstBitIndex;
 			unstoredData = true;
 
 			if ((firstBitIndex + this.genotypeSize) > 7) {
 				// we need the next byte too
 				compactGenotypes.put(curByte);
-//				byteIndex++;
 				curByte = 0x00;
 				curByte += compactForm << (firstBitIndex - 8);
 				firstBitIndex -= 8;
 				unstoredData = false;
 			}
+//			gti++;
 			firstBitIndex += this.genotypeSize;
 		}
 		if (unstoredData) {
@@ -289,17 +297,11 @@ try {
 		storedByte = compactGenotypes.get(firstByteIndex);
 		compactValue = (byte) ((storedByte & 0xFF) >>> firstBitLocalIndex); // XXX Java fail!
 		if ((firstBitLocalIndex + genotypeSize - 1) > 7) {
-//System.err.println("UUU test_1: " + byteToBitString((byte) -47) + " (" + ((byte) -47) + ")");
-//System.err.println("UUU test_2: " + byteToBitString((byte) (-47 >> 5)) + " (" + ((byte) (-47 >> 5)) + ")");
-//System.err.println("UUU test_3: " + byteToBitString((byte) (-47 >>> 5)) + " (" + ((byte) (-47 >>> 5)) + ")");
-
-//System.err.println("VVV storedByte " + byteToBitString(storedByte) + " (" + storedByte + ")");
 			storedByte = compactGenotypes.get(firstByteIndex + 1);
-//System.err.println("VVV compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
 			compactValue += (storedByte & 0xFF) >>> (firstBitLocalIndex - 8);
 		}
-//System.err.println("WWW compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
 		compactValue &= compactGenotypeMask;
+//		System.err.println(index + "\t" + byteToBitString(compactValue) + " " + firstBitLocalIndex);
 
 		return Arrays.copyOf(decodingTable[compactValue], 2);
 } catch (Exception ex) {
