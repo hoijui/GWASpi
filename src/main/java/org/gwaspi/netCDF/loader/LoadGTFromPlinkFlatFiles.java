@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
@@ -71,8 +71,6 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());
-
 		File file = new File(loadDescription.getAnnotationFilePath());
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -81,11 +79,13 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
 
+		final int numMarkers = dataSet.getMarkerMetadatas().size();
+
 		// GET ALLELES
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			// PURGE WRITE MARKER SET
-			Map<MarkerKey, byte[]> allelesMap = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+			List<byte[]> markerAlleles = new ArrayList<byte[]>(numMarkers);
 
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_CommaSpaceTab_rgxp);
 
@@ -104,13 +104,23 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 				i++;
 			}
 
-			// read genotypes from this point on
-			for (MarkerKey markerKey : mapMarkerSetMap.keySet()) {
+			// Parse genotypes from this point on
+
+			// This would require to parse the line two times,
+			// and if things are in order,
+			// it should be the same like numMarkers.
+//			final int numAvailableMarkers = st.countTokens() / 2;
+			for (int mi = 0; mi < numMarkers; mi++) {
 				byte[] alleles = new byte[] {
 						(byte) (st.nextToken().charAt(0)),
 						(byte) (st.nextToken().charAt(0))};
-				allelesMap.put(markerKey, alleles);
+				markerAlleles.add(alleles);
 			}
+			// This would only possibly happen if we woudl allow an incompleete
+			// list of genotypes in the step above.
+//			if (markerAlleles.size() < numMarkers) {
+//				markerAlleles.addAll(Collections.nCopies(numMarkers - markerAlleles.size(), cNetCDF.Defaults.DEFAULT_GT));
+//			}
 
 //			GenotypeEncoding guessedGTCode = getGuessedGTCode();
 //			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
@@ -122,7 +132,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			// WRITING GENOTYPE DATA INTO netCDF FILE
 			int sampleIndex = sampleKeys.indexOf(new SampleKey(loadDescription.getStudyKey(), sampleId, familyId));
 			if (sampleIndex != -1) { // CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
-				samplesReceiver.addSampleGTAlleles(sampleIndex, allelesMap.values());
+				samplesReceiver.addSampleGTAlleles(sampleIndex, markerAlleles);
 			}
 		}
 		inputBufferReader.close();
