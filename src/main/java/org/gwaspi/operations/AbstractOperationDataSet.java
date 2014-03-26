@@ -37,7 +37,6 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +48,6 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private final Logger log = LoggerFactory.getLogger(AbstractOperationDataSet.class);
 
 	private final boolean markersOperationSet;
-//	private MatrixKey rdMatrixKey;
-//	private OperationKey rdOperationKey;
 	private final MatrixKey origin;
 	private final DataSetKey parent;
 	private Integer numMarkers;
