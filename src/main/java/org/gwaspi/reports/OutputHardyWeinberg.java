@@ -46,13 +46,8 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OutputHardyWeinberg {
-
-	private static final Logger log
-			= LoggerFactory.getLogger(OutputHardyWeinberg.class);
 
 	private OutputHardyWeinberg() {
 	}
