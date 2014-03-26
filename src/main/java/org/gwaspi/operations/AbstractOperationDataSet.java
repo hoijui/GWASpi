@@ -422,7 +422,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		alreadyWritten = writeEntriesBuffer(alreadyWritten, writeBuffer, "");
 	}
 
-	protected int writeEntriesBuffer(int alreadyWritten, final Queue<ET> writeBuffer, String additionalWriteLogSpecifier) throws IOException {
+	protected int writeEntriesBuffer(final int alreadyWritten, final Queue<ET> writeBuffer, String additionalWriteLogSpecifier) throws IOException {
 
 		if (writeBuffer.isEmpty()) { // this should not be required
 //			throw new IllegalStateException("We have already written all entries (already written: " + alreadyWritten + ", num entries: " + getNumEntries() + ", write buffer size: " + writeBuffer.size() + ")");
@@ -434,20 +434,21 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 		final int numWriting = writeBuffer.size();
 		writeEntries(alreadyWritten, writeBuffer);
-		alreadyWritten += numWriting;
+		final int nowWritten = alreadyWritten + numWriting;
 		writeBuffer.clear();
 
-		if (((alreadyWritten / numEntriesToLog) != ((alreadyWritten - numWriting) / numEntriesToLog)) // approximately numEntriesToLog written since last log
-				|| (alreadyWritten == getNumEntries())) // the final entries
+		if ((alreadyWritten == 0) // the first entries
+				|| ((nowWritten / numEntriesToLog) != ((nowWritten - numWriting) / numEntriesToLog)) // approximately numEntriesToLog written since last log
+				|| (nowWritten == getNumEntries())) // the final entries
 		{
 			log.info("Processed {}{}: {} / {}",
 					additionalWriteLogSpecifier,
 					isMarkersOperationSet() ? "markers" : "samples",
-					alreadyWritten,
+					nowWritten,
 					getNumEntries());
 		}
 
-		return alreadyWritten;
+		return nowWritten;
 	}
 
 	@Override
