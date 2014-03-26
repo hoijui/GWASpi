@@ -30,6 +30,7 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
@@ -87,8 +88,10 @@ public class OutputHardyWeinberg {
 //		Collection<MarkerKey> sortedMarkerKeys = sortedByHWPval.keySet();
 		List<HardyWeinbergOperationEntry> hardyWeinbergEntries = hardyWeinbergOperationDataSet.getEntriesAlternate();
 		Collections.sort(hardyWeinbergEntries, HardyWeinbergOperationEntry.P_VALUE_COMPARATOR);
-		Collection<MarkerKey> sortedMarkerKeys = new ArrayList<MarkerKey>(hardyWeinbergEntries.size()); // XXX create an Extractor in AbstractOperationDataSet instead
+		List<Integer> sortedMarkerOrigIndices = new ArrayList<Integer>(hardyWeinbergEntries.size());
+		List<MarkerKey> sortedMarkerKeys = new ArrayList<MarkerKey>(hardyWeinbergEntries.size()); // XXX create an Extractor in AbstractOperationDataSet instead
 		for (HardyWeinbergOperationEntry hardyWeinbergOperationEntry : hardyWeinbergEntries) {
+			sortedMarkerOrigIndices.add(hardyWeinbergOperationEntry.getIndex());
 			sortedMarkerKeys.add(hardyWeinbergOperationEntry.getKey());
 		}
 
@@ -103,23 +106,24 @@ public class OutputHardyWeinberg {
 		String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
-		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
+		final MarkersMetadataSource markersMetadatas = dataSetSource.getMarkersMetadatasSource();
+		final List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedMarkerOrigIndices, markersMetadatas);
 
 		// WRITE MARKERS ID & RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, markersMetadatasSource, null, MarkerMetadata.TO_MARKER_ID);
-		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource, null, MarkerMetadata.TO_RS_ID);
+		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 //		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 //		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 		// WRITE MARKERSET CHROMOSOME
-		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource.getChromosomes(), null, new Extractor.ToStringExtractor());
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 //		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
 
 		// WRITE MARKERSET POS
-		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource.getPositions(), null, new Extractor.ToStringExtractor());
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor<MarkerMetadata, Integer>(MarkerMetadata.TO_POS));
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 //		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
