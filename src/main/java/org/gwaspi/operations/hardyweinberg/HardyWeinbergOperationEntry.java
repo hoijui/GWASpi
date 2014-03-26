@@ -35,7 +35,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 
 		@Override
 		public int compare(HardyWeinbergOperationEntry e1, HardyWeinbergOperationEntry e2) {
-			return (int) Math.signum(e1.getP() - e1.getP());
+			return Double.compare(e1.getP(), e2.getP());
 		}
 	}
 	public static final Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
