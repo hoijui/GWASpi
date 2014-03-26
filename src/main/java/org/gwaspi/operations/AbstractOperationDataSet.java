@@ -87,7 +87,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
-		this.numEntriesToLog = markersOperationSet ? 10000 : 100;
+		this.numEntriesToLog = markersOperationSet ? 2000 : 100;
 	}
 
 	public AbstractOperationDataSet(
