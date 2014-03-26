@@ -24,15 +24,22 @@ public class StatisticsUtils {
 	private StatisticsUtils() {
 	}
 
-	public static double calculatePunnettFrequency(int obsAA, int obsAa, int sampleNb) {
-		double freq = (double) ((obsAA * 2) + obsAa) / (sampleNb * 2);
-		return freq;
-
+	/**
+	 * {@see https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle}
+	 */
+	public static double calculatePunnettFrequency(final int obsAA, final int obsAa, final int numSamples) {
+		return (double) ((obsAA * 2) + obsAa) / (numSamples * 2);
 	}
 
-	public static BigInteger factorial(BigInteger n) {
-		if (n.compareTo(BigInteger.ONE) <= 0) // base case
-		{
+	/**
+	 * Calculates the mathematical factorial of a non-negative integer.
+	 * {@see https://en.wikipedia.org/wiki/Factorial}
+	 * @param n non-negative integer
+	 * @return n!
+	 */
+	public static BigInteger factorial(final BigInteger n) {
+
+		if (n.compareTo(BigInteger.ONE) <= 0) { // base case
 			return BigInteger.ONE;
 		} else {
 			return factorial(n.subtract(BigInteger.ONE)).multiply(n);
