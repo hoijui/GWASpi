@@ -81,32 +81,30 @@ public class HardyWeinbergOperation extends AbstractOperation<HardyWeinbergOpera
 		int resultOpId;
 
 		final OperationKey markerCensusOPKey = getParams().getParent().getOperationParent();
-		MarkerCensusOperationDataSet markerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(markerCensusOPKey);
+		final MarkerCensusOperationDataSet markerCensusOperationDataSet
+				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(markerCensusOPKey);
 
-		HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
+		final HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
 		dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
 		dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
 		dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
 
 		dataSet.setHardyWeinbergName(getParams().getName());
 
-		//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
-		Collection<MarkerCensusOperationEntry> markersCensus = markerCensusOperationDataSet.getEntries();
+		final Collection<MarkerCensusOperationEntry> markersCensus
+				= markerCensusOperationDataSet.getEntries();
 
-//		// PROCESS ALL SAMPLES
-//		performHardyWeinberg(wrNcFile, markersCensus, "ALL");
+//		log.info("Perform Hardy-Weinberg test (All)");
+//		performHardyWeinberg(wrNcFile, markersCensus, Category.ALL);
 //
-//		// PROCESS CASE SAMPLES
-//		performHardyWeinberg(wrNcFile, markersCensus, "CASE");
+//		log.info("Perform Hardy-Weinberg test (Case)");
+//		performHardyWeinberg(wrNcFile, markersCensus, Category.CASE);
 
-		// PROCESS CONTROL SAMPLES
 		log.info("Perform Hardy-Weinberg test (Control)");
 		performHardyWeinberg(dataSet, markersCensus, Category.CONTROL);
 
-		// PROCESS ALTERNATE HW SAMPLES
-		log.info("Perform Hardy-Weinberg test (HW-ALT)");
+		log.info("Perform Hardy-Weinberg test (Alternate Hardy&Weinberg)");
 		performHardyWeinberg(dataSet, markersCensus, Category.ALTERNATE);
-		//</editor-fold>
 
 		dataSet.finnishWriting();
 		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
@@ -116,33 +114,40 @@ public class HardyWeinbergOperation extends AbstractOperation<HardyWeinbergOpera
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Collection<MarkerCensusOperationEntry> markersContingencyMap, Category category) throws IOException {
+	/**
+	 * Performs the Hardy & Weinberg test.
+	 * {@see https://en.wikipedia.org/wiki/Hardy%E2%80%93Weinberg_principle}
+	 * @param dataSet where to store the results
+	 * @param markersContingencyMap where to read input-data from
+	 * @param category process only this category
+	 * @throws IOException
+	 */
+	private static void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Collection<MarkerCensusOperationEntry> markersContingencyMap, Category category) throws IOException {
 
 		for (MarkerCensusOperationEntry entry : markersContingencyMap) {
-			// HARDY-WEINBERG
-			Census census = entry.getCensus().getCategoryCensus().get(category);
-			int obsAA = census.getAA();
-			int obsAa = census.getAa();
-			int obsaa = census.getaa();
-			int sampleNb = obsAA + obsaa + obsAa;
-			double obsHzy = (double) obsAa / sampleNb;
+			final Census census = entry.getCensus().getCategoryCensus().get(category);
+			final int obsAA = census.getAA();
+			final int obsAa = census.getAa();
+			final int obsaa = census.getaa();
+			final int numSamples = obsAA + obsaa + obsAa;
+			final double obsHzy = (double) obsAa / numSamples;
 
-			double fA = StatisticsUtils.calculatePunnettFrequency(obsAA, obsAa, sampleNb);
-			double fa = StatisticsUtils.calculatePunnettFrequency(obsaa, obsAa, sampleNb);
+			final double fA = StatisticsUtils.calculatePunnettFrequency(obsAA, obsAa, numSamples);
+			final double fa = StatisticsUtils.calculatePunnettFrequency(obsaa, obsAa, numSamples);
 
-			double pAA = fA * fA;
-			double pAa = 2 * fA * fa;
-			double paa = fa * fa;
+			final double pAA = fA * fA;
+			final double pAa = 2 * fA * fa;
+			final double paa = fa * fa;
 
-			double expAA = pAA * sampleNb;
-			double expAa = pAa * sampleNb;
-			double expaa = paa * sampleNb;
-			double expHzy = pAa;
+			final double expAA = pAA * numSamples;
+			final double expAa = pAa * numSamples;
+			final double expaa = paa * numSamples;
+			final double expHzy = pAa;
 
-			double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
-			double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
+			final double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
+			final double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
 
-			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), entry.getIndex(), category, pvalue, obsHzy, expHzy);
+			final HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), entry.getIndex(), category, pvalue, obsHzy, expHzy);
 			dataSet.addEntry(hwEntry);
 		}
 	}
