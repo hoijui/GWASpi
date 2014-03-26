@@ -95,7 +95,6 @@ public class OutputQAMarkers {
 		Map<Integer, Double> sortedOrigIndexMissingRatios = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedOrigIndexMissingRatios);
 		unsortedOrigIndexMissingRatios.clear(); // "garbage collection"
 
-
 //		Map<MarkerKey, Double> unsortedMarkerMissingRatios = GatherQAMarkersData.loadMarkerQAMissingRatio(operationKey);
 //		Map<MarkerKey, Double> sortedMarkerKeyMissingRatio = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedMarkerMissingRatios);
 //		unsortedMarkerMissingRatios.clear(); // "garbage collection"
