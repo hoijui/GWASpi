@@ -19,7 +19,6 @@ package org.gwaspi.operations.qasamples;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -96,9 +95,9 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Double> getMissingRatios(int from, int to) throws IOException {
+	public List<Double> getMissingRatios(int from, int to) throws IOException {
 
-		Collection<Double> missingRatios = new ArrayList<Double>(0);
+		List<Double> missingRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, from, to, missingRatios, null);
 //		// the old way:
 //		OperationMetadata rdOPMetadata = OperationsList.getOperation(getResultOperationKey());
@@ -112,35 +111,35 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Integer> getMissingCounts(int from, int to) throws IOException {
+	public List<Integer> getMissingCounts(int from, int to) throws IOException {
 
-		Collection<Integer> missingCount = new ArrayList<Integer>(0);
+		List<Integer> missingCount = new ArrayList<Integer>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, from, to, missingCount, null);
 
 		return missingCount;
 	}
 
 	@Override
-	public Collection<Double> getHetzyRatios(int from, int to) throws IOException {
+	public List<Double> getHetzyRatios(int from, int to) throws IOException {
 
-		Collection<Double> hetzyRatios = new ArrayList<Double>(0);
+		List<Double> hetzyRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, from, to, hetzyRatios, null);
 
 		return hetzyRatios;
 	}
 
 	@Override
-	public Collection<QASamplesOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<QASamplesOperationEntry> getEntries(int from, int to) throws IOException {
 
 //		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
 //		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
 		Map<Integer, SampleKey> samplesKeys = getSamplesKeysSource().getIndicesMap(from, to);
 
-		Collection<Double> missingRatios = getMissingRatios(from, to);
-		Collection<Integer> missingCount = getMissingCounts(from, to);
-		Collection<Double> hetzyRatios = getHetzyRatios(from, to);
+		List<Double> missingRatios = getMissingRatios(from, to);
+		List<Integer> missingCount = getMissingCounts(from, to);
+		List<Double> hetzyRatios = getHetzyRatios(from, to);
 
-		Collection<QASamplesOperationEntry> entries
+		List<QASamplesOperationEntry> entries
 				= new ArrayList<QASamplesOperationEntry>(missingRatios.size());
 		Iterator<Double> missingRatioIt = missingRatios.iterator();
 		Iterator<Integer> missingCountIt = missingCount.iterator();

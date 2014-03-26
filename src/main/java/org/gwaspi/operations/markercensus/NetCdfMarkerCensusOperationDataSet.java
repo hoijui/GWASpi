@@ -19,7 +19,6 @@ package org.gwaspi.operations.markercensus;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -233,7 +232,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	public List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
 
-		Collection<int[]> censusesRaw = new ArrayList<int[]>(0);
+		List<int[]> censusesRaw = new ArrayList<int[]>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarName.get(category), from, to, censusesRaw, null);
 
 		List<Census> censusesData = new ArrayList<Census>(censusesRaw.size());
@@ -271,18 +270,18 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<MarkerCensusOperationEntry> getEntries(int from, int to) throws IOException {
 
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
-		Collection<byte[]> knownAlleles = getKnownAlleles(from, to);
+		List<byte[]> knownAlleles = getKnownAlleles(from, to);
 //		Collection<Census> censusesAll = getCensus(Category.ALL, from, to);
 //		Collection<Census> censusesCase = getCensus(Category.CASE, from, to);
 //		Map<Integer, Census> censusesControl = getCensus(Category.CONTROL, from, to);
 //		Map<Integer, Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
-		Collection<Census> censusesControl = getCensus(Category.CONTROL, from, to);
-		Collection<Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
+		List<Census> censusesControl = getCensus(Category.CONTROL, from, to);
+		List<Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
 
-		Collection<MarkerCensusOperationEntry> entries
+		List<MarkerCensusOperationEntry> entries
 				= new ArrayList<MarkerCensusOperationEntry>(knownAlleles.size());
 		Iterator<byte[]> knownAllelesIt = knownAlleles.iterator();
 //		Iterator<Census> censusesControlIt = censusesControl.values().iterator();
