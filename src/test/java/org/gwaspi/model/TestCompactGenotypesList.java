@@ -183,6 +183,8 @@ public class TestCompactGenotypesList {
 							"Different value in original ("
 							+ (char) origVal + ") and resulting ("
 							+ (char) resultValue[arrInd] + ") value at index "
+							+ index + " / " + originalValues.size()
+							+ ", inner index "
 							+ arrInd + " / " + originalValue.length,
 							String.valueOf((char) origVal),
 							String.valueOf((char) resultValue[arrInd])
