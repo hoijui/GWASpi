@@ -28,7 +28,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
 		@Override
 		public int compare(TrendTestOperationEntry entry1, TrendTestOperationEntry entry2) {
-			return (int) Math.signum(entry1.getP()- entry2.getP());
+			return Double.compare(entry1.getP(), entry2.getP());
 		}
 	}
 
