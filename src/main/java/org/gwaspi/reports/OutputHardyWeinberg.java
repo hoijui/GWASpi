@@ -127,7 +127,6 @@ public class OutputHardyWeinberg {
 		// WRITE KNOWN ALLELES FROM QA
 		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
 
-
 		if (qaMarkersOpKey != null) {
 			QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(qaMarkersOpKey);
 			Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
@@ -143,7 +142,6 @@ public class OutputHardyWeinberg {
 				opQaMarkersAllelesMin.put(markerKey, knownMinorAlleleIt.next());
 			}
 //		}
-//
 //
 //		if (markersQAopKey != null) {
 //			OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
