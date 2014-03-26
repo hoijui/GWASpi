@@ -18,7 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
@@ -81,7 +81,7 @@ public interface OperationDataSet<ET> extends DataSetSource {
 	 * @return
 	 * @throws IOException
 	 */
-	Collection<ET> getEntries(int from, int to) throws IOException;
+	List<ET> getEntries(int from, int to) throws IOException;
 
-	Collection<ET> getEntries() throws IOException;
+	List<ET> getEntries() throws IOException;
 }

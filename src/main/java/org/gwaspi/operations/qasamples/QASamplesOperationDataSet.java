@@ -18,7 +18,7 @@
 package org.gwaspi.operations.qasamples;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOperationEntry> {
@@ -31,7 +31,7 @@ public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOpe
 
 	void addEntry(QASamplesOperationEntry entry) throws IOException;
 
-	Collection<Double> getMissingRatios(int from, int to) throws IOException;
-	Collection<Integer> getMissingCounts(int from, int to) throws IOException;
-	Collection<Double> getHetzyRatios(int from, int to) throws IOException;
+	List<Double> getMissingRatios(int from, int to) throws IOException;
+	List<Integer> getMissingCounts(int from, int to) throws IOException;
+	List<Double> getHetzyRatios(int from, int to) throws IOException;
 }

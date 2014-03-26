@@ -287,7 +287,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
+	public List<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
 		return getEntries(HardyWeinbergOperationEntry.Category.ALL, from, to);
 	}
 

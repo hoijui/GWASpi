@@ -18,8 +18,8 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -463,7 +463,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
 
 	@Override
-	public Collection<ET> getEntries() throws IOException {
+	public List<ET> getEntries() throws IOException {
 		return getEntries(-1, -1);
 	}
 }
