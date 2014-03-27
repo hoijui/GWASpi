@@ -278,8 +278,8 @@ public class MatrixDataExtractor extends AbstractOperation {
 //	}
 
 	/**
-	 * This constructor to extract data from Matrix a by passing a variable and
-	 * the criteria to filter items by.
+	 * This constructor allows to extract data from a Matrix,
+	 * by passing a variable, and the criteria to filter items by.
 	 */
 	public MatrixDataExtractor(
 			DataSetSource dataSetSource,
