@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations;
 
-
 import org.gwaspi.model.SampleInfo.Sex;
 
 public enum CensusDecision {

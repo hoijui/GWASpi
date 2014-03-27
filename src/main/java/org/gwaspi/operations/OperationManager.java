@@ -109,7 +109,7 @@ public class OperationManager {
 
 	/**
 	 * Creates a new OperationDataSet for the specified type.
-	 * @param operationType
+	 * @param type
 	 * @param origin
 	 * @param parent
 	 * @return

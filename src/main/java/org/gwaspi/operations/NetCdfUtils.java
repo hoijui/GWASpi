@@ -69,7 +69,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, ORIGIN_D2, markersD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -84,7 +84,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, ORIGIN_D2, markersD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -95,7 +95,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, ORIGIN_D2, markersD1);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -149,7 +149,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, ORIGIN_D1, arrayDouble);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -200,7 +200,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, markersOrigin, markersD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -218,7 +218,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, originD1, arrayDouble);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -235,7 +235,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, originD1, arrayInt);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -256,7 +256,7 @@ public class NetCdfUtils {
 //		try {
 //			wrNcFile.write(variable, originD1, arrayBoolean);
 //			log.info("Done writing {}", variable);
-//		} catch (Exception ex) {
+//		} catch (InvalidRangeException ex) {
 //			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 //		}
 	}
@@ -288,7 +288,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, originD2, arrayIntD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -306,7 +306,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, originD2, arrayIntD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -324,7 +324,7 @@ public class NetCdfUtils {
 		try {
 			wrNcFile.write(variable, originD2, arrayDoubleD2);
 			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
+		} catch (InvalidRangeException ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
@@ -1013,7 +1013,6 @@ public class NetCdfUtils {
 //	}
 	//</editor-fold>
 
-
 	public static Set<byte[]> extractUniqueGenotypesOrdered(
 			final Collection<byte[]> rawGenotypes,
 			final List<Boolean> indicesToKeep)
@@ -1021,7 +1020,7 @@ public class NetCdfUtils {
 		Map<Integer, byte[]> unique = new TreeMap<Integer, byte[]>();
 		Iterator<Boolean> keep = indicesToKeep.iterator();
 		for (byte[] genotype : rawGenotypes) {
-			if (keep.next().booleanValue()) {
+			if (keep.next()) {
 				unique.put(Genotype.hashCode(genotype), genotype);
 			}
 		}
