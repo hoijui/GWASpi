@@ -407,9 +407,9 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			// the current chunk of the feature matrix
 			for (int smi = 0; smi < numFeaturesInChunk; smi++) {
 				for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
-					final float curRowValue = (Float) featuresChunk[krsi][smi];
+					final float curRowValue = featuresChunk[krsi][smi];
 					for (int krci = 0; krci < n; krci++) { // kernel column sample index
-						final float curColValue = (Float) featuresChunk[krci][smi];
+						final float curColValue = featuresChunk[krci][smi];
 						kernelMatrix[krsi][krci] += curRowValue * curColValue;
 					}
 				}
