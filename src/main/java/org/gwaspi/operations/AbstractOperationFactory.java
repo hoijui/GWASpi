@@ -17,9 +17,6 @@
 
 package org.gwaspi.operations;
 
-import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.OperationTypeInfo;
-
 public abstract class AbstractOperationFactory implements OperationFactory {
 
 	private final Class<? extends MatrixOperation> type;

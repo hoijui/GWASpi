@@ -35,7 +35,6 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.operations.MatrixOperationFactory;
 
 public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 

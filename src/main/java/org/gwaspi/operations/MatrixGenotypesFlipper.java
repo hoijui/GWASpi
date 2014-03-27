@@ -36,8 +36,6 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.operations.MatrixOperationFactory;
-import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

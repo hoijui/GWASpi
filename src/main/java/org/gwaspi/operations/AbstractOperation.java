@@ -25,8 +25,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationDataSet;
-import org.gwaspi.operations.OperationParams;
 
 public abstract class AbstractOperation<DST extends OperationDataSet, PT extends OperationParams> implements MatrixOperation<PT> {
 
