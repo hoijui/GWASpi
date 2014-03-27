@@ -28,8 +28,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.filter.SimpleOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;

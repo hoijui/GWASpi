@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.OperationTypeInfo;
 
 public abstract class AbstractDefaultTypesOperationFactory extends AbstractOperationFactory {
 

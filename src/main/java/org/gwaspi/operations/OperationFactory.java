@@ -19,11 +19,8 @@ package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.OperationTypeInfo;
 
 public interface OperationFactory {
 

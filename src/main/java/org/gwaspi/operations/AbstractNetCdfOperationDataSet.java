@@ -54,7 +54,6 @@ import org.gwaspi.datasource.netcdf.NetCdfSamplesInfosSource;
 import org.gwaspi.datasource.netcdf.NetCdfSamplesKeysSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;

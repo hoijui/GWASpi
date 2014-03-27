@@ -24,7 +24,6 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;

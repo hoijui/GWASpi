@@ -18,7 +18,6 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
-import org.gwaspi.operations.OperationParams;
 
 public interface MatrixOperation<PT extends OperationParams> {
 
