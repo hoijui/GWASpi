@@ -30,7 +30,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
@@ -40,7 +40,7 @@ import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 
-public class QAMarkersOperation extends AbstractOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
+public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(

@@ -40,7 +40,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
+public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
