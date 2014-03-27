@@ -22,6 +22,33 @@ import java.io.IOException;
 public interface MatrixOperation<PT extends OperationParams> {
 
 	/**
+	 * Every operation is in one of these states at any time.
+	 * {@link #addOperationListener(OperationListener)}
+	 * {@link #removeOperationListener(OperationListener)}
+	 *
+	 * NOTE
+	 * Why "Status" instead of "State"?
+	 * See the explanation given here:
+	 * {@see http://forum.wordreference.com/showthread.php?t=287984&s=0d5454f63863bcb10cb775d94faef585&p=3423244#post3423244}
+	 * ... while it is a different thing if we move away from IT:
+	 * {@see https://answers.yahoo.com/question/index?qid=20070427185233AAcmFY5}
+	 */
+	public static enum Status {
+		INITIALIZING,
+		INITIALIZED,
+		STARTED,
+		PAUSED,
+		RESUMED,
+		ABORTED,
+		FAILED,
+		COMPLEETED; // XXX or FINNISHED?
+	}
+
+	void addOperationListener(OperationListener listener);
+
+	void removeOperationListener(OperationListener listener);
+
+	/**
 	 * Whether the operation is valid, given its parameters.
 	 * @return true, if the operation seems to be valid,
 	 *   and may be able to execute properly; false otherwise

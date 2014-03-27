@@ -39,7 +39,7 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatrixTranslator implements MatrixOperation {
+public class MatrixTranslator extends AbstractOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
@@ -57,7 +57,6 @@ public class MatrixTranslator implements MatrixOperation {
 	}
 
 	private final DataSetSource dataSetSource;
-	private final DataSetDestination dataSetDestination;
 	private final boolean translateBySamples; // ... or markers
 
 	public MatrixTranslator(
@@ -65,8 +64,9 @@ public class MatrixTranslator implements MatrixOperation {
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
+		super(dataSetDestination);
+
 		this.dataSetSource = dataSetSource;
-		this.dataSetDestination = dataSetDestination;
 		this.translateBySamples = true;
 	}
 
@@ -286,6 +286,8 @@ public class MatrixTranslator implements MatrixOperation {
 					+ gtEncoding.toString() + " to "
 					+ GenotypeEncoding.ACGT0.toString());
 		}
+
+		final DataSetDestination dataSetDestination = getDataSetDestination();
 
 		// METADATA WRITER
 		// WRITING METADATA TO MATRIX

@@ -96,7 +96,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
-		dataSetDestination.startLoadingAlleles(true);
+		getDataSetDestination().startLoadingAlleles(true);
 		int wrSampleIndex = 0;
 		for (Map.Entry<SampleKey, int[]> entry : wrSampleSetMap.entrySet()) {
 			int[] rdSampleIndices = entry.getValue(); // position[rdPos matrix 1, rdPos matrix 2]
@@ -133,6 +133,6 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 			addSampleGTAlleles(wrSampleIndex, wrComboSortedMarkerGTs);
 			wrSampleIndex++;
 		}
-		dataSetDestination.finishedLoadingAlleles();
+		getDataSetDestination().finishedLoadingAlleles();
 	}
 }

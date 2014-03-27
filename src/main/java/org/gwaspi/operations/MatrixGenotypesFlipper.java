@@ -39,7 +39,7 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatrixGenotypesFlipper implements MatrixOperation {
+public class MatrixGenotypesFlipper extends AbstractOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
 
@@ -57,7 +57,6 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	}
 
 	private final DataSetSource dataSetSource;
-	private final DataSetDestination dataSetDestination;
 	private final File flipperFile;
 	private final Set<MarkerKey> markersToFlip;
 
@@ -71,8 +70,9 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 			File flipperFile)
 			throws IOException
 	{
+		super(dataSetDestination);
+
 		this.dataSetSource = dataSetSource;
-		this.dataSetDestination = dataSetDestination;
 		this.flipperFile = flipperFile;
 		this.markersToFlip = loadMarkerKeys(this.flipperFile);
 	}
@@ -132,6 +132,8 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	public int processMatrix() throws IOException {
 
 		int resultMatrixId = MatrixKey.NULL_ID;
+
+		final DataSetDestination dataSetDestination = getDataSetDestination();
 
 		// simply copy&paste the sample infos
 		dataSetDestination.startLoadingSampleInfos(true);

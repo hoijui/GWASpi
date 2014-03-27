@@ -40,13 +40,12 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
+public abstract class AbstractMergeMatrixOperation extends AbstractOperation {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 
 	protected final DataSetSource dataSetSource1;
 	protected final DataSetSource dataSetSource2;
-	protected final DataSetDestination dataSetDestination;
 
 	protected AbstractMergeMatrixOperation(
 			DataSetSource dataSetSource1,
@@ -54,9 +53,10 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
+		super(dataSetDestination);
+
 		this.dataSetSource1 = dataSetSource1;
 		this.dataSetSource2 = dataSetSource2;
-		this.dataSetDestination = dataSetDestination;
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 			}
 		}
 
-		dataSetDestination.addSampleGTAlleles(sampleIndex, sampleAlleles);
+		getDataSetDestination().addSampleGTAlleles(sampleIndex, sampleAlleles);
 	}
 
 	protected void finalizeGenotypesMismatchChecking() {

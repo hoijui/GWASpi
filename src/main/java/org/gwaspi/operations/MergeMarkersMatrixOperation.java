@@ -83,7 +83,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	{
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
-		dataSetDestination.startLoadingAlleles(true);
+		getDataSetDestination().startLoadingAlleles(true);
 		for (int[] sampleIndices : wrSampleSetMap.values()) { // position[rdPos matrix 1, rdPos matrix 2]
 			final int readDataSet1SampleIndex = sampleIndices[0];
 			final int readDataSet2SampleIndex = sampleIndices[1];
@@ -112,7 +112,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 			addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
 		}
-		dataSetDestination.finishedLoadingAlleles();
+		getDataSetDestination().finishedLoadingAlleles();
 	}
 
 	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {
