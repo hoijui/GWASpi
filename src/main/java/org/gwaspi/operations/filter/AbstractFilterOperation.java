@@ -24,13 +24,13 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractFilterOperation<PT extends OperationParams> extends AbstractOperation<SimpleOperationDataSet, PT> {
+public abstract class AbstractFilterOperation<PT extends OperationParams> extends AbstractOperationCreatingOperation<SimpleOperationDataSet, PT> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(AbstractFilterOperation.class);

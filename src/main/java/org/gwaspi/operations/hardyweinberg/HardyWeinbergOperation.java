@@ -25,7 +25,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -39,7 +39,7 @@ import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HardyWeinbergOperation extends AbstractOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
+public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> {
 
 	private final Logger log = LoggerFactory.getLogger(HardyWeinbergOperation.class);
 

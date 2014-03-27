@@ -26,31 +26,31 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 
-public abstract class AbstractOperation<DST extends OperationDataSet, PT extends OperationParams> implements MatrixOperation<PT> {
+public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> implements MatrixOperation<PT> {
 
 	/** @params deprecated */
 	private final DataSetKey parent;
 	private final PT params;
 
-	protected AbstractOperation(DataSetKey parent) {
+	protected AbstractOperationCreatingOperation(DataSetKey parent) {
 
 		this.parent = parent;
 		this.params = null;
 	}
 
-	protected AbstractOperation(MatrixKey parent) {
+	protected AbstractOperationCreatingOperation(MatrixKey parent) {
 
 		this.parent = new DataSetKey(parent);
 		this.params = null;
 	}
 
-	protected AbstractOperation(OperationKey parent) {
+	protected AbstractOperationCreatingOperation(OperationKey parent) {
 
 		this.parent = new DataSetKey(parent);
 		this.params = null;
 	}
 
-	protected AbstractOperation(PT params) {
+	protected AbstractOperationCreatingOperation(PT params) {
 
 		this.parent = params.getParent();
 		this.params = params;

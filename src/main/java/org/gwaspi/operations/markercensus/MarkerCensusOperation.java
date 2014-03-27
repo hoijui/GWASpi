@@ -46,7 +46,7 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
@@ -60,7 +60,7 @@ import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MarkerCensusOperation extends AbstractOperation<MarkerCensusOperationDataSet, MarkerCensusOperationParams> {
+public class MarkerCensusOperation extends AbstractOperationCreatingOperation<MarkerCensusOperationDataSet, MarkerCensusOperationParams> {
 
 	private final Logger log = LoggerFactory.getLogger(MarkerCensusOperation.class);
 
