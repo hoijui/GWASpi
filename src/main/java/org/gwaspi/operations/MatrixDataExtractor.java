@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Extracts Genotypes to a new matrix.
  */
-public class MatrixDataExtractor implements MatrixOperation {
+public class MatrixDataExtractor extends AbstractOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
@@ -91,7 +91,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 	private final int sampleFilterPos;
 
 	private final DataSetSource dataSetSource;
-	private final DataSetDestination dataSetDestination;
 
 	private static interface Picker<K> {
 
@@ -296,8 +295,9 @@ public class MatrixDataExtractor implements MatrixOperation {
 			File samplePickerFile)
 			throws IOException
 	{
+		super(dataSetDestination);
+
 		this.dataSetSource = dataSetSource;
-		this.dataSetDestination = dataSetDestination;
 
 		// INIT EXTRACTOR OBJECTS
 		this.markerPickCase = markerPickCase;
@@ -536,6 +536,8 @@ public class MatrixDataExtractor implements MatrixOperation {
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
 			return resultMatrixId;
 		}
+
+		final DataSetDestination dataSetDestination = getDataSetDestination();
 
 		dataSetDestination.init();
 

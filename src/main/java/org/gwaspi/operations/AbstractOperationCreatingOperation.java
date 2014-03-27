@@ -26,7 +26,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 
-public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> implements MatrixOperation<PT> {
+public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> extends AbstractOperation<PT> {
 
 	/** @params deprecated */
 	private final DataSetKey parent;

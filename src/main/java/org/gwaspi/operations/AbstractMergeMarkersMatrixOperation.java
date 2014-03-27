@@ -143,6 +143,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			markerEntry.setValue(newMarkerMetadata);
 		}
 
+		final DataSetDestination dataSetDestination = getDataSetDestination();
+
 		dataSetDestination.init();
 
 		// NOTE We do not need to safe the sample-info again,

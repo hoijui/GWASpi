@@ -100,6 +100,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		// Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 		final int numMarkers = dataSetSource1.getMarkersKeysSource().size();
 
+		final DataSetDestination dataSetDestination = getDataSetDestination();
+
 		dataSetDestination.init();
 
 		// NOTE We do not need to safe the sample-info again,
@@ -151,7 +153,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	{
 		// Iterate through wrSampleSetMap, use item position to read
 		// the correct sample GTs into rdMarkerIdSetMap.
-		dataSetDestination.startLoadingAlleles(true);
+		getDataSetDestination().startLoadingAlleles(true);
 		for (int[] sampleIndices : wrComboSampleSetMap) { // Next SampleId
 			// sampleIndices: Next position[rdMatrixNb, rdPos, wrPos] to read/write
 			final int dataSetIndices = sampleIndices[0];
@@ -186,6 +188,6 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 			addSampleGTAlleles(writeSampleIndices, readSampleGenotypes);
 		}
-		dataSetDestination.finishedLoadingAlleles();
+		getDataSetDestination().finishedLoadingAlleles();
 	}
 }
