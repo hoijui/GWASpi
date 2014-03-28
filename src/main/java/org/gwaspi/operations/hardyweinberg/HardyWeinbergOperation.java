@@ -25,13 +25,13 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.AbstractOperationCreatingOperation;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
-import org.gwaspi.operations.OperationManager;
-import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.AbstractOperationCreatingOperation;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
@@ -145,9 +145,9 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 			final double expHzy = pAa;
 
 			final double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
-			final double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
+			final double pValue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
 
-			final HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), entry.getIndex(), category, pvalue, obsHzy, expHzy);
+			final HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), entry.getIndex(), category, pValue, obsHzy, expHzy);
 			dataSet.addEntry(hwEntry);
 		}
 	}

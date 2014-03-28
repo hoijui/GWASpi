@@ -58,14 +58,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
-//	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
-//	static {
-//		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
-//		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
-//		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
-//		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
-//	}
-
 	private static final Map<Category, String> categoryNetCdfVarNameWithoutAll = new EnumMap<Category, String>(Category.class);
 	static {
 		categoryNetCdfVarNameWithoutAll.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
@@ -230,7 +222,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 //		return getCensusMarkerIndices(category, -1, -1);
 //	}
 
-	public List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
+	private List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
 
 		List<int[]> censusesRaw = new ArrayList<int[]>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarName.get(category), from, to, censusesRaw, null);
@@ -243,7 +235,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		return censusesData;
 	}
 
-	public List<Census> getCensusMarkerData(Category category) throws IOException {
+	private List<Census> getCensusMarkerData(Category category) throws IOException {
 		return getCensusMarkerData(category, -1, -1);
 	}
 
@@ -307,7 +299,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<MarkerCensusOperationEntry> writeBuffer) throws IOException {
 
-		int[] origin = new int[] {alreadyWritten, 0};
+		final int[] origin = new int[] {alreadyWritten, 0};
 		if (netCdfCensusAlls == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage

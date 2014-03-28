@@ -158,6 +158,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 			final String markerChr = markerChromosomesIt.next();
 			final GenotypesList markerGTs = markersGTsIt.next();
 
+			// This is the very expensive task, as we have to read all GTs
 			gatherRawMarkerAlleleAndGTStatistics(rawMarkerCensusStatistics, markerChr, samplesSex, samplesAffection, markerGTs);
 
 			MarkerAlleleAndGTStatistics allSamplesStatistics = new MarkerAlleleAndGTStatistics();

@@ -81,9 +81,9 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
 		boolean nonInformativeMarkers = false;
-		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
-			final Integer origIndex = caseMarkerOrigIndexKey.getKey();
-			final MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
+		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
+			final Integer origIndex = markerOrigIndexKey.getKey();
+			final MarkerKey markerKey = markerOrigIndexKey.getValue();
 			final Census caseCensus = caseMarkerCensusIt.next();
 			final Census ctrlCensus = ctrlMarkersCensusIt.next();
 
