@@ -171,7 +171,7 @@ public class GenericReportGenerator {
 		Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>(); // FIXME This is unused, was a global static var before (also private though), was the data added here actually used somewhere? (i think not)
 		for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
-			Object[] data = entry.getValue(); //CHR, POS, PVAL
+			Object[] data = entry.getValue(); // CHR, POS, PVAL
 
 			String chr = (String) data[0];
 			int position = (Integer) data[1];
@@ -184,6 +184,8 @@ public class GenericReportGenerator {
 						labeler.put(currChr + "_" + position, markerKey);
 					} else {
 						if (!currChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
+							// add the last (now compleeted) chromosomes data-set,
+							// before starting the new one
 							currChrSC.addSeries(currChrS);
 							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, threshold, background, backgroundAlternative, main);
 						}
@@ -374,8 +376,7 @@ public class GenericReportGenerator {
 		//constant chi-square boundaries
 		XYSeries seriesLower = new XYSeries("2σ boundary");
 		XYSeries seriesUpper = new XYSeries("");
-		for (int i = 0; i < boundary.size(); i++) {
-			Double[] slice = boundary.get(i);
+		for (Double[] slice : boundary) {
 			seriesUpper.add(slice[1], slice[0]);
 			seriesLower.add(slice[1], slice[2]);
 		}
@@ -462,16 +463,16 @@ public class GenericReportGenerator {
 				{
 					continue;
 				}
-				if (pValue.isNaN() || pValue.isInfinite()) { // Ignore NaN Pvalues
+				if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
 					pValue = null;
 				}
-				MarkerKey curMmarkerKey = marker.getValue();
+				MarkerKey curMarkerKey = marker.getValue();
 				Object[] data = new Object[] {
 					markerMetadata.getChr(),
 					markerMetadata.getPos(),
 					pValue
 				};
-				markerKeyChrPosPVal.put(curMmarkerKey, data);
+				markerKeyChrPosPVal.put(curMarkerKey, data);
 			}
 
 			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">

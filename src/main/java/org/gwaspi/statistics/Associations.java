@@ -75,7 +75,6 @@ public class Associations {
 				+ weights[1] * ((ctrlTot / N) * caseAa - (caseTot / N) * ctrlAa)
 				+ weights[2] * ((ctrlTot / N) * caseaa - (caseTot / N) * ctrlaa);
 
-
 		// calculate variance
 		final double trendTestVar
 				= caseTot * ctrlTot * (
@@ -85,7 +84,6 @@ public class Associations {
 				- (2 * ((weights[0] * weights[1] * AATot * AaTot)
 				+ (weights[1] * weights[2] * AaTot * aaTot))))
 				/ Math.pow(N, 3));
-
 
 		// calculate trend-test _X^2
 		final double trendTestChiSqr = Math.pow(trendTest, 2) / trendTestVar;
