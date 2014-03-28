@@ -463,14 +463,21 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 			Iterator<Integer> allSampleOrigIndicesIt = dataSetSource.getSamplesKeysSource().getIndices().iterator();
 			Iterator<Sex> allSexesIt = samplesInfosSource.getSexes().iterator();
 			Iterator<Affection> allAffectionsIt = samplesInfosSource.getAffections().iterator();
-			for (Integer toKeepSampleOrigIndex : toKeepSampleOrigIndices) {
-				Integer curOrigIndex = allSampleOrigIndicesIt.next();
-				Sex curSex = allSexesIt.next();
-				Affection curAffection = allAffectionsIt.next();
-				if (curOrigIndex == toKeepSampleOrigIndex) {
-					samplesSex.add(curSex);
-					samplesAffection.add(curAffection);
+
+			Integer curOrigIndex = allSampleOrigIndicesIt.next();
+			Sex curSex = allSexesIt.next();
+			Affection curAffection = allAffectionsIt.next();
+			toKeep: for (Integer toKeepSampleOrigIndex : toKeepSampleOrigIndices) {
+				while (!curOrigIndex.equals(toKeepSampleOrigIndex)) {
+					if (!allSampleOrigIndicesIt.hasNext()) {
+						break toKeep;
+					}
+					curOrigIndex = allSampleOrigIndicesIt.next();
+					curSex = allSexesIt.next();
+					curAffection = allAffectionsIt.next();
 				}
+				samplesSex.add(curSex);
+				samplesAffection.add(curAffection);
 			}
 		} else {
 			DataSetSource sampleIndicesFilteredData = new SampleIndicesFilterDataSetSource(dataSetSource.getOriginDataSetSource(), toKeepSampleOrigIndices);
