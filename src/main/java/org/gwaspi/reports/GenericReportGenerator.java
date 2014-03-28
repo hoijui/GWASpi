@@ -35,7 +35,6 @@ import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -43,7 +42,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
@@ -105,16 +103,23 @@ public class GenericReportGenerator {
 
 		Map<MarkerKey, Object[]> markerKeyChrPosPVal;
 
-		// XXX Should we possibly use only the markers from the test operation, instead of all the ones in the parent matrix, as it is done in getManhattanZoomByChrAndPos, forther down?
-		DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
-		MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
+		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS
+				= (CommonTestOperationDataSet<? extends TrendTestOperationEntry>)
+				OperationManager.generateOperationDataSet(testOpKey);
+		final MarkersMetadataSource markersMetadatasSource = testOpDS.getMarkersMetadatasSource();
+		final List<Double> ps = testOpDS.getPs(-1, -1);
+		Iterator<Double> psIt = ps.iterator();
 		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
 		for (MarkerMetadata markerMetadata : markersMetadatasSource) {
 			MarkerKey markerKey = MarkerKey.valueOf(markerMetadata);
+			Double pValue = psIt.next();
+			if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
+				pValue = null;
+			}
 			Object[] data = new Object[] {
 				markerMetadata.getChr(),
 				markerMetadata.getPos(),
-				null // P-Value, will be filled in later on (not for all markers though)
+				pValue
 			};
 			markerKeyChrPosPVal.put(markerKey, data);
 		}
@@ -123,18 +128,6 @@ public class GenericReportGenerator {
 //		if (snpNumber < 250000) {
 //			hetzyThreshold = 0.5 / snpNumber;  // (0.05 / 10^6 SNPs => 5*10^(-7))
 //		}
-
-		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationManager.generateOperationDataSet(testOpKey);
-		Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
-		Iterator<MarkerKey> testOpMarkerKeysIt = testOpMarkers.values().iterator();
-		Collection<Double> ps = testOpDS.getPs(-1, -1);
-		for (Double pValue : ps) {
-			MarkerKey markerKey = testOpMarkerKeysIt.next();
-//			if (!Double.isNaN(pValue) && !Double.isInfinite(pValue)) {
-			if (!pValue.isNaN() && !pValue.isInfinite()) { // Ignore NaN Pvalues
-				markerKeyChrPosPVal.get(markerKey)[2] = pValue;
-			}
-		}
 
 		return markerKeyChrPosPVal;
 	}
@@ -177,8 +170,8 @@ public class GenericReportGenerator {
 			int position = (Integer) data[1];
 
 			if (data[2] != null) {
-				double pVal = (Double) data[2]; // Is allready free of NaN
-				if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
+				double pVal = (Double) data[2]; // Is allready free of NaN and infinity
+				if (pVal < 1) {
 					if (chr.equals(currChr)) {
 						currChrS.add(position, pVal);
 						labeler.put(currChr + "_" + position, markerKey);
@@ -444,17 +437,15 @@ public class GenericReportGenerator {
 
 			Map<MarkerKey, Object[]> markerKeyChrPosPVal;
 
-			DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
-			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
-
-			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationManager.generateOperationDataSet(testOpKey);
-			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
+			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS
+					= (CommonTestOperationDataSet<? extends TrendTestOperationEntry>)
+					OperationManager.generateOperationDataSet(testOpKey);
+			Iterator<MarkerMetadata> markersMetadatasIt = testOpDS.getMarkersMetadatasSource().iterator();
 			Iterator<Double> psIt = testOpDS.getPs(-1, -1).iterator();
-			markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(testOpMarkers.size());
-			for (Map.Entry<Integer, MarkerKey> marker : testOpMarkers.entrySet()) {
-				int markerOrigIndex = marker.getKey();
+			markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(testOpDS.getNumMarkers());
+			for (MarkerKey curMarkerKey : testOpDS.getMarkersKeysSource()) {
 				Double pValue = psIt.next();
-				MarkerMetadata markerMetadata = markersMetadatasSource.get(markerOrigIndex);
+				MarkerMetadata markerMetadata = markersMetadatasIt.next();
 				String curChr = markerMetadata.getChr();
 				int curPos = markerMetadata.getPos();
 				if (!curChr.equals(chr.toString())
@@ -466,7 +457,6 @@ public class GenericReportGenerator {
 				if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
 					pValue = null;
 				}
-				MarkerKey curMarkerKey = marker.getValue();
 				Object[] data = new Object[] {
 					markerMetadata.getChr(),
 					markerMetadata.getPos(),
