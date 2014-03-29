@@ -38,7 +38,9 @@ import org.gwaspi.operations.NetCdfUtils;
  */
 public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList, Serializable {
 
-	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
+	public static final GenotypesListFactory FACTORY = new CompactGenotypesListFactory();
+
+	private static class CompactGenotypesListFactory implements GenotypesListFactory {
 		@Override
 		public GenotypesList extract(List<byte[]> rawGenotypes) {
 
@@ -46,7 +48,7 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 			return new CompactGenotypesList(rawGenotypes, possibleGenotypes);
 		}
-	};
+	}
 
 	public static class SelectiveIndicesGenotypesListFactory implements GenotypesListFactory {
 

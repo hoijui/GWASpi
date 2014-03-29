@@ -30,7 +30,9 @@ import org.gwaspi.operations.NetCdfUtils;
  */
 public class ArrayGenotypesList extends ArrayList<byte[]> implements GenotypesList {
 
-	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
+	public static final GenotypesListFactory FACTORY = new ArrayGenotypesListFactory();
+
+	private static class ArrayGenotypesListFactory implements GenotypesListFactory {
 		@Override
 		public GenotypesList extract(List<byte[]> rawGenotypes) {
 
@@ -38,7 +40,8 @@ public class ArrayGenotypesList extends ArrayList<byte[]> implements GenotypesLi
 			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 			return new ArrayGenotypesList(rawGenotypes, possibleGenotypes);
 		}
-	};
+	}
+
 	private final Set<byte[]> possibleGenotypes;
 
 	public ArrayGenotypesList(Collection<byte[]> originalGenotypes,
