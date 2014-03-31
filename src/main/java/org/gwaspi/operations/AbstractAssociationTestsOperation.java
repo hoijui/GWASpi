@@ -74,12 +74,12 @@ public abstract class AbstractAssociationTestsOperation extends AbstractTestMatr
 			final int ctrlaa = ctrlCensus.getaa();
 			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			if (getParams().getType() == OPType.ALLELICTEST) {
+			if (getParams().getType() == OPType.ALLELICTEST) { // XXX Genotypic is about 10 times faster then allelic, and the only difference between the two is the code here, so... find out why!!!
 				// allelic test
-				final int sampleNb = caseTot + ctrlTot;
+				final int numSamples = caseTot + ctrlTot;
 
 				final double allelicT = Associations.calculateAllelicAssociationChiSquare(
-						sampleNb,
+						numSamples,
 						caseAA,
 						caseAa,
 						caseaa,
