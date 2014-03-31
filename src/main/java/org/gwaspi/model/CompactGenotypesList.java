@@ -165,9 +165,6 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 //		int byteIndex = 0;
 		int firstBitIndex = 0;
 		byte curByte = 0x00;
-		// Indicates whether there is data in curByte
-		// that is not yet stored in compactGenotypes.
-		boolean unstoredData = false;
 //		int gti = 0;
 		for (byte[] originalGenotype : originalGenotypes) {
 			int gtHashCode = Genotype.hashCode(originalGenotype);
@@ -180,9 +177,8 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 //				}
 //			}
 			curByte += compactForm << firstBitIndex;
-			unstoredData = true;
 
-			if ((firstBitIndex + this.genotypeSize) > 7) {
+			if ((firstBitIndex + this.genotypeSize) > 7) { // XXX This whole thing could be done faster (a bit(?), for big lists), if we initially create a list of firstBitInidices from 0 ... till 0 again, and a corresponding list of boooleans, indicating whether to write the byte or not
 				// we need the next byte too
 				compactGenotypes.put(curByte);
 				curByte = 0x00;
@@ -192,9 +188,11 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 //			gti++;
 			firstBitIndex += this.genotypeSize;
 		}
+		// Indicates whether there is data in curByte
+		// that is not yet stored in compactGenotypes.
+		final boolean unstoredData = (firstBitIndex > 0);
 		if (unstoredData) {
 			compactGenotypes.put(curByte);
-			unstoredData = false;
 		}
 	}
 
