@@ -75,6 +75,8 @@ public class OperationManager {
 		HardyWeinbergOperation.register();
 		MarkerCensusOperation.register();
 		TrendTestOperation.register();
+		AllelicAssociationTestOperation.register();
+		GenotypicAssociationTestOperation.register();
 		ByHardyWeinbergThresholdFilterOperation.register();
 		ByValidAffectionFilterOperation.register();
 		ByCombiWeightsFilterOperation.register();
