@@ -490,13 +490,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //				encodedSamplesMarker[mi] = 0.0f;
 //			}
 			// just set everythign to 0.0f, as this marker contains no meaningful information
+			int fi = markerIndex * getEncodingFactor();
 			for (int lfi = 0; lfi < getEncodingFactor(); lfi++) {
-				final int fi = markerIndex + lfi;
 				encodedSamplesFeatures.startStoringFeature(fi);
 				for (int si = 0; si < encodedSamplesFeatures.getNumSamples(); si++) {
 					encodedSamplesFeatures.setSampleValue(si, 0.0f);
 				}
 				encodedSamplesFeatures.endStoringFeature();
+				fi++;
 			}
 		} else {
 			// encode
