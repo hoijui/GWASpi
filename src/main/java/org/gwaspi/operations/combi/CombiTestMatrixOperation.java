@@ -267,8 +267,6 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 						"encoding markers chunk",
 						markerIndexFrom,
 						markerIndexFrom + markersChunkSize - 1);
-		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, encodingMarkersChunkProgressSource), 2000);
-		encodingMarkersChunkProgressSource.addProgressListener(slf4jProgressListener);
 		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(encodingMarkersChunkProgressSource);
 		encodingMarkersChunkProgressSource.addProgressListener(swingMonitorProgressListener);
 
