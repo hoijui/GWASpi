@@ -250,10 +250,17 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final int dEncoded = dSamples * encoder.getEncodingFactor();
 
 		final byte numSingleValueStorageBytes = 4; // float
-		final int featureBytes = Util.calcFeatureBytes(n, dEncoded, numSingleValueStorageBytes);
-		final String humanReadableFeaturesMemorySize = Util.bytes2humanReadable(featureBytes);
-		LOG.info("Combi Association Test: allocate memory for features: {}",
-				humanReadableFeaturesMemorySize);
+		// This would be the estimate if we would load the whole features matrix
+		// into memory at once.
+//		final int featureBytes = Util.calcFeatureBytes(n, dEncoded, numSingleValueStorageBytes);
+//		final String humanReadableFeaturesMemorySize = Util.bytes2humanReadable(featureBytes);
+		// The estimated memory used for having the features in memory
+		// that result from of the chunk of markers we are currently looking at
+		// (during the current invocation of this function).
+		final int featureChunkBytes = Util.calcFeatureBytes(n, dEncoded / dSamples * markersChunkSize, numSingleValueStorageBytes);
+		final String humanReadableFeaturesChunkMemorySize = Util.bytes2humanReadable(featureChunkBytes);
+		LOG.debug("allocating memory for features chunk: {}",
+				humanReadableFeaturesChunkMemorySize);
 
 		IntegerProgressHandler encodingMarkersChunkProgressSource
 				= new IntegerProgressHandler(
