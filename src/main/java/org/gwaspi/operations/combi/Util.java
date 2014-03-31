@@ -72,7 +72,7 @@ public class Util {
 	}
 
 	static final String[] MEMORY_SIZE_PREFIXES = new String[] {
-		"K", "M", "G", "T", "E", "P"
+		"", "K", "M", "G", "T", "E", "P"
 	};
 	static String bytes2humanReadable(long bytes) {
 
