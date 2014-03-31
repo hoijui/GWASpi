@@ -129,7 +129,13 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 			final int numMarkersInChunk = Math.min(dSamples - firstMarkerIndex, maxChunkSize);
 //			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
 
-			SamplesFeaturesStorage<Float> encodedSamplesPart = new PartialFeaturesInMemorySamplesFeaturesStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), firstMarkerFeatureIndex, encodedSamplesRawStorage);
+			SamplesFeaturesStorage<Float> encodedSamplesPart
+					= new PartialFeaturesInMemorySamplesFeaturesStorage<Float>(
+							n,
+							dEncoded,
+							encodedSamplesRawStorage.getCache(),
+							firstMarkerFeatureIndex,
+							encodedSamplesRawStorage);
 
 			// encode only a chunk/part of the markers at a time
 			// which gives us a part of the feature matrix
