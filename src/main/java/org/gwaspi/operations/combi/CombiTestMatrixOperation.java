@@ -350,7 +350,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		// how much memory does one sample per marker use [bytes]
 		final int singleEntryMemoryUsage = 2 * 8; // HACK FIXME two doubles.. arbitrary.. investigate
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
-		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage));
+		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
 
 		return new MarkerGenotypesEncoder(markersGenotypesSource, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, maxChunkSize);
 	}
