@@ -31,7 +31,7 @@ import ucar.nc2.Variable;
 
 public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<GenotypesList> implements MarkersGenotypesSource {
 
-	private final GenotypesListFactory genotyesListFactory;
+	private final GenotypesListFactory genotypesListFactory;
 	private MarkersGenotypesSource originSource;
 
 	private static final int DEFAULT_CHUNK_SIZE = 200;
@@ -40,7 +40,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 	private NetCdfMarkersGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
 		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
 
-		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+		this.genotypesListFactory = CompactGenotypesList.FACTORY;
 	}
 
 	public static MarkersGenotypesSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
@@ -75,7 +75,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 
 			for (int mi = fromMarkerIndex; mi <= toMarkerIndex; mi++) {
 				List<byte[]> sampleGTs = NetCdfSamplesGenotypesSource.readMarkerGTs(var, -1, -1, mi);
-				GenotypesList genotypesList = genotyesListFactory.extract(sampleGTs);
+				GenotypesList genotypesList = genotypesListFactory.extract(sampleGTs);
 				values.add(genotypesList);
 			}
 

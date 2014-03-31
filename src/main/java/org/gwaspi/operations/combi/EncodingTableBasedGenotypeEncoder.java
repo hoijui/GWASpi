@@ -345,7 +345,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		final boolean lexOrder = isUsingLexicographicEncodingOrder();
 		final boolean swapMajorMinor = (lexOrder && (majorAllele > minorAllele))
-				|| (!lexOrder && (majorAllele < minorAllele) && (genotypesCountsAccumulated.get(0) == genotypesCountsAccumulated.get(3)));
+				|| (!lexOrder && (majorAllele < minorAllele) && genotypesCountsAccumulated.get(0).equals(genotypesCountsAccumulated.get(3)));
 
 		// If swapping, instead of assigning encoding values based on the allele
 		// frequencies (major & minor), we use the lexicographicly smaller
@@ -511,13 +511,13 @@ final byte[] genotypeIndexed = rawGenotypes.get(gti++);
 if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 	throw new RuntimeException();
 }
-final int gtHash = Genotype.hashCode(genotype);
+					final int gtHash = Genotype.hashCode(genotype);
 final String gtStr = new String(genotype);
 					List<Float> encodedGT = encodingTable.get(gtHash);
 					if (encodedGT == null) {
 						encodedGT = invalidEncoded;
 					}
-					encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0).floatValue());
+					encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0));
   					for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
 						tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));
 					}

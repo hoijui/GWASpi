@@ -345,7 +345,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final int n)
 			throws IOException
 	{
-		// max memory usage of this function [bytes]
+		// max memory usage of the featre matrix [bytes]
 		final int maxChunkMemoryUsage = 1024 * 1024;
 		// how much memory does one sample per marker use [bytes]
 		final int singleEntryMemoryUsage = 2 * 8; // HACK FIXME two doubles.. arbitrary.. investigate

@@ -88,7 +88,7 @@ public class Util {
 					+ (humanReadable.isEmpty() ? "" : " ") + humanReadable;
 		} while (remaining > 0);
 
-		return humanReadable.toString();
+		return humanReadable;
 	}
 
 	private static List<List<Double>> matrixMult(
@@ -140,7 +140,7 @@ public class Util {
 
 		@Override
 		public Double get(int index) {
-			return Double.valueOf(innerVector[index]);
+			return (double) innerVector[index];
 		}
 
 		@Override
