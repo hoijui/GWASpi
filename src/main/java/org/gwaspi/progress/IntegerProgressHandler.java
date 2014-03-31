@@ -54,7 +54,7 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 			// to prevent div-by-0 -> NaN.
 			completionFraction = currentState.equals(endState) ? 1.0 : 0.0;
 		} else {
-			completionFraction = (double) Math.abs((currentState - startState) / getNumIntervals());
+			completionFraction = (double) Math.abs((double) (currentState - startState) / getNumIntervals());
 		}
 		fireProgressHappened(completionFraction, currentState);
 	}
