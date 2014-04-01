@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.operations.combi;
 
 import java.util.List;
@@ -31,15 +32,6 @@ public interface GenotypeEncoder {
 	/**
 	 * Encodes the genotypes for one marker (== one data-point for the SVM)
 	 * into values suitable for SVM input.
-	 * @param possibleGenotypes input, one up to three entries
-	 *   per genotype(-pair) per marker, for example:
-	 *   <code>
-	 *   {
-	 *     {{'A', 'A'}, {'A', 'G'}, {'G', 'G'}}, // possible values for marker 0
-	 *     {{'A', 'T'}, {'T', 'T'}},             // possible values for marker 1
-	 *     {{'G', 'G'}, {'G', 'T'}, {'T', 'T'}}, // possible values for marker 2
-	 *   }
-	 *   </code>
 	 * @param majorAllele
 	 * @param rawGenotypes input, one genotype(-pair) per marker and sample,
 	 *   for example:
