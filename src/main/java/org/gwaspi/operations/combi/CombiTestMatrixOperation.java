@@ -366,8 +366,6 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final float[][] kernelMatrix)
 			throws IOException
 	{
-		final int n = kernelMatrix.length;
-
 		IntegerProgressHandler creatingKernelMatrixProgressSource
 				= new IntegerProgressHandler(
 						"encoding features and creating kernel matrix",
@@ -393,20 +391,35 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
 
-			// calculate the part of the kernel matrix defined by
-			// the current chunk of the feature matrix
-			for (int smi = 0; smi < numFeaturesInChunk; smi++) {
-				for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
-					final float curRowValue = featuresChunk[krsi][smi];
-					for (int krci = 0; krci < n; krci++) { // kernel column sample index
-						final float curColValue = featuresChunk[krci][smi];
-						kernelMatrix[krsi][krci] += curRowValue * curColValue;
-					}
-				}
-			}
+			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
 		creatingKernelMatrixProgressSource.finalized();
+	}
+
+	/**
+	 * Calculates the part of the kernel matrix defined by
+	 * the supplied chunk of the feature matrix.
+	 * @param kernelMatrix
+	 * @param featuresChunk
+	 * @param numFeaturesInChunk
+	 */
+	private static void calculateKernelMatrixPart(
+			final float[][] kernelMatrix,
+			final Float[][] featuresChunk,
+			final int numFeaturesInChunk)
+	{
+		final int n = kernelMatrix.length;
+
+		for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+			for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+				final float curRowValue = featuresChunk[krsi][smi];
+				for (int krci = 0; krci < n; krci++) { // kernel column sample index
+					final float curColValue = featuresChunk[krci][smi];
+					kernelMatrix[krsi][krci] += curRowValue * curColValue;
+				}
+			}
+		}
 	}
 
 	private static svm_problem createLibSvmProblem(
