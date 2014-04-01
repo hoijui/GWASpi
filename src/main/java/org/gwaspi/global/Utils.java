@@ -314,6 +314,10 @@ public class Utils {
 		return timeStampFormat.format(now.getTime());
 	}
 
+	public static String toHumanReadableTime(final long milliseconds) {
+		return milliseconds + "ms"; // XXX make nicer (days, hours, minutes, seconds, millieconds)
+	}
+
 	public static Date stringToDate(String txtDate, String format) {
 
 		Date dateDate = null;
