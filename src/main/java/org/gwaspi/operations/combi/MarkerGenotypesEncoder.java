@@ -21,8 +21,13 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
 import org.gwaspi.model.GenotypesList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
+
+	private static final Logger LOG
+			= LoggerFactory.getLogger(MarkerGenotypesEncoder.class);
 
 	private final List<GenotypesList> markersGenotypesSource;
 //	private final MarkersGenotypesSource markersGenotypesSource;
@@ -77,6 +82,19 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 		this.maxChunkSize = maxChunkSize;
 		this.maxFeaturesChunkSize = maxChunkSize * genotypeEncoder.getEncodingFactor();
 		this.numChunks = (int) Math.ceil((double) dSamples / maxChunkSize);
+
+		final byte numSingleValueStorageBytes = 4; // float
+		// This would be the estimate if we would load the whole features matrix
+		// into memory at once.
+//		final int featureBytes = Util.calcFeatureBytes(n, dEncoded, numSingleValueStorageBytes);
+//		final String humanReadableFeaturesMemorySize = Util.bytes2humanReadable(featureBytes);
+		// The estimated memory used for having the features in memory
+		// that result from of the chunk of markers we are currently looking at
+		// (during the current invocation of this function).
+		final int featureChunkBytes = Util.calcFeatureBytes(n, maxFeaturesChunkSize, numSingleValueStorageBytes);
+		final String humanReadableFeaturesChunkMemorySize = Util.bytes2humanReadable(featureChunkBytes);
+		LOG.debug("allocating memory for features chunk: {}",
+				humanReadableFeaturesChunkMemorySize);
 
 		try {
 			// NOTE This may allocate a LOT of memory!
