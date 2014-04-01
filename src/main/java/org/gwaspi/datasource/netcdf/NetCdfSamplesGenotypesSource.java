@@ -176,6 +176,26 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 		}
 	}
 
+	static List<GenotypesList> readMarkerGTLists(Variable netCdfGTsVar, int fromSampleIndex, int toSampleIndex, int fromMarkerIndex, int toMarkerIndex, GenotypesListFactory genotypesListFactory) throws IOException {
+
+		final int[] varShape = netCdfGTsVar.getShape();
+
+		if (fromSampleIndex == -1) {
+			fromSampleIndex = 0;
+		}
+		if (toSampleIndex == -1) {
+			toSampleIndex = varShape[0] - 1;
+		}
+
+		try {
+			final String netCdfReadStr = buildNetCdfReadString(fromSampleIndex, toSampleIndex, fromMarkerIndex, toMarkerIndex, varShape[2]);
+			final ArrayByte.D3 sampleMarkerGTs = (ArrayByte.D3) netCdfGTsVar.read(netCdfReadStr);
+			return NetCdfUtils.writeD3ArrayByteToGenotypeLists(sampleMarkerGTs, genotypesListFactory, true);
+		} catch (InvalidRangeException ex) {
+			throw new IOException("Cannot read data", ex);
+		}
+	}
+
 	static void readSampleGTs(ArrayByte.D3 from, Collection<GenotypesList> to, GenotypesListFactory genotyesListFactory) throws IOException {
 
 		try {
