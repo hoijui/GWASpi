@@ -19,6 +19,7 @@ package org.gwaspi.progress;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import org.gwaspi.global.Utils;
 import org.slf4j.Logger;
 
 /**
@@ -31,11 +32,15 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 
 	private final Logger logger;
 	private final ProgressHandler progressHandler;
+	private Long firstCompleetedEventTime;
+	private Double firstCompleetedEventCompletionFraction;
 
 	public Slf4jProgressListener(final Logger logger, final ProgressHandler progressHandler) {
 
 		this.logger = logger;
 		this.progressHandler = progressHandler;
+		firstCompleetedEventTime = null;
+		firstCompleetedEventCompletionFraction = null;
 	}
 
 	@Override
@@ -51,10 +56,22 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
 
+		if (firstCompleetedEventTime == null) {
+			firstCompleetedEventTime = System.currentTimeMillis();
+			firstCompleetedEventCompletionFraction = evt.getCompletionFraction();
+		}
+
 		if (logger.isInfoEnabled()) {
-			logger.info("{}: progressed {}",
+			final double completionFraction = evt.getCompletionFraction();
+			final long timeSpan = System.currentTimeMillis() - firstCompleetedEventTime;
+			final double compleetionSpan = completionFraction - firstCompleetedEventCompletionFraction;
+			final long estimatedTotalTaskTime = (long) (timeSpan / compleetionSpan);
+			final long estimatedRemainingTaskTime = (long) (estimatedTotalTaskTime * (1.0 - completionFraction));
+			logger.info("{}: progressed {} (ETA: {} ETT: {})",
 					progressHandler.getShortName(),
-					PERCENTAGE_FORMAT.format(evt.getCompletionFraction().floatValue()));
+					PERCENTAGE_FORMAT.format(completionFraction),
+					Utils.toHumanReadableTime(estimatedRemainingTaskTime),
+					Utils.toHumanReadableTime(estimatedTotalTaskTime));
 		}
 	}
 
