@@ -34,6 +34,8 @@ import org.gwaspi.global.EnumeratedValueExtractor;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.Genotype;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -837,6 +839,43 @@ public class NetCdfUtils {
 		}
 
 		return als;
+	}
+
+	public static List<GenotypesList> writeD3ArrayByteToGenotypeLists(
+			final ArrayByte.D3 inputArray,
+			final GenotypesListFactory genotypesListFactory,
+			boolean markers)
+			throws IOException
+	{
+		// NOTE We only support up until Integer Integer.MAX_VALUE lists,
+		//   which is 2^31 - 1
+		final int[] shape = inputArray.getShape(); // [0]: #samples, [1]: #markers, [2]: #allelesPerGenotype(== 2)
+		List<GenotypesList> genotypesLists = new ArrayList<GenotypesList>(shape[0]);
+
+		final int numLists;
+		final int listsIndicesIndex;
+		final int[] reducedOrigin = new int[] {0, 0, 0};
+		final int[] reducedShape = new int[] {shape[0], shape[1], shape[2]};
+		if (markers) {
+			listsIndicesIndex = 1;
+		} else {
+			listsIndicesIndex = 0;
+		}
+		numLists = shape[listsIndicesIndex];
+		reducedOrigin[listsIndicesIndex] = -1;
+		reducedShape[listsIndicesIndex] = 1;
+		try {
+			for (int li = 0; li < numLists; li++) {
+				reducedOrigin[listsIndicesIndex] = li;
+				final ArrayByte.D2 netCdfGts = (ArrayByte.D2) inputArray.section(reducedOrigin, reducedShape);
+				final List<byte[]> rawGts = NetCdfUtils.writeD2ArrayByteToList(netCdfGts);
+				genotypesLists.add(genotypesListFactory.extract(rawGts));
+			}
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
+
+		return genotypesLists;
 	}
 //
 //	public static List<byte[]> writeD2Array2ndDimByteToList(ArrayByte inputArray) {
