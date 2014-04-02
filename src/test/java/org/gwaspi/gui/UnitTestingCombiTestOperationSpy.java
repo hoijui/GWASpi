@@ -102,7 +102,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 			X.add(new ArrayList<Double>(dEncoded));
 		}
 		for (int ci = 0; ci < markerGenotypesEncoder.size(); ci++) {
-			final float[][] featuresChunk = markerGenotypesEncoder.get(ci);
+			final Float[][] featuresChunk = markerGenotypesEncoder.get(ci);
 			final int chunkSize = markerGenotypesEncoder.getChunkSize(ci);
 			for (int si = 0; si < n; si++) {
 				List<Double> xRow = X.get(si);
