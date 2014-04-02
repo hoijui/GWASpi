@@ -247,6 +247,8 @@ public class Config {
 						if (isInitiated) {
 							log.info("Databases and working folders initialized successfully!");
 						}
+					} else {
+						throw new IllegalStateException("Unable to determine a data directory path");
 					}
 				} else {
 					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
