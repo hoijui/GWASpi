@@ -36,8 +36,6 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -241,39 +239,6 @@ public class NetCdfUtils {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
-
-	/**
-	 * @deprecated NetCDF does not support writing boolean arrays :/
-	 */
-	public static void saveBooleansD1ToWrMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Collection<Boolean> values,
-			String variable,
-			int offset)
-			throws IOException
-	{
-		throw new UnsupportedOperationException("NetCDF does not support writing boolean arrays :/");
-//		ArrayBoolean.D1 arrayBoolean = NetCdfUtils.writeValuesToD1ArrayBoolean(values);
-//		int[] originD1 = new int[] {offset};
-//		try {
-//			wrNcFile.write(variable, originD1, arrayBoolean);
-//			log.info("Done writing {}", variable);
-//		} catch (InvalidRangeException ex) {
-//			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
-//		}
-	}
-
-	/**
-	 * @deprecated NetCDF does not support writing boolean arrays :/
-	 */
-	public static void saveBooleansD1ToWrMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Collection<Boolean> values,
-			String variable)
-			throws IOException
-	{
-		saveBooleansD1ToWrMatrix(wrNcFile, values, variable, 0);
-	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
@@ -377,32 +342,6 @@ public class NetCdfUtils {
 
 		return charArray;
 	}
-//	public static <V> ArrayChar.D1 writeValuesToD1ArrayChar(Collection<V> values, Extractor<V, String> valueToStringConverter, int stride) {
-//
-//		ArrayChar.D1 charArray = new ArrayChar.D1(values.size(), stride);
-//		Index index = charArray.getIndex();
-//		int count = 0;
-//		for (V value : values) {
-//			String strValue = valueToStringConverter.extract(value);
-//			charArray.setString(index.set(count), strValue.trim());
-//			count++;
-//		}
-//
-//		return charArray;
-//	}
-
-//	public static ArrayByte.D1 writeValuesToD1ArrayByte(Collection<Byte> values) {
-//
-//		ArrayByte.D1 ncArray = new ArrayByte.D1(values.size());
-//		Index index = ncArray.getIndex();
-//		int count = 0;
-//		for (Byte value : values) {
-//			ncArray.setByte(index.set(count), value);
-//			count++;
-//		}
-//
-//		return ncArray;
-//	}
 
 	public static <V> ArrayByte.D1 writeValuesToD1ArrayByte(Collection<V> values, Extractor<V, Byte> valueToStringConverter, int stride) {
 
@@ -490,22 +429,6 @@ public class NetCdfUtils {
 		return intArray;
 	}
 
-	/**
-	 * @deprecated NetCDF does not support writing boolean arrays :/
-	 */
-	public static ArrayBoolean.D1 writeValuesToD1ArrayBoolean(Collection<Boolean> values) {
-
-		ArrayBoolean.D1 booleanArray = new ArrayBoolean.D1(values.size());
-		Index index = booleanArray.getIndex();
-		int count = 0;
-		for (Boolean value : values) {
-			booleanArray.setBoolean(index.set(count), value);
-			count++;
-		}
-
-		return booleanArray;
-	}
-
 	public static <V> ArrayInt.D1 writeValuesToD1ArrayInt(Collection<V> values, Extractor<V, Integer> valueToIntegerConverter) {
 
 		ArrayInt.D1 intArray = new ArrayInt.D1(values.size());
@@ -551,7 +474,6 @@ public class NetCdfUtils {
 
 		return intArray;
 	}
-
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D3">
@@ -620,24 +542,6 @@ public class NetCdfUtils {
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
 			result.put(new String(values).trim(), commonValue);
-		}
-
-		return result;
-	}
-
-	/**
-	 * @deprecated just remove, as it was wrong anyway (we need MarkerKey, not SampleKey)
-	 */
-	public static <V> Map<SampleKey, V> writeD2ArrayCharToMapSampleKeys(StudyKey studyKey, ArrayChar inputArray, V commonValue) {
-
-		Map<SampleKey, V> result = new LinkedHashMap<SampleKey, V>();
-
-		int[] shape = inputArray.getShape();
-		for (int i = 0; i < shape[0]; i++) {
-			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
-			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
-			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			result.put(SampleKey.valueOf(studyKey, String.valueOf(values).trim()), commonValue);
 		}
 
 		return result;
@@ -877,44 +781,10 @@ public class NetCdfUtils {
 
 		return genotypesLists;
 	}
-//
-//	public static List<byte[]> writeD2Array2ndDimByteToList(ArrayByte inputArray) {
-//
-//		Long expectedSize = inputArray.getSize();
-//		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
-//
-//		int[] shape = inputArray.getShape();
-//		for (int j = 0; j < shape[1]; j++) {
-//			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
-//			ArrayByte.D2.arraycopy(inputArray, j * shape[1], wrArray, 0, shape[1]); XXX;
-//			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
-//			als.add(values);
-//		}
-//
-//		return als;
-//	}
 	//</editor-fold>
-
-//	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, Byte> map) {
-//
-//		int i = 0;
-//		for (Map.Entry<K, Byte> entry : map.entrySet()) {
-//			entry.setValue(inputArray.getByte(i++));
-//			i++;
-//		}
-//	}
-//
-//	public static <K> void writeD1ArrayByteToMapValues(ArrayChar inputArray, Map<K, Character> map) {
-//
-//		int i = 0;
-//		for (Map.Entry<K, Character> entry : map.entrySet()) {
-//			entry.setValue(inputArray.getChar(i++));
-//		}
-//	}
 
 	public static <K, V> void writeD1ArrayToMapValues(Array from, Map<K, V> to) {
 
-//		int[] shape = from.getShape();
 		Index index = from.getIndex();
 
 		int i = 0;
@@ -954,12 +824,10 @@ public class NetCdfUtils {
 		}
 	}
 
-
 	public static <V> void writeD1ArrayToCollection(Array from, Collection<V> to) {
 
-//		Long expectedSize = input.getSize();
 		int[] shape = from.getShape();
-		final int size = shape[0]; //|| expectedSize;
+		final int size = shape[0];
 		if (to instanceof ArrayList) {
 			((ArrayList<V>) to).ensureCapacity(size);
 		}
@@ -1030,26 +898,6 @@ public class NetCdfUtils {
 			}
 		}
 	}
-//
-//	public static <RT, IT extends List<RT>> void writeD3ArrayToCollection(Array from, Collection<IT> to, Extractor<List<RT>, IT> innerListFactory) throws IOException {
-//
-//		try {
-//			int[] shp = from.getShape();
-//			List<Range> ranges = new ArrayList<Range>(3);
-//			ranges.add(new Range(0, 0));
-//			ranges.add(new Range(0, shp[1] - 1));
-//			ranges.add(new Range(0, shp[2] - 1));
-//			for (int r0 = 0; r0 < shp[0]; r0++) {
-//				ranges.set(0, new Range(r0, r0));
-//				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) from.section(ranges);
-//				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
-//				IT innerList = innerListFactory.extract(rawList);
-//				to.add(innerList);
-//			}
-//		} catch (InvalidRangeException ex) {
-//			log.error("Cannot read data", ex);
-//		}
-//	}
 	//</editor-fold>
 
 	public static Set<byte[]> extractUniqueGenotypesOrdered(
