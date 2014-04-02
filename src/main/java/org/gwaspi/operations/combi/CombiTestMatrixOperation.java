@@ -330,6 +330,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	}
 
 	public static int KERNEL_CALCULATION_ALGORTIHM = 5;
+	public static Integer MAX_CHUNK_SIZE = null;
 
 	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
@@ -346,7 +347,12 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		// how much memory does one sample per marker use [bytes]
 		final int singleEntryMemoryUsage = 4; // 1 float value
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
-		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
+		final int maxChunkSize;
+		if (MAX_CHUNK_SIZE == null) {
+			maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
+		} else {
+			maxChunkSize = MAX_CHUNK_SIZE;
+		}
 		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
 
 		return new MarkerGenotypesEncoder(markersGenotypesSource, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, maxChunkSize);
