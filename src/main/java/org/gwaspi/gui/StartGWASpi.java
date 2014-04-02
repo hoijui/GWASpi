@@ -72,10 +72,10 @@ public class StartGWASpi extends JFrame {
 			guiMode = false;
 			if (args.contains("log")) {
 				logToFile = true;
-				logPath = args.get(args.indexOf("log") + 1).toString();
+				logPath = args.get(args.indexOf("log") + 1);
 			}
 
-			File scriptFile = new File(args.get(args.indexOf("script") + 1).toString());
+			File scriptFile = new File(args.get(args.indexOf("script") + 1));
 			if (scriptFile.exists()) {
 				if (maxHeapSize > 254) {
 					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
