@@ -22,8 +22,8 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 	private final Integer startState;
 	private final Integer endState;
 
-	public IntegerProgressHandler(String shortName, Integer startState, Integer endState) {
-		super(shortName, Math.abs(endState - startState) + 1);
+	public IntegerProgressHandler(ProcessInfo processInfo, Integer startState, Integer endState) {
+		super(processInfo, Math.abs(endState - startState) + 1);
 
 		this.startState = startState;
 		this.endState = endState;

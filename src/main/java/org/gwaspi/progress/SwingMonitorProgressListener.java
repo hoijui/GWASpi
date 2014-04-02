@@ -31,8 +31,8 @@ public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
 
 		this.progressMonitor = new ProgressMonitor(
 				null,
-				progressSource.getShortName(),
-				progressSource.getDescription(),
+				progressSource.getInfo().getShortName(),
+				progressSource.getInfo().getDescription(),
 				progressSource.getStartState(),
 				progressSource.getEndState()
 		);

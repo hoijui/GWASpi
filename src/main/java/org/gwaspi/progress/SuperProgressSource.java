@@ -44,8 +44,8 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		}
 	}
 
-	public SuperProgressSource(String shortName, Map<ProgressSource, Double> subProgressSourcesAndWeights) {
-		super(shortName, calculateNumIntervalls(subProgressSourcesAndWeights));
+	public SuperProgressSource(ProcessInfo processInfo, Map<ProgressSource, Double> subProgressSourcesAndWeights) {
+		super(processInfo, calculateNumIntervalls(subProgressSourcesAndWeights));
 
 		this.subProgressSourcesAndWeights = subProgressSourcesAndWeights;
 		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>();
@@ -58,8 +58,8 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		}
 	}
 
-	public SuperProgressSource(String shortName, Collection<ProgressSource> subProgressSources) {
-		this(shortName, createEvenlyDistributedWeights(subProgressSources));
+	public SuperProgressSource(ProcessInfo processInfo, Collection<ProgressSource> subProgressSources) {
+		this(processInfo, createEvenlyDistributedWeights(subProgressSources));
 	}
 
 	private static Map<ProgressSource, Double> createEvenlyDistributedWeights(Collection<ProgressSource> subProgressSources) {
