@@ -50,8 +50,10 @@ import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.PerTimeIntervalFilteredProgressListener;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressListener;
 import org.gwaspi.progress.Slf4jProgressListener;
 import org.gwaspi.progress.SwingMonitorProgressListener;
@@ -250,13 +252,12 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			throws IOException
 	{
 		ProcessInfo encodingMarkersChunkPI = new DefaultProcessInfo("encoding markers chunk", null);
-		IntegerProgressHandler encodingMarkersChunkProgressSource
-				= new IntegerProgressHandler(
-						encodingMarkersChunkPI,
-						markerIndexFrom,
-						markerIndexFrom + markersChunkSize - 1);
-		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(encodingMarkersChunkProgressSource);
-		encodingMarkersChunkProgressSource.addProgressListener(swingMonitorProgressListener);
+		ProgressHandler encodingMarkersChunkProgressSource
+//				= new IntegerProgressHandler(
+//						encodingMarkersChunkPI,
+//						markerIndexFrom,
+//						markerIndexFrom + markersChunkSize - 1);
+				= new NullProgressHandler(encodingMarkersChunkPI);
 
 		encodingMarkersChunkProgressSource.starting();
 		encodingMarkersChunkProgressSource.initialized();
