@@ -59,6 +59,12 @@ public class NetCdfUtils {
 	private static final int[] ORIGIN_D1 = new int[] {0};
 	private static final int[] ORIGIN_D2 = new int[] {0, 0};
 
+	/**
+	 * Whether to use {@link Array#arraycopy(Array, int, Array, int, int)}
+	 * or {@link Array#section(int[], int[])}.
+	 */
+	public static boolean ARRAY_COPY = false;
+
 	private NetCdfUtils() {
 	}
 
@@ -731,18 +737,36 @@ public class NetCdfUtils {
 
 	public static List<byte[]> writeD2ArrayByteToList(ArrayByte inputArray) {
 
-		Long expectedSize = inputArray.getSize();
-		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
+		final int[] shape = inputArray.getShape();
+		final int numLists = shape[0];
+		final int numValues = shape[1]; // 2, in case of GTs
+		List<byte[]> resultLists = new ArrayList<byte[]>(numLists);
 
-		int[] shape = inputArray.getShape();
-		for (int i = 0; i < shape[0]; i++) {
-			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
-			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
-			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
-			als.add(values);
+		if (ARRAY_COPY) {
+			// Using ArrayByte.D2.arraycopy (slow!)
+			final ArrayByte wrArray = new ArrayByte(new int[] {1, numValues});
+			for (int li = 0; li < numLists; li++) {
+				ArrayByte.D2.arraycopy(inputArray, li * numValues, wrArray, 0, numValues);
+				final byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
+				resultLists.add(values);
+			}
+		} else {
+			// Using ArrayByte.section(origin, shape)
+			int[] origin = {0, 0};
+			final int[] newShape = {1, numValues};
+			try {
+				for (int li = 0; li < numLists; li++) {
+					origin[0] = li;
+					final ArrayByte.D1 reducedView = (ArrayByte.D1) inputArray.section(origin, newShape);
+					final byte[] values = (byte[]) reducedView.copyTo1DJavaArray();
+					resultLists.add(values);
+				}
+			} catch (InvalidRangeException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
-		return als;
+		return resultLists;
 	}
 
 	public static List<GenotypesList> writeD3ArrayByteToGenotypeLists(
