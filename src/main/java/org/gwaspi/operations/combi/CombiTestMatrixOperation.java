@@ -345,6 +345,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final int singleEntryMemoryUsage = 4; // 1 float value
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
 		final int maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
+		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
 
 		return new MarkerGenotypesEncoder(markersGenotypesSource, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, maxChunkSize);
 	}
