@@ -329,6 +329,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder);
 	}
 
+	public static int KERNEL_CALCULATION_ALGORTIHM = 5;
+
 	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
 			final List<Byte> majorAlleles,
@@ -417,14 +419,79 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	{
 		final int n = kernelMatrix.length;
 
-		for (int smi = 0; smi < numFeaturesInChunk; smi++) {
-			for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
-				final float curRowValue = featuresChunk[krsi][smi];
-				for (int krci = 0; krci < n; krci++) { // kernel column sample index
-					final float curColValue = featuresChunk[krci][smi];
-					kernelMatrix[krsi][krci] += curRowValue * curColValue;
+		// Test data-set: ~ 22'000 markers, ~ 1'200 samples
+
+		switch (KERNEL_CALCULATION_ALGORTIHM) {
+			case 0:
+				// With this version, encoding of the whole feature-matrix takes ~ 3'200s (73 markers chunks)
+				for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+					for (int krci = 0; krci < n; krci++) { // kernel column sample index
+						final float curColValue = featuresChunk[krci][smi];
+						for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+							final float curRowValue = featuresChunk[krsi][smi];
+							kernelMatrix[krsi][krci] += curRowValue * curColValue;
+						}
+					}
 				}
-			}
+				break;
+
+			case 1:
+				// With this version, encoding of the whole feature-matrix takes ~ 3'000s (73 markers chunks)
+				for (int krci = 0; krci < n; krci++) { // kernel column sample index
+					for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+						for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+						}
+					}
+				}
+				break;
+
+			case 2:
+				// With this version, encoding of the whole feature-matrix takes ~ 1'900s (73 markers chunks)
+				for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+					for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+						for (int krci = 0; krci < n; krci++) { // kernel column sample index
+							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+						}
+					}
+				}
+				break;
+
+			case 3:
+				// With this version, encoding of the whole feature-matrix takes ~ 900s (73 markers chunks)
+				for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+					for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+						for (int krci = 0; krci < n; krci++) { // kernel column sample index
+							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+						}
+					}
+				}
+				break;
+
+			case 4:
+				// With this version, encoding of the whole feature-matrix takes ~ 430s (73 markers chunks)
+				for (int krci = 0; krci < n; krci++) { // kernel column sample index
+					for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+						for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+						}
+					}
+				}
+				break;
+
+			case 5:
+				// With this version, encoding of the whole feature-matrix takes ~ 400s (73 markers chunks)
+				for (int krsi = 0; krsi < n; krsi++) { // kernel row sample index
+					for (int krci = 0; krci < n; krci++) { // kernel column sample index
+						for (int smi = 0; smi < numFeaturesInChunk; smi++) {
+							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+						}
+					}
+				}
+				break;
+
+			default:
+				throw new UnsupportedOperationException("KERNEL_CALCULATION_ALGORTIHM has to have a value in [0, 5], is: " + KERNEL_CALCULATION_ALGORTIHM);
 		}
 	}
 
