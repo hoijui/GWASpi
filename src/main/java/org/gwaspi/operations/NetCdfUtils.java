@@ -596,22 +596,6 @@ public class NetCdfUtils {
 		}
 	}
 
-	/** @deprecated should not be used! */
-	public static <V> Map<String, V> writeD2ArrayByteToMapKeys(ArrayByte inputArray) {
-
-		final Map<String, V> result = new LinkedHashMap<String, V>();
-
-		final int[] shape = inputArray.getShape();
-		for (int i = 0; i < shape[0]; i++) {
-			final ArrayByte wrByteArray = new ArrayByte(new int[] {1, shape[1]});
-			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrByteArray, 0, shape[1]);
-			final byte[] values = (byte[]) wrByteArray.copyTo1DJavaArray();
-			result.put(new String(values).trim(), null);
-		}
-
-		return result;
-	}
-
 	public static <K> void writeD2ArrayByteToMapValues(ArrayByte inputArray, Map<K, byte[]> map) {
 
 		final int[] shape = inputArray.getShape();

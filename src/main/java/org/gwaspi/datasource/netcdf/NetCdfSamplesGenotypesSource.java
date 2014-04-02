@@ -224,11 +224,6 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 		return reparsedData;
 	}
 
-	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayByte.D2 markersAC) {
-		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayByteToMapKeys(markersAC);
-		return wrapToMarkerKeyMap(markerIdAlleles);
-	}
-
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayChar.D2 markersAC, IV commonValue) {
 		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayCharToMapKeys(markersAC, commonValue);
 		return wrapToMarkerKeyMap(markerIdAlleles);
