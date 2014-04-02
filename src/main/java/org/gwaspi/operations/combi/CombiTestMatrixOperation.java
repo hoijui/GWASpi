@@ -402,7 +402,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		creatingKernelMatrixProgressSource.initialized();
 
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
-			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
+			final float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
 
 			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
@@ -420,7 +420,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	 */
 	private static void calculateKernelMatrixPart(
 			final float[][] kernelMatrix,
-			final Float[][] featuresChunk,
+			final float[][] featuresChunk,
 			final int numFeaturesInChunk)
 	{
 		final int n = kernelMatrix.length;
@@ -666,7 +666,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		calculateOriginalSpaceWeightsProgressSource.initialized();
 		for (int ci = 0; ci < xs.size(); ci++) {
-			final Float[][] featuresChunk = xs.get(ci);
+			final float[][] featuresChunk = xs.get(ci);
 			final int chunkSize = xs.getChunkSize(ci);
 			final int firstFeatureIndex = ci * xs.getMaxChunkSize();
 
