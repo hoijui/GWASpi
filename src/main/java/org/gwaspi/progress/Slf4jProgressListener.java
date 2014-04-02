@@ -31,26 +31,26 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 	private static final NumberFormat PERCENTAGE_FORMAT = new DecimalFormat("##0.00%");
 
 	private final Logger logger;
-	private final ProgressHandler progressHandler;
+	private final ProcessInfo processInfo;
 	private Long firstCompleetedEventTime;
 	private Double firstCompleetedEventCompletionFraction;
 
-	public Slf4jProgressListener(final Logger logger, final ProgressHandler progressHandler) {
+	public Slf4jProgressListener(final Logger logger, final ProcessInfo processInfo) {
 
 		this.logger = logger;
-		this.progressHandler = progressHandler;
+		this.processInfo = processInfo;
 		firstCompleetedEventTime = null;
 		firstCompleetedEventCompletionFraction = null;
 	}
 
 	@Override
 	public void processStarted() {
-		logger.info("{}: started. now initializing ...", progressHandler.getShortName());
+		logger.info("{}: started. now initializing ...", processInfo.getShortName());
 	}
 
 	@Override
 	public void processInitialized() {
-		logger.info("{}: initialized. now progressing ...", progressHandler.getShortName());
+		logger.info("{}: initialized. now progressing ...", processInfo.getShortName());
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 			final long estimatedTotalTaskTime = (long) (timeSpan / compleetionSpan);
 			final long estimatedRemainingTaskTime = (long) (estimatedTotalTaskTime * (1.0 - completionFraction));
 			logger.info("{}: progressed {} (ETA: {} ETT: {})",
-					progressHandler.getShortName(),
+					processInfo.getShortName(),
 					PERCENTAGE_FORMAT.format(completionFraction),
 					Utils.toHumanReadableTime(estimatedRemainingTaskTime),
 					Utils.toHumanReadableTime(estimatedTotalTaskTime));
@@ -77,11 +77,11 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 
 	@Override
 	public void processEnded() {
-		logger.info("{}: ended. now finalizing ...", progressHandler.getShortName());
+		logger.info("{}: ended. now finalizing ...", processInfo.getShortName());
 	}
 
 	@Override
 	public void processFinalized() {
-		logger.info("{}: finalized.", progressHandler.getShortName());
+		logger.info("{}: finalized.", processInfo.getShortName());
 	}
 }

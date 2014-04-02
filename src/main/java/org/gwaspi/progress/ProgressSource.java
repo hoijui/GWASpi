@@ -27,17 +27,10 @@ import java.util.List;
 public interface ProgressSource<ST> {
 
 	/**
-	 * Returns a name for the process this source covers.
-	 * @return a short, human oriented description of the process.
+	 * Returns basic, immutable info about the process this source covers.
+	 * @return a container with basic info about the process this source covers.
 	 */
-	String getShortName();
-
-	/**
-	 * Returns a more thorough description for the process this source covers.
-	 * This will likely be used as a tool-tip.
-	 * @return an extensive, human oriented description of the process.
-	 */
-	String getDescription();
+	ProcessInfo getInfo();
 
 	/**
 	 * Returns the number of total progress intervals this source produces,
@@ -46,6 +39,14 @@ public interface ProgressSource<ST> {
 	 *   or <code>null</code>, if unknown.
 	 */
 	Integer getNumIntervals();
+
+	/**
+	 * Sets the number of total progress intervals this source produces,
+	 * if it is known.
+	 * @param numIntervals number of progress intervals produced,
+	 *   or <code>null</code>, if unknown.
+	 */
+	void setNumIntervals(Integer numIntervals);
 
 	void addProgressListener(ProgressListener lst);
 

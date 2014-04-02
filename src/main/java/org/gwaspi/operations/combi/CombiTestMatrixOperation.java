@@ -48,8 +48,10 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.PerTimeIntervalFilteredProgressListener;
+import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProgressListener;
 import org.gwaspi.progress.Slf4jProgressListener;
 import org.gwaspi.progress.SwingMonitorProgressListener;
@@ -247,9 +249,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final SamplesFeaturesStorage<Float> encodedSamples)
 			throws IOException
 	{
+		ProcessInfo encodingMarkersChunkPI = new DefaultProcessInfo("encoding markers chunk", null);
 		IntegerProgressHandler encodingMarkersChunkProgressSource
 				= new IntegerProgressHandler(
-						"encoding markers chunk",
+						encodingMarkersChunkPI,
 						markerIndexFrom,
 						markerIndexFrom + markersChunkSize - 1);
 		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(encodingMarkersChunkProgressSource);
@@ -366,12 +369,13 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final float[][] kernelMatrix)
 			throws IOException
 	{
+		ProcessInfo creatingKernelMatrixPI = new DefaultProcessInfo("encoding features and creating kernel matrix", null);
 		IntegerProgressHandler creatingKernelMatrixProgressSource
 				= new IntegerProgressHandler(
-						"encoding features and creating kernel matrix",
+						creatingKernelMatrixPI,
 						0,
 						markerGenotypesEncoder.size() - 1);
-		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, creatingKernelMatrixProgressSource), 2000);
+		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, creatingKernelMatrixPI), 2000);
 		creatingKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
 		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(creatingKernelMatrixProgressSource);
 		creatingKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
@@ -446,12 +450,13 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 				throw new IOException(er);
 			}
 
+			ProcessInfo transcribeKernelMatrixPI = new DefaultProcessInfo("store kernel matrix rows", null);
 			IntegerProgressHandler transcribeKernelMatrixProgressSource
 					= new IntegerProgressHandler(
-							"store kernel matrix rows",
+							transcribeKernelMatrixPI,
 							0,
 							n - 1);
-			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, transcribeKernelMatrixProgressSource), 2000);
+			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, transcribeKernelMatrixPI), 2000);
 			transcribeKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
 			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(transcribeKernelMatrixProgressSource);
 			transcribeKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
@@ -561,12 +566,13 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final MarkerGenotypesEncoder xs,
 			final double[] ys)
 	{
+		ProcessInfo calculateOriginalSpaceWeightsPI = new DefaultProcessInfo("calculate original space weights", null);
 		IntegerProgressHandler calculateOriginalSpaceWeightsProgressSource
 				= new IntegerProgressHandler(
-						"calculate original space weights",
+						calculateOriginalSpaceWeightsPI,
 						0,
 						xs.size() - 1);
-		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsProgressSource), 2000);
+		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsPI), 2000);
 		calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
 		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(calculateOriginalSpaceWeightsProgressSource);
 		calculateOriginalSpaceWeightsProgressSource.addProgressListener(swingMonitorProgressListener);

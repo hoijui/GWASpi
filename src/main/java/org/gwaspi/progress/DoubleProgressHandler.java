@@ -23,8 +23,8 @@ public class DoubleProgressHandler extends AbstractProgressHandler<Double> {
 	private final Double endState;
 	private final Double difference;
 
-	public DoubleProgressHandler(String shortName, Double startState, Double endState) {
-		super(shortName, null);
+	public DoubleProgressHandler(ProcessInfo processInfo, Double startState, Double endState) {
+		super(processInfo, null);
 
 		this.startState = startState;
 		this.endState = endState;

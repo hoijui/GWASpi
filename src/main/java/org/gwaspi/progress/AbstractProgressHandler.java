@@ -23,28 +23,24 @@ import java.util.List;
 public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST> {
 
 	private final List<ProgressListener> progressListeners;
-	private final String shortName;
-	private final Integer numIntervals;
+	private final ProcessInfo processInfo;
+	private Integer numIntervals;
 	private long startTime;
 	private long endTime;
 	private int nextEventIndex;
 
-	protected AbstractProgressHandler(String shortName, Integer numIntervals) {
+	protected AbstractProgressHandler(ProcessInfo processInfo, Integer numIntervals) {
 
 		if (numIntervals <= 0) {
 			throw new IllegalStateException("a progress has to consist of one or more intervals (is " + numIntervals + ")");
 		}
 
 		this.progressListeners = new ArrayList<ProgressListener>(1);
-		this.shortName = shortName;
+		this.processInfo = processInfo;
 		this.numIntervals = numIntervals;
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
-	}
-
-	protected AbstractProgressHandler() {
-		this("generic process", null);
 	}
 
 	protected int getNextEventIndex() {
@@ -52,18 +48,18 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 	}
 
 	@Override
-	public String getShortName() {
-		return shortName;
-	}
-
-	@Override
-	public String getDescription() {
-		return "";
+	public ProcessInfo getInfo() {
+		return processInfo;
 	}
 
 	@Override
 	public Integer getNumIntervals() {
 		return numIntervals;
+	}
+
+	@Override
+	public void setNumIntervals(Integer numIntervals) {
+		this.numIntervals = numIntervals;
 	}
 
 	@Override
