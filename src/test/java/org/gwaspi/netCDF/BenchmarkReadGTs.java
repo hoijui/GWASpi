@@ -25,6 +25,7 @@ import org.gwaspi.model.ArrayGenotypesList;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
+import org.gwaspi.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -54,20 +55,25 @@ public class BenchmarkReadGTs {
 					CompactGenotypesList.FACTORY};
 		final boolean[] readInBulkValues = new boolean[] {true, false};
 		final int[] chunkSizes = new int[] {1, 10, 100, 1000};
+		final boolean[] arrayCopyStates = new boolean[] {true, false};
 
-		log.info("WCT(ms)\tGT-fac\trd-bulk\tchunk-size");
+		log.info("WCT(ms)\tGT-fac\trd-bulk\tchunk-s\tarray-c");
 		for (GenotypesListFactory genotypesListFactory : genotypesListFactories) {
 			final String genotypesListFactoryName = genotypesListFactory.getClass().getSimpleName().replace("GenotypesListFactory", "");
 			for (boolean readInBulk : readInBulkValues) {
 				for (int chunkSize : chunkSizes) {
-					final long wallClockTime = readAllGTs(netCdfGTs, genotypesListFactory, readInBulk, chunkSize);
-					log.info(
-							"{}\t{}\t{}\t{}",
-							wallClockTime,
-							genotypesListFactoryName,
-							readInBulk ? "yes" : "no",
-							chunkSize
-					);
+					for (boolean arrayCopy : arrayCopyStates) {
+						NetCdfUtils.ARRAY_COPY = arrayCopy;
+						final long wallClockTime = readAllGTs(netCdfGTs, genotypesListFactory, readInBulk, chunkSize);
+						log.info(
+								"{}\t{}\t{}\t{}\t{}",
+								wallClockTime,
+								genotypesListFactoryName,
+								readInBulk ? "yes" : "no",
+								chunkSize,
+								arrayCopy ? "yes" : "no"
+						);
+					}
 				}
 			}
 		}
