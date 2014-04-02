@@ -24,7 +24,7 @@ import org.gwaspi.model.GenotypesList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
+public class MarkerGenotypesEncoder extends AbstractList<float[][]> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(MarkerGenotypesEncoder.class);
@@ -58,7 +58,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 	 * The last chunk may be smaller then {@link #maxChunkSize}.
 	 */
 	private final int numChunks;
-	private final InMemorySamplesFeaturesStorage<Float> encodedSamplesRawStorage;
+	private final InMemorySamplesFeaturesStorage encodedSamplesRawStorage;
 
 	MarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
@@ -101,13 +101,13 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 			//   We use float instead of double to half the memory,
 			//   because we have no more then 4 or 5 distinct values anyway,
 			//   so we do not need high precission.
-			this.encodedSamplesRawStorage = new InMemorySamplesFeaturesStorage<Float>(Float.class, n, maxFeaturesChunkSize);
+			this.encodedSamplesRawStorage = new InMemorySamplesFeaturesStorage(n, maxFeaturesChunkSize);
 		} catch (OutOfMemoryError er) {
 			throw new IOException(er);
 		}
 	}
 
-	private Float[][] encodeChunk(final int chunkIndex) throws IOException {
+	private float[][] encodeChunk(final int chunkIndex) throws IOException {
 
 //		// initialize the kernelMatrix
 //		// this should not be required, if the aray was just created,
@@ -193,7 +193,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 	 * Each call to this method invalidates the result returned by
 	 * the last call.
 	 */
-	public Float[][] get(int index) {
+	public float[][] get(int index) {
 
 		try {
 			return encodeChunk(index);
