@@ -17,29 +17,31 @@
 
 package org.gwaspi.operations.combi;
 
+import java.lang.reflect.Array;
 import java.util.Map;
 
-class InMemorySamplesFeaturesStorage extends AbstractSamplesFeaturesStorage<Float> {
+class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
 
 	private static final int NO_INDEX = -1;
 
-	private final float[][] storage;
+	private final ST[][] storage;
 	private int curSampleIndex;
 	private int curFeatureIndex;
 
-	InMemorySamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache) {
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures, Map<String, Object> cache) {
 		super(numSamples, numFeatures, cache);
 
-		this.storage = new float[numSamples][numFeatures];
+//		this.storage = (ST[][]) new Object[numSamples][numFeatures]; // NOTE This would be (partly) fail, because the actual arrays type is still Object[][], not really ST[][]
+		this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
 		this.curSampleIndex = NO_INDEX;
 		this.curFeatureIndex = NO_INDEX;
 	}
 
-	InMemorySamplesFeaturesStorage(int numSamples, int numFeatures) {
-		this(numSamples, numFeatures, null);
+	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures) {
+		this(storageTypeClass, numSamples, numFeatures, null);
 	}
 
-	public float[][] getStorage() {
+	public ST[][] getStorage() {
 		return storage;
 	}
 
@@ -49,7 +51,7 @@ class InMemorySamplesFeaturesStorage extends AbstractSamplesFeaturesStorage<Floa
 	}
 
 	@Override
-	public void setFeatureValue(int featuresIndex, Float value) {
+	public void setFeatureValue(int featuresIndex, ST value) {
 		storage[curSampleIndex][featuresIndex] = value;
 	}
 
@@ -64,7 +66,7 @@ class InMemorySamplesFeaturesStorage extends AbstractSamplesFeaturesStorage<Floa
 	}
 
 	@Override
-	public void setSampleValue(int sampleIndex, Float value) {
+	public void setSampleValue(int sampleIndex, ST value) {
 		storage[sampleIndex][curFeatureIndex] = value;
 	}
 
