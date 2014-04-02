@@ -32,7 +32,7 @@ class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<
 		super(numSamples, numFeatures, cache);
 
 //		this.storage = (ST[][]) new Object[numSamples][numFeatures]; // NOTE This would be (partly) fail, because the actual arrays type is still Object[][], not really ST[][]
-        this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
+		this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
 		this.curSampleIndex = NO_INDEX;
 		this.curFeatureIndex = NO_INDEX;
 	}
