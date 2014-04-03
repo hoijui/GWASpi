@@ -302,6 +302,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			//   We use float instead of double to half the memory,
 			//   this might be subject to change, as in,
 			//   change to use double.
+			LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4 * n * n));
 			kernelMatrix = new float[n][n];
 		} catch (OutOfMemoryError er) {
 			throw new IOException(er);
