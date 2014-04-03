@@ -21,23 +21,28 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
-import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
-import org.gwaspi.operations.genotypicassociationtest.DefaultGenotypicAssociationOperationEntry;
-import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
-import org.gwaspi.statistics.Associations;
-import org.gwaspi.statistics.Pvalue;
 
-public abstract class AbstractAssociationTestsOperation extends AbstractTestMatrixOperation<CommonTestOperationDataSet, AssociationTestOperationParams> {
+public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOperationDataSet> extends AbstractTestMatrixOperation<DST, AssociationTestOperationParams> {
 
 	public AbstractAssociationTestsOperation(final AssociationTestOperationParams params) {
 		super(params);
 	}
+
+	protected abstract void associationTest(
+			final DST dataSet,
+			final Integer markerOrigIndex,
+			final MarkerKey markerKey,
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa)
+			throws IOException;
 
 	/**
 	 * Performs the Allelic or Genotypic Association Tests.
@@ -67,73 +72,13 @@ public abstract class AbstractAssociationTestsOperation extends AbstractTestMatr
 			final int caseAA = caseCensus.getAA();
 			final int caseAa = caseCensus.getAa();
 			final int caseaa = caseCensus.getaa();
-			final int caseTot = caseAA + caseaa + caseAa;
 
 			final int ctrlAA = ctrlCensus.getAA();
 			final int ctrlAa = ctrlCensus.getAa();
 			final int ctrlaa = ctrlCensus.getaa();
-			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			if (getParams().getType() == OPType.ALLELICTEST) { // XXX Genotypic is about 10 times faster then allelic, and the only difference between the two is the code here, so... find out why!!!
-				// allelic test
-				final int numSamples = caseTot + ctrlTot;
-
-				final double allelicT = Associations.calculateAllelicAssociationChiSquare(
-						numSamples,
-						caseAA,
-						caseAa,
-						caseaa,
-						caseTot,
-						ctrlAA,
-						ctrlAa,
-						ctrlaa,
-						ctrlTot);
-				final double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
-
-				final double allelicOR = Associations.calculateAllelicAssociationOR(
-						caseAA,
-						caseAa,
-						caseaa,
-						ctrlAA,
-						ctrlAa,
-						ctrlaa);
-
-				AllelicAssociationTestsOperationDataSet allelicAssociationDataSet = (AllelicAssociationTestsOperationDataSet) dataSet;
-				allelicAssociationDataSet.addEntry(new DefaultAllelicAssociationOperationEntry(
-						markerKey,
-						origIndex,
-						allelicT,
-						allelicPval,
-						allelicOR));
-			} else {
-				// genotypic test
-				final double gntypT = Associations.calculateGenotypicAssociationChiSquare(
-						caseAA,
-						caseAa,
-						caseaa,
-						caseTot,
-						ctrlAA,
-						ctrlAa,
-						ctrlaa,
-						ctrlTot);
-				final double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-				final double[] gntypOR = Associations.calculateGenotypicAssociationOR(
-						caseAA,
-						caseAa,
-						caseaa,
-						ctrlAA,
-						ctrlAa,
-						ctrlaa);
-
-				GenotypicAssociationTestsOperationDataSet genotypicAssociationDataSet = (GenotypicAssociationTestsOperationDataSet) dataSet;
-				genotypicAssociationDataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(
-						markerKey,
-						origIndex,
-						gntypT,
-						gntypPval,
-						gntypOR[0],
-						gntypOR[1]));
-			}
+			// XXX Genotypic is about 10 times faster then allelic, and the only difference between the two is the code here, so... find out why!!!
+			associationTest((DST) dataSet, origIndex, markerKey, caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa);
 		}
 	}
 }
