@@ -91,6 +91,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
 
+	public static int KERNEL_CALCULATION_ALGORTIHM = 5;
+
 	public static CombiTestOperationSpy spy = null;
 
 	private Boolean valid;
@@ -273,9 +275,32 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		encodingMarkersChunkProgressSource.finalized();
 	}
 
+	static float[][] encodeFeaturesAndCalculateKernel(
+			final int n,
+			MarkerGenotypesEncoder markerGenotypesEncoder)
+			throws IOException
+	{
+		final float[][] kernelMatrix;
+		try {
+			// NOTE This allocates quite some memory!
+			//   We use float instead of double to half the memory,
+			//   this might be subject to change, as in,
+			//   change to use double.
+			LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4 * n * n));
+			kernelMatrix = new float[n][n];
+		} catch (OutOfMemoryError er) {
+			throw new IOException(er);
+		}
+
+		encodeFeaturesAndCreateKernelMatrix(
+				markerGenotypesEncoder,
+				kernelMatrix);
+
+		return kernelMatrix;
+	}
+
 	static List<Double> runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
-//			final List<Census> allMarkersCensus,
 			final List<Byte> majorAlleles,
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
@@ -296,27 +321,14 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 				sampleKeys,
 				sampleAffections);
 
-		final float[][] kernelMatrix;
-		try {
-			// NOTE This allocates quite some memory!
-			//   We use float instead of double to half the memory,
-			//   this might be subject to change, as in,
-			//   change to use double.
-			LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4 * n * n));
-			kernelMatrix = new float[n][n];
-		} catch (OutOfMemoryError er) {
-			throw new IOException(er);
-		}
 		MarkerGenotypesEncoder markerGenotypesEncoder = createMarkerGenotypesEncoder(
-				markerGTs, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n);
+				markerGTs, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, null);
 
 		if (spy != null) {
 			spy.initializing(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs, genotypeEncoder, markerGenotypesEncoder);
 		}
 
-		encodeFeaturesAndCreateKernelMatrix(
-				markerGenotypesEncoder,
-				kernelMatrix);
+		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder);
 
 		if (spy != null) {
 			spy.kernelCalculated(kernelMatrix);
@@ -330,17 +342,15 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder);
 	}
 
-	public static int KERNEL_CALCULATION_ALGORTIHM = 5;
-	public static Integer MAX_CHUNK_SIZE = null;
-
-	private static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
+	static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
 			final List<Byte> majorAlleles,
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
 			final GenotypeEncoder genotypeEncoder,
 			final int dSamples,
-			final int n)
+			final int n,
+			final Integer maxChunkSizePreset)
 			throws IOException
 	{
 		// max memory usage of the featre matrix [bytes]
@@ -349,10 +359,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final int singleEntryMemoryUsage = 4; // 1 float value
 		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
 		final int maxChunkSize;
-		if (MAX_CHUNK_SIZE == null) {
+		if (maxChunkSizePreset == null) {
 			maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
 		} else {
-			maxChunkSize = MAX_CHUNK_SIZE;
+			maxChunkSize = maxChunkSizePreset;
 		}
 		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
 

@@ -30,8 +30,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -59,34 +57,40 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 		final Map<String, GenotypeEncoder> genotypeEncoders = CombiTestScriptCommand.GENOTYPE_ENCODERS;
 		final int[] kernelCalculationAlgorithms = new int[] {2, 3, 4, 5};
 		final int[] chunkSizes = new int[] {1, 10, 100, 1000};
-		final boolean[] arrayCopyStates = new boolean[] {true, false};
+		final boolean[] arrayCopyStates = new boolean[] {/*true, */false};
 
-		log.info("WCT(ms)\tGT-enc\tkern-a\tchunk-s\tarray-c");
+		final StringBuilder benchmarkSummary = new StringBuilder("\n");
+		String header = ("WCT(s)\tGT-enc\tkern-a\tchunk-s\tarray-c");
+		log.info(header);
+		benchmarkSummary.append(header).append("\n");
 		for (Map.Entry<String, GenotypeEncoder> genotypeEncoder : genotypeEncoders.entrySet()) {
 			for (int kernelCalculationAlgorithm : kernelCalculationAlgorithms) {
 				CombiTestMatrixOperation.KERNEL_CALCULATION_ALGORTIHM = kernelCalculationAlgorithm;
 				for (int chunkSize : chunkSizes) {
-					CombiTestMatrixOperation.MAX_CHUNK_SIZE = chunkSize;
 					for (boolean arrayCopy : arrayCopyStates) {
 						NetCdfUtils.ARRAY_COPY = arrayCopy;
-						final long wallClockTime = runCombi(parentQAMarkersOperationDataSet, genotypeEncoder.getValue());
-						log.info(
-								"{}\t{}\t{}\t{}\t{}",
-								wallClockTime,
+						final long wallClockTime = runCombi(parentQAMarkersOperationDataSet, genotypeEncoder.getValue(), chunkSize);
+						String benchmarkEntry = String.format(
+								"%d\t%s\t%d\t%d\t%s",
+								wallClockTime / 1000,
 								genotypeEncoder.getKey(),
 								kernelCalculationAlgorithm,
 								chunkSize,
 								arrayCopy ? "yes" : "no"
 						);
+						log.info(benchmarkEntry);
+						benchmarkSummary.append(benchmarkEntry).append("\n");
 					}
 				}
 			}
 		}
+		log.info(benchmarkSummary.toString());
 	}
 
 	private static long runCombi(
 			QAMarkersOperationDataSet parentQAMarkersOperationDataSet,
-			GenotypeEncoder genotypeEncoder)
+			GenotypeEncoder genotypeEncoder,
+			int chunkSize)
 			throws IOException
 	{
 //		DataSetSource parentDataSetSource = getParentDataSetSource();
@@ -108,8 +112,9 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 //		final int n = parentDataSetSource.getNumSamples();
 
 		final List<MarkerKey> markerKeys = parentQAMarkersOperationDataSet.getMarkersKeysSource();
-		final List<SampleKey> validSamplesKeys = parentQAMarkersOperationDataSet.getSamplesKeysSource();
-		final List<SampleInfo.Affection> validSampleAffections = parentQAMarkersOperationDataSet.getSamplesInfosSource().getAffections();
+//		final List<SampleKey> validSamplesKeys = parentQAMarkersOperationDataSet.getSamplesKeysSource();
+//		final List<SampleInfo.Affection> validSampleAffections = parentQAMarkersOperationDataSet.getSamplesInfosSource().getAffections();
+		final int numSamples = parentQAMarkersOperationDataSet.getNumSamples();
 
 //		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
 		final List<Byte> majorAlleles = parentQAMarkersOperationDataSet.getKnownMajorAllele();
@@ -117,16 +122,29 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentQAMarkersOperationDataSet.getMarkersGenotypesSource();
 
-		final long startTime = System.currentTimeMillis();
-		List<Double> weights = CombiTestMatrixOperation.runEncodingAndSVM(
-				markerKeys,
+		MarkerGenotypesEncoder markerGenotypesEncoder = CombiTestMatrixOperation.createMarkerGenotypesEncoder(
+				markersGenotypesSource,
 				majorAlleles,
 				minorAlleles,
 				markerGenotypesCounts,
-				validSamplesKeys,
-				validSampleAffections,
-				markersGenotypesSource,
-				genotypeEncoder);
+				genotypeEncoder,
+				markerKeys.size(),
+				numSamples,
+				chunkSize);
+
+		final long startTime = System.currentTimeMillis();
+//		List<Double> weights = CombiTestMatrixOperation.runEncodingAndSVM(
+//				markerKeys,
+//				majorAlleles,
+//				minorAlleles,
+//				markerGenotypesCounts,
+//				validSamplesKeys,
+//				validSampleAffections,
+//				markersGenotypesSource,
+//				genotypeEncoder);
+		float[][] kernelMatrix = CombiTestMatrixOperation.encodeFeaturesAndCalculateKernel(
+				numSamples,
+				markerGenotypesEncoder);
 		final long endTime = System.currentTimeMillis();
 
 		return endTime - startTime;
