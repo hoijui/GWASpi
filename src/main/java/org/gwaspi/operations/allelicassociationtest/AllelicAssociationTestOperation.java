@@ -22,6 +22,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.AbstractAssociationTestsOperation;
@@ -30,8 +31,10 @@ import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
+import org.gwaspi.statistics.Associations;
+import org.gwaspi.statistics.Pvalue;
 
-public class AllelicAssociationTestOperation extends AbstractAssociationTestsOperation {
+public class AllelicAssociationTestOperation extends AbstractAssociationTestsOperation<AllelicAssociationTestsOperationDataSet> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -53,5 +56,43 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 
 	public AllelicAssociationTestOperation(final AssociationTestOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	protected void associationTest(
+			final AllelicAssociationTestsOperationDataSet dataSet,
+			final Integer markerOrigIndex,
+			final MarkerKey markerKey,
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa)
+			throws IOException
+	{
+		final double allelicT = Associations.calculateAllelicAssociationChiSquare(
+				caseAA,
+				caseAa,
+				caseaa,
+				ctrlAA,
+				ctrlAa,
+				ctrlaa);
+		final double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
+
+		final double allelicOR = Associations.calculateAllelicAssociationOR(
+				caseAA,
+				caseAa,
+				caseaa,
+				ctrlAA,
+				ctrlAa,
+				ctrlaa);
+
+		dataSet.addEntry(new DefaultAllelicAssociationOperationEntry(
+				markerKey,
+				markerOrigIndex,
+				allelicT,
+				allelicPval,
+				allelicOR));
 	}
 }

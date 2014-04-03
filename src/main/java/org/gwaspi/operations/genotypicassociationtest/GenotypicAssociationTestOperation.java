@@ -22,6 +22,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.AbstractAssociationTestsOperation;
@@ -29,8 +30,10 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.statistics.Associations;
+import org.gwaspi.statistics.Pvalue;
 
-public class GenotypicAssociationTestOperation extends AbstractAssociationTestsOperation {
+public class GenotypicAssociationTestOperation extends AbstractAssociationTestsOperation<GenotypicAssociationTestsOperationDataSet> {
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -52,5 +55,43 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 
 	public GenotypicAssociationTestOperation(final AssociationTestOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	protected void associationTest(
+			final GenotypicAssociationTestsOperationDataSet dataSet,
+			final Integer markerOrigIndex,
+			final MarkerKey markerKey,
+			final int caseAA,
+			final int caseAa,
+			final int caseaa,
+			final int ctrlAA,
+			final int ctrlAa,
+			final int ctrlaa)
+			throws IOException
+	{
+		final double gntypT = Associations.calculateGenotypicAssociationChiSquare(
+				caseAA,
+				caseAa,
+				caseaa,
+				ctrlAA,
+				ctrlAa,
+				ctrlaa);
+		final double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
+		final double[] gntypOR = Associations.calculateGenotypicAssociationOR(
+				caseAA,
+				caseAa,
+				caseaa,
+				ctrlAA,
+				ctrlAa,
+				ctrlaa);
+
+		dataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(
+				markerKey,
+				markerOrigIndex,
+				gntypT,
+				gntypPval,
+				gntypOR[0],
+				gntypOR[1]));
 	}
 }

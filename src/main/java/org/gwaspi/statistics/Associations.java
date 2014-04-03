@@ -95,11 +95,9 @@ public class Associations {
 			final int obsCaseAA,
 			final int obsCaseAa,
 			final int obsCaseaa,
-			final int caseTot,
 			final int obsCtrlAA,
 			final int obsCtrlAa,
-			final int obsCtrlaa,
-			final int ctrlTot)
+			final int obsCtrlaa)
 	{
 		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
@@ -214,15 +212,12 @@ public class Associations {
 
 	//<editor-fold defaultstate="expanded" desc="ALLELIC TESTS">
 	public static double calculateAllelicAssociationChiSquare(
-			final int sampleNb,
 			final int obsCaseAA,
 			final int obsCaseAa,
 			final int obsCaseaa,
-			final int caseTot,
 			final int obsCtrlAA,
 			final int obsCtrlAa,
-			final int obsCtrlaa,
-			final int ctrlTot)
+			final int obsCtrlaa)
 	{
 		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
