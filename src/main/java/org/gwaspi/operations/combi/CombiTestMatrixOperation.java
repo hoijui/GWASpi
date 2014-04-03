@@ -149,7 +149,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	@Override
 	public int processMatrix() throws IOException {
 
-		LOG.info("Combi Association Test: init");
+		LOG.debug("init");
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 //		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
@@ -188,7 +188,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
-		LOG.info("Combi Association Test: start");
+		LOG.debug("start");
 
 		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder());
 
@@ -199,7 +199,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		dataSet.finnishWriting();
 
-		LOG.info("Combi Association Test: finished");
+		LOG.debug("finished");
 
 		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 	}
@@ -288,10 +288,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final int dSamples = markerKeys.size();
 		final int n = sampleKeys.size();
 
-		LOG.info("Combi Association Test: create SVM parameters");
+		LOG.debug("create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
-		LOG.info("Combi Association Test: encode affection states");
+		LOG.debug("encode affection states");
 		Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
 				sampleKeys,
 				sampleAffections);
@@ -516,9 +516,9 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			// KERNEL
 			final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
 			final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
-			LOG.info("Combi Association Test: libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
+			LOG.debug("libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
-			LOG.info("Combi Association Test: libSVM preparation: allocate kernel memory");
+			LOG.debug("libSVM preparation: allocate kernel memory");
 			try {
 				prob.x = new svm_node[n][1 + n];
 			} catch (OutOfMemoryError er) {
@@ -536,7 +536,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(transcribeKernelMatrixProgressSource);
 			transcribeKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
 
-			LOG.info("Combi Association Test: libSVM preparation: store the kernel elements");
+			LOG.debug("libSVM preparation: store the kernel elements");
 			transcribeKernelMatrixProgressSource.starting();
 			transcribeKernelMatrixProgressSource.initialized();
 			for (int si = 0; si < n; si++) {
@@ -570,7 +570,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		}
 
 		// prepare the labels
-		LOG.info("Combi Association Test: libSVM preparation: store the label");
+		LOG.debug("libSVM preparation: store the labels");
 		prob.l = n;
 		prob.y = new double[prob.l];
 		Iterator<Double> itY = Y.iterator();
@@ -723,10 +723,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		final int n = libSvmProblem.x.length;
 
-		LOG.info("Combi Association Test: create SVM parameters");
+		LOG.debug("create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
-		LOG.info("Combi Association Test: train the SVM model");
+		LOG.debug("train the SVM model");
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
 		if (spy != null) {
@@ -736,7 +736,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		// sample index and value of non-zero alphas
 		Map<Integer, Double> nonZeroAlphas = extractNonZeroAlphas(svmModel);
 
-		LOG.info("Combi Association Test: calculate original space weights from alphas");
+		LOG.debug("calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
 				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y);
 
@@ -753,7 +753,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		LOG.debug("genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
 		LOG.debug("encodingFactor: " + genotypeEncoder.getEncodingFactor());
 
-		LOG.info("Combi Association Test: decode weights from the encoded feature space into marker space");
+		LOG.debug("decode weights from the encoded feature space into marker space");
 		List<Double> weights = new ArrayList<Double>(dSamples);
 		genotypeEncoder.decodeWeights(weightsEncoded, weights);
 
