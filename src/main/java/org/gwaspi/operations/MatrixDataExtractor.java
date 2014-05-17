@@ -42,23 +42,27 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Extracts Genotypes to a new matrix.
  */
-public class MatrixDataExtractor extends AbstractOperation {
+public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Trafo.extractData,
+			Text.Trafo.extractToNewMatrix);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -94,74 +98,79 @@ public class MatrixDataExtractor extends AbstractOperation {
 
 	private static interface Picker<K> {
 
-		Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException;
-	}
-
-	private abstract static class AbstractKeyPicker<K> implements Picker<K> {
-
-		private final Collection<K> criteria;
-		private final boolean include;
-
 		/**
-		 * @param include whether this is an include or an exclude picker.
+		 * @return original indices of picked keys
 		 */
-		AbstractKeyPicker(Collection<K> criteria, boolean include) {
-
-			this.criteria = criteria;
-			this.include = include;
-		}
-
-		abstract Collection<K> getInputKeys(DataSetSource dataSetSource) throws IOException;
-
-		@Override
-		public Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException {
-
-			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
-
-			int originalIndex = 0;
-			if (include) {
-				for (K inputKey : getInputKeys(dataSetSource)) {
-					if (criteria.contains(inputKey)) {
-						result.put(inputKey, originalIndex);
-					}
-					originalIndex++;
-				}
-			} else {
-				for (K inputKey : getInputKeys(dataSetSource)) {
-					if (!criteria.contains(inputKey)) {
-						result.put(inputKey, originalIndex);
-					}
-					originalIndex++;
-				}
-			}
-
-			return result;
-		}
+		List<Integer> pick(final DataSetDestination dataSetDestination, DataSetSource dataSetSource) throws IOException;
 	}
 
-	private static class SampleKeyPicker extends AbstractKeyPicker<SampleKey> {
+//	private abstract static class AbstractKeyPicker<K> implements Picker<K> {
+//
+//		private final Collection<K> criteria;
+//		private final boolean include;
+//
+//		/**
+//		 * @param include whether this is an include or an exclude picker.
+//		 */
+//		AbstractKeyPicker(Collection<K> criteria, boolean include) {
+//
+//			this.criteria = criteria;
+//			this.include = include;
+//		}
+//
+//		abstract Map<Integer, K> getInputKeys(DataSetSource dataSetSource) throws IOException;
+//
+//		@Override
+//		public List<Integer> pick(final DataSetDestination dataSetDestination, DataSetSource dataSetSource) throws IOException {
+//
+//			List<Integer> pickedOrigIndices = new LinkedList<Integer>();
+//
+//			int originalIndex = 0;
+//			if (include) {
+//				for (K inputKey : getInputKeys(dataSetSource)) {
+//					if (criteria.contains(inputKey)) {
+//						pickedOrigIndices.add(originalIndex);
+//						dataSetDestination.addMarkerKey(inputKey);
+//					}
+//					originalIndex++;
+//				}
+//			} else {
+//				for (K inputKey : getInputKeys(dataSetSource)) {
+//					if (!criteria.contains(inputKey)) {
+//						pickedOrigIndices.add(originalIndex);
+//						dataSetDestination.addMarkerKey(inputKey);
+//					}
+//					originalIndex++;
+//				}
+//			}
+//
+//			return pickedOrigIndices;
+//		}
+//	}
 
-		SampleKeyPicker(Collection<SampleKey> criteria, boolean include) {
-			super(criteria, include);
-		}
-
-		@Override
-		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getSamplesKeysSource();
-		}
-	}
-
-	private static class MarkerKeyPicker extends AbstractKeyPicker<MarkerKey> {
-
-		MarkerKeyPicker(Collection<MarkerKey> criteria, boolean include) {
-			super(criteria, include);
-		}
-
-		@Override
-		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getMarkersKeysSource();
-		}
-	}
+//	private static class SampleKeyPicker extends AbstractKeyPicker<SampleKey> {
+//
+//		SampleKeyPicker(Collection<SampleKey> criteria, boolean include) {
+//			super(criteria, include);
+//		}
+//
+//		@Override
+//		public Map<Integer, SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
+//			return dataSetSource.getSamplesKeysSource().getIndicesMap();
+//		}
+//	}
+//
+//	private static class MarkerKeyPicker extends AbstractKeyPicker<MarkerKey> {
+//
+//		MarkerKeyPicker(Collection<MarkerKey> criteria, boolean include) {
+//			super(criteria, include);
+//		}
+//
+//		@Override
+//		public Map<Integer, MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
+//			return dataSetSource.getMarkersKeysSource().getIndicesMap();
+//		}
+//	}
 
 	private abstract static class AbstractValuePicker<K, V, M> implements Picker<K> {
 
@@ -179,35 +188,36 @@ public class MatrixDataExtractor extends AbstractOperation {
 			this.include = include;
 		}
 
-		abstract Collection<K> getInputKeys(DataSetSource dataSetSource) throws IOException;
-		abstract Collection<V> getInputValues(DataSetSource dataSetSource) throws IOException;
+		abstract Map<Integer, MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException;
+		abstract List<V> getInputValues(DataSetSource dataSetSource) throws IOException;
 
 		@Override
-		public Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException {
+		public List<Integer> pick(final DataSetDestination dataSetDestination, DataSetSource dataSetSource) throws IOException {
 
-			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+//			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+			List<Integer> pickedOrigIndices = new LinkedList<Integer>();
 
-			int originalIndex = 0;
-			Iterator<K> keysIt = getInputKeys(dataSetSource).iterator();
+//			int originalIndex = 0;
+			Iterator<Map.Entry<Integer, MarkerKey>> keysIt = getInputKeys(dataSetSource).entrySet().iterator();
 			if (include) {
 				for (V value : getInputValues(dataSetSource)) {
-					K key = keysIt.next();
+					final Map.Entry<Integer, MarkerKey> keyEntry = keysIt.next();
 					if (criteria.contains(typeConverter.extract(value))) {
-						result.put(key, originalIndex);
+						pickedOrigIndices.add(keyEntry.getKey());
+						dataSetDestination.addMarkerKey(keyEntry.getValue());
 					}
-					originalIndex++;
 				}
 			} else {
 				for (V value : getInputValues(dataSetSource)) {
-					K key = keysIt.next();
+					final Map.Entry<Integer, MarkerKey> keyEntry = keysIt.next();
 					if (!criteria.contains(typeConverter.extract(value))) {
-						result.put(key, originalIndex);
+						pickedOrigIndices.add(keyEntry.getKey());
+						dataSetDestination.addMarkerKey(keyEntry.getValue());
 					}
-					originalIndex++;
 				}
 			}
 
-			return result;
+			return pickedOrigIndices;
 		}
 	}
 
@@ -218,12 +228,12 @@ public class MatrixDataExtractor extends AbstractOperation {
 		}
 
 		@Override
-		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getMarkersKeysSource();
+		public Map<Integer, MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
+			return dataSetSource.getMarkersKeysSource().getIndicesMap();
 		}
 
 		@Override
-		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) throws IOException {
+		public List<MarkerMetadata> getInputValues(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getMarkersMetadatasSource();
 		}
 	}
@@ -245,22 +255,22 @@ public class MatrixDataExtractor extends AbstractOperation {
 		}
 	}
 
-	private abstract static class AbstractSampleValuePicker<M> extends AbstractValuePicker<SampleKey, SampleInfo, M> {
-
-		AbstractSampleValuePicker(Collection<M> criteria, Extractor<SampleInfo, M> typeConverter, boolean include) {
-			super(criteria, typeConverter, include);
-		}
-
-		@Override
-		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getSamplesKeysSource();
-		}
-
-		@Override
-		public Collection<SampleInfo> getInputValues(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getSamplesInfosSource();
-		}
-	}
+//	private abstract static class AbstractSampleValuePicker<M> extends AbstractValuePicker<SampleKey, SampleInfo, M> {
+//
+//		AbstractSampleValuePicker(Collection<M> criteria, Extractor<SampleInfo, M> typeConverter, boolean include) {
+//			super(criteria, typeConverter, include);
+//		}
+//
+//		@Override
+//		public List<SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
+//			return dataSetSource.getSamplesKeysSource();
+//		}
+//
+//		@Override
+//		public List<SampleInfo> getInputValues(DataSetSource dataSetSource) throws IOException {
+//			return dataSetSource.getSamplesInfosSource();
+//		}
+//	}
 
 //	private abstract static class NetCdfVariableSampleValuePicker<M> extends AbstractSampleValuePicker<M> {
 //
@@ -316,9 +326,14 @@ public class MatrixDataExtractor extends AbstractOperation {
 		this.fullSampleCriteria.addAll(parseSamplePickerFile(samplePickerFile, samplePickCase, samplePickerVar, rdMatrixKey.getStudyKey()));
 	}
 
-	public static Collection<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
+	}
 
-		Collection<?> markerCriteria = new LinkedList();
+	private static List<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {
+
+		List<?> markerCriteria = new LinkedList();
 
 		// Pick markerId by criteria file
 		if (!markerPickerFile.toString().isEmpty() && markerPickerFile.isFile()) {
@@ -346,9 +361,9 @@ public class MatrixDataExtractor extends AbstractOperation {
 		return markerCriteria;
 	}
 
-	public static Collection<?> parseSamplePickerFile(File samplePickerFile, SetSamplePickCase samplePickCase, String samplePickerVar, StudyKey studyKey) throws IOException {
+	private static List<?> parseSamplePickerFile(File samplePickerFile, SetSamplePickCase samplePickCase, String samplePickerVar, StudyKey studyKey) throws IOException {
 
-		Collection<?> sampleCriteria = new LinkedList();
+		List<?> sampleCriteria = new LinkedList();
 
 		// USE cNetCDF Key and criteria or list file
 		if (!samplePickerFile.toString().isEmpty() && samplePickerFile.isFile()) {
@@ -382,62 +397,66 @@ public class MatrixDataExtractor extends AbstractOperation {
 	}
 
 	/**
-	 * @return key & index in the original set for all picked markers.
+	 * @return marker indices in the original set for all picked markers.
 	 */
-	private static Map<MarkerKey, Integer> pickMarkers(SetMarkerPickCase markerPickCase, DataSetSource dataSetSource/*, MarkerSet rdMarkerSet*/, Set markerCriteria, String markerPickerVar) throws IOException {
+	private static List<Integer> pickMarkers(final DataSetDestination dataSetDestination, SetMarkerPickCase markerPickCase, DataSetSource dataSetSource/*, MarkerSet rdMarkerSet*/, Set markerCriteria, String markerPickerVar) throws IOException {
 
-		Map<MarkerKey, Integer> wrMarkers;
+		final List<Integer> pickedMarkersOrigIndices;
+		dataSetDestination.startLoadingMarkerMetadatas(true);
 		switch (markerPickCase) {
 			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA: {
 				// Pick by netCDF field value and criteria
 				NetCdfVariableMarkerValuePicker variableMarkerValuePicker
 						= new NetCdfVariableMarkerValuePicker(markerCriteria, markerPickerVar, true);
-				wrMarkers = variableMarkerValuePicker.pick(dataSetSource);
+				pickedMarkersOrigIndices = variableMarkerValuePicker.pick(dataSetDestination, dataSetSource);
 			} break;
 			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA: {
 				// Exclude by netCDF field value and criteria
 				NetCdfVariableMarkerValuePicker variableMarkerValuePicker
 						= new NetCdfVariableMarkerValuePicker(markerCriteria, markerPickerVar, false);
-				wrMarkers = variableMarkerValuePicker.pick(dataSetSource);
+				pickedMarkersOrigIndices = variableMarkerValuePicker.pick(dataSetDestination, dataSetSource);
 			} break;
 			case MARKERS_INCLUDE_BY_ID:
-				wrMarkers = pickValidMarkerSetItemsByKey(dataSetSource.getMarkersKeysSource(), (Set<MarkerKey>) markerCriteria, true);
+				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource.getMarkersKeysSource().getIndicesMap(), (Set<MarkerKey>) markerCriteria, true);
 				break;
 			case MARKERS_EXCLUDE_BY_ID:
-				wrMarkers = pickValidMarkerSetItemsByKey(dataSetSource.getMarkersKeysSource(), (Set<MarkerKey>) markerCriteria, false);
+				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource.getMarkersKeysSource().getIndicesMap(), (Set<MarkerKey>) markerCriteria, false);
 				break;
 			case ALL_MARKERS:
 			default:
 				// Get all markers
-				MarkersKeysSource wrMarkerKeys = dataSetSource.getMarkersKeysSource();
-				wrMarkers = new LinkedHashMap<MarkerKey, Integer>(wrMarkerKeys.size());
-				int markerIndex = 0;
-				for (MarkerKey markerKey : wrMarkerKeys) {
-					wrMarkers.put(markerKey, markerIndex);
-					markerIndex++;
+				pickedMarkersOrigIndices = new ArrayList<Integer>(dataSetSource.getNumMarkers());
+				for (Map.Entry<Integer, MarkerKey> origIndexAndKey
+						: dataSetSource.getMarkersKeysSource().getIndicesMap().entrySet())
+				{
+					dataSetDestination.addMarkerKey(origIndexAndKey.getValue());
+					pickedMarkersOrigIndices.add(origIndexAndKey.getKey());
 				}
 		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
 
-		return wrMarkers;
+		return pickedMarkersOrigIndices;
 	}
 
 	/**
-	 * @return key & index in the original set for all picked markers.
+	 * @return sample indices in the original set for all picked markers.
 	 */
-	private static Map<SampleKey, Integer> pickSamples(SetSamplePickCase samplePickCase, DataSetSource dataSetSource/*, SampleSet rdSampleSet*/, Set sampleCriteria, String samplePickerVar, StudyKey studyKey, int sampleFilterPos) throws IOException {
+	private static List<Integer> pickSamples(final DataSetDestination dataSetDestination, SetSamplePickCase samplePickCase, DataSetSource dataSetSource/*, SampleSet rdSampleSet*/, Set sampleCriteria, String samplePickerVar, StudyKey studyKey, int sampleFilterPos) throws IOException {
 
 //		Map<SampleKey, ?> rdSampleSetMap = rdSampleSet.getSampleIdSetMapCharArray();
 
 		Map<SampleKey, Integer> pickedSamples;
+		boolean addedToDestination = false;
 		switch (samplePickCase) {
 			case ALL_SAMPLES:
 				// Get all samples
 				pickedSamples = new LinkedHashMap<SampleKey, Integer>(dataSetSource.getSamplesKeysSource().size());
-				int i = 0;
-				for (SampleKey key : dataSetSource.getSamplesKeysSource()) {
-					pickedSamples.put(key, i);
-					i++;
+				dataSetDestination.startLoadingSampleInfos(true);
+				for (Map.Entry<Integer, SampleKey> origIndexAndKey : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+					pickedSamples.put(origIndexAndKey.getValue(), origIndexAndKey.getKey());
+					dataSetDestination.addSampleKey(origIndexAndKey.getValue());
 				}
+				addedToDestination = true;
 				break;
 //			case SAMPLES_INCLUDE_BY_NETCDF_FILTER:
 //				// USE cNetCDF Filter Data and criteria
@@ -478,8 +497,15 @@ public class MatrixDataExtractor extends AbstractOperation {
 			default:
 				throw new IOException("Invalid sample pick case: " + samplePickCase.toString());
 		}
+		if (!addedToDestination) {
+			dataSetDestination.startLoadingSampleInfos(true);
+			for (SampleKey key : pickedSamples.keySet()) {
+				dataSetDestination.addSampleKey(key);
+			}
+		}
+		dataSetDestination.finishedLoadingSampleInfos();
 
-		return pickedSamples;
+		return new ArrayList<Integer>(pickedSamples.values());
 	}
 
 	public Set<?> getFullMarkerCriteria() {
@@ -510,16 +536,47 @@ public class MatrixDataExtractor extends AbstractOperation {
 
 		int resultMatrixId = MatrixKey.NULL_ID;
 
+		final DataSetDestination dataSetDestination = getDataSetDestination();
+
+		dataSetDestination.init();
+
+		final List<Integer> pickedSamplesOrigIndices = pickSamples(
+				dataSetDestination,
+				samplePickCase,
+				dataSetSource,
+				fullSampleCriteria,
+				samplePickerVar,
+				rdMatrixKey.getStudyKey(),
+				sampleFilterPos);
+		if (pickedSamplesOrigIndices.isEmpty()) {
+			// XXX maybe we should instead throw an IOException?
+			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
+			return resultMatrixId;
+		}
+
+		final List<Integer> pickedMarkersOrigIndices = pickMarkers(
+				dataSetDestination,
+				markerPickCase,
+				dataSetSource,
+				fullMarkerCriteria,
+				markerPickerVar);
+		if (pickedMarkersOrigIndices.isEmpty()) {
+			// XXX maybe we should instead throw an IOException?
+			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
+			return resultMatrixId;
+		}
+
+
 		// MARKERSET PICKING
 //		MarkerSet rdMarkerSet = new MarkerSet(this.rdMatrixKey);
 //		rdMarkerSet.initFullMarkerIdSetMap();
 		// Contains key & index in the original set for all to be extracted markers.
-		Map<MarkerKey, Integer> wrMarkers = pickMarkers(markerPickCase, dataSetSource, fullMarkerCriteria, markerPickerVar);
-		if (wrMarkers.isEmpty()) {
-			// XXX maybe we should instead trhow an IOException?
-			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
-			return resultMatrixId;
-		}
+//		Map<MarkerKey, Integer> wrMarkers = pickMarkers(dataSetDestination, markerPickCase, dataSetSource, fullMarkerCriteria, markerPickerVar);
+//		if (wrMarkers.isEmpty()) {
+//			// XXX maybe we should instead throw an IOException?
+//			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
+//			return resultMatrixId;
+//		}
 
 //		// RETRIEVE CHROMOSOMES INFO
 //		Map<ChromosomeKey, ChromosomeInfo> rdChromosomeInfo;
@@ -529,53 +586,45 @@ public class MatrixDataExtractor extends AbstractOperation {
 
 		// SAMPLESET PICKING
 //		SampleSet rdSampleSet = new SampleSet(this.rdMatrixKey);
-		// Contains key & index in the original set for all to be extracted samples.
-		Map<SampleKey, Integer> wrSampleSetMap = pickSamples(samplePickCase, dataSetSource, fullSampleCriteria, samplePickerVar, rdMatrixKey.getStudyKey(), sampleFilterPos);
-		if (wrSampleSetMap.isEmpty()) {
-			// XXX maybe we should instead throw an IOException?
-			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
-			return resultMatrixId;
-		}
+//		// Contains key & index in the original set for all to be extracted samples.
+//		Map<SampleKey, Integer> wrSampleSetMap = pickSamples(dataSetDestination, samplePickCase, dataSetSource, fullSampleCriteria, samplePickerVar, rdMatrixKey.getStudyKey(), sampleFilterPos);
+//		if (wrSampleSetMap.isEmpty()) {
+//			// XXX maybe we should instead throw an IOException?
+//			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
+//			return resultMatrixId;
+//		}
 
-		final DataSetDestination dataSetDestination = getDataSetDestination();
+//		// use only the selected sample infos
+//		dataSetDestination.startLoadingSampleInfos(true);
+//		for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+//			dataSetDestination.addSampleKey(sampleKey); XXX; // do this in the pickSamples() method
+//		}
+//		dataSetDestination.finishedLoadingSampleInfos();
 
-		dataSetDestination.init();
-
-		// use only the selected sample infos
-		dataSetDestination.startLoadingSampleInfos(true);
-		for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
-			dataSetDestination.addSampleKey(sampleKey);
-		}
-		dataSetDestination.finishedLoadingSampleInfos();
-
-		// use only the selected markers metadata
-		dataSetDestination.startLoadingMarkerMetadatas(true); // FIXME This is not yet supported. we may have to read the whole marker metadatas from dataSetSource, and wrtie them to dataSetDestination
-		for (MarkerKey markerKey : wrMarkers.keySet()) {
-			dataSetDestination.addMarkerKey(markerKey);
-		}
-		dataSetDestination.finishedLoadingMarkerMetadatas();
+//		// use only the selected markers metadata
+//		dataSetDestination.startLoadingMarkerMetadatas(true); // FIXME This is not yet supported. we may have to read the whole marker metadatas from dataSetSource, and wrtie them to dataSetDestination
+//		for (MarkerKey markerKey : wrMarkers.keySet()) {
+//			dataSetDestination.addMarkerKey(markerKey); XXX; // do this in the pickMarkers() method
+//		}
+//		dataSetDestination.finishedLoadingMarkerMetadatas();
 
 		// chromosomes infos
 		// NOTE just let the auto-extraction of chromosomes from the markers metadatas kick in
 
-
 		// GENOTYPES WRITER
-		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
+		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into the dataSetDestination.
 
 		SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
 		int sampleWrIndex = 0;
-		for (int rdSampleIndex : wrSampleSetMap.values()) {
+		for (int rdSampleIndex : pickedSamplesOrigIndices) {
 			GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
-			List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(wrMarkers.size());
-			for (int rdMarkerIndex : wrMarkers.values()) {
+			List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(pickedMarkersOrigIndices.size());
+			for (int rdMarkerIndex : pickedMarkersOrigIndices) {
 				wrSampleGenotypes.add(sampleGenotypes.get(rdMarkerIndex));
 			}
 
 			dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
 			sampleWrIndex++;
-			if ((sampleWrIndex == 1) || ((sampleWrIndex % 100) == 0)) {
-				log.info("Samples copied: {} / {}", sampleWrIndex, wrSampleSetMap.size());
-			}
 		}
 
 		dataSetDestination.done();
@@ -585,28 +634,28 @@ public class MatrixDataExtractor extends AbstractOperation {
 		return resultMatrixId;
 	}
 
-	private static <V> Map<MarkerKey, Integer> pickValidMarkerSetItemsByKey(Collection<MarkerKey> markerKeys, Set<MarkerKey> criteria, boolean includes) {
+	private static <V> List<Integer> pickValidMarkerSetItemsByKey(DataSetDestination dataSetDestination, Map<Integer, MarkerKey> markerKeys, Set<MarkerKey> criteria, boolean includes) throws IOException {
 
-		Map<MarkerKey, Integer> returnMap = new LinkedHashMap<MarkerKey, Integer>();
+		final List<Integer> pickedOrigIndices = new LinkedList<Integer>();
 
-		int markerIndex = 0;
+//		int markerIndex = 0;
 		if (includes) {
-			for (MarkerKey key : markerKeys) {
-				if (criteria.contains(key)) {
-					returnMap.put(key, markerIndex);
+			for (Map.Entry<Integer, MarkerKey> keyEntry : markerKeys.entrySet()) {
+				if (criteria.contains(keyEntry.getValue())) {
+					pickedOrigIndices.add(keyEntry.getKey());
+					dataSetDestination.addMarkerKey(keyEntry.getValue());
 				}
-				markerIndex++;
 			}
 		} else {
-			for (MarkerKey key : markerKeys) {
-				if (!criteria.contains(key)) {
-					returnMap.put(key, markerIndex);
+			for (Map.Entry<Integer, MarkerKey> keyEntry : markerKeys.entrySet()) {
+				if (!criteria.contains(keyEntry.getValue())) {
+					pickedOrigIndices.add(keyEntry.getKey());
+					dataSetDestination.addMarkerKey(keyEntry.getValue());
 				}
-				markerIndex++;
 			}
 		}
 
-		return returnMap;
+		return pickedOrigIndices;
 	}
 
 

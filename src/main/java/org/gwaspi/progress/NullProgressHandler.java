@@ -58,14 +58,8 @@ public final class NullProgressHandler<ST> implements ProgressHandler<ST> {
 	}
 
 	@Override
-	public void starting() {}
-
-	@Override
-	public void initialized() {}
+	public void setNewStatus(ProcessStatus newStatus) {}
 
 	@Override
 	public void setProgress(ST currentProgress) {}
-
-	@Override
-	public void finalized() {}
 }

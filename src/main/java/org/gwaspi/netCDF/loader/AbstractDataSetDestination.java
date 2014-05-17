@@ -41,14 +41,25 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 			= LoggerFactory.getLogger(AbstractDataSetDestination.class);
 
 	private final DataSet dataSet;
+	private DataSetDestinationProgressHandler progressHandler;
+	private int addedSampleInfos;
+	private int addedMarkerInfos;
 
 	protected AbstractDataSetDestination() {
 
 		this.dataSet = new DataSet();
+		this.progressHandler = null;
+		this.addedSampleInfos = 0;
+		this.addedMarkerInfos = 0;
 	}
 
 	public DataSet getDataSet() {
 		return dataSet;
+	}
+
+
+	public void setProgressHandler(DataSetDestinationProgressHandler progressHandler) {
+		this.progressHandler = progressHandler;
 	}
 
 	@Override
@@ -79,6 +90,9 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 		Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
 		sampleInfos.add(sampleInfo);
+		if (progressHandler != null) {
+			progressHandler.getSampleInfosProgressHandler().setProgress(addedSampleInfos++);
+		}
 
 		if ((sampleInfos.size() % 100) == 0) {
 			logParsedSampleInfos();
@@ -102,7 +116,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void addMarkerKey(MarkerKey markerKey) throws IOException {
 
 		// we simply ignore this, and rely on #addMarkerMetadata() receiving
-		// the correct order aswell, and we just extract the keys there
+		// the correct order aswell. We just extract the keys there
 //		XXX;
 //		throw new UnsupportedOperationException("Not yet implemented (was not in use when first introduced)");
 //		MarkerMetadata markerMetadata = Matrix.getSample(markerKey);
@@ -111,7 +125,11 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
+
 		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		if (progressHandler != null) {
+			progressHandler.getMarkerInfosProgressHandler().setProgress(addedMarkerInfos++);
+		}
 	}
 
 	@Override
@@ -143,17 +161,30 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void startLoadingAlleles(boolean perSample) throws IOException {
+
+		progressHandler.getGenotypesProgressHandler().setStartState(0);
+		if (perSample) {
+			progressHandler.getGenotypesProgressHandler().setEndState(dataSet.getSampleInfos().size() - 1);
+		} else {
+			progressHandler.getGenotypesProgressHandler().setEndState(dataSet.getMarkerMetadatas().size() - 1);
+		}
 	}
 
-//	@Override
-//	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
-//		throw new UnsupportedOperationException(); XXX;
-//	}
-//
-//	@Override
-//	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
-//		throw new UnsupportedOperationException(); XXX;
-//	}
+	@Override
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+
+		if (progressHandler != null) {
+			progressHandler.getGenotypesProgressHandler().setProgress(sampleIndex);
+		}
+	}
+
+	@Override
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+
+		if (progressHandler != null) {
+			progressHandler.getGenotypesProgressHandler().setProgress(markerIndex);
+		}
+	}
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {

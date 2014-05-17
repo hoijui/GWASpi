@@ -30,17 +30,25 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 
 public class GenotypicAssociationTestOperation extends AbstractAssociationTestsOperation<GenotypicAssociationTestsOperationDataSet> {
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Operation.genoAssocTest,
+			Text.Operation.genoAssocTest); // TODO We need a more elaborate description of this operation!
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.genoAssocTest,
 					Text.Operation.genoAssocTest, // TODO We need a more elaborate description of this operation!
-					OPType.GENOTYPICTEST);
+					OPType.GENOTYPICTEST,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -55,6 +63,11 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 
 	public GenotypicAssociationTestOperation(final AssociationTestOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

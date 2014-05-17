@@ -35,6 +35,8 @@ import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +45,18 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 	private final Logger log = LoggerFactory.getLogger(HardyWeinbergOperation.class);
 
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Operation.hardyWeiberg,
+			Text.Operation.hardyWeiberg); // TODO We need a more elaborate description of this operation!
+
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.hardyWeiberg,
 					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
-					OPType.HARDY_WEINBERG);
+					OPType.HARDY_WEINBERG,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -63,6 +71,11 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 	public HardyWeinbergOperation(HardyWeinbergOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

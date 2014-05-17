@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.markercensus;
 
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -46,17 +45,20 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +66,18 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 	private final Logger log = LoggerFactory.getLogger(MarkerCensusOperation.class);
 
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			"Marker Census",
+			"Marker Census (== Genotypes frequencies)"); // TODO We need a more elaborate description of this operation!); // TODO We need a more elaborate description of this operation!
+
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					"Marker Census",
 					"Marker Census (== Genotypes frequencies)", // TODO We need a more elaborate description of this operation!
-					OPType.MARKER_CENSUS_BY_AFFECTION);
+					OPType.MARKER_CENSUS_BY_AFFECTION,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -84,6 +92,11 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 	public MarkerCensusOperation(final MarkerCensusOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,21 +17,26 @@
 
 package org.gwaspi.progress;
 
-/**
- * TODO
- * @param <ST> the status type
- */
-public interface ProgressHandler<ST> extends ProgressSource<ST> {
+import java.util.EventObject;
 
-	/**
-	 * @see ProgressListener#statusChanged(ProcessStatusChangeEvent)
-	 */
-	void setNewStatus(ProcessStatus newStatus);
+public class ProcessStatusChangeEvent extends EventObject {
 
-	/**
-	 * Signals that the process advanced.
-	 * @see ProgressListener#progressHappened(ProgressEvent)
-	 * @param currentProgress the current/new state of progress
-	 */
-	void setProgress(ST currentProgress);
+	private final ProcessStatus newStatus;
+
+	public ProcessStatusChangeEvent(
+			ProgressSource source,
+			ProcessStatus newStatus)
+	{
+		super(source);
+
+		this.newStatus = newStatus;
+	}
+
+	public ProgressSource getProgressSource() {
+		return (ProgressSource) getSource();
+	}
+
+	public ProcessStatus getNewStatus() {
+		return newStatus;
+	}
 }

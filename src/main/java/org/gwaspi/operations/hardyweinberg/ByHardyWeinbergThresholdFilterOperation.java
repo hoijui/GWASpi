@@ -31,15 +31,23 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 
 public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			"Filter by Hardy&Weinberg threshold",
+			"Filter by Hardy&Weinberg threshold"); // TODO We need a more elaborate description of this operation!
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					"Filter by Hardy&Weinberg threshold",
 					"Filter by Hardy&Weinberg threshold", // TODO We need a more elaborate description of this operation!
-					OPType.FILTER_BY_HW_THREASHOLD);
+					OPType.FILTER_BY_HW_THREASHOLD,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -49,6 +57,11 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 
 	public ByHardyWeinbergThresholdFilterOperation(ByHardyWeinbergThresholdFilterOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

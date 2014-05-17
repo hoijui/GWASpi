@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressHandler;
 
 public abstract class AbstractOperation<PT extends OperationParams> implements MatrixOperation<PT> {
 
@@ -36,6 +38,8 @@ public abstract class AbstractOperation<PT extends OperationParams> implements M
 	public AbstractOperation() {
 		this(null);
 	}
+
+	public abstract ProcessInfo getProcessInfo();
 
 	@Override
 	public void addOperationListener(OperationListener listener) {

@@ -29,8 +29,14 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Trafo.mergeMarkersOnly,
+			Text.Trafo.mergeMethodMarkerJoin);
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -45,7 +51,6 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 				MergeMarkersMatrixOperation.class, OPERATION_TYPE_INFO));
 	}
 
-
 	public MergeMarkersMatrixOperation(
 			DataSetSource dataSetSource1,
 			DataSetSource dataSetSource2,
@@ -56,6 +61,11 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 				dataSetSource1,
 				dataSetSource2,
 				dataSetDestination);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

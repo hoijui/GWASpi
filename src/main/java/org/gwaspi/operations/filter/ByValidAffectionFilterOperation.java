@@ -30,15 +30,23 @@ import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 
 public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByValidAffectionFilterOperationParams> {
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			"Filter samples by valid affection",
+			"Filter samples by valid affection"); // TODO We need a more elaborate description of this operation!); // TODO We need a more elaborate description of this operation!
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					"Filter samples by valid affection",
 					"Filter samples by valid affection", // TODO We need a more elaborate description of this operation!
-					OPType.FILTER_BY_VALID_AFFECTION);
+					OPType.FILTER_BY_VALID_AFFECTION,
+					false,
+					true);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -48,6 +56,11 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 
 	public ByValidAffectionFilterOperation(ByValidAffectionFilterOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

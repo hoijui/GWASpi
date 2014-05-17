@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +18,23 @@
 package org.gwaspi.progress;
 
 /**
- * TODO
- * @param <ST> the status type
+ * Default implementation of ProcessInfo.
  */
-public interface ProgressHandler<ST> extends ProgressSource<ST> {
+public class SubProcessInfo extends DefaultProcessInfo {
 
-	/**
-	 * @see ProgressListener#statusChanged(ProcessStatusChangeEvent)
-	 */
-	void setNewStatus(ProcessStatus newStatus);
+	private final ProcessInfo superProcessInfo;
 
-	/**
-	 * Signals that the process advanced.
-	 * @see ProgressListener#progressHappened(ProgressEvent)
-	 * @param currentProgress the current/new state of progress
-	 */
-	void setProgress(ST currentProgress);
+	public SubProcessInfo(final ProcessInfo superProcessInfo, final String shortName, final String description) {
+		super(shortName, description);
+
+		this.superProcessInfo = superProcessInfo;
+	}
+
+	public SubProcessInfo(final ProcessInfo superProcessInfo) {
+		this(superProcessInfo, "generic process", null);
+	}
+
+	public ProcessInfo getSuperProcessInfo() {
+		return superProcessInfo;
+	}
 }

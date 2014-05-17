@@ -59,7 +59,9 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 
 	@Override
 	public void setNumIntervals(Integer numIntervals) {
+		
 		this.numIntervals = numIntervals;
+		fireProcessDetailsChanged();
 	}
 
 	@Override
@@ -77,18 +79,19 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 		return progressListeners;
 	}
 
-	protected void fireProcessStarted() {
+	protected void fireProcessDetailsChanged() {
 
-		startTime = System.currentTimeMillis();
+		ProcessDetailsChangeEvent evt = new ProcessDetailsChangeEvent(this);
 		for (ProgressListener progressListener : progressListeners) {
-			progressListener.processStarted();
+			progressListener.processDetailsChanged(evt);
 		}
 	}
 
-	protected void fireProcessInitialized() {
+	protected void fireStatusChanged(ProcessStatus newStatus) {
 
+		ProcessStatusChangeEvent evt = new ProcessStatusChangeEvent(this, newStatus);
 		for (ProgressListener progressListener : progressListeners) {
-			progressListener.processInitialized();
+			progressListener.statusChanged(evt);
 		}
 	}
 
@@ -111,34 +114,23 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 		nextEventIndex++;
 	}
 
-	protected void fireProcessEnded() {
-
-		endTime = System.currentTimeMillis();
-		for (ProgressListener progressListener : progressListeners) {
-			progressListener.processEnded();
-		}
-	}
-
-	protected void fireProcessFinalized() {
-
-		endTime = System.currentTimeMillis();
-		for (ProgressListener progressListener : progressListeners) {
-			progressListener.processFinalized();
-		}
-	}
-
 	@Override
-	public void starting() {
-		fireProcessStarted();
+	public void setNewStatus(ProcessStatus newStatus) {
+		fireStatusChanged(newStatus);
 	}
 
-	@Override
-	public void initialized() {
-		fireProcessInitialized();
-	}
-
-	@Override
-	public void finalized() {
-		fireProcessFinalized();
-	}
+//	@Override
+//	public void starting() {
+//		fireStatusChanged(ProcessStatus.INITIALIZING);
+//	}
+//
+//	@Override
+//	public void initialized() {
+//		fireStatusChanged(ProcessStatus.RUNNING);
+//	}
+//
+//	@Override
+//	public void finalized() {
+//		fireStatusChanged(ProcessStatus.COMPLEETED);
+//	}
 }

@@ -40,7 +40,7 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMergeMatrixOperation extends AbstractOperation {
+public abstract class AbstractMergeMatrixOperation extends AbstractMatrixCreatingOperation {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 

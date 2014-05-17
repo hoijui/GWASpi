@@ -36,7 +36,7 @@ public class DoubleProgressHandler extends AbstractProgressHandler<Double> {
 
 		fireProgressHappened(currentState);
 		if (currentState >= endState) { // XXX maybe this poses a problem, if the endState is actually reached, but the precise value is a tiny bit smaller then the expected end-state value
-			fireProcessEnded();
+			fireStatusChanged(ProcessStatus.COMPLEETED);
 		}
 	}
 

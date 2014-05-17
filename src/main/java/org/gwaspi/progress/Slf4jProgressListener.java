@@ -26,7 +26,7 @@ import org.slf4j.Logger;
  * Logs all progress events to SLF4J.
  * @param <ST> the status type
  */
-public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
+public class Slf4jProgressListener<ST> extends AbstractProgressListener<ST> {
 
 	private static final NumberFormat PERCENTAGE_FORMAT = new DecimalFormat("##0.00%");
 
@@ -44,13 +44,13 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 	}
 
 	@Override
-	public void processStarted() {
-		logger.info("{}: started. now initializing ...", processInfo.getShortName());
-	}
+	public void statusChanged(ProcessStatusChangeEvent evt) {
 
-	@Override
-	public void processInitialized() {
-		logger.info("{}: initialized. now progressing ...", processInfo.getShortName());
+		final ProcessStatus newStatus = evt.getNewStatus();
+		logger.info("{}: {}{}",
+				processInfo.getShortName(),
+				newStatus.name(),
+				newStatus.isActive() ? " ..." : (newStatus.isEnd() ? "." : ""));
 	}
 
 	@Override
@@ -73,15 +73,5 @@ public class Slf4jProgressListener<ST> implements ProgressListener<ST> {
 					Utils.toHumanReadableTime(estimatedRemainingTaskTime),
 					Utils.toHumanReadableTime(estimatedTotalTaskTime));
 		}
-	}
-
-	@Override
-	public void processEnded() {
-		logger.info("{}: ended. now finalizing ...", processInfo.getShortName());
-	}
-
-	@Override
-	public void processFinalized() {
-		logger.info("{}: finalized.", processInfo.getShortName());
 	}
 }

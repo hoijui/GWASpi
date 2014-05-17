@@ -26,15 +26,27 @@ import java.util.EventListener;
 public interface ProgressListener<ST> extends EventListener {
 
 	/**
-	 * Signals that the process started with the initialization phase,
-	 * if there is one.
+	 * Signals that the details of the process changed.
+	 * This might happen, in case the total length of the process
+	 * was previously unknown, but is now known.
 	 */
-	void processStarted();
+	void processDetailsChanged(ProcessDetailsChangeEvent evt);
 
 	/**
-	 * Signals that the main process phase started.
+	 * Signals that the process status changed.
 	 */
-	void processInitialized();
+	void statusChanged(ProcessStatusChangeEvent evt);
+
+//	/**
+//	 * Signals that the process started with the initialization phase,
+//	 * if there is one.
+//	 */
+//	void processStarted();
+//
+//	/**
+//	 * Signals that the main process phase started.
+//	 */
+//	void processInitialized();
 
 	/**
 	 * Signals that the process advanced.
@@ -42,13 +54,13 @@ public interface ProgressListener<ST> extends EventListener {
 	 */
 	void progressHappened(ProgressEvent<ST> evt);
 
-	/**
-	 * Signals that the main phase of the process ended.
-	 */
-	void processEnded();
-
-	/**
-	 * Signals that the process finished completely.
-	 */
-	void processFinalized();
+//	/**
+//	 * Signals that the main phase of the process ended.
+//	 */
+//	void processEnded();
+//
+//	/**
+//	 * Signals that the process finished completely.
+//	 */
+//	void processFinalized();
 }

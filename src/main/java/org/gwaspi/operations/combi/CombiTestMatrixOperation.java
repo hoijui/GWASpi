@@ -40,23 +40,22 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
+import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
-import org.gwaspi.operations.AbstractOperationDataSet;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.NullProgressHandler;
-import org.gwaspi.progress.PerTimeIntervalFilteredProgressListener;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressListener;
-import org.gwaspi.progress.Slf4jProgressListener;
-import org.gwaspi.progress.SwingMonitorProgressListener;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,9 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 					false,
 					"COMBI Test",
 					"Assigns a weight to each marker, rating its ability to predict the affection", // FIXME TODO We need a more elaborate description of this operation!
-					OPType.COMBI_ASSOC_TEST);
+					OPType.COMBI_ASSOC_TEST,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -95,14 +96,79 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 	public static CombiTestOperationSpy spy = null;
 
+	private static final ProcessInfo combiProcessInfo = new DefaultProcessInfo("COMBI Test", ""); // TODO
+
 	private Boolean valid;
 	private String problemDescription;
+	private ProgressHandler operationPH;
+	private IntegerProgressHandler creatingKernelMatrixPH;
+	private IntegerProgressHandler transcribeKernelMatrixPH;
+	private IntegerProgressHandler calculateOriginalSpaceWeightsPH;
 
 	public CombiTestMatrixOperation(CombiTestOperationParams params) {
 		super(params);
 
 		this.valid = null;
 		this.problemDescription = null;
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return combiProcessInfo;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			final DataSetSource parentDataSetSource = getParentDataSetSource();
+			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
+			final int n = parentDataSetSource.getNumSamples();
+			final int dSamples = parentDataSetSource.getNumMarkers();
+			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
+			final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
+			final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
+
+			ProcessInfo creatingKernelMatrixPI = new DefaultProcessInfo(
+					"encoding features and creating kernel matrix", null);
+			creatingKernelMatrixPH
+					= new IntegerProgressHandler(
+							creatingKernelMatrixPI,
+							0, // start state, first marker
+							numChunks - 1); // end state, last marker
+
+			ProcessInfo transcribeKernelMatrixPI = new DefaultProcessInfo(
+					"store kernel matrix rows", null);
+			transcribeKernelMatrixPH
+					= new IntegerProgressHandler(
+							transcribeKernelMatrixPI,
+							0, // start state, first marker
+							n - 1); // end state, last marker
+
+			ProcessInfo calculateOriginalSpaceWeightsPI = new DefaultProcessInfo(
+					"calculate original space weights", null);
+			calculateOriginalSpaceWeightsPH
+					= new IntegerProgressHandler(
+							calculateOriginalSpaceWeightsPI,
+							0, // start state, first marker
+							dEncoded - 1); // end state, last marker
+
+//			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsPI), 2000);
+//			calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
+//			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(calculateOriginalSpaceWeightsProgressSource);
+//			calculateOriginalSpaceWeightsProgressSource.addProgressListener(swingMonitorProgressListener);
+
+			Map<ProgressSource, Double> subProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>();
+
+			subProgressSourcesAndWeights.put(creatingKernelMatrixPH, 0.80);
+			subProgressSourcesAndWeights.put(transcribeKernelMatrixPH, 0.01);
+			subProgressSourcesAndWeights.put(calculateOriginalSpaceWeightsPH, 0.19);
+
+			operationPH = new SuperProgressSource(combiProcessInfo, subProgressSourcesAndWeights);
+		}
+
+		return operationPH;
 	}
 
 	@Override
@@ -192,7 +258,18 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		LOG.debug("start");
 
-		List<Double> weights = runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, validSamplesKeys, validSampleAffections, markersGenotypesSource, getParams().getEncoder());
+		List<Double> weights = runEncodingAndSVM(
+				markerKeys,
+				majorAlleles,
+				minorAlleles,
+				markerGenotypesCounts,
+				validSamplesKeys,
+				validSampleAffections,
+				markersGenotypesSource,
+				getParams().getEncoder(),
+				creatingKernelMatrixPH,
+				transcribeKernelMatrixPH,
+				calculateOriginalSpaceWeightsPH);
 
 		// TODO sort the weights (should already be absolute? .. hopefully not!)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -261,8 +338,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 //						markerIndexFrom + markersChunkSize - 1);
 				= new NullProgressHandler(encodingMarkersChunkPI);
 
-		encodingMarkersChunkProgressSource.starting();
-		encodingMarkersChunkProgressSource.initialized();
+		encodingMarkersChunkProgressSource.setNewStatus(ProcessStatus.INITIALIZING);
+		encodingMarkersChunkProgressSource.setNewStatus(ProcessStatus.RUNNING);
 		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
 			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
 			Byte majorAllele = majorAlleles.get(mi);
@@ -272,12 +349,13 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 			encodingMarkersChunkProgressSource.setProgress(mi);
 		}
-		encodingMarkersChunkProgressSource.finalized();
+		encodingMarkersChunkProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	static float[][] encodeFeaturesAndCalculateKernel(
 			final int n,
-			MarkerGenotypesEncoder markerGenotypesEncoder)
+			final MarkerGenotypesEncoder markerGenotypesEncoder,
+			final ProgressHandler<Integer> creatingKernelMatrixPH)
 			throws IOException
 	{
 		final float[][] kernelMatrix;
@@ -294,7 +372,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		encodeFeaturesAndCreateKernelMatrix(
 				markerGenotypesEncoder,
-				kernelMatrix);
+				kernelMatrix,
+				creatingKernelMatrixPH);
 
 		return kernelMatrix;
 	}
@@ -307,7 +386,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
-			GenotypeEncoder genotypeEncoder)
+			GenotypeEncoder genotypeEncoder,
+			final ProgressHandler<Integer> creatingKernelMatrixPH,
+			final ProgressHandler<Integer> transcribeKernelMatrixPH,
+			final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH)
 			throws IOException
 	{
 		final int dSamples = markerKeys.size();
@@ -321,14 +403,24 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 				sampleKeys,
 				sampleAffections);
 
-		MarkerGenotypesEncoder markerGenotypesEncoder = createMarkerGenotypesEncoder(
-				markerGTs, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, null);
+		final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
+		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
+
+		MarkerGenotypesEncoder markerGenotypesEncoder = new MarkerGenotypesEncoder(
+				markerGTs,
+				majorAlleles,
+				minorAlleles,
+				markerGenotypesCounts,
+				genotypeEncoder,
+				dSamples,
+				n,
+				maxChunkSize);
 
 		if (spy != null) {
 			spy.initializing(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs, genotypeEncoder, markerGenotypesEncoder);
 		}
 
-		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder);
+		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder, creatingKernelMatrixPH);
 
 		if (spy != null) {
 			spy.kernelCalculated(kernelMatrix);
@@ -337,9 +429,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		svm_problem libSvmProblem = createLibSvmProblem(
 				kernelMatrix,
 				encodedAffectionStates.values(),
-				libSvmParameters);
+				libSvmParameters,
+				transcribeKernelMatrixPH);
 
-		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder);
+		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, calculateOriginalSpaceWeightsPH);
 	}
 
 	static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
@@ -350,23 +443,22 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			final GenotypeEncoder genotypeEncoder,
 			final int dSamples,
 			final int n,
-			final Integer maxChunkSizePreset)
+			final int maxChunkSize)
 			throws IOException
 	{
-		// max memory usage of the featre matrix [bytes]
-		final int maxChunkMemoryUsage = 1024 * 1024;
-		// how much memory does one sample per marker use [bytes]
-		final int singleEntryMemoryUsage = 4; // 1 float value
-		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
-		final int maxChunkSize;
-		if (maxChunkSizePreset == null) {
-			maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
-		} else {
-			maxChunkSize = maxChunkSizePreset;
-		}
 		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
 
-		return new MarkerGenotypesEncoder(markersGenotypesSource, majorAlleles, minorAlleles, markerGenotypesCounts, genotypeEncoder, dSamples, n, maxChunkSize);
+		MarkerGenotypesEncoder markerGenotypesEncoder = new MarkerGenotypesEncoder(
+				markersGenotypesSource,
+				majorAlleles,
+				minorAlleles,
+				markerGenotypesCounts,
+				genotypeEncoder,
+				dSamples,
+				n,
+				maxChunkSize);
+
+		return markerGenotypesEncoder;
 	}
 
 	/**
@@ -387,30 +479,20 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	 */
 	private static void encodeFeaturesAndCreateKernelMatrix(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
-			final float[][] kernelMatrix)
+			final float[][] kernelMatrix,
+			ProgressHandler<Integer> creatingKernelMatrixProgressSource)
 			throws IOException
 	{
-		ProcessInfo creatingKernelMatrixPI = new DefaultProcessInfo("encoding features and creating kernel matrix", null);
-		IntegerProgressHandler creatingKernelMatrixProgressSource
-				= new IntegerProgressHandler(
-						creatingKernelMatrixPI,
-						0,
-						markerGenotypesEncoder.size() - 1);
-		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, creatingKernelMatrixPI), 2000);
-		creatingKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
-		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(creatingKernelMatrixProgressSource);
-		creatingKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
-
 		// initialize the kernelMatrix
 		// this should not be required, if the array was just created,
 		// but who knows who will call this function in what way in the future!?
-		creatingKernelMatrixProgressSource.starting();
+		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		for (float[] kernelMatrixRow : kernelMatrix) {
 			for (int ci = 0; ci < kernelMatrixRow.length; ci++) {
 				kernelMatrixRow[ci] = 0.0f;
 			}
 		}
-		creatingKernelMatrixProgressSource.initialized();
+		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
@@ -419,7 +501,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
-		creatingKernelMatrixProgressSource.finalized();
+		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.FINALIZING);
+		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	/**
@@ -515,7 +598,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	private static svm_problem createLibSvmProblem(
 			float[][] K,
 			Collection<Double> Y,
-			svm_parameter libSvmParameters)
+			svm_parameter libSvmParameters,
+			final ProgressHandler<Integer> transcribeKernelMatrixPH)
 			throws IOException
 	{
 		svm_problem prob = new svm_problem();
@@ -536,20 +620,9 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 				throw new IOException(er);
 			}
 
-			ProcessInfo transcribeKernelMatrixPI = new DefaultProcessInfo("store kernel matrix rows", null);
-			IntegerProgressHandler transcribeKernelMatrixProgressSource
-					= new IntegerProgressHandler(
-							transcribeKernelMatrixPI,
-							0,
-							n - 1);
-			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, transcribeKernelMatrixPI), 2000);
-			transcribeKernelMatrixProgressSource.addProgressListener(slf4jProgressListener);
-			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(transcribeKernelMatrixProgressSource);
-			transcribeKernelMatrixProgressSource.addProgressListener(swingMonitorProgressListener);
-
 			LOG.debug("libSVM preparation: store the kernel elements");
-			transcribeKernelMatrixProgressSource.starting();
-			transcribeKernelMatrixProgressSource.initialized();
+			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.INITIALIZING);
+			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.RUNNING);
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
@@ -573,9 +646,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 					}
 				}
 
-				transcribeKernelMatrixProgressSource.setProgress(si + 1);
+				transcribeKernelMatrixPH.setProgress(si + 1);
 			}
-			transcribeKernelMatrixProgressSource.finalized();
+			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.FINALIZING);
+			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.COMPLEETED);
 		} else {
 			throw new IllegalStateException("unsupported libSVM kernel type: " + libSvmParameters.kernel_type);
 		}
@@ -650,20 +724,10 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	private static List<Double> calculateOriginalSpaceWeights(
 			Map<Integer, Double> nonZeroAlphas,
 			final MarkerGenotypesEncoder xs,
-			final double[] ys)
+			final double[] ys,
+			final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH)
 	{
-		ProcessInfo calculateOriginalSpaceWeightsPI = new DefaultProcessInfo("calculate original space weights", null);
-		IntegerProgressHandler calculateOriginalSpaceWeightsProgressSource
-				= new IntegerProgressHandler(
-						calculateOriginalSpaceWeightsPI,
-						0,
-						xs.size() - 1);
-		ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsPI), 2000);
-		calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
-		SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(calculateOriginalSpaceWeightsProgressSource);
-		calculateOriginalSpaceWeightsProgressSource.addProgressListener(swingMonitorProgressListener);
-
-		calculateOriginalSpaceWeightsProgressSource.starting();
+		calculateOriginalSpaceWeightsPH.setNewStatus(ProcessStatus.INITIALIZING);
 
 		// number of data-points/samples
 		final int n = ys.length;
@@ -675,7 +739,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 		// but it does not hurt to make things clear.
 		Arrays.fill(weights, 0.0);
 
-		calculateOriginalSpaceWeightsProgressSource.initialized();
+		calculateOriginalSpaceWeightsPH.setNewStatus(ProcessStatus.RUNNING);
 		for (int ci = 0; ci < xs.size(); ci++) {
 			final Float[][] featuresChunk = xs.get(ci);
 			final int chunkSize = xs.getChunkSize(ci);
@@ -695,8 +759,9 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 					weights[di] += alphaYXi;
 				}
 			}
-			calculateOriginalSpaceWeightsProgressSource.setProgress(ci);
+			calculateOriginalSpaceWeightsPH.setProgress(ci);
 		}
+		calculateOriginalSpaceWeightsPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		// convert array to list
 		List<Double> weightsList = new ArrayList<Double>(weights.length);
@@ -704,7 +769,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 			weightsList.add(weights[wi]);
 		}
 
-		calculateOriginalSpaceWeightsProgressSource.finalized();
+		calculateOriginalSpaceWeightsPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return weightsList;
 	}
@@ -728,7 +793,8 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 	private static List<Double> runSVM(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
-			GenotypeEncoder genotypeEncoder)
+			GenotypeEncoder genotypeEncoder,
+			final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH)
 	{
 		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
@@ -749,7 +815,7 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		LOG.debug("calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y);
+				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y, calculateOriginalSpaceWeightsPH);
 
 		if (spy != null) {
 			spy.originalSpaceWeightsCalculated(weightsEncoded);

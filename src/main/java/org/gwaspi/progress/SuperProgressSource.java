@@ -18,6 +18,7 @@
 package org.gwaspi.progress;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,8 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 	private final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	private final Map<ProgressSource, Double> subProgressSourcesAndLastCompletionFraction;
 	private final ProgressListener progressListener;
-	private final double lastCompletionFraction;
+	private double lastCompletionFraction;
+	private double weightSum;
 
 	private class SubProgressListener<ST> extends AbstractProgressListener<ST> {
 
@@ -38,7 +40,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 				ProgressSource progressSource = (ProgressSource) evt.getSource();
 				final double weight = subProgressSourcesAndWeights.get(progressSource);
 				double lastSubCompletionFraction = subProgressSourcesAndLastCompletionFraction.get(progressSource);
-				fireAdditionalProgressHappened((currentSubCompletionFraction - lastSubCompletionFraction) * weight);
+				fireAdditionalProgressHappened((currentSubCompletionFraction - lastSubCompletionFraction) * weight / weightSum);
 				subProgressSourcesAndLastCompletionFraction.put(progressSource, currentSubCompletionFraction);
 			}
 		}
@@ -51,15 +53,23 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>();
 		this.progressListener = new SubProgressListener();
 		this.lastCompletionFraction = 0.0;
+		this.weightSum = 0.0;
 
-		for (ProgressSource progressSource : subProgressSourcesAndWeights.keySet()) {
+		for (Map.Entry<ProgressSource, Double> subProgressSourceAndWeight : subProgressSourcesAndWeights.entrySet()) {
+			final ProgressSource progressSource = subProgressSourceAndWeight.getKey();
+			final double weight = subProgressSourceAndWeight.getValue();
 			progressSource.addProgressListener(progressListener);
 			subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
+			weightSum += weight;
 		}
 	}
 
 	public SuperProgressSource(ProcessInfo processInfo, Collection<ProgressSource> subProgressSources) {
 		this(processInfo, createEvenlyDistributedWeights(subProgressSources));
+	}
+
+	public SuperProgressSource(ProcessInfo processInfo) {
+		this(processInfo, Collections.EMPTY_MAP);
 	}
 
 	private static Map<ProgressSource, Double> createEvenlyDistributedWeights(Collection<ProgressSource> subProgressSources) {
@@ -89,6 +99,19 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		return numIntervalls;
 	}
 
+	public void addSubProgressSource(ProgressSource progressSource, Double weight) {
+
+		subProgressSourcesAndWeights.put(progressSource, weight);
+		progressSource.addProgressListener(progressListener);
+		subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
+		weightSum += weight;
+		fireProcessDetailsChanged();
+	}
+
+	public Map<ProgressSource, Double> getSubProgressSourcesAndWeights() {
+		return subProgressSourcesAndWeights;
+	}
+
 	@Override
 	public void setProgress(Double currentState) {
 		throw new UnsupportedOperationException("progress should never be set directly on the super process, but only on its child pocesses");
@@ -98,5 +121,6 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 
 		final double newCompletionFraction = lastCompletionFraction + additionalCompletionFraction;
 		fireProgressHappened(newCompletionFraction, newCompletionFraction);
+		lastCompletionFraction = newCompletionFraction;
 	}
 }

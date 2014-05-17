@@ -25,6 +25,28 @@ public class DefaultOperationTypeInfo implements OperationTypeInfo {
 	private final String name;
 	private final String description;
 	private final OPType type;
+	private final boolean markersOriented;
+	private final boolean samplesOriented;
+
+	public DefaultOperationTypeInfo(
+			boolean creatingMatrix,
+			String name,
+			String description,
+			OPType type,
+			boolean markersOriented,
+			boolean samplesOriented)
+	{
+		this.creatingMatrix = creatingMatrix;
+		this.name = name;
+		this.description = description;
+		this.type = type;
+		this.markersOriented = markersOriented;
+		this.samplesOriented = samplesOriented;
+
+		if (markersOriented && samplesOriented) {
+			throw new IllegalArgumentException("An operation can not be both, primarly markers and samples oriented");
+		}
+	}
 
 	public DefaultOperationTypeInfo(
 			boolean creatingMatrix,
@@ -32,10 +54,13 @@ public class DefaultOperationTypeInfo implements OperationTypeInfo {
 			String description,
 			OPType type)
 	{
-		this.creatingMatrix = creatingMatrix;
-		this.name = name;
-		this.description = description;
-		this.type = type;
+		this(
+				creatingMatrix,
+				name,
+				description,
+				type,
+				false,
+				false);
 	}
 
 	@Override
@@ -56,5 +81,15 @@ public class DefaultOperationTypeInfo implements OperationTypeInfo {
 	@Override
 	public OPType getType() {
 		return type;
+	}
+
+	@Override
+	public boolean isMarkersOriented() {
+		return markersOriented;
+	}
+
+	@Override
+	public boolean isSamplesOriented() {
+		return samplesOriented;
 	}
 }
