@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -36,12 +37,18 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatrixTranslator extends AbstractOperation {
+public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Trafo.translateMatrix,
+			Text.Trafo.translateMatrix); // TODO We need a more elaborate description of this operation!
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -68,6 +75,11 @@ public class MatrixTranslator extends AbstractOperation {
 
 		this.dataSetSource = dataSetSource;
 		this.translateBySamples = true;
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override
@@ -116,8 +128,8 @@ public class MatrixTranslator extends AbstractOperation {
 
 	private static interface GenotypeTranslator {
 
-		Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException;
-		Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException;
+		List<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException;
+		List<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException;
 	}
 
 	private static class AB12ToACGTGenotypeTranslator implements GenotypeTranslator {
@@ -162,7 +174,7 @@ public class MatrixTranslator extends AbstractOperation {
 		}
 
 		@Override
-		public Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
+		public List<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
 
 			// Iterate through all markers
 			Iterator<byte[]> sampleGenotypesIt = sampleGenotypes.iterator();
@@ -194,7 +206,7 @@ public class MatrixTranslator extends AbstractOperation {
 		}
 
 		@Override
-		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
+		public List<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
 
 			final byte[] basesDict = dictionnaries.get(markerKey);
 
@@ -242,16 +254,16 @@ public class MatrixTranslator extends AbstractOperation {
 		}
 
 		@Override
-		public Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
+		public List<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
 			return translate(sampleGenotypes);
 		}
 
 		@Override
-		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
+		public List<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
 			return translate(markerGenotypes);
 		}
 
-		private static Collection<byte[]> translate(GenotypesList genotypes) throws IOException {
+		private static List<byte[]> translate(GenotypesList genotypes) throws IOException {
 
 			int li = 0;
 			for (byte[] codedAlleles : genotypes) {
@@ -266,8 +278,6 @@ public class MatrixTranslator extends AbstractOperation {
 			return genotypes;
 		}
 	}
-
-
 
 	private void translateToACGT() throws IOException {
 

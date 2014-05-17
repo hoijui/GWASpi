@@ -39,15 +39,23 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 
 public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			"Markers Quality Assurance",
+			""); // TODO
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					"Markers Quality Assurance",
 					"Markers Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.MARKER_QA);
+					OPType.MARKER_QA,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -62,6 +70,11 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 
 	public QAMarkersOperation(QAMarkersOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

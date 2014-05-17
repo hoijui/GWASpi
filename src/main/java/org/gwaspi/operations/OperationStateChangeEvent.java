@@ -18,17 +18,18 @@
 package org.gwaspi.operations;
 
 import java.util.EventObject;
+import org.gwaspi.progress.ProcessStatus;
 
 public class OperationStateChangeEvent extends EventObject {
 
-	private final MatrixOperation.Status oldState;
-	private final MatrixOperation.Status newState;
+	private final ProcessStatus oldState;
+	private final ProcessStatus newState;
 	private final String description;
 
 	public OperationStateChangeEvent(
 			MatrixOperation source,
-			MatrixOperation.Status oldState,
-			MatrixOperation.Status newState,
+			ProcessStatus oldState,
+			ProcessStatus newState,
 			String description)
 	{
 		super(source);
@@ -42,11 +43,11 @@ public class OperationStateChangeEvent extends EventObject {
 		return (MatrixOperation) getSource();
 	}
 
-	public MatrixOperation.Status getOldState() {
+	public ProcessStatus getOldState() {
 		return oldState;
 	}
 
-	public MatrixOperation.Status getNewState() {
+	public ProcessStatus getNewState() {
 		return newState;
 	}
 

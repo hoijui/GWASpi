@@ -22,23 +22,16 @@ public abstract class AbstractProgressListener<ST> implements ProgressListener<S
 	protected AbstractProgressListener() {
 	}
 
+
 	@Override
-	public void processStarted() {
+	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
 	}
 
 	@Override
-	public void processInitialized() {
+	public void statusChanged(ProcessStatusChangeEvent evt) {
 	}
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
-	}
-
-	@Override
-	public void processEnded() {
-	}
-
-	@Override
-	public void processFinalized() {
 	}
 }

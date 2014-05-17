@@ -84,6 +84,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void init() throws IOException {
+		super.init();
+
 		resultMatrixKey = null;
 	}
 
@@ -262,6 +264,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		super.finishedLoadingMarkerMetadatas();
 	}
+
 	private void storeSamplesAndMarkersMetadata() throws IOException {
 
 		try {
@@ -416,6 +419,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void startLoadingAlleles(boolean perSample) throws IOException {
+		super.startLoadingAlleles(perSample);
 
 		alleleLoadPerSample = perSample;
 
@@ -442,6 +446,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+		super.addSampleGTAlleles(sampleIndex, sampleAlleles);
 
 		if (!alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -457,6 +462,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+		super.addMarkerGTAlleles(markerIndex, markerAlleles);
 
 		if (alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -483,6 +489,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {
+		super.finishedLoadingAlleles();
 
 		if (!alleleLoadPerSample) {
 //			int markerNb = bimSamples.size();
@@ -536,6 +543,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void done() throws IOException {
+		super.done();
 	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {

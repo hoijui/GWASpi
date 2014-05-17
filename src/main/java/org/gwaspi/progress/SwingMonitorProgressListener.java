@@ -23,7 +23,7 @@ import javax.swing.ProgressMonitor;
  * TODO
  * @param <ST> the status type
  */
-public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
+public class SwingMonitorProgressListener<ST> extends AbstractProgressListener<ST> {
 
 	private final ProgressMonitor progressMonitor;
 
@@ -39,21 +39,7 @@ public class SwingMonitorProgressListener<ST> implements ProgressListener<ST> {
 	}
 
 	@Override
-	public void processStarted() {}
-
-	@Override
-	public void processInitialized() {}
-
-	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
 		progressMonitor.setProgress((Integer) evt.getCurrentState());
-	}
-
-	@Override
-	public void processEnded() {}
-
-	@Override
-	public void processFinalized() {
-		progressMonitor.close();
 	}
 }

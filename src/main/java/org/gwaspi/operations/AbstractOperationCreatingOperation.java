@@ -25,35 +25,72 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 
 public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> extends AbstractOperation<PT> {
 
 	/** @params deprecated */
 	private final DataSetKey parent;
 	private final PT params;
+	private ProgressHandler operationPH;
 
 	protected AbstractOperationCreatingOperation(DataSetKey parent) {
 
 		this.parent = parent;
 		this.params = null;
+		this.operationPH = null;
 	}
 
 	protected AbstractOperationCreatingOperation(MatrixKey parent) {
 
 		this.parent = new DataSetKey(parent);
 		this.params = null;
+		this.operationPH = null;
 	}
 
 	protected AbstractOperationCreatingOperation(OperationKey parent) {
 
 		this.parent = new DataSetKey(parent);
 		this.params = null;
+		this.operationPH = null;
 	}
 
 	protected AbstractOperationCreatingOperation(PT params) {
 
 		this.parent = params.getParent();
 		this.params = params;
+		this.operationPH = null;
+	}
+
+	public int getNumItems() throws IOException {
+
+		final int numItems;
+
+		final DataSetSource parentDataSetSource = getParentDataSetSource();
+		if (((AbstractOperationDataSet) parentDataSetSource).isMarkersOperationSet()) { // HACK
+			numItems = parentDataSetSource.getNumMarkers();
+		} else {
+			numItems = parentDataSetSource.getNumSamples();
+		}
+
+		return numItems;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			final int numItems = getNumItems();
+
+			operationPH =  new IntegerProgressHandler(
+					getProcessInfo(),
+					0, // start state, first marker/sample
+					numItems - 1); // end state, last marker/sample
+		}
+
+		return operationPH;
 	}
 
 	@Override
@@ -102,4 +139,14 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 
 		return operationDataSet;
 	}
+
+//	protected abstract ProgressSource createProgressSource() throws IOException;
+//
+//	@Override
+//	public ProgressSource getProgressSource() throws IOException {
+//
+//		if (operationPH == null) {
+//			operationPH = createProgressSource();
+//		}
+//	}
 }

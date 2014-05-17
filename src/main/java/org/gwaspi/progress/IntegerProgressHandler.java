@@ -19,22 +19,42 @@ package org.gwaspi.progress;
 
 public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 
-	private final Integer startState;
-	private final Integer endState;
+	private Integer startState;
+	private Integer endState;
 
 	public IntegerProgressHandler(ProcessInfo processInfo, Integer startState, Integer endState) {
-		super(processInfo, Math.abs(endState - startState) + 1);
+		super(processInfo, calculateNumIntervalls(startState, endState));
 
 		this.startState = startState;
 		this.endState = endState;
+	}
+
+	private static int calculateNumIntervalls(final Integer startState, final Integer endState) {
+		return Math.abs(endState - startState) + 1;
+	}
+
+	private void recalculateNumIntervalls() {
+		setNumIntervals(calculateNumIntervalls(startState, endState));
 	}
 
 	public Integer getStartState() {
 		return startState;
 	}
 
+	public void setStartState(final Integer startState) {
+
+		this.startState = startState;
+		recalculateNumIntervalls();
+	}
+
 	public Integer getEndState() {
 		return endState;
+	}
+
+	public void setEndState(final Integer endState) {
+
+		this.endState = endState;
+		recalculateNumIntervalls();
 	}
 
 	@Override
@@ -42,7 +62,7 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 
 		fireProgressHappened(currentState);
 		if (currentState.equals(endState)) {
-			fireProcessEnded();
+			fireStatusChanged(ProcessStatus.COMPLEETED);
 		}
 	}
 

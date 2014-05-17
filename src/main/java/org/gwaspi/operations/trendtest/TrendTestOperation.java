@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractTestMatrixOperation;
@@ -33,6 +34,12 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -45,12 +52,18 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 
 	private final Logger log = LoggerFactory.getLogger(TrendTestOperation.class);
 
+	private static final ProcessInfo trendTestProcessInfo = new DefaultProcessInfo(
+			Text.Operation.trendTest,
+			Text.Operation.trendTest); // TODO We need a more elaborate description of this operation!
+
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
 					Text.Operation.trendTest,
 					Text.Operation.trendTest, // TODO We need a more elaborate description of this operation!
-					OPType.TRENDTEST);
+					OPType.TRENDTEST,
+					true,
+					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
@@ -63,8 +76,31 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 				});
 	}
 
+	private ProgressHandler operationPH;
+
 	public TrendTestOperation(final TrendTestOperationParams params) {
 		super(params);
+	}
+
+//	@Override
+//	public ProgressSource getProgressSource() throws IOException {
+//should be gone, casue it is same as in parent, just need to export process info!
+//		if (operationPH == null) {
+//			final DataSetSource parentDataSetSource = getParentDataSetSource();
+//			final int numMarkers = parentDataSetSource.getNumMarkers();
+//
+//			operationPH =  new IntegerProgressHandler(
+//					trendTestProcessInfo,
+//					0, // start state, first marker
+//					numMarkers - 1); // end state, last marker
+//		}
+//
+//		return operationPH;
+//	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return trendTestProcessInfo;
 	}
 
 	@Override
@@ -75,12 +111,15 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 			List<Census> ctrlMarkersCensus)
 			throws IOException
 	{
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
 		trendTestDataSet.setNumMarkers(markerOrigIndicesKeys.size());
 
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
 		boolean nonInformativeMarkers = false;
+		int localMarkerIndex = 0;
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
 			final Integer origIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
@@ -101,14 +140,19 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 
 			final double armitagePval = Pvalue.calculatePvalueFromChiSqr(armitageT, 1);
 
+			operationPH.setProgress(localMarkerIndex);
 			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(
 					markerKey,
 					origIndex,
 					armitageT,
 					armitagePval));
+
+			localMarkerIndex++;
 		}
+		operationPH.setNewStatus(ProcessStatus.FINALIZING);
 		if (nonInformativeMarkers) {
 			log.warn("There were markers baring no information (all genotypes are equal). You may consider first filtering them out.");
 		}
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

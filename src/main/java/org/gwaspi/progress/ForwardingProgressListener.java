@@ -37,27 +37,17 @@ public class ForwardingProgressListener<ST> implements ProgressListener<ST> {
 	}
 
 	@Override
-	public void processStarted() {
-		innerListener.processStarted();
+	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+		innerListener.processDetailsChanged(evt);
 	}
 
 	@Override
-	public void processInitialized() {
-		innerListener.processInitialized();
+	public void statusChanged(ProcessStatusChangeEvent evt) {
+		innerListener.statusChanged(evt);
 	}
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
 		innerListener.progressHappened(evt);
-	}
-
-	@Override
-	public void processEnded() {
-		innerListener.processEnded();
-	}
-
-	@Override
-	public void processFinalized() {
-		innerListener.processFinalized();
 	}
 }

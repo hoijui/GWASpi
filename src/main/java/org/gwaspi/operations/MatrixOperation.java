@@ -18,31 +18,34 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import org.gwaspi.progress.ProgressSource;
 
 public interface MatrixOperation<PT extends OperationParams> {
 
-	/**
-	 * Every operation is in one of these states at any time.
-	 * {@link #addOperationListener(OperationListener)}
-	 * {@link #removeOperationListener(OperationListener)}
-	 *
-	 * NOTE
-	 * Why "Status" instead of "State"?
-	 * See the explanation given here:
-	 * {@see http://forum.wordreference.com/showthread.php?t=287984&s=0d5454f63863bcb10cb775d94faef585&p=3423244#post3423244}
-	 * ... while it is a different thing if we move away from IT:
-	 * {@see https://answers.yahoo.com/question/index?qid=20070427185233AAcmFY5}
-	 */
-	public static enum Status {
-		INITIALIZING,
-		INITIALIZED,
-		STARTED,
-		PAUSED,
-		RESUMED,
-		ABORTED,
-		FAILED,
-		COMPLEETED; // XXX or FINNISHED?
-	}
+//	/**
+//	 * Every operation is in one of these states at any time.
+//	 * {@link #addOperationListener(OperationListener)}
+//	 * {@link #removeOperationListener(OperationListener)}
+//	 *
+//	 * NOTE
+//	 * Why "Status" instead of "State"?
+//	 * See the explanation given here:
+//	 * {@see http://forum.wordreference.com/showthread.php?t=287984&s=0d5454f63863bcb10cb775d94faef585&p=3423244#post3423244}
+//	 * ... while it is a different thing if we move away from IT:
+//	 * {@see https://answers.yahoo.com/question/index?qid=20070427185233AAcmFY5}
+//	 */
+//	public static enum Status {
+//		INITIALIZING,
+//		INITIALIZED,
+//		STARTED,
+//		PAUSED,
+//		RESUMED,
+//		ABORTED,
+//		FAILED,
+//		COMPLEETED; // XXX or FINNISHED?
+//	}
+
+	ProgressSource getProgressSource() throws IOException;
 
 	void addOperationListener(OperationListener listener);
 

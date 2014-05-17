@@ -35,6 +35,26 @@ public interface OperationTypeInfo {
 	boolean isCreatingMatrix();
 
 	/**
+	 * Returns whether this operation stores its data by using the markers
+	 * as the main index.
+	 * Both this and {@link #isSamplesOriented()} may return <code>false</code>.
+	 * NOTE This method only makes sense for operation creating operations,
+	 *   not for matrix creating ones.
+	 * @return true, if the output of this operation "appends" data to markers.
+	 */
+	boolean isMarkersOriented();
+
+	/**
+	 * Returns whether this operation stores its data by using the samples
+	 * as the main index.
+	 * Both this and {@link #isMarkersOriented()} may return <code>false</code>.
+	 * NOTE This method only makes sense for operation creating operations,
+	 *   not for matrix creating ones.
+	 * @return true, if the output of this operation "appends" data to samples.
+	 */
+	boolean isSamplesOriented();
+
+	/**
 	 * Returns a human readable, short explanation of what this operation does.
 	 * @return a human readable, short explanation of what this operation does
 	 * @see #getDescription()

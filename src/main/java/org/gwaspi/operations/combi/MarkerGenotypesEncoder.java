@@ -81,7 +81,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 		this.n = n;
 		this.maxChunkSize = maxChunkSize;
 		this.maxFeaturesChunkSize = maxChunkSize * genotypeEncoder.getEncodingFactor();
-		this.numChunks = (int) Math.ceil((double) dSamples / maxChunkSize);
+		this.numChunks = calculateNumChunks(dSamples, maxChunkSize);
 
 		final byte numSingleValueStorageBytes = 4; // float
 		// This would be the estimate if we would load the whole features matrix
@@ -105,6 +105,33 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 		} catch (OutOfMemoryError er) {
 			throw new IOException(er);
 		}
+	}
+
+	public static int calculateMaxChunkSize(
+			final GenotypeEncoder genotypeEncoder,
+			final int dSamples,
+			final int n,
+			final Integer maxChunkSizePreset)
+			throws IOException
+	{
+		// max memory usage of the featre matrix [bytes]
+		final int maxChunkMemoryUsage = 1024 * 1024;
+		// how much memory does one sample per marker use [bytes]
+		final int singleEntryMemoryUsage = 4; // 1 float value
+		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
+		final int maxChunkSize;
+		if (maxChunkSizePreset == null) {
+			maxChunkSize = Math.min(dSamples, (int) Math.floor((double) maxChunkMemoryUsage / n / genotypeEncoder.getEncodingFactor() / singleEntryMemoryUsage));
+		} else {
+			maxChunkSize = maxChunkSizePreset;
+		}
+		LOG.debug("working with feature chunks of {} markers", maxChunkSize);
+
+		return maxChunkSize;
+	}
+
+	public static int calculateNumChunks(final int dSamples, final int maxChunkSize) {
+		return (int) Math.ceil((double) dSamples / maxChunkSize);
 	}
 
 	private Float[][] encodeChunk(final int chunkIndex) throws IOException {

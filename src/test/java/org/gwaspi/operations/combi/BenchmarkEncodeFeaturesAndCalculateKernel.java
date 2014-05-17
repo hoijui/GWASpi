@@ -33,6 +33,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.NullProgressHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +145,8 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 //				genotypeEncoder);
 		float[][] kernelMatrix = CombiTestMatrixOperation.encodeFeaturesAndCalculateKernel(
 				numSamples,
-				markerGenotypesEncoder);
+				markerGenotypesEncoder,
+				new NullProgressHandler<Integer>(null));
 		final long endTime = System.currentTimeMillis();
 
 		return endTime - startTime;

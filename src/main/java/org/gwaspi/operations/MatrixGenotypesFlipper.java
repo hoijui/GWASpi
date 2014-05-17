@@ -36,12 +36,18 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatrixGenotypesFlipper extends AbstractOperation {
+public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
+
+	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+			Text.Trafo.flipStrand,
+			Text.Trafo.flipStrand); // TODO We need a more elaborate description of this operation!
 
 	private static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
@@ -75,6 +81,11 @@ public class MatrixGenotypesFlipper extends AbstractOperation {
 		this.dataSetSource = dataSetSource;
 		this.flipperFile = flipperFile;
 		this.markersToFlip = loadMarkerKeys(this.flipperFile);
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return processInfo;
 	}
 
 	@Override

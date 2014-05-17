@@ -33,6 +33,7 @@ import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.progress.NullProgressHandler;
 
 public class Util {
 
@@ -445,7 +446,18 @@ public class Util {
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGenotypes, genotypeEncoder);
+			CombiTestMatrixOperation.runEncodingAndSVM(
+					markerKeys,
+					majorAlleles,
+					minorAlleles,
+					markerGenotypesCounts,
+					sampleKeys,
+					sampleAffections,
+					markerGenotypes,
+					genotypeEncoder,
+					new NullProgressHandler<Integer>(null),
+					new NullProgressHandler<Integer>(null),
+					new NullProgressHandler<Integer>(null));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
