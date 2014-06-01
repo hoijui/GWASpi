@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,29 +17,13 @@
 
 package org.gwaspi.progress;
 
-import java.util.Collections;
-import java.util.List;
+import javax.swing.JComponent;
 
-public final class NullProgressHandler<ST> extends AbstractProgressHandler<ST> {
+public interface SwingProgressListener<ST> extends ProgressListener<ST> {
 
-	public NullProgressHandler(ProcessInfo processInfo) {
-		super(processInfo, 1);
-	}
-
-	@Override
-	public void addProgressListener(ProgressListener lst) {}
-
-	@Override
-	public void removeProgressListener(ProgressListener lst) {}
-
-	@Override
-	public List<ProgressListener> getProgressListeners() {
-		return Collections.EMPTY_LIST;
-	}
-
-	@Override
-	public void setNewStatus(ProcessStatus newStatus) {}
-
-	@Override
-	public void setProgress(ST currentProgress) {}
+	/**
+	 * Returns the component where the progress is visualized.
+	 * @return main GUI component for the visualization
+	 */
+	JComponent getMainComponent();
 }
