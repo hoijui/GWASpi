@@ -288,7 +288,8 @@ public class ProcessTab extends JPanel {
 		return spreadSheet;
 	}
 
-	public void startBusyLogo() {
+	private void startBusyLogo() {
+
 		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
 		Icon logo = new ImageIcon(logoPath);
 
