@@ -17,7 +17,6 @@
 
 package org.gwaspi.netCDF.loader;
 
-import java.util.Collections;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.SubProcessInfo;
@@ -32,7 +31,7 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 
 	public DataSetDestinationProgressHandler(ProcessInfo processInfo) {
 //		super(processInfo, createSubProgressSourcesAndWeights(processInfo));
-		super(processInfo, Collections.EMPTY_MAP);
+		super(processInfo);
 
 		sampleInfosPH = new IntegerProgressHandler(
 				new SubProcessInfo(processInfo, "SampleInfos", "Storing sample infos"), -1, -1);

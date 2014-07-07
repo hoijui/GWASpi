@@ -31,8 +31,10 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.OperationManager;
+import static org.gwaspi.operations.OperationManager.performOperation;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.GenotypeEncoder;
@@ -42,7 +44,9 @@ import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperati
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
 import org.junit.FixMethodOrder;
@@ -163,10 +167,12 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		final OperationKey parentQaMarkersOpKey;
 		if (doPreFiltering) {
 			final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(initialParent, matrixSampleQAOpKey, matrixMarkersQAOpKey);
-			final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
+			final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
+			final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperation);
 
 			final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier, matrixMarkersQAOpKey);
-			final OperationKey hwOpKey = OperationManager.performHardyWeinberg(hardyWeinbergOperationParams);
+			final MatrixOperation operation = new HardyWeinbergOperation(hardyWeinbergOperationParams);
+			final OperationKey hwOpKey = performOperation(operation);
 
 			final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
 			final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
@@ -178,7 +184,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 			final QAMarkersOperationParams markersQAOperationParams = new QAMarkersOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
 			final QAMarkersOperation qaMarkersOperation = new QAMarkersOperation(markersQAOperationParams);
-			parentQaMarkersOpKey = OperationManager.performQAMarkersOperationAndCreateReports(qaMarkersOperation);
+			parentQaMarkersOpKey = OperationManager.performOperation(qaMarkersOperation); // we do not need the QA Marker reports here!
 		} else {
 			parentQaMarkersOpKey = matrixMarkersQAOpKey;
 		}

@@ -66,7 +66,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 	private final Logger log = LoggerFactory.getLogger(MarkerCensusOperation.class);
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	public static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			"Marker Census",
 			"Marker Census (== Genotypes frequencies)"); // TODO We need a more elaborate description of this operation!); // TODO We need a more elaborate description of this operation!
 
@@ -96,7 +96,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

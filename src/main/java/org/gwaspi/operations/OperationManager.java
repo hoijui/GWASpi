@@ -17,11 +17,6 @@
 
 package org.gwaspi.operations;
 
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
-import org.gwaspi.operations.markercensus.MarkerCensusOperation;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
-import org.gwaspi.operations.qasamples.QASamplesOperation;
-import org.gwaspi.operations.trendtest.TrendTestOperation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -41,21 +36,22 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
+import org.gwaspi.operations.markercensus.MarkerCensusOperation;
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
+import org.gwaspi.operations.qasamples.QASamplesOperation;
+import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
-import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
-import org.gwaspi.reports.OutputHardyWeinberg;
-import org.gwaspi.reports.OutputQAMarkers;
-import org.gwaspi.reports.OutputQASamples;
+import org.gwaspi.progress.SuperProgressSource;
 import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,13 +144,12 @@ public class OperationManager {
 	}
 
 	public static OperationKey censusCleanMatrixMarkers(
-			final MarkerCensusOperationParams params)
+			final MarkerCensusOperation operation)
 			throws IOException
 	{
+		final MarkerCensusOperationParams params = operation.getParams();
 		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
-
-		final MatrixOperation operation = new MarkerCensusOperation(params);
 
 		final OperationKey operationKey = performOperation(operation);
 
@@ -163,24 +158,12 @@ public class OperationManager {
 		return operationKey;
 	}
 
-	public static OperationKey performHardyWeinberg(HardyWeinbergOperationParams params) throws IOException {
-
-		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
-
-		final MatrixOperation operation = new HardyWeinbergOperation(params);
-
-		final OperationKey operationKey = performOperation(operation);
-
-		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey, params.getMarkersQAOpKey());
-
-		return operationKey;
-	}
-
 	public static OperationKey performCleanTests(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			double hwThreshold,
-			OPType testType)
+			OPType testType,
+			final SuperProgressSource superProgressSource)
 			throws IOException
 	{
 		org.gwaspi.global.Utils.sysoutStart(OutputTest.createTestName(testType) + " Test using QA and HW thresholds");
@@ -189,6 +172,7 @@ public class OperationManager {
 		// exclude by Hardy & Weinberg threshold
 		final MatrixOperation excludeOperation = new ByHardyWeinbergThresholdFilterOperation(
 				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
+		superProgressSource.replaceSubProgressSource(ByHardyWeinbergThresholdFilterOperation.PLACEHOLDER_PS_HW_TF, excludeOperation.getProgressSource(), null);
 		final OperationKey excludeOperationKey = performOperation(excludeOperation);
 
 		// run the test
@@ -204,18 +188,11 @@ public class OperationManager {
 				operation = new GenotypicAssociationTestOperation(params);
 			}
 		}
+		superProgressSource.replaceSubProgressSource(AllelicAssociationTestOperation.PLACEHOLDER_PS_TEST, operation.getProgressSource(), null);
 
 		final OperationKey operationKey = performOperation(operation);
 
 		return operationKey;
-	}
-
-	public static OperationKey performRawCombiTest(CombiTestOperationParams params)
-			throws IOException
-	{
-		MatrixOperation operation = new CombiTestMatrixOperation(params);
-
-		return performOperation(operation);
 	}
 
 	public static OperationKey performOperation(MatrixOperation operation)
@@ -243,28 +220,6 @@ public class OperationManager {
 		}
 
 		return resultOperationKey;
-	}
-
-	public static OperationKey performQASamplesOperationAndCreateReports(
-			QASamplesOperation operation)
-			throws IOException
-	{
-		OperationKey samplesQAOpKey = performOperation(operation);
-
-		OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
-
-		return samplesQAOpKey;
-	}
-
-	public static OperationKey performQAMarkersOperationAndCreateReports(
-			QAMarkersOperation operation)
-			throws IOException
-	{
-		OperationKey markersQAOpKey = performOperation(operation);
-
-		OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-
-		return markersQAOpKey;
 	}
 
 	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOpTypes, DataSetKey rootKey, boolean childrenOnly) {

@@ -61,6 +61,8 @@ public class SwingDeleterItemList {
 		if (SwingWorkerItemList.sizePending() == 0) {
 			deleteAllListed();
 		}
+
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void deleteAllListed() {

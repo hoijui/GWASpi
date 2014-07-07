@@ -26,14 +26,24 @@ import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
+	private static final ProcessInfo processInfo
+			= new DefaultProcessInfo("Updating Sample Info",
+					"Complete COMBI Test procedure and evaluation of the results"); // TODO
 	private final StudyKey studyKey;
 	private final File sampleInfoFile;
+	private final ProgressHandler progressHandler;
 
 	public Threaded_UpdateSampleInfo(
 			StudyKey studyKey,
@@ -47,15 +57,25 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 		this.studyKey = studyKey;
 		this.sampleInfoFile = sampleInfoFile;
+		this.progressHandler = new IndeterminateProgressHandler(processInfo);
 	}
 
+	@Override
+	protected ProgressSource getProgressSource() {
+		return progressHandler;
+	}
+
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_UpdateSampleInfo.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 		InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		SamplesParserManager.scanSampleInfo(
 				studyKey,
 				ImportFormat.GWASpi,
@@ -63,6 +83,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 				inMemorySamplesReceiver);
 		Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
 		SampleInfoList.insertSampleInfos(sampleInfos);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		// DO NOT! Write new reports of SAMPLE QA
 //		OperationsList opList = new OperationsList(matrix.getMatrixId());
@@ -87,5 +108,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		oldDesc.append(") *");
 		study.setDescription(oldDesc.toString());
 		StudyList.updateStudy(study);
+
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

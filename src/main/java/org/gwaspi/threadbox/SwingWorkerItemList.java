@@ -59,6 +59,8 @@ public class SwingWorkerItemList {
 			swi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			swi.setQueueState(QueueState.PROCESSING);
 		}
+
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void startNext() {
@@ -76,6 +78,7 @@ public class SwingWorkerItemList {
 		if (!started) {
 			SwingDeleterItemList.deleteAllListed(); // This will also update the tree
 		}
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static List<SwingWorkerItem> getItems() {

@@ -17,28 +17,45 @@
 
 package org.gwaspi.threadbox;
 
-import org.gwaspi.model.DataSetKey;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.MatrixTranslator;
 import org.gwaspi.operations.MatrixTranslatorNetCDFDataSetDestination;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
-import org.gwaspi.operations.qasamples.QASamplesOperation;
-import org.gwaspi.operations.OperationManager;
-import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
-import org.gwaspi.operations.qasamples.QASamplesOperationParams;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_TranslateMatrix extends CommonRunnable {
 
+	private static final ProcessInfo processInfo
+			= new DefaultProcessInfo("Translating Matrix", // TODO this is .. unique? preserve? but should include QA!
+					"Translates all the Genotypes from a matrix from one encoding to an other"); // TODO see todo note of the last line
+	private static final ProgressSource PLACEHOLDER_PS_TRANSLATE = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_TRANSLATE", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TRANSLATE, 0.6);
+		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.4);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
+
 	private final MatrixKey parentMatrixKey;
 	private final String newMatrixName;
 	private final String description;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_TranslateMatrix(
 			MatrixKey parentMatrixKey,
@@ -54,54 +71,41 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		this.parentMatrixKey = parentMatrixKey;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
+		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);
 	}
 
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
+	}
+
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_TranslateMatrix.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
-			AbstractNetCDFDataSetDestination dataSetDestination
+			final DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+			final AbstractNetCDFDataSetDestination dataSetDestination
 					= new MatrixTranslatorNetCDFDataSetDestination(
 					dataSetSource,
 					newMatrixName,
 					description);
-			MatrixTranslator matrixOperation = new MatrixTranslator(
+			final MatrixTranslator matrixOperation = new MatrixTranslator(
 					dataSetSource,
 					dataSetDestination);
+			progressSource.setNewStatus(ProcessStatus.RUNNING);
 
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			matrixCompleeted(thisSwi, resultMatrixKey);
+			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
 		}
-	}
-
-	static OperationKey[] matrixCompleeted(SwingWorkerItem thisSwi, MatrixKey matrixKey)
-			throws Exception
-	{
-		OperationKey[] resultOperationKeys = new OperationKey[2];
-
-		GWASpiExplorerNodes.insertMatrixNode(matrixKey);
-
-		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			return resultOperationKeys;
-		}
-		final OperationKey samplesQAOpKey = OperationManager.performQASamplesOperationAndCreateReports(new QASamplesOperation(new QASamplesOperationParams(new DataSetKey(matrixKey))));
-
-		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			return resultOperationKeys;
-		}
-		final OperationKey markersQAOpKey = OperationManager.performQAMarkersOperationAndCreateReports(new QAMarkersOperation(new QAMarkersOperationParams(new DataSetKey(matrixKey))));
-
-		resultOperationKeys[0] = samplesQAOpKey;
-		resultOperationKeys[1] = markersQAOpKey;
-
-		MultiOperations.printCompleted("Matrix Quality Control");
-
-		return resultOperationKeys;
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

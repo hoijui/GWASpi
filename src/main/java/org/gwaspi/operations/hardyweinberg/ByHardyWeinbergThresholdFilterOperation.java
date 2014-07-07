@@ -32,9 +32,15 @@ import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
 
 public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
+
+	public static final ProgressSource PLACEHOLDER_PS_HW_TF = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_HW_TF", null));
 
 	private static final ProcessInfo processInfo = new DefaultProcessInfo(
 			"Filter by Hardy&Weinberg threshold",

@@ -45,7 +45,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 	private final Logger log = LoggerFactory.getLogger(HardyWeinbergOperation.class);
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	public static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Operation.hardyWeiberg,
 			Text.Operation.hardyWeiberg); // TODO We need a more elaborate description of this operation!
 
@@ -75,7 +75,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

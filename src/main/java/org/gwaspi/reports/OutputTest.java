@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
@@ -31,7 +33,6 @@ import org.gwaspi.global.Utils;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -39,12 +40,20 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperationEntry;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SuperProgressSource;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
@@ -52,25 +61,33 @@ import org.jfree.chart.plot.XYPlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OutputTest {
+/**
+ * Write reports and generate plots for test data.
+ */
+public class OutputTest extends AbstractOperation<TestOutputParams> {
 
 	private static final Logger log = LoggerFactory.getLogger(OutputTest.class);
 
-	private final OperationKey testOpKey;
-	private final OperationKey qaMarkersOpKey;
-	private final OPType testType;
+	private static final Color MANHATTAN_PLOT_CHART_BACKGROUD_COLOR
+			= Color.getHSBColor(0.1f, 0.1f, 1.0f); // Hue, saturation, brightness
+
+	private static final ProcessInfo testOutputProcessInfo = new DefaultProcessInfo("Write test output to files", ""); // TODO
+
+	private final TestOutputParams params;
 	private final String testName;
 	private final int qqPlotDof;
 	private final String header;
+	private ProgressHandler operationPH;
+	private ProgressHandler creatingManhattanPlotPH;
+	private ProgressHandler creatingQQPlotPH;
+	private ProgressHandler writingAssociationReportPH;
 
-	public OutputTest(OperationKey testOpKey, OPType testType, OperationKey qaMarkersOpKey) {
+	public OutputTest(TestOutputParams params) {
 
-		this.testOpKey = testOpKey;
-		this.testType = testType;
-		this.qaMarkersOpKey = qaMarkersOpKey;
+		this.params = params;
 
 		final String headerBase = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele";
-		switch (testType) {
+		switch (params.getTestType()) {
 			case ALLELICTEST:
 				this.qqPlotDof = 1;
 				this.header = headerBase + "\tX²\tPval\tOR\n";
@@ -88,13 +105,46 @@ public class OutputTest {
 				this.header = headerBase + "\tTrend-Test\tPval\n";
 				break;
 			default:
-				throw new IllegalArgumentException("Not a supported test type: " + testType.toString());
+				throw new IllegalArgumentException("Not a supported test type: " + params.getTestType().toString());
 		}
-		this.testName = createTestName(testType);
+		this.testName = createTestName(params.getTestType());
 	}
 
-	public OutputTest(OperationKey testOpKey, OperationKey qaMarkersOpKey) throws IOException {
-		this(testOpKey, OperationsList.getOperationMetadata(testOpKey).getOperationType(), qaMarkersOpKey);
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return testOutputProcessInfo;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			final ProcessInfo creatingManhattanPlotPI = new DefaultProcessInfo(
+					"creating & writing the Manhattan plot", null);
+			creatingManhattanPlotPH
+					= new IndeterminateProgressHandler(creatingManhattanPlotPI);
+
+			final ProcessInfo creatingQQPlotPI = new DefaultProcessInfo(
+					"creating & writing QQ plot", null);
+			creatingQQPlotPH
+					= new IndeterminateProgressHandler(creatingQQPlotPI);
+
+			final ProcessInfo writingAssociationReportPI = new DefaultProcessInfo(
+					"writing the association report", null);
+			writingAssociationReportPH
+					= new IndeterminateProgressHandler(writingAssociationReportPI);
+
+			Map<ProgressSource, Double> subProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>();
+
+			subProgressSourcesAndWeights.put(creatingManhattanPlotPH, 0.4); // TODO adjust these weights!
+			subProgressSourcesAndWeights.put(creatingQQPlotPH, 0.3);
+			subProgressSourcesAndWeights.put(writingAssociationReportPH, 0.3);
+
+			operationPH = new SuperProgressSource(testOutputProcessInfo, subProgressSourcesAndWeights);
+		}
+
+		return operationPH;
 	}
 
 	public static String createTestName(OPType testType) {
@@ -120,65 +170,79 @@ public class OutputTest {
 		return testName;
 	}
 
-	public void writeReportsForTestData() throws IOException {
+	@Override
+	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(testOpKey);
-		final StudyKey studyKey = testOpKey.getParentMatrixKey().getStudyKey();
+		OperationMetadata op = OperationsList.getOperationMetadata(params.getTestOperationKey());
+		final StudyKey studyKey = params.getTestOperationKey().getParentMatrixKey().getStudyKey();
 
+		creatingManhattanPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(studyKey)));
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving {} test", testName);
+		creatingManhattanPlotPH.setNewStatus(ProcessStatus.RUNNING);
 		writeManhattanPlotFromAssociationData(manhattanName, 4000, 500);
-		if (testType != OPType.COMBI_ASSOC_TEST) {
+		creatingManhattanPlotPH.setNewStatus(ProcessStatus.FINALIZING);
+		if (params.getTestType() != OPType.COMBI_ASSOC_TEST) {
 			ReportsList.insertRPMetadata(new Report(
 					testName + " Test Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
-					testOpKey,
+					params.getTestOperationKey(),
 					testName + " Test Manhattan Plot",
 					studyKey));
 			log.info("Saved " + testName + " Test Manhattan Plot in reports folder");
 		}
+		creatingManhattanPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 
+		creatingQQPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
 		String qqName = prefix + "qq";
+		creatingQQPlotPH.setNewStatus(ProcessStatus.RUNNING);
 		writeQQPlotFromAssociationData(qqName, 500, 500);
-		if (testType != OPType.COMBI_ASSOC_TEST) {
+		creatingQQPlotPH.setNewStatus(ProcessStatus.FINALIZING);
+		if (params.getTestType() != OPType.COMBI_ASSOC_TEST) {
 			ReportsList.insertRPMetadata(new Report(
 					testName + " Test QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
-					testOpKey,
+					params.getTestOperationKey(),
 					testName + " Test QQ Plot",
 					studyKey));
 			log.info("Saved {} Test QQ Plot in reports folder", testName);
 		}
+		creatingQQPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 
+		writingAssociationReportPH.setNewStatus(ProcessStatus.INITIALIZING);
 		String assocName = prefix;
+		writingAssociationReportPH.setNewStatus(ProcessStatus.RUNNING);
 		createSortedAssociationReport(assocName);
+		writingAssociationReportPH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				testName + " Tests Values",
 				assocName + ".txt",
-				testType,
-				testOpKey,
+				params.getTestType(),
+				params.getTestOperationKey(),
 				testName + " Tests Values",
 				studyKey));
+		writingAssociationReportPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		org.gwaspi.global.Utils.sysoutCompleted(testName + " Test Reports & Charts");
+
+		return Integer.MIN_VALUE;
 	}
 
 	private void writeManhattanPlotFromAssociationData(String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(testOpKey);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(params.getTestOperationKey());
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
-		// CHART BACKGROUD COLOR
-		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
+		chart.setBackgroundPaint(MANHATTAN_PLOT_CHART_BACKGROUD_COLOR);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(params.getTestOperationKey());
 		int pointNb = rdOPMetadata.getNumMarkers();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -191,9 +255,11 @@ public class OutputTest {
 			picWidth = 2000;
 		}
 
-		String imagePath = Study.constructReportsPath(testOpKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
+		final StudyKey studyKey = params.getTestOperationKey().getParentMatrixKey().getStudyKey();
+		String imagePath = Study.constructReportsPath(studyKey) + outName + ".png";
 		try {
-			ChartUtilities.saveChartAsPNG(new File(imagePath),
+			ChartUtilities.saveChartAsPNG(
+					new File(imagePath),
 					chart,
 					picWidth,
 					height);
@@ -205,11 +271,11 @@ public class OutputTest {
 	private void writeQQPlotFromAssociationData(String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(testOpKey, qqPlotDof);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(params.getTestOperationKey(), qqPlotDof);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(params.getTestOperationKey());
 		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(
@@ -237,7 +303,7 @@ public class OutputTest {
 
 	private void createSortedAssociationReport(String reportName) throws IOException {
 
-		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationManager.generateOperationDataSet(testOpKey);
+		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationManager.generateOperationDataSet(params.getTestOperationKey());
 		List<? extends TrendTestOperationEntry> testOperationEntries = (List) testOperationDataSet.getEntries(); // HACK This might not be a List!
 		Collections.sort(testOperationEntries, new TrendTestOperationEntry.PValueComparator());
 
@@ -247,8 +313,8 @@ public class OutputTest {
 		}
 
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(testOpKey);
-		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(params.getTestOperationKey());
+		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(params.getTestOperationKey().getParentMatrixKey());
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedOrigIndices, markersMetadatas);
 
@@ -267,7 +333,7 @@ public class OutputTest {
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(qaMarkersOpKey);
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(params.geQaMarkersOpKey());
 		final int[] origIndexToQaMarkersIndexLookupTable = createOrigIndexToQaMarkersIndexLookupTable(qaMarkersOperationDataSet);
 		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
 		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();
@@ -287,9 +353,9 @@ public class OutputTest {
 		// WRITE DATA TO REPORT
 		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_T));
 		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
-		if (testType != OPType.TRENDTEST) { // FIXME for COMBI test
+		if (params.getTestType() != OPType.TRENDTEST) { // FIXME for COMBI test
 			ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(AllelicAssociationTestOperationEntry.TO_OR));
-			if (testType != OPType.ALLELICTEST) { // FIXME for COMBI test
+			if (params.getTestType() != OPType.ALLELICTEST) { // FIXME for COMBI test
 				ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
 			}
 		}

@@ -39,48 +39,104 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SuperProgressSource;
 
-public class OutputQAMarkers {
+/**
+ * Write reports for QA Markers data.
+ */
+public class OutputQAMarkers extends AbstractOperation<QAMarkersOutputParams> {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(OutputQAMarkers.class);
+	private static final ProcessInfo qaMarkersOutputProcessInfo = new DefaultProcessInfo("Write QA Markers output to files", ""); // TODO
 
-	private OutputQAMarkers() {
+	private final QAMarkersOutputParams params;
+	private ProgressHandler operationPH;
+	private ProgressHandler creatingMissingnessTablePH;
+	private ProgressHandler creatingMismatchTablePH;
+
+	public OutputQAMarkers(QAMarkersOutputParams params) {
+
+		this.params = params;
 	}
 
-	public static void writeReportsForQAMarkersData(OperationKey operationKey) throws IOException {
+	@Override
+	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(params.getMarkersQAOpKey());
 
 		String prefix = ReportsList.getReportNamePrefix(op);
-		String markMissOutName = prefix + "markmissing.txt";
-
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 
-		createSortedMarkerMissingnessReport(operationKey, markMissOutName);
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
+		String markMissOutName = prefix + "markmissing.txt";
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
+		createSortedMarkerMissingnessReport(params.getMarkersQAOpKey(), markMissOutName);
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Marker Missingness Table",
 				markMissOutName,
 				OPType.MARKER_QA,
-				operationKey,
+				params.getMarkersQAOpKey(),
 				"Marker Missingness Table",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Marker Missingness QA Report");
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.COMPLEETED);
 
+		creatingMismatchTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		String markMismatchOutName = prefix + "markmismatch.txt";
-		createMarkerMismatchReport(operationKey, markMismatchOutName);
+		creatingMismatchTablePH.setNewStatus(ProcessStatus.RUNNING);
+		createMarkerMismatchReport(params.getMarkersQAOpKey(), markMismatchOutName);
+		creatingMismatchTablePH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Marker Mismatch State Table",
 				markMismatchOutName,
 				OPType.MARKER_QA,
-				operationKey,
+				params.getMarkersQAOpKey(),
 				"Marker Mismatch State Table",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Marker Mismatch QA Report");
+		creatingMismatchTablePH.setNewStatus(ProcessStatus.COMPLEETED);
+
+		return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return qaMarkersOutputProcessInfo;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			final ProcessInfo creatingMissingnessTablePI = new DefaultProcessInfo(
+					"writing the QA Markers missingness table to a text file", null);
+			creatingMissingnessTablePH
+					= new IndeterminateProgressHandler(creatingMissingnessTablePI);
+
+			final ProcessInfo creatingMismatchTablePI = new DefaultProcessInfo(
+					"creating & writing the QA Markers mismatch table to a text file", null);
+			creatingMismatchTablePH
+					= new IndeterminateProgressHandler(creatingMismatchTablePI);
+
+			Map<ProgressSource, Double> subProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>();
+
+			subProgressSourcesAndWeights.put(creatingMissingnessTablePH, 0.5); // TODO adjust these weights!
+			subProgressSourcesAndWeights.put(creatingMismatchTablePH, 0.5);
+
+			operationPH = new SuperProgressSource(qaMarkersOutputProcessInfo, subProgressSourcesAndWeights);
+		}
+
+		return operationPH;
 	}
 
 	private static void createSortedMarkerMissingnessReport(OperationKey markersQAopKey, String reportName) throws IOException {

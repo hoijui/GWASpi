@@ -32,18 +32,20 @@ public class SimpleSwingProgressListener<ST> extends AbstractProgressListener<ST
 
 	private final JPanel main;
 	private final JProgressBar bar;
+	private boolean numIntervallsKnown;
 
 	public SimpleSwingProgressListener(ProgressSource progressSource) {
 
 		this.main = new JPanel();
 		this.main.setLayout(new BorderLayout());
+		this.numIntervallsKnown = (progressSource.getNumIntervals() != null);
 
 		final JPanel superDisplay = new JPanel();
 		superDisplay.setLayout(new BorderLayout());
 
 		final JPanel superInfo = new JPanel();
 		final JLabel superInfoName = new JLabel();
-		// XXX There has to be more info here, and it may has to be dynamically updated
+		// XXX There has to be more info here, and it may has to be dynamically updated in the processDetailsChanged method
 		superInfoName.setText(progressSource.getInfo().getShortName());
 		superInfoName.setToolTipText(progressSource.getInfo().getDescription());
 		superDisplay.add(superInfo, BorderLayout.SOUTH);
@@ -65,12 +67,24 @@ public class SimpleSwingProgressListener<ST> extends AbstractProgressListener<ST
 	@Override
 	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
 
-		bar.setMaximum(evt.getProgressSource().getNumIntervals());
+		final Integer numIntervals = evt.getProgressSource().getNumIntervals();
+		numIntervallsKnown = (numIntervals != null);
+		if (numIntervallsKnown) {
+			bar.setMaximum(numIntervals);
+		}
+	}
+
+	@Override
+	public void statusChanged(ProcessStatusChangeEvent evt) {
+
+		bar.setIndeterminate(!numIntervallsKnown && evt.getNewStatus().isActive());
 	}
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
 
-		bar.setValue(evt.getIntervalIndex());
+		if (numIntervallsKnown) {
+			bar.setValue(evt.getIntervalIndex());
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,19 @@
 
 package org.gwaspi.progress;
 
-public abstract class AbstractProgressHandler<ST> extends AbstractProgressSource<ST> implements ProgressHandler<ST> {
+/**
+ * This is to be used for a process that goes through the different statuses,
+ * but does not supply any intermediate progress reporting.
+ */
+public class IndeterminateProgressHandler extends AbstractProgressHandler<Object> {
 
-	protected AbstractProgressHandler(ProcessInfo processInfo, Integer numIntervals) {
-		super(processInfo, numIntervals);
+	public IndeterminateProgressHandler(ProcessInfo processInfo) {
+		super(processInfo, null);
 	}
 
 	@Override
-	public void setNewStatus(ProcessStatus newStatus) {
-		fireStatusChanged(newStatus);
+	public void setProgress(Object currentState) {
+		throw new UnsupportedOperationException(
+				"This progress handler does by design not support progress reporting");
 	}
 }

@@ -17,30 +17,67 @@
 
 package org.gwaspi.threadbox;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.markercensus.MarkerCensusOperation;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
-import org.gwaspi.operations.qasamples.QASamplesOperation;
-import org.gwaspi.operations.trendtest.TrendTestOperation;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
+import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
-import org.gwaspi.operations.qasamples.QASamplesOperationParams;
+import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.gwaspi.reports.OutputTest;
+import org.gwaspi.reports.TestOutputParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_Combi extends CommonRunnable {
 
+	private static final ProcessInfo fullCombiProcessInfo
+			= new DefaultProcessInfo("Full COMBI Test",
+					"Complete COMBI Test procedure and evaluation of the results"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_COMBI_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_COMBI_TEST", null));
+	private static final ProgressSource PLACEHOLDER_PS_COMBI_FILTER = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_COMBI_FILTER", null));
+	private static final ProgressSource PLACEHOLDER_PS_QA = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_QA", null));
+	private static final ProgressSource PLACEHOLDER_PS_MARKER_CENSUS = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_MARKER_CENSUS", null));
+	private static final ProgressSource PLACEHOLDER_PS_TREND_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_TREND_TEST", null));
+	private static final ProgressSource PLACEHOLDER_PS_TEST_OUTPUT = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_TEST_OUTPUT", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(6);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_COMBI_TEST, 0.5);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_COMBI_FILTER, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_QA, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MARKER_CENSUS, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TREND_TEST, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TEST_OUTPUT, 0.1);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
+
 	private final CombiTestOperationParams paramsTest;
 	private final ByCombiWeightsFilterOperationParams paramsFilter;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_Combi(
 			final CombiTestOperationParams paramsTest,
@@ -54,6 +91,12 @@ public class Threaded_Combi extends CommonRunnable {
 
 		this.paramsTest = paramsTest;
 		this.paramsFilter = paramsFilter;
+		this.progressSource = new SuperProgressSource(fullCombiProcessInfo, subProgressSourcesAndWeights);
+	}
+
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
 	}
 
 	@Override
@@ -72,39 +115,45 @@ public class Threaded_Combi extends CommonRunnable {
 
 		OperationKey combiTestOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			combiTestOpKey = OperationManager.performRawCombiTest(paramsTest);
+			final MatrixOperation operation = new CombiTestMatrixOperation(paramsTest);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, operation.getProgressSource(), null);
+			combiTestOpKey = OperationManager.performOperation(operation);
 		}
 
 		OperationKey combiFilterOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			paramsFilter.setParent(new DataSetKey(combiTestOpKey));
-			combiFilterOpKey = OperationManager.performOperation(new ByCombiWeightsFilterOperation(paramsFilter));
+			final MatrixOperation operation = new ByCombiWeightsFilterOperation(paramsFilter);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_FILTER, operation.getProgressSource(), null);
+			combiFilterOpKey = OperationManager.performOperation(operation);
 		}
 
-		OperationKey qaSamplesOpKey = null;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			QASamplesOperationParams samplesQAParams = new QASamplesOperationParams(new DataSetKey(combiFilterOpKey));
-			qaSamplesOpKey = OperationManager.performOperation(new QASamplesOperation(samplesQAParams));
-		}
-
-		OperationKey qaMarkersOpKey = null;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			QAMarkersOperationParams markersQAParams = new QAMarkersOperationParams(new DataSetKey(combiFilterOpKey));
-			qaMarkersOpKey = OperationManager.performOperation(new QAMarkersOperation(markersQAParams));
-		}
+		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(new DataSetKey(combiFilterOpKey), false);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
+		// run within this thread
+		threaded_MatrixQA.run();
+		final OperationKey qaSamplesOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
+		final OperationKey qaMarkersOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
 
 		OperationKey markerCensusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
-			markerCensusOpKey = OperationManager.performOperation(new MarkerCensusOperation(markerCensusParams));
+			final MatrixOperation operation = new MarkerCensusOperation(markerCensusParams);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, operation.getProgressSource(), null);
+			markerCensusOpKey = OperationManager.performOperation(operation);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
-			OperationKey trendTestOpKey = OperationManager.performOperation(new TrendTestOperation(trendTestParams));
+			final TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
+			final MatrixOperation operation = new TrendTestOperation(trendTestParams);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TREND_TEST, operation.getProgressSource(), null);
+			final OperationKey trendTestOpKey = OperationManager.performOperation(operation);
 
 			if (trendTestOpKey != null) {
-				new OutputTest(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey).writeReportsForTestData();
+				final TestOutputParams testOutputParams = new TestOutputParams(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey);
+				final MatrixOperation testOutputOperation = new OutputTest(testOutputParams);
+				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_OUTPUT, testOutputOperation.getProgressSource(), null);
+				OperationManager.performOperation(testOutputOperation);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 			}
 		}

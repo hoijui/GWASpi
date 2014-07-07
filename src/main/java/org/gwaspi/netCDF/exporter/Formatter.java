@@ -23,6 +23,15 @@ import org.gwaspi.model.MatrixMetadata;
 
 interface Formatter {
 
+	/**
+	 *
+	 * @param exportPath
+	 * @param rdMatrixMetadata
+	 * @param dataSetSource
+	 * @param phenotype
+	 * @return true if formatting and exporting went through successfully, false otherwise
+	 * @throws IOException
+	 */
 	boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,

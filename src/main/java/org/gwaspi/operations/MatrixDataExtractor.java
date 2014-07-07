@@ -50,15 +50,11 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Extracts Genotypes to a new matrix.
  */
 public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
-
-	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
 	private static final ProcessInfo processInfo = new DefaultProcessInfo(
 			Text.Trafo.extractData,

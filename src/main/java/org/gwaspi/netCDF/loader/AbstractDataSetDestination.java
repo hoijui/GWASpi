@@ -57,7 +57,6 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 		return dataSet;
 	}
 
-
 	public void setProgressHandler(DataSetDestinationProgressHandler progressHandler) {
 		this.progressHandler = progressHandler;
 	}

@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.MultiOperations;
 
 class ExportMatrixScriptCommand extends AbstractScriptCommand {
@@ -54,13 +56,13 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 		MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 		boolean studyExists = checkStudy(studyKey);
 
-		String format = args.get("format");
+		String formatStr = args.get("format");
+		ExportFormat format = ExportFormat.valueOf(formatStr);
 
 		if (studyExists) {
-			MultiOperations.doExportMatrix(
-					matrixKey,
-					cExport.ExportFormat.valueOf(format),
-					cDBSamples.f_AFFECTION);
+			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
+					matrixKey, format, cDBSamples.f_AFFECTION);
+			MultiOperations.doExportMatrix(matrixExporterParams);
 			return true;
 		}
 

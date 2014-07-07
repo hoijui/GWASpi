@@ -32,11 +32,17 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 
 public class AllelicAssociationTestOperation extends AbstractAssociationTestsOperation<AllelicAssociationTestsOperationDataSet> {
+
+	public static final ProgressSource PLACEHOLDER_PS_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_TEST", null));
 
 	private static final ProcessInfo processInfo = new DefaultProcessInfo(
 			Text.Operation.allelicAssocTest,

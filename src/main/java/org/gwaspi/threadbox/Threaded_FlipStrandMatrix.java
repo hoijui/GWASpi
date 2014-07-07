@@ -19,19 +19,43 @@ package org.gwaspi.threadbox;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.MatrixGenotypesFlipper;
 import org.gwaspi.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
+	private static final ProcessInfo fullFlipStrandMatrixInfo
+			= new DefaultProcessInfo("Full Flip Strand",
+					"Flip Strand and QA"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_MATRIX_STRAND_FLIP = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_MATRIX_STRAND_FLIP", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, 0.4);
+		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.6);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
+
 	private final DataSetSource parentDataSetSource;
 	private final String newMatrixName;
 	private final String description;
 	private final File markerFlipFile;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_FlipStrandMatrix(
 			DataSetSource parentDataSetSource,
@@ -51,12 +75,20 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 		this.newMatrixName = newMatrixName;
 		this.description = description;
 		this.markerFlipFile = markerFlipFile;
+		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);
 	}
 
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
+	}
+
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_FlipStrandMatrix.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
@@ -71,10 +103,11 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 					dataSetDestination,
 					markerFlipFile);
 
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			Threaded_TranslateMatrix.matrixCompleeted(thisSwi, resultMatrixKey);
+			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
 		}
 	}
 }

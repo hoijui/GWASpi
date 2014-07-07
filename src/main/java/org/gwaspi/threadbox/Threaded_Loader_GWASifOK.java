@@ -17,28 +17,58 @@
 
 package org.gwaspi.threadbox;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.netCDF.loader.DataSetDestinationProgressHandler;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
 import org.gwaspi.operations.GWASinOneGOParams;
-import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
+	private static final ProcessInfo loadAndFullGwasProcessInfo
+			= new DefaultProcessInfo("Load GTs & GWAS",
+					"Load Genotypes and conduct a full GWAS on them"); // TODO
+	private static final ProcessInfo loadGTsProcessInfo
+			= new DefaultProcessInfo("Load GTs",
+					"Load Genotypes"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_LOAD_GTS = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_LOAD_GTS", null));
+	public static final ProgressSource PLACEHOLDER_PS_GWAS = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_GWAS", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(3);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_LOAD_GTS, 0.2);
+		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GWAS, 0.6);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
+
 	private final boolean dummySamples;
 	private final boolean performGwas;
 	private final GenotypesLoadDescription loadDescription;
 	private final GWASinOneGOParams gwasParams;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_Loader_GWASifOK(
 			GenotypesLoadDescription loadDescription,
@@ -56,6 +86,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		this.dummySamples = dummySamples;
 		this.performGwas = performGwas;
 		this.gwasParams = gwasParams;
+		this.progressSource = new SuperProgressSource(loadAndFullGwasProcessInfo, subProgressSourcesAndWeights);
+	}
+
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
 	}
 
 	@Override
@@ -66,9 +102,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		LoadingNetCDFDataSetDestination samplesReceiver = new LoadingNetCDFDataSetDestination(loadDescription); // HACK FIXME
+		final LoadingNetCDFDataSetDestination samplesReceiver = new LoadingNetCDFDataSetDestination(loadDescription); // HACK FIXME
 //		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
 //		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
+		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(loadGTsProcessInfo);
+		samplesReceiver.setProgressHandler(dataSetDestinationProgressHandler);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
@@ -81,7 +120,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 		final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
 
-		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
 		final DataSetKey parent;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			LoadManager.dispatchLoadByFormat(
@@ -94,12 +132,13 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		} else {
 			return;
 		}
-		//</editor-fold>
 
-		final OperationKey[] resultOperationKeys = Threaded_TranslateMatrix.matrixCompleeted(thisSwi, parent.getOrigin());
-		final OperationKey samplesQAOpKey = resultOperationKeys[0];
-		final OperationKey markersQAOpKey = resultOperationKeys[1];
+		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(parent, true);
+		progressSource.replaceSubProgressSource(Threaded_MatrixQA.PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
+		threaded_MatrixQA.runInternal(thisSwi);
 
+		final OperationKey samplesQAOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
+		final OperationKey markersQAOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
 		final MarkerCensusOperationParams markerCensusOperationParams
 				= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
 		markerCensusOperationParams.setName(markerCensusName);
@@ -109,14 +148,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 				&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 		{
-			// GENOTYPE FREQ.
-			OperationKey censusOpKey = null;
-			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
-			}
-			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
-
-			Threaded_GWAS.performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
+			final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
+			threaded_GWAS.runInternal(thisSwi);
 		}
 	}
 }

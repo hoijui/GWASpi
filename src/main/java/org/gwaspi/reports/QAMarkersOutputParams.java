@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.progress;
+package org.gwaspi.reports;
 
-public abstract class AbstractProgressHandler<ST> extends AbstractProgressSource<ST> implements ProgressHandler<ST> {
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.operations.AbstractOperationParams;
 
-	protected AbstractProgressHandler(ProcessInfo processInfo, Integer numIntervals) {
-		super(processInfo, numIntervals);
+/**
+ * Parameters for the {@link OutputQAMarkers}.
+ */
+public class QAMarkersOutputParams extends AbstractOperationParams {
+
+	public QAMarkersOutputParams(OperationKey markersQAOpKey) {
+		super(null, new DataSetKey(markersQAOpKey), null);
+	}
+
+	/** @deprecated */
+	public OperationKey getMarkersQAOpKey() {
+		return getParent().getOperationParent();
 	}
 
 	@Override
-	public void setNewStatus(ProcessStatus newStatus) {
-		fireStatusChanged(newStatus);
+	protected String getNameDefault() {
+		return "Output to file for QA Markers: " + getParent().toString();
 	}
 }
