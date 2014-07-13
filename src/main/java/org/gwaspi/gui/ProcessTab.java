@@ -27,6 +27,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -40,27 +41,39 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
+import org.gwaspi.progress.ProcessDetailsChangeEvent;
+import org.gwaspi.progress.ProcessStatusChangeEvent;
+import org.gwaspi.progress.ProgressEvent;
+import org.gwaspi.progress.ProgressListener;
+import org.gwaspi.progress.SuperSwingProgressListener;
+import org.gwaspi.progress.SwingProgressListener;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.TaskEvent;
+import org.gwaspi.threadbox.TasksListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessTab extends JPanel {
+public class ProcessTab extends JPanel implements TasksListener, ProgressListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	private final JScrollPane scrl_Overview;
+	private final JPanel pnl_progress;
+	private final List<SwingProgressListener> taskProgressDisplays;
 	private static ProcessTab singleton = null;
 
 	private ProcessTab() {
+
+		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
 		final JPanel pnl_top = new JPanel();
 		this.scrl_Overview = new JScrollPane();
 //		final JPanel pnl_Logo = new JPanel();
 //		final JLabel lbl_Logo = new JLabel();
-		final JPanel pnl_progress = new JPanel();
+		this.pnl_progress = new JPanel();
 		pnl_top.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
 		pnl_top.add(scrl_Overview, BorderLayout.NORTH);
 		pnl_top.add(pnl_progress, BorderLayout.CENTER);
@@ -84,7 +97,6 @@ public class ProcessTab extends JPanel {
 		this.add(pnl_center, BorderLayout.CENTER);
 		this.add(pnl_bottom, BorderLayout.SOUTH);
 
-
 		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
 //		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
@@ -95,11 +107,7 @@ public class ProcessTab extends JPanel {
 		txtA_ProcessLog.setEditable(false);
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
 
-
 		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
-
-
-
 
 		if (!StartGWASpi.logOff) {
 			txtA_ProcessLog.setDocument(new LogDocument());
@@ -110,10 +118,24 @@ public class ProcessTab extends JPanel {
 
 		if (singleton == null) {
 			singleton = new ProcessTab();
+			SwingWorkerItemList.addTaskListener(singleton);
 		}
 
 		return singleton;
 	}
+
+	@Override
+	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+		updateProcessOverview();
+	}
+
+	@Override
+	public void statusChanged(ProcessStatusChangeEvent evt) {
+		updateProcessOverview();
+	}
+
+	@Override
+	public void progressHappened(ProgressEvent evt) {}
 
 	private static class ProcessesTable extends JTable {
 
@@ -163,7 +185,19 @@ public class ProcessTab extends JPanel {
 		}
 	}
 
-	public void updateProcessOverview() {
+	@Override
+	public void taskRegistered(TaskEvent evt) {
+
+		evt.getTask().getProgressSource().addProgressListener(this);
+
+		SwingProgressListener taskProgressDisplay = SuperSwingProgressListener.newDisplay(evt.getTask().getProgressSource());
+		pnl_progress.add(taskProgressDisplay.getMainComponent());
+		taskProgressDisplays.add(taskProgressDisplay);
+
+		updateProcessOverview();
+	}
+
+	private void updateProcessOverview() {
 
 		if (StartGWASpi.guiMode) {
 			final JTable tmpTable = new ProcessesTable();

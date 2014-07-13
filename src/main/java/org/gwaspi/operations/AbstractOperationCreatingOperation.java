@@ -27,7 +27,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 
 public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> extends AbstractOperation<PT> {
 
@@ -69,7 +68,8 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		final int numItems;
 
 		final DataSetSource parentDataSetSource = getParentDataSetSource();
-		if (((AbstractOperationDataSet) parentDataSetSource).isMarkersOperationSet()) { // HACK
+//		if (((OperationDataSet) parentDataSetSource).isMarkersOperationSet()) { // HACK
+		if (OperationManager.getOperationTypeInfo(this.getClass()).isMarkersOriented()) {
 			numItems = parentDataSetSource.getNumMarkers();
 		} else {
 			numItems = parentDataSetSource.getNumSamples();
@@ -78,8 +78,7 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		return numItems;
 	}
 
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
+	protected ProgressHandler getProgressHandler() throws IOException {
 
 		if (operationPH == null) {
 			final int numItems = getNumItems();

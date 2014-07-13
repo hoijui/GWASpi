@@ -25,7 +25,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractTestMatrixOperation;
@@ -35,11 +34,9 @@ import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
-import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -76,8 +73,6 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 				});
 	}
 
-	private ProgressHandler operationPH;
-
 	public TrendTestOperation(final TrendTestOperationParams params) {
 		super(params);
 	}
@@ -108,10 +103,11 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 			OperationDataSet dataSet,
 			Map<Integer, MarkerKey> markerOrigIndicesKeys,
 			List<Census> caseMarkersCensus,
-			List<Census> ctrlMarkersCensus)
+			List<Census> ctrlMarkersCensus,
+			ProgressHandler rawTestPH)
 			throws IOException
 	{
-		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
+		rawTestPH.setNewStatus(ProcessStatus.INITIALIZING);
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
 		trendTestDataSet.setNumMarkers(markerOrigIndicesKeys.size());
 
@@ -119,7 +115,7 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
 		boolean nonInformativeMarkers = false;
 		int localMarkerIndex = 0;
-		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		rawTestPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
 			final Integer origIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
@@ -140,7 +136,7 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 
 			final double armitagePval = Pvalue.calculatePvalueFromChiSqr(armitageT, 1);
 
-			operationPH.setProgress(localMarkerIndex);
+			rawTestPH.setProgress(localMarkerIndex);
 			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(
 					markerKey,
 					origIndex,
@@ -149,10 +145,10 @@ public class TrendTestOperation extends AbstractTestMatrixOperation<TrendTestOpe
 
 			localMarkerIndex++;
 		}
-		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+		rawTestPH.setNewStatus(ProcessStatus.FINALIZING);
 		if (nonInformativeMarkers) {
 			log.warn("There were markers baring no information (all genotypes are equal). You may consider first filtering them out.");
 		}
-		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+		rawTestPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

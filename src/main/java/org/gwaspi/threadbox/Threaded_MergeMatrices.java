@@ -179,7 +179,7 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 			final DataSetKey qaParent = new DataSetKey(resultMatrixKey);
 			final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(qaParent, true);
 			progressSource.replaceSubProgressSource(Threaded_MatrixQA.PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
-			threaded_MatrixQA.runInternal(thisSwi);
+			CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}

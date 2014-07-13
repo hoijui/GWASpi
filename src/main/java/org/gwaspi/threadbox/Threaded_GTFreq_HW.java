@@ -207,7 +207,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
-			threaded_HardyWeinberg.runInternal(thisSwi);
+			CommonRunnable.doRunNowInThread(threaded_HardyWeinberg, thisSwi);
 			hardyWeinbergOperationKey = threaded_HardyWeinberg.getHardyWeinbergOperationKey();
 		}
 	}

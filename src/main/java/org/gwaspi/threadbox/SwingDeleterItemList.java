@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -62,7 +61,7 @@ public class SwingDeleterItemList {
 			deleteAllListed();
 		}
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		SwingWorkerItemList.fireTaskRegistered(sdi);
 	}
 
 	public static void deleteAllListed() {
@@ -134,7 +133,6 @@ public class SwingDeleterItemList {
 		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
 		if (StartGWASpi.guiMode) {
 			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
-			ProcessTab.getSingleton().updateProcessOverview();
 			try {
 				MultiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {
@@ -209,7 +207,6 @@ public class SwingDeleterItemList {
 			log.info(sdi.getDescription());
 			log.info("Delete Launch Time: {}", sdi.getLaunchTime());
 			log.info("");
-			ProcessTab.getSingleton().updateProcessOverview();
 		}
 	}
 }

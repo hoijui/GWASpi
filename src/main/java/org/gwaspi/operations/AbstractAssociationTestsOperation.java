@@ -25,6 +25,8 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
 
 public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOperationDataSet> extends AbstractTestMatrixOperation<DST, AssociationTestOperationParams> {
 
@@ -50,6 +52,7 @@ public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOp
 	 * @param markerOrigIndicesKeys
 	 * @param caseMarkersCensus
 	 * @param ctrlMarkersCensus
+	 * @param rawTestPH
 	 * @throws IOException
 	 */
 	@Override
@@ -57,11 +60,15 @@ public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOp
 			OperationDataSet dataSet,
 			Map<Integer, MarkerKey> markerOrigIndicesKeys,
 			List<Census> caseMarkersCensus,
-			List<Census> ctrlMarkersCensus)
+			List<Census> ctrlMarkersCensus,
+			ProgressHandler rawTestPH)
 			throws IOException
 	{
+		rawTestPH.setNewStatus(ProcessStatus.INITIALIZING);
 		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
 		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
+		int localMarkerIndex = 0;
+		rawTestPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
 			final Integer origIndex = caseMarkerOrigIndexKey.getKey();
 			final MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
@@ -79,6 +86,9 @@ public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOp
 
 			// XXX Genotypic is about 10 times faster then allelic, and the only difference between the two is the code here, so... find out why!!!
 			associationTest((DST) dataSet, origIndex, markerKey, caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa);
+			rawTestPH.setProgress(localMarkerIndex);
+			localMarkerIndex++;
 		}
+		rawTestPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

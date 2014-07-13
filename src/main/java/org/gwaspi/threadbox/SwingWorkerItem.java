@@ -21,8 +21,10 @@ package org.gwaspi.threadbox;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import org.gwaspi.progress.AbstractProgressSource;
+import org.gwaspi.progress.ProcessStatus;
 
-public class SwingWorkerItem {
+public class SwingWorkerItem extends AbstractProgressSource {
 
 	private final CommonRunnable task;
 	private final String launchTime;
@@ -54,12 +56,27 @@ public class SwingWorkerItem {
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
 	{
+		super(task.getProgressSource().getInfo(), task.getProgressSource().getNumIntervals());
+
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.task = task;
 		this.queueState = QueueState.QUEUED;
 		this.parentStudyIds = Collections.unmodifiableCollection(Arrays.asList(parentStudyIds));
 		this.parentMatricesIds = Collections.unmodifiableCollection(Arrays.asList(parentMatricesIds));
 		this.parentOperationsIds = Collections.unmodifiableCollection(Arrays.asList(parentOperationsIds));
+	}
+
+	public static ProcessStatus toProcessStatus(QueueState queueState) {
+
+		switch (queueState) {
+			case ABORT: return ProcessStatus.ABORTED;
+			case DELETED: return null;
+			case DONE: return ProcessStatus.COMPLEETED;
+			case ERROR: return ProcessStatus.FAILED;
+			case PROCESSING: return ProcessStatus.RUNNING;
+			case QUEUED: return ProcessStatus.INITIALIZING;
+			default: return null;
+		}
 	}
 
 	public QueueState getQueueState() {
@@ -103,7 +120,9 @@ public class SwingWorkerItem {
 	}
 
 	public void setQueueState(QueueState queueState) {
+
 		this.queueState = queueState;
+		fireStatusChanged(SwingWorkerItem.toProcessStatus(queueState));
 	}
 
 	public void setEndTime(String endTime) {

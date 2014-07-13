@@ -61,7 +61,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	}
 
 	@Override
-	protected ProgressSource getProgressSource() {
+	public ProgressSource getProgressSource() {
 		return progressHandler;
 	}
 

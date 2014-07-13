@@ -32,8 +32,11 @@ import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 
@@ -61,8 +64,25 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 				ByHardyWeinbergThresholdFilterOperation.class, OPERATION_TYPE_INFO));
 	}
 
+	private ProgressHandler filterPH;
+
 	public ByHardyWeinbergThresholdFilterOperation(ByHardyWeinbergThresholdFilterOperationParams params) {
 		super(params);
+
+		this.filterPH = null;
+	}
+
+	@Override
+	protected ProgressSource getFilteringProgressSource() throws IOException {
+
+		if (filterPH == null) {
+			final int numItems = getNumItems();
+			filterPH = new IntegerProgressHandler(
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
+					0, numItems - 1);
+		}
+
+		return filterPH;
 	}
 
 	@Override
@@ -77,6 +97,7 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 			Map<Integer, SampleKey> filteredSampleOrigIndicesAndKeys)
 			throws IOException
 	{
+		filterPH.setNewStatus(ProcessStatus.INITIALIZING);
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 
 		final OperationKey hwOpKey = getParams().getHardyWeinbergOperationKey();
@@ -89,6 +110,8 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 		List<HardyWeinbergOperationEntry> hwEntriesControl = hardyWeinbergOperationDataSet.getEntriesControl();
 		Iterator<HardyWeinbergOperationEntry> hwEntriesControlIt = hwEntriesControl.iterator();
 		HardyWeinbergOperationEntry curHardyWeinbergOperationEntry = null;
+		int localMarkerIndex = 0;
+		filterPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			if (curHardyWeinbergOperationEntry == null) {
 				curHardyWeinbergOperationEntry = hwEntriesControlIt.next();
@@ -108,10 +131,14 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 						parentMarkersEntry.getKey(),
 						parentMarkersEntry.getValue());
 			}
+			filterPH.setProgress(localMarkerIndex);
+			localMarkerIndex++;
 		}
+		filterPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		// we use all samples from the parent
 		filteredSampleOrigIndicesAndKeys.putAll(parentDataSetSource.getSamplesKeysSource().getIndicesMap());
+		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	@Override

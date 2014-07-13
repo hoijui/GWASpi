@@ -19,7 +19,6 @@ package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
@@ -30,14 +29,39 @@ public class SwingWorkerItemList {
 	private static List<Integer> parentStudyIds = new ArrayList<Integer>();
 	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
 	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
+	private static List<TasksListener> taskListeners = new ArrayList<TasksListener>();
 
 	private SwingWorkerItemList() {
 	}
 
-	public static void add(SwingWorkerItem swi)
-	{
+	/**
+	 * Registers a task listener.
+	 * @param tasksListener this listener will receive task-registered and -deleted events
+	 */
+	public static void addTaskListener(TasksListener tasksListener) {
+		taskListeners.add(tasksListener);
+	}
+
+	public static void removeTaskListener(TasksListener tasksListener) {
+		taskListeners.remove(tasksListener);
+	}
+
+	static List<TasksListener> getTaskListeners() {
+		return taskListeners;
+	}
+
+	static void fireTaskRegistered(CommonRunnable task) {
+
+		final TaskEvent taskEvent = new TaskEvent(task);
+		for (TasksListener tasksListener : getTaskListeners()) {
+			tasksListener.taskRegistered(taskEvent);
+		}
+	}
+
+	public static void add(SwingWorkerItem swi) {
+
 		SwingDeleterItemList.purgeDoneDeletes();
-		SwingWorkerItemList.swingWorkerItems.add(swi);
+		swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
 		parentStudyIds.addAll(swi.getParentStudyIds());
@@ -60,7 +84,7 @@ public class SwingWorkerItemList {
 			swi.setQueueState(QueueState.PROCESSING);
 		}
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		fireTaskRegistered(swi.getTask());
 	}
 
 	public static void startNext() {
@@ -78,7 +102,6 @@ public class SwingWorkerItemList {
 		if (!started) {
 			SwingDeleterItemList.deleteAllListed(); // This will also update the tree
 		}
-		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static List<SwingWorkerItem> getItems() {
@@ -149,7 +172,6 @@ public class SwingWorkerItemList {
 		SwingWorkerItem currentSwi = getCurrentItemByIndex(rowIdx);
 		if (currentSwi != null) {
 			currentSwi.setQueueState(QueueState.ABORT);
-			ProcessTab.getSingleton().updateProcessOverview();
 
 			unlockParentItems(currentSwi);
 		}

@@ -30,7 +30,7 @@ public class ProgressForwarder<ST> extends AbstractProgressSource<ST> implements
 	public void setInnerProgressSource(ProgressSource<ST> progressSource) {
 
 		if (this.progressSource != null) {
-			progressSource.removeProgressListener(this);
+			this.progressSource.removeProgressListener(this);
 		}
 		this.progressSource = progressSource;
 		progressSource.addProgressListener(this);

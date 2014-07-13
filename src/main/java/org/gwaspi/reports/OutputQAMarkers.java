@@ -39,7 +39,6 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
@@ -53,24 +52,22 @@ import org.gwaspi.progress.SuperProgressSource;
 /**
  * Write reports for QA Markers data.
  */
-public class OutputQAMarkers extends AbstractOperation<QAMarkersOutputParams> {
+public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputParams> {
 
 	private static final ProcessInfo qaMarkersOutputProcessInfo = new DefaultProcessInfo("Write QA Markers output to files", ""); // TODO
 
-	private final QAMarkersOutputParams params;
 	private ProgressHandler operationPH;
 	private ProgressHandler creatingMissingnessTablePH;
 	private ProgressHandler creatingMismatchTablePH;
 
 	public OutputQAMarkers(QAMarkersOutputParams params) {
-
-		this.params = params;
+		super(params);
 	}
 
 	@Override
 	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(params.getMarkersQAOpKey());
+		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
 
 		String prefix = ReportsList.getReportNamePrefix(op);
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
@@ -78,13 +75,13 @@ public class OutputQAMarkers extends AbstractOperation<QAMarkersOutputParams> {
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		String markMissOutName = prefix + "markmissing.txt";
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
-		createSortedMarkerMissingnessReport(params.getMarkersQAOpKey(), markMissOutName);
+		createSortedMarkerMissingnessReport(getParams().getMarkersQAOpKey(), markMissOutName);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Marker Missingness Table",
 				markMissOutName,
 				OPType.MARKER_QA,
-				params.getMarkersQAOpKey(),
+				getParams().getMarkersQAOpKey(),
 				"Marker Missingness Table",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Marker Missingness QA Report");
@@ -93,13 +90,13 @@ public class OutputQAMarkers extends AbstractOperation<QAMarkersOutputParams> {
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		String markMismatchOutName = prefix + "markmismatch.txt";
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.RUNNING);
-		createMarkerMismatchReport(params.getMarkersQAOpKey(), markMismatchOutName);
+		createMarkerMismatchReport(getParams().getMarkersQAOpKey(), markMismatchOutName);
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Marker Mismatch State Table",
 				markMismatchOutName,
 				OPType.MARKER_QA,
-				params.getMarkersQAOpKey(),
+				getParams().getMarkersQAOpKey(),
 				"Marker Mismatch State Table",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Marker Mismatch QA Report");

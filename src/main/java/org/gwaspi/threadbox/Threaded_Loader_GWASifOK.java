@@ -135,7 +135,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(parent, true);
 		progressSource.replaceSubProgressSource(Threaded_MatrixQA.PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
-		threaded_MatrixQA.runInternal(thisSwi);
+		CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
 
 		final OperationKey samplesQAOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
 		final OperationKey markersQAOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
@@ -150,7 +150,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		{
 			final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
-			threaded_GWAS.runInternal(thisSwi);
+			CommonRunnable.doRunNowInThread(threaded_GWAS, thisSwi);
 		}
 	}
 }

@@ -36,7 +36,6 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
@@ -51,24 +50,22 @@ import org.gwaspi.progress.SuperProgressSource;
 /**
  * Write reports for QA Samples data.
  */
-public class OutputQASamples extends AbstractOperation<QASamplesOutputParams> {
+public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputParams> {
 
 	private static final ProcessInfo qaSamplesOutputProcessInfo = new DefaultProcessInfo("Write QA Samples output to files", ""); // TODO
 
-	private final QASamplesOutputParams params;
 	private ProgressHandler operationPH;
 	private ProgressHandler creatingMissingnessTablePH;
 	private ProgressHandler creatingHetzyPlotPH;
 
 	public OutputQASamples(QASamplesOutputParams params) {
-
-		this. params = params;
+		super(params);
 	}
 
 	@Override
 	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(params.getSampleQAOpKey());
+		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		final String reportPath = Study.constructReportsPath(op.getStudyKey());
@@ -78,14 +75,14 @@ public class OutputQASamples extends AbstractOperation<QASamplesOutputParams> {
 		final String sampleMissOutName = prefix + "samplmissing.txt";
 		final File sampleMissOutFile = new File(reportPath, sampleMissOutName);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
-		createSortedSampleMissingnessReport(params.getSampleQAOpKey(), sampleMissOutFile);
+		createSortedSampleMissingnessReport(getParams().getSampleQAOpKey(), sampleMissOutFile);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
-		if (params.isNewReport()) {
+		if (getParams().isNewReport()) {
 			ReportsList.insertRPMetadata(new Report(
 					"Sample Missingness Table",
 					sampleMissOutName,
 					OPType.SAMPLE_QA,
-					params.getSampleQAOpKey(),
+					getParams().getSampleQAOpKey(),
 					"Sample Missingness Table",
 					op.getStudyKey()));
 			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
@@ -103,7 +100,7 @@ public class OutputQASamples extends AbstractOperation<QASamplesOutputParams> {
 				"Sample Heterozygosity vs Missingness Plot",
 				hetzyMissOutName,
 				OPType.SAMPLE_HTZYPLOT,
-				params.getSampleQAOpKey(),
+				getParams().getSampleQAOpKey(),
 				"Sample Heterozygosity vs Missingness Plot",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Heterozygosity QA Report");

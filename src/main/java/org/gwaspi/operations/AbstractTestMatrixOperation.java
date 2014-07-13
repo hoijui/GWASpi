@@ -20,6 +20,7 @@ package org.gwaspi.operations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.filter.SimpleOperationDataSet;
+import static org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation.PROCESS_INFO;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -36,6 +38,12 @@ import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +52,45 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
+	private ProgressHandler filterPH;
+	private ProgressHandler testPH;
+	private SuperProgressSource progressSource;
+
 	public AbstractTestMatrixOperation(PT params) {
 		super(params);
+
+		this.filterPH = null;
+		this.testPH = null;
+		this.progressSource = null;
+	}
+
+	private SuperProgressSource getSuperProgressHandler() throws IOException {
+
+		if (progressSource == null) {
+			final int numItems = getNumItems();
+			filterPH = new IntegerProgressHandler(
+					new SubProcessInfo(PROCESS_INFO, getParams().getName() + " filtering", null),
+					0, numItems - 1);
+			testPH = new IntegerProgressHandler(
+					new SubProcessInfo(PROCESS_INFO, getParams().getName() + " testing", null),
+					0, numItems - 1);
+
+			final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+			final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>(2);
+			tmpSubProgressSourcesAndWeights.put(filterPH, 0.5);
+			tmpSubProgressSourcesAndWeights.put(testPH, 0.5);
+			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+
+			progressSource = new SuperProgressSource(PROCESS_INFO, subProgressSourcesAndWeights);
+		}
+
+		return progressSource;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+		return getSuperProgressHandler();
 	}
 
 	@Override
@@ -62,6 +107,9 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 	public int processMatrix() throws IOException {
 
 		int resultOpId = OperationKey.NULL_ID;
+
+		final SuperProgressSource progressHandler = getSuperProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		SimpleOperationDataSet filteredOperationDataSet
 				= (SimpleOperationDataSet) OperationManager.generateOperationDataSet(getParams().getParent().getOperationParent());
@@ -88,10 +136,13 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		Map<Integer, MarkerKey> censusOpMarkers = markerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
 		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filteredOperationDataSet.getMarkersKeysSource().getIndicesMap();
 
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		Iterator<Census> wrCaseMarkerCensusesIt = markerCensusOperationDataSet.getCensus(Category.CASE).iterator();
 		Iterator<Census> wrCtrlMarkerCensusesIt = markerCensusOperationDataSet.getCensus(Category.CONTROL).iterator();
 		List<Census> wrCaseMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
 		List<Census> wrCtrlMarkerCensusesFiltered = new ArrayList<Census>(wrMarkerKeysFiltered.size());
+		int localMarkerIndex = 0;
+		filterPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Integer allOrigIndex : censusOpMarkers.keySet()) {
 			final Census markerCensusCase = wrCaseMarkerCensusesIt.next();
 			final Census markerCensusCtrl = wrCtrlMarkerCensusesIt.next();
@@ -99,18 +150,24 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 				wrCaseMarkerCensusesFiltered.add(markerCensusCase);
 				wrCtrlMarkerCensusesFiltered.add(markerCensusCtrl);
 			}
+			filterPH.setProgress(localMarkerIndex);
+			localMarkerIndex++;
 		}
+		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		org.gwaspi.global.Utils.sysoutStart(getParams().getName());
 		performTest(
 				dataSet,
 				wrMarkerKeysFiltered,
 				wrCaseMarkerCensusesFiltered,
-				wrCtrlMarkerCensusesFiltered);
+				wrCtrlMarkerCensusesFiltered,
+				testPH);
 		org.gwaspi.global.Utils.sysoutCompleted(getParams().getName());
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
 		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
 	}
@@ -183,6 +240,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 			OperationDataSet dataSet,
 			Map<Integer, MarkerKey> markerOrigIndicesKeys,
 			List<Census> caseMarkersCensus,
-			List<Census> ctrlMarkersCensus)
+			List<Census> ctrlMarkersCensus,
+			ProgressHandler rawTestPH)
 			throws IOException;
 }

@@ -48,10 +48,15 @@ public abstract class CommonRunnable implements Runnable {
 
 	protected abstract Logger createLog();
 
-	protected abstract ProgressSource getProgressSource();
+	public abstract ProgressSource getProgressSource();
 
 	protected Logger getLog() {
 		return log;
+	}
+
+	public static void doRunNowInThread(CommonRunnable task, SwingWorkerItem thisSwi) throws Exception {
+
+		task.runInternal(thisSwi);
 	}
 
 	protected abstract void runInternal(SwingWorkerItem thisSwi) throws Exception;

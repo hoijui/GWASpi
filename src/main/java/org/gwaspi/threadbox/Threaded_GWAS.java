@@ -84,7 +84,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GTFREQ_HW, threaded_GTFreq_HW.getProgressSource(), null);
-		threaded_GTFreq_HW.runInternal(thisSwi);
+		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW, thisSwi);
 
 //		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
 //		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
@@ -148,7 +148,11 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		final Threaded_Test threaded_Test = new Threaded_Test(censusOpKey, hwOpKey, gwasParams, testType);
 		superProgressSource.replaceSubProgressSource(placeholderPS, threaded_Test.getProgressSource(), null);
-		threaded_Test.runInternal(thisSwi);
+		try {
+			CommonRunnable.doRunNowInThread(threaded_Test, thisSwi);
+		} catch (Exception ex) {
+			throw new IOException(ex);
+		}
 //		OperationKey testOpKey = OperationManager.performCleanTests(
 //				censusOpKey,
 //				hwOpKey,

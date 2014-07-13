@@ -169,7 +169,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, matrixQA.getProgressSource(), null);
 
 		// run within this thread
-		matrixQA.runInternal(thisSwi);
+		CommonRunnable.doRunNowInThread(matrixQA, thisSwi);
 
 		resultOperationKeys[0] = matrixQA.getSamplesQAOperationKey();
 		resultOperationKeys[1] = matrixQA.getMarkersQAOperationKey();

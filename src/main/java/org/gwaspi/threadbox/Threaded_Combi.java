@@ -131,7 +131,7 @@ public class Threaded_Combi extends CommonRunnable {
 		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(new DataSetKey(combiFilterOpKey), false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
-		threaded_MatrixQA.run();
+		CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
 		final OperationKey qaSamplesOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
 		final OperationKey qaMarkersOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
 

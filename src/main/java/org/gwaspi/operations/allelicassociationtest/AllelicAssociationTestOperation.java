@@ -44,7 +44,7 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 	public static final ProgressSource PLACEHOLDER_PS_TEST = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_TEST", null));
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Operation.allelicAssocTest,
 			Text.Operation.allelicAssocTest); // TODO We need a more elaborate description of this operation!
 
@@ -74,7 +74,7 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

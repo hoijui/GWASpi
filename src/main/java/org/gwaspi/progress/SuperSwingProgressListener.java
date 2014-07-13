@@ -116,7 +116,7 @@ public class SuperSwingProgressListener<ST> extends AbstractProgressListener<ST>
 		visualizeStatus(subProgressSourcesAndProgressBarParts.get(evt.getProgressSource()), evt.getProgressSource(), evt.getNewStatus());
 	}
 
-	private SwingProgressListener newDisplay(final ProgressSource progressSource) {
+	public static SwingProgressListener newDisplay(final ProgressSource progressSource) {
 
 		if (progressSource instanceof SuperProgressSource) {
 			return new SuperSwingProgressListener((SuperProgressSource) progressSource);
@@ -127,7 +127,7 @@ public class SuperSwingProgressListener<ST> extends AbstractProgressListener<ST>
 
 	private void visualizeStatus(final JProgressBar subProgressBar, final ProgressSource progressSource, final ProcessStatus status) {
 
-			subProgressBar.setToolTipText(status.name());
+			subProgressBar.setToolTipText(String.valueOf(status));
 
 			if (status.isEnd()) {
 				subProgressBar.setValue(100);

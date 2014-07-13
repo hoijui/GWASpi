@@ -46,7 +46,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	}
 
 	@Override
-	protected ProgressSource getProgressSource() {
+	public ProgressSource getProgressSource() {
 		return progressForwarder;
 	}
 

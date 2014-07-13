@@ -59,6 +59,9 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +98,11 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 	}
 
 	@Override
+	public ProgressSource getProgressSource() throws IOException {
+		return getProgressHandler();
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
 		return PROCESS_INFO;
 	}
@@ -113,6 +121,9 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 	public int processMatrix() throws IOException {
 
 		int resultOpId = Integer.MIN_VALUE;
+
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		Map<Integer, SampleKey> excludeSamplesOrigIndexAndKey = new LinkedHashMap<Integer, SampleKey>();
 		boolean dataRemaining = pickingMarkersAndSamplesFromQA(
@@ -165,6 +176,8 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 		Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
 		Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
+		int localMarkerIndex = 0;
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		for (final Map.Entry<Integer, MarkerKey> markerEntry : dataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
 			final int markerOrigIndex = markerEntry.getKey();
 			final MarkerKey markerKey = markerEntry.getValue();
@@ -258,13 +271,17 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 					markerOrigIndex,
 					majorAndMinorAlleles,
 					censusFull));
+			progressHandler.setProgress(localMarkerIndex);
+			localMarkerIndex++;
 		}
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 		//</editor-fold>
 
 		dataSet.finnishWriting();
 		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
 	}
