@@ -31,6 +31,7 @@ package org.gwaspi.progress;
  * {@see https://answers.yahoo.com/question/index?qid=20070427185233AAcmFY5}
  */
 public enum ProcessStatus {
+	NONE(false, false, false),
 	INITIALIZING(true, false, false),
 	RUNNING(true, false, false),
 	PAUSED(false, false, false),

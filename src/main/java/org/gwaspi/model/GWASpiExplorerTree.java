@@ -215,6 +215,11 @@ public class GWASpiExplorerTree {
 				return;
 			}
 
+			if (tree.isSelectionEmpty()) {
+				gwasPiExplorerPanel.setPnl_Content(new JPanel());
+				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+			}
+
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			if (currentNode == null) {
 				// TODO Maybe, in this case, we should auto-select the root node, or something even more intelligent?
