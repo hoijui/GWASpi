@@ -443,7 +443,23 @@ public class Dialogs {
 		return resultFile;
 	}
 
-	public static File selectDirectoryDialog(int okOption) {
+	/**
+	 * @deprecated use {@link #selectDirectoryDialog(java.io.File, java.lang.String, java.lang.String)} instead!
+	 * @return
+	 */
+	public static File selectDirectoryDialog() {
+		return selectDirectoryDialog(null, null, null);
+	}
+
+	public static File selectDirectoryDialog(String propertyName, String dialogTitle) {
+		return selectDirectoryDialog(null, propertyName, dialogTitle);
+	}
+
+	public static File selectDirectoryDialog(File currentSelection, String dialogTitle) {
+		return selectDirectoryDialog(currentSelection, null, dialogTitle);
+	}
+
+	private static File selectDirectoryDialog(File currentSelection, String propertyName, String dialogTitle) {
 
 		File resultFile = null;
 
@@ -451,26 +467,38 @@ public class Dialogs {
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		// Handle open button action.
-		if (okOption == JOptionPane.OK_OPTION) {
+		if (dialogTitle != null) {
+			fc.setDialogTitle(dialogTitle);
+		}
+
+		if (propertyName == null) {
+			// use the default directory
+			propertyName = Config.PROPERTY_LAST_OPENED_DIR;
+		}
+
+		if (currentSelection == null) {
 			// getting the latest opened dir
 			try {
-				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+				final String dir = Config.getConfigValue(propertyName, cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
+		} else {
+			fc.setCurrentDirectory(currentSelection);
+		}
 
-			int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				resultFile = fc.getSelectedFile();
+		// show the dialog
+		final int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
+		// process the users choise
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			resultFile = fc.getSelectedFile();
 
-				// setting the directory to latest opened dir
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+			// setting the directory to latest opened dir
+			try {
+				Config.setConfigValue(propertyName, resultFile);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
 		}
 

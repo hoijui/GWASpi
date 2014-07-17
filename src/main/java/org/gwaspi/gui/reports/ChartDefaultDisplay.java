@@ -27,10 +27,10 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.MatrixAnalysePanel;
@@ -162,9 +162,11 @@ public class ChartDefaultDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				String reportPath = Study.constructReportsPath(studyKey);
-				File origFile = new File(reportPath + chartPath);
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
+				final String reportPath = Study.constructReportsPath(studyKey);
+				final File origFile = new File(reportPath, chartPath);
+				final File newChartDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+				final File newFile = new File(newChartDir, chartPath);
+
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}

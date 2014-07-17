@@ -734,7 +734,9 @@ public final class ManhattanPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerKey + ".png");
+				final String newFileName = "zoom_" + origMarkerKey + ".png";
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newFile = new File(newDir, newFileName);
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
 				log.error(null, ex);

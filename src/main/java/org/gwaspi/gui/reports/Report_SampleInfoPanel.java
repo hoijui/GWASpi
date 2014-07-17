@@ -29,7 +29,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,6 +38,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -235,9 +235,10 @@ public class Report_SampleInfoPanel extends JPanel {
 	private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
 
 		try {
-			String reportPath = Study.constructReportsPath(studyKey);
-			File origFile = new File(reportPath + chartPath);
-			File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
+			final String reportPath = Study.constructReportsPath(studyKey);
+			final File origFile = new File(reportPath + chartPath);
+			final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+			final File newFile = new File(newDir, chartPath);
 			if (origFile.exists()) {
 				Utils.copyFile(origFile, newFile);
 			}
@@ -267,7 +268,9 @@ public class Report_SampleInfoPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/sampleInfo.txt");
+				final String newFileName = "sampleInfo.txt";
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newFile = new File(newDir, newFileName);
 				FileWriter writer = new FileWriter(newFile);
 
 				StringBuilder tableData = new StringBuilder();
