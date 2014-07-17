@@ -176,10 +176,7 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 			OperationManager.performOperation(matrixOperation);
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			final DataSetKey qaParent = new DataSetKey(resultMatrixKey);
-			final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(qaParent, true);
-			progressSource.replaceSubProgressSource(Threaded_MatrixQA.PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
-			CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
+			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}

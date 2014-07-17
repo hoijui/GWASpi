@@ -133,12 +133,10 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			return;
 		}
 
-		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(parent, true);
-		progressSource.replaceSubProgressSource(Threaded_MatrixQA.PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
-		CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
+		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(thisSwi, parent.getMatrixParent(), progressSource);
 
-		final OperationKey samplesQAOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
-		final OperationKey markersQAOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
+		final OperationKey samplesQAOpKey = qaOpKeys[0];
+		final OperationKey markersQAOpKey = qaOpKeys[1];
 		final MarkerCensusOperationParams markerCensusOperationParams
 				= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
 		markerCensusOperationParams.setName(markerCensusName);
