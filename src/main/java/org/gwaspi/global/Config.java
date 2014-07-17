@@ -188,7 +188,9 @@ public class Config {
 			if (_startWithGUI) { // GUI MODE
 				if (dirToData.getPath().equals("")) {
 					JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.initText);
-					File dataDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+					File dataDir = Dialogs.selectDirectoryDialog(
+							PROPERTY_DATA_DIR,
+							"Choose your " + Text.App.appName + " data directory");
 
 					if (dataDir != null) {
 						try {
@@ -208,7 +210,9 @@ public class Config {
 							createDataStructure(dirToData);
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.NO_OPTION) {
-							dirToData = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+							dirToData = Dialogs.selectDirectoryDialog(
+									dirToData,
+									"Choose your " + Text.App.appName + " data directory");
 							createDataStructure(dirToData);
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.CANCEL_OPTION) {

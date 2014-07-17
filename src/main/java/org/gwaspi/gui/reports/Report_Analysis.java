@@ -60,6 +60,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -515,12 +516,12 @@ public abstract class Report_Analysis extends JPanel {
 			try {
 				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
-				File newDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+				File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose a new directory for " + chartPath);
 				if (newDir == null) {
 					// the user has not choosen a directory to save to
 					return;
 				}
-				File newFile = new File(newDir.getPath() + "/" + chartPath);
+				File newFile = new File(newDir, chartPath);
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}
@@ -538,9 +539,10 @@ public abstract class Report_Analysis extends JPanel {
 
 		private void actionSaveReportViewAs(String chartPath) {
 			try {
-				String newPath = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + nRows.getText() + "rows_" + chartPath;
-				File newFile = new File(newPath);
-				FileWriter writer = new FileWriter(newFile);
+				final String newFileName = nRows.getText() + "rows_" + chartPath;
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newFile = new File(newDir, newFileName);
+				final FileWriter writer = new FileWriter(newFile);
 
 				StringBuilder tableData = new StringBuilder();
 				// HEADER

@@ -37,6 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
@@ -305,6 +306,8 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 
 	private static class SaveAsAction extends AbstractAction {
 
+		private static final String LOG_FILE_NAME = "process.log";
+
 		private final JTextArea processLog;
 
 		SaveAsAction(JTextArea processLog) {
@@ -318,11 +321,12 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 
 			FileWriter writer = null;
 			try {
-				File selectedPath = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+				// XXX This would be better done by letting the user choose the file directly, not just the directory, right? With sane defaults, it can be just as easy, but more powerfull
+				final File selectedPath = Dialogs.selectDirectoryDialog(Config.PROPERTY_LOG_DIR, "Choose directory to save '" + LOG_FILE_NAME + "' to");
 				if (selectedPath == null) {
 					return;
 				}
-				File newFile = new File(selectedPath, "process.log");
+				File newFile = new File(selectedPath, LOG_FILE_NAME);
 				writer = new FileWriter(newFile);
 				writer.write(processLog.getText());
 			} catch (IOException ex) {

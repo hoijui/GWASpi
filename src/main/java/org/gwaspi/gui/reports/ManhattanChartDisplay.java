@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -332,8 +333,9 @@ public final class ManhattanChartDisplay extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				String reportPath = Study.constructReportsPath(studyKey);
-				File origFile = new File(reportPath + chartPath);
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
+				final File origFile = new File(reportPath, chartPath);
+				final File newChartDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+				final File newFile = new File(newChartDir, chartPath);
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}

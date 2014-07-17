@@ -32,7 +32,6 @@ import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -594,7 +593,9 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png");
+				final String newFileName = "SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png";
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newFile = new File(newDir, newFileName);
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
 				log.error(null, ex);
