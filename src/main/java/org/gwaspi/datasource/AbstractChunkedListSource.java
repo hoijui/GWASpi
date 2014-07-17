@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.datasource.netcdf;
+package org.gwaspi.datasource;
 
+import org.gwaspi.datasource.ListSource;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;

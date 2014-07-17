@@ -40,7 +40,7 @@ import org.gwaspi.progress.ProcessInfo;
 
 public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.mergeSamplesOnly,
 			Text.Trafo.mergeMethodSampleJoin);
 
@@ -77,8 +77,13 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ package org.gwaspi.datasource.filter;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
-import org.gwaspi.datasource.netcdf.ListSource;
+import org.gwaspi.datasource.ListSource;
 import org.gwaspi.model.CompactGenotypesList.SelectiveIndicesGenotypesListFactory;
 import org.gwaspi.model.GenotypesList;
 

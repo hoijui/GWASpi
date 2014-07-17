@@ -22,16 +22,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -57,24 +52,10 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 			Text.Operation.hardyWeiberg,
 			Text.Operation.hardyWeiberg); // TODO We need a more elaborate description of this operation!
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					Text.Operation.hardyWeiberg,
-					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
-					OPType.HARDY_WEINBERG,
-					true,
-					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				HardyWeinbergOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfHardyWeinbergOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new HardyWeinbergOperationFactory());
 	}
 
 //	private ProgressHandler hwAllPH;
@@ -91,6 +72,11 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		this.hwControlPH = null;
 		this.hwAlternatePH = null;
 		this.progressSource = null;
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return HardyWeinbergOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	private SuperProgressSource getSuperProgressHandler() throws IOException {
@@ -160,8 +146,6 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
 		dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
 		dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
-
-		dataSet.setHardyWeinbergName(getParams().getName());
 
 		final Collection<MarkerCensusOperationEntry> markersCensus
 				= markerCensusOperationDataSet.getEntries();

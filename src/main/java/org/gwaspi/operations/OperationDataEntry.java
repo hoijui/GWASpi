@@ -17,14 +17,34 @@
 
 package org.gwaspi.operations;
 
+import org.gwaspi.global.Extractor;
+
 /**
  * TODO
  *
  * @param <OK> operation key type, this is the main/primary key type
- * @param <IK> implicit key type, this is the secondary key type,
- *   already _implied_ by the primary)
  */
 public interface OperationDataEntry<OK> {
+
+	public static class KeyExtractor<KT>
+			implements Extractor<OperationDataEntry<KT>, KT>
+	{
+		@Override
+		public KT extract(OperationDataEntry<KT> from) {
+			return from.getKey();
+		}
+	};
+
+	public static class IndexExtractor
+			implements Extractor<OperationDataEntry, Integer>
+	{
+		@Override
+		public Integer extract(OperationDataEntry from) {
+			return from.getIndex();
+		}
+	};
+	public static final Extractor<OperationDataEntry, Integer> TO_INDEX
+			= new IndexExtractor();
 
 	/**
 	 * @return the (operation/main-)key of this data entry

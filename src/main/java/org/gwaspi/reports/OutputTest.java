@@ -40,8 +40,10 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperationEntry;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -53,6 +55,7 @@ import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperProgressSource;
+import static org.gwaspi.reports.OutputHardyWeinberg.OPERATION_TYPE_INFO;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
@@ -71,6 +74,15 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			= Color.getHSBColor(0.1f, 0.1f, 1.0f); // Hue, saturation, brightness
 
 	private static final ProcessInfo testOutputProcessInfo = new DefaultProcessInfo("Write test output to files", ""); // TODO
+
+	static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Output Test data",
+					"Output Test data", // TODO We need a more elaborate description of this operation!
+					null,
+					false,
+					false);
 
 	private final String testName;
 	private final int qqPlotDof;
@@ -105,6 +117,12 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 				throw new IllegalArgumentException("Not a supported test type: " + getParams().getTestType().toString());
 		}
 		this.testName = createTestName(getParams().getTestType());
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		// XXX For this class, we should use a different return type on this method (ialso for the othe Output* classes)
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override

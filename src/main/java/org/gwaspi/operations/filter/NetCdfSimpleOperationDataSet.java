@@ -29,35 +29,32 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfSimpleOperationDataSet extends AbstractNetCdfOperationDataSet<SimpleOperationEntry> implements SimpleOperationDataSet {
 
-	private OPType operationType;
-	private String filterDescription;
+	private final OperationTypeInfo typeInfo;
 
-	public NetCdfSimpleOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+	public NetCdfSimpleOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey, OperationTypeInfo typeInfo) {
 		super(true, origin, parent, operationKey);
+
+		this.typeInfo = typeInfo;
 	}
 
-	public NetCdfSimpleOperationDataSet(MatrixKey origin, DataSetKey parent) {
-		this(origin, parent, null);
+	public NetCdfSimpleOperationDataSet(MatrixKey origin, DataSetKey parent, OperationTypeInfo typeInfo) {
+		this(origin, parent, null, typeInfo);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return typeInfo;
 	}
 
 	@Override
 	public boolean isDataLeft() throws IOException {
 		return ((getNumMarkers() > 0) && (getNumSamples() > 0));
-	}
-
-	@Override
-	public void setType(OPType operationType) throws IOException {
-		this.operationType = operationType;
-	}
-
-	@Override
-	public void setFilterDescription(String filterDescription) throws IOException {
-		this.filterDescription = filterDescription;
 	}
 
 	@Override
@@ -70,25 +67,6 @@ public class NetCdfSimpleOperationDataSet extends AbstractNetCdfOperationDataSet
 			throws IOException
 	{
 	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				"Filtering_by_" + filterDescription, // friendly name
-				"Filters the markers and/or samples by " + filterDescription, // description
-				operationType, // operationType
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
-	}
-
-//	@Override
-//	public void setHardyWeinbergName(String hardyWeinbergName) {
-//		this.hardyWeinbergName = hardyWeinbergName;
-//	}
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<SimpleOperationEntry> writeBuffer) throws IOException {

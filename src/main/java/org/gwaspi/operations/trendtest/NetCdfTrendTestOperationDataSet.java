@@ -29,11 +29,15 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.NetCdfUtils;
+import org.gwaspi.operations.OperationTypeInfo;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
-public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
+public class NetCdfTrendTestOperationDataSet
+		extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry>
+		implements TrendTestOperationDataSet
+{
 
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
@@ -51,6 +55,11 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 
 	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return TrendTestOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override

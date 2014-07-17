@@ -29,28 +29,22 @@ import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.qamarkers.MarkerAlleleAndGTStatistics;
@@ -73,28 +67,19 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 			"Marker Census",
 			"Marker Census (== Genotypes frequencies)"); // TODO We need a more elaborate description of this operation!); // TODO We need a more elaborate description of this operation!
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					"Marker Census",
-					"Marker Census (== Genotypes frequencies)", // TODO We need a more elaborate description of this operation!
-					OPType.MARKER_CENSUS_BY_AFFECTION,
-					true,
-					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				MarkerCensusOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfMarkerCensusOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new MarkerCensusOperationFactory());
 	}
 
 	public MarkerCensusOperation(final MarkerCensusOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return MarkerCensusOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -141,32 +126,32 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		DataSetSource dataSetSource = getParentDataSetSource();
 
 		//<editor-fold defaultstate="expanded" desc="PURGE Maps">
-		Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
-		for (Map.Entry<Integer, SampleKey> origIndexKey : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+		final Map<Integer, SampleKey> samplesIndicesMap = dataSetSource.getSamplesKeysSource().getIndicesMap();
+		final List<Integer> filtereSamplesOriginalIndices = new ArrayList<Integer>(samplesIndicesMap.size());
+		final List<SampleKey> filtereSamplesKeys = new ArrayList<SampleKey>(samplesIndicesMap.size());
+		for (Map.Entry<Integer, SampleKey> origIndexKey : samplesIndicesMap.entrySet()) {
 			if (!excludeSamplesOrigIndexAndKey.containsKey(origIndexKey.getKey())) {
-				wrSampleKeys.put(origIndexKey.getKey(), origIndexKey.getValue());
+				filtereSamplesOriginalIndices.add(origIndexKey.getKey());
+				filtereSamplesKeys.add(origIndexKey.getValue());
 			}
 		}
-		List<Integer> wrSampleOrigIndices = new ArrayList<Integer>(wrSampleKeys.keySet());
 		//</editor-fold>
 
 		MarkerCensusOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		final int numMySamples = wrSampleKeys.size();
+		final int numMySamples = filtereSamplesOriginalIndices.size();
 //		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
 
 		dataSet.setNumMarkers(dataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(numMySamples);
 
-		dataSet.setParams(getParams());
-
-		dataSet.setSamples(wrSampleKeys);
+		dataSet.setSamples(filtereSamplesOriginalIndices, filtereSamplesKeys);
 
 		//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 		final List<Sex> samplesSex = new ArrayList<Sex>(numMySamples);
 		final List<Affection> samplesAffection = new ArrayList<Affection>(numMySamples);
-		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
+		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, filtereSamplesOriginalIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
 
 		log.info("Start Census testing markers");
 

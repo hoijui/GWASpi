@@ -63,6 +63,9 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		this.operationPH = null;
 	}
 
+//	public abstract OperationMetadata createOperationMetadata(DST operationDataSet) throws IOException;
+
+
 	public int getNumItems() throws IOException {
 
 		final int numItems;
@@ -134,7 +137,7 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 
 	protected DST generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent);
+		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent, getParams());
 
 		return operationDataSet;
 	}

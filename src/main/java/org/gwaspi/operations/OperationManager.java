@@ -64,6 +64,8 @@ public class OperationManager {
 			= new HashMap<Class<? extends MatrixOperation>, OperationFactory>();
 	private static final Map<OPType, Class<? extends MatrixOperation>> oldToNewType
 			= new EnumMap<OPType, Class<? extends MatrixOperation>>(OPType.class);
+	private static final Map<OperationTypeInfo, Class<? extends MatrixOperation>> operationTypeInfoToOperationType
+			= new HashMap<OperationTypeInfo, Class<? extends MatrixOperation>>();
 
 	static {
 		QAMarkersOperation.register();
@@ -90,6 +92,7 @@ public class OperationManager {
 		}
 		operationTypeToFactory.put(type, operationFactory);
 		oldToNewType.put(operationFactory.getTypeInfo().getType(), type);
+		operationTypeInfoToOperationType.put(operationFactory.getTypeInfo(), type);
 	}
 
 	private static OperationFactory getOperationFactory(final Class<? extends MatrixOperation> type) {
@@ -113,11 +116,17 @@ public class OperationManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(final OPType type, MatrixKey origin, DataSetKey parent) throws IOException {
-		return generateOperationDataSet(oldToNewType.get(type), origin, parent);
+	public static OperationDataSet generateOperationDataSet(final OPType type, MatrixKey origin, DataSetKey parent, OperationParams params) throws IOException {
+		return generateOperationDataSet(oldToNewType.get(type), origin, parent, params);
 	}
-	public static OperationDataSet generateOperationDataSet(final Class<? extends MatrixOperation> type, MatrixKey origin, DataSetKey parent) throws IOException {
-		return generateOperationDataSet(type, null, origin, parent, FACTORY_DEFAULT_PROPERTIES);
+	public static OperationDataSet generateOperationDataSet(
+			final Class<? extends MatrixOperation> type,
+			MatrixKey origin,
+			DataSetKey parent,
+			OperationParams params)
+			throws IOException
+	{
+		return generateOperationDataSet(type, null, origin, parent, FACTORY_DEFAULT_PROPERTIES, params);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
@@ -126,21 +135,38 @@ public class OperationManager {
 		OPType oldType = operationMetadata.getOperationType();
 		final Class<? extends MatrixOperation> type = oldToNewType.get(oldType);
 
-		return generateOperationDataSet(type, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent(), FACTORY_DEFAULT_PROPERTIES);
+		return generateOperationDataSet(type, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent(), FACTORY_DEFAULT_PROPERTIES, null);
 	}
 
-	private static OperationDataSet generateOperationDataSet(final Class<? extends MatrixOperation> type, OperationKey operationKey, MatrixKey origin, DataSetKey parent, Map<String, Object> properties) throws IOException {
-
+	private static OperationDataSet generateOperationDataSet(
+			final Class<? extends MatrixOperation> type,
+			OperationKey operationKey,
+			MatrixKey origin,
+			DataSetKey parent,
+			Map<String, Object> properties,
+			OperationParams params) 
+			throws IOException
+	{
 		final OperationFactory operationFactory = getOperationFactory(type);
 		if (operationFactory == null) {
 			throw new IllegalArgumentException("No operation factory registered for this type: " + type);
 		}
 
 		if (operationKey == null) {
-			return operationFactory.generateWriteOperationDataSet(parent, properties);
+			OperationDataSet operationDataSet = operationFactory.generateWriteOperationDataSet(parent, properties);
+			operationDataSet.setParams(params);
+			return operationDataSet;
 		} else {
 			return operationFactory.generateReadOperationDataSet(operationKey, parent, properties);
 		}
+	}
+
+	private static OperationMetadata generateOperationMetadata(final Class<? extends MatrixOperation> type, OperationDataSet dataSet, OperationParams params) throws IOException {
+		return getOperationFactory(type).getOperationMetadataFactory().generateMetadata(dataSet, params);
+	}
+
+	public static OperationMetadata generateOperationMetadata(final OperationTypeInfo type, OperationDataSet dataSet, OperationParams params) throws IOException {
+		return generateOperationMetadata(operationTypeInfoToOperationType.get(type), dataSet, params);
 	}
 
 	public static OperationKey censusCleanMatrixMarkers(

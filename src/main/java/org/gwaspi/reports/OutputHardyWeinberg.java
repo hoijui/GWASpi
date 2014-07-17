@@ -42,7 +42,9 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -60,10 +62,25 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 
 	private static final ProcessInfo hardyWeinbergOutputProcessInfo = new DefaultProcessInfo("Write Hardy&Weinberg output to files", ""); // TODO
 
+	static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Output Hardy&Weinberg data",
+					"Output Hardy&Weinberg data", // TODO We need a more elaborate description of this operation!
+					null,
+					false,
+					false);
+
 	private ProgressHandler operationPH;
 
 	public OutputHardyWeinberg(final HardyWeinbergOutputParams params) {
 		super(params);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		// XXX For this class, we should use a different return type on this method (ialso for the othe Output* classes)
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override

@@ -21,23 +21,17 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
@@ -50,28 +44,19 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 			"Samples Quality Assurance",
 			""); // TODO
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					"Samples Quality Assurance",
-					"Samples Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.SAMPLE_QA,
-					false,
-					true);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				QASamplesOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new QASamplesOperationFactory());
 	}
 
 	public QASamplesOperation(QASamplesOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return QASamplesOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -119,7 +104,9 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
 		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		int localSampleIndex = 0;
-		for (Map.Entry<Integer, SampleKey> sampleKeyEntry : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+		for (Map.Entry<Integer, SampleKey> sampleKeyEntry
+				: dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet())
+		{
 			final int sampleOrigIndex = sampleKeyEntry.getKey();
 			final SampleKey sampleKey = sampleKeyEntry.getValue();
 
@@ -146,8 +133,10 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 				}
 			}
 
-			final double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
-			final double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
+			final double missingRatio = (double) missingCount
+					/ dataSetSource.getNumMarkers();
+			final double heterozygRatio = (double) heterozygCount
+					/ (dataSetSource.getNumMarkers() - missingCount);
 
 			dataSet.addEntry(new DefaultQASamplesOperationEntry(
 					sampleKey,

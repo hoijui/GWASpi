@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.datasource.netcdf;
+package org.gwaspi.datasource;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +60,10 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 		}
 
 		return localValues;
+	}
+
+	protected List<Integer> getOriginalIndices() {
+		return originalIndices;
 	}
 
 	@Override

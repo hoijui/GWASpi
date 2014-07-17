@@ -19,7 +19,7 @@ package org.gwaspi.datasource.filter;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.datasource.netcdf.ListSource;
+import org.gwaspi.datasource.ListSource;
 
 public class IndicesFilteredListSource<T> extends IndicesFilteredList<T> implements ListSource<T> {
 

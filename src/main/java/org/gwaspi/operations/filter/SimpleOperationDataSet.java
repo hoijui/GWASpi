@@ -18,16 +18,11 @@
 package org.gwaspi.operations.filter;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface SimpleOperationDataSet extends OperationDataSet<SimpleOperationEntry> {
 
 	boolean isDataLeft() throws IOException;
-
-	void setType(OPType operationType) throws IOException;
-
-	void setFilterDescription(String filterDescription) throws IOException;
 
 	void addEntry(SimpleOperationEntry entry) throws IOException;
 }

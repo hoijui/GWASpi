@@ -56,7 +56,7 @@ import org.gwaspi.progress.ProcessInfo;
  */
 public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.extractData,
 			Text.Trafo.extractToNewMatrix);
 
@@ -323,8 +323,13 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	private static List<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {

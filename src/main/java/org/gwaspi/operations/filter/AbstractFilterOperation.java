@@ -18,8 +18,10 @@
 package org.gwaspi.operations.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
@@ -88,8 +90,6 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		return null;
 	}
 
-	protected abstract String getFilterDescription();
-
 	protected abstract void filter(
 			Map<Integer, MarkerKey> filteredMarkerOrigIndicesAndKeys,
 //			Map<Integer, ChromosomeKey> filteredChromosomeOrigIndicesAndKeys,
@@ -127,21 +127,24 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 			return Integer.MIN_VALUE;
 		}
 
+		final List<Integer> filtereMarkersOriginalIndices = new ArrayList<Integer>(filteredMarkerOrigIndicesAndKeys.keySet());
+		final List<MarkerKey> filtereMarkersKeys = new ArrayList<MarkerKey>(filteredMarkerOrigIndicesAndKeys.values());
+		final List<Integer> filtereSamplesOriginalIndices = new ArrayList<Integer>(filteredSampleOrigIndicesAndKeys.keySet());
+		final List<SampleKey> filtereSamplesKeys = new ArrayList<SampleKey>(filteredSampleOrigIndicesAndKeys.values());
+
 		storePH.setNewStatus(ProcessStatus.INITIALIZING);
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
 
 		storePH.setNewStatus(ProcessStatus.RUNNING);
-		dataSet.setType(getParams().getType());
-		dataSet.setFilterDescription(getFilterDescription());
 
 		dataSet.setNumMarkers(filteredMarkerOrigIndicesAndKeys.size());
 //		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());
 		dataSet.setNumChromosomes(filteredSampleOrigIndicesAndKeys.size());
 		dataSet.setNumSamples(filteredSampleOrigIndicesAndKeys.size());
 
-		dataSet.setMarkers(filteredMarkerOrigIndicesAndKeys);
+		dataSet.setMarkers(filtereMarkersOriginalIndices, filtereMarkersKeys);
 //		dataSet.setChromosomes(filteredChromosomeOrigIndicesAndKeys);
-		dataSet.setSamples(filteredSampleOrigIndicesAndKeys);
+		dataSet.setSamples(filtereSamplesOriginalIndices, filtereSamplesKeys);
 		storePH.setNewStatus(ProcessStatus.FINALIZING);
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 

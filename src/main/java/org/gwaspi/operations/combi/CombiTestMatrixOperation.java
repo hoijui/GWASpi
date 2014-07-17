@@ -31,20 +31,15 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -65,29 +60,16 @@ import org.slf4j.LoggerFactory;
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
-
+public class CombiTestMatrixOperation
+		extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams>
+{
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					"COMBI Test",
-					"Assigns a weight to each marker, rating its ability to predict the affection", // FIXME TODO We need a more elaborate description of this operation!
-					OPType.COMBI_ASSOC_TEST,
-					true,
-					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				CombiTestMatrixOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfCombiTestOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new CombiTestOperationFactory());
 	}
 
 	private static final boolean REQUIRE_ONLY_VALID_AFFECTION = false;
@@ -110,6 +92,11 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 
 		this.valid = null;
 		this.problemDescription = null;
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return CombiTestOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override

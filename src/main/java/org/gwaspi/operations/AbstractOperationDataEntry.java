@@ -17,7 +17,24 @@
 
 package org.gwaspi.operations;
 
+import org.gwaspi.global.Extractor;
+
 public abstract class AbstractOperationDataEntry<OK> implements OperationDataEntry<OK> {
+
+	public static class KeyExtractor<OK> implements Extractor<OperationDataEntry<OK>, OK> {
+		@Override
+		public OK extract(OperationDataEntry<OK> from) {
+			return from.getKey();
+		}
+	};
+
+	public static class IndexExtractor implements Extractor<OperationDataEntry, Integer> {
+		@Override
+		public Integer extract(OperationDataEntry from) {
+			return from.getIndex();
+		}
+	};
+	public static final Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
 
 	private final OK key;
 	private final int index;

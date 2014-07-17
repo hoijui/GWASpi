@@ -14,10 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.global;
 
 /**
  * Allows to extract one or multiple values out of an object
+ * @param <IV> input/container value type
+ * @param <OV> output/extracted value type
  */
 public interface Extractor<IV, OV> {
 

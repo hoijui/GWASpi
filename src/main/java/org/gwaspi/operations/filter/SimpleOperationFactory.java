@@ -22,18 +22,32 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
-import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.OperationMetadataFactory;
+import org.gwaspi.operations.OperationParams;
 
-public class SimpleOperationFactory extends AbstractDefaultTypesOperationFactory {
+public class SimpleOperationFactory<PT extends OperationParams> extends AbstractDefaultTypesOperationFactory<SimpleOperationDataSet, PT> {
 
-	public SimpleOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
-		super(type, typeInfo);
+	private final OperationMetadataFactory<SimpleOperationDataSet, PT> operationMetadataFactory;
+
+	public SimpleOperationFactory(Class<? extends MatrixOperation> type, OperationMetadataFactory<SimpleOperationDataSet, PT> operationMetadataFactory) {
+		super(type, operationMetadataFactory.getTypeInfo());
+
+		this.operationMetadataFactory = operationMetadataFactory;
 	}
 
 	@Override
-	protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-		return new NetCdfSimpleOperationDataSet(parent.getOrigin(), parent, operationKey);
+	protected SimpleOperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+		return new NetCdfSimpleOperationDataSet(parent.getOrigin(), parent, operationKey, operationMetadataFactory.getTypeInfo());
+	}
+
+	@Override
+	protected SimpleOperationDataSet generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
+		return new InMemorySimpleOperationDataSet(parent.getOrigin(), parent, operationMetadataFactory.getTypeInfo());
+	}
+
+	@Override
+	public OperationMetadataFactory<SimpleOperationDataSet, PT> getOperationMetadataFactory() {
+		return operationMetadataFactory;
 	}
 }

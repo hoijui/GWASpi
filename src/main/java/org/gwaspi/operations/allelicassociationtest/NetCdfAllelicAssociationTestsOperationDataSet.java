@@ -29,6 +29,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.NetCdfUtils;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
@@ -53,6 +54,11 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 
 	public NetCdfAllelicAssociationTestsOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return AllelicAssociationTestsOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override

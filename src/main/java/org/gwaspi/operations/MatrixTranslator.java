@@ -46,7 +46,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.translateMatrix,
 			Text.Trafo.translateMatrix); // TODO We need a more elaborate description of this operation!
 
@@ -78,8 +78,13 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

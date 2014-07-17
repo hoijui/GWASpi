@@ -33,6 +33,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -67,6 +68,11 @@ public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return CombiTestOperationFactory.OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	protected void supplementNetCdfHandler(
 			NetcdfFileWriteable ncFile,
 			OperationMetadata operationMetadata,
@@ -76,22 +82,6 @@ public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationData
 			throws IOException
 	{
 		ncFile.addVariable(VAR_OP_MARKERS_WEIGHT, DataType.DOUBLE, markersSpace);
-	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		DataSetKey parentDataSetKey = getParent();
-		DataSetMetadata parentDataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
-		return new OperationMetadata(
-				parentDataSetKey, // parent data set
-				"COMBI_Test"/* + myFriendlyName*/, // friendly name
-				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
-				OPType.COMBI_ASSOC_TEST, // operationType
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
 	}
 
 //	@Override

@@ -24,16 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetMetadata;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
@@ -42,7 +40,10 @@ import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationDataSet<QASamplesOperationEntry> implements QASamplesOperationDataSet {
+public class NetCdfQASamplesOperationDataSet
+		extends AbstractNetCdfOperationDataSet<QASamplesOperationEntry>
+		implements QASamplesOperationDataSet
+{
 
 	// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
 	// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
@@ -63,6 +64,11 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return QASamplesOperationFactory.OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	protected void supplementNetCdfHandler(
 			NetcdfFileWriteable ncFile,
 			OperationMetadata operationMetadata,
@@ -75,23 +81,6 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, samplesSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, samplesSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, samplesSpace);
-	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				"Sample QA", // friendly name
-				"Sample census on " + rdDataSetMetadata.getFriendlyName()
-						+ "\nSamples: " + getNumSamples(), // description
-				OPType.SAMPLE_QA,
-				getNumSamples(),
-				getNumMarkers(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
 	}
 
 	@Override

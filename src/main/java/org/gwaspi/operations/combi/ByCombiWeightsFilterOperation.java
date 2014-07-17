@@ -30,6 +30,7 @@ import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
+import org.gwaspi.operations.filter.SimpleFilterOperationMetadataFactory;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IntegerProgressHandler;
@@ -62,7 +63,10 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new SimpleOperationFactory(
-				ByCombiWeightsFilterOperation.class, OPERATION_TYPE_INFO));
+				ByCombiWeightsFilterOperation.class,
+				new SimpleFilterOperationMetadataFactory<ByCombiWeightsFilterOperationParams>(
+						OPERATION_TYPE_INFO,
+						"Removes all markers that have a COMBI weight smaller then a given threshold.")));
 	}
 
 	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
@@ -73,6 +77,11 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		super(params);
 
 		this.filterPH = null;
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -158,10 +167,5 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		Util.pNormFilter(weightsFiltered, filterWidth, WEIGHTS_MOVING_AVERAGE_FILTER_NORM);
 
 		return weightsFiltered;
-	}
-
-	@Override
-	protected String getFilterDescription() {
-		return "Removes all markers that have a COMBI weight smaller then a given threshold.";
 	}
 }

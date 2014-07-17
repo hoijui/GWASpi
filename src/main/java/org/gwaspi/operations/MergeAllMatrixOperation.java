@@ -36,7 +36,7 @@ import org.gwaspi.progress.ProcessInfo;
 
 public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.mergeAll,
 			Text.Trafo.mergeMethodMergeAll);
 
@@ -66,12 +66,18 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	/**
 	 * Mingles markers and keeps samples constant.
+	 * @throws IOException
 	 */
 	@Override
 	public int processMatrix() throws IOException {

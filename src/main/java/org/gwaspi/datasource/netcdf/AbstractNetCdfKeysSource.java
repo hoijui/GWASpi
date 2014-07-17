@@ -17,14 +17,17 @@
 
 package org.gwaspi.datasource.netcdf;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.global.IndicesList;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
+import static org.gwaspi.operations.NetCdfUtils.checkDimensions;
 import ucar.nc2.NetcdfFile;
 
 public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSource<KT> {
@@ -45,14 +48,15 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 
 		List<Integer> originalIndices;
 
+		final Dimension fromTo = new Dimension(from, to);
+		checkDimensions(size(), fromTo);
+		final int fromClean = fromTo.width;
+		final int toClean = fromTo.height;
+
 		if (varOriginalIndices == null) {
-			// FIXME We can make a special implementation that uses no storage for this!
-			originalIndices = new ArrayList<Integer>(size());
-			for (int oi = 0; oi < size(); oi++) {
-				originalIndices.add(oi);
-			}
+			originalIndices = new IndicesList(toClean - fromClean, fromClean);
 		} else {
-			originalIndices = readVar(varOriginalIndices, from, to);
+			originalIndices = readVar(varOriginalIndices, fromClean, toClean);
 		}
 
 		return originalIndices;

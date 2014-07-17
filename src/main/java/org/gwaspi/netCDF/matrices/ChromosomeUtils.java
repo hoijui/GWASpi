@@ -17,8 +17,11 @@
 
 package org.gwaspi.netCDF.matrices;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
@@ -33,6 +36,13 @@ public class ChromosomeUtils {
 	 * Map to be aggregated, where is the chromosome, where is the position.
 	 */
 	public static Map<ChromosomeKey, ChromosomeInfo> aggregateChromosomeInfo(Map<MarkerKey, MarkerMetadata> wrMarkerSetMap, int chrIdx, int posIdx) {
+		return aggregateChromosomeInfo(wrMarkerSetMap.values()/*, chrIdx, posIdx*/);
+	}
+
+	/**
+	 * Map to be aggregated, where is the chromosome, where is the position.
+	 */
+	public static Map<ChromosomeKey, ChromosomeInfo> aggregateChromosomeInfo(Collection<MarkerMetadata> wrMarkerSetMap) {
 		// RETRIEVE CHROMOSOMES INFO
 		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 		String curChr = "";
@@ -40,7 +50,7 @@ public class ChromosomeUtils {
 		int markerCount = 0;
 		int idx = 0;
 		ChromosomeInfo chrInfo = new ChromosomeInfo();
-		for (MarkerMetadata metaInfo : wrMarkerSetMap.values()) {
+		for (MarkerMetadata metaInfo : wrMarkerSetMap) {
 			// value: markerid, rsId, chr, pos
 			if (!curChr.equals(metaInfo.getChr())) {
 				if (markerCount != 0) { // Not first time round
@@ -57,5 +67,33 @@ public class ChromosomeUtils {
 		chrSetMap.put(ChromosomeKey.valueOf(curChr), chrInfo); // Store last chromosome info
 
 		return chrSetMap;
+	}
+
+	public static Collection<ChromosomeKey> aggregateChromosomeKeys(
+			final Collection<String> filteredMarkersChrs)
+	{
+		final Set<ChromosomeKey> filteredChromosomeKeys = new HashSet<ChromosomeKey>();
+
+		for (String markerChr : filteredMarkersChrs) {
+			filteredChromosomeKeys.add(ChromosomeKey.valueOf(markerChr));
+		}
+
+		return filteredChromosomeKeys;
+	}
+
+	public static Map<Integer, ChromosomeKey> aggregateChromosomeIndicesAndKeys(
+			final Map<Integer, ChromosomeKey> originalChromosomeKeys,
+			final Collection<ChromosomeKey> filteredChromosomeKeys)
+	{
+		final Map<Integer, ChromosomeKey> filteredChromosomeIndicesAndKeys
+				= new LinkedHashMap<Integer, ChromosomeKey>(filteredChromosomeKeys.size());
+
+		for (Map.Entry<Integer, ChromosomeKey> origIndexAndKey : originalChromosomeKeys.entrySet()) {
+			if (filteredChromosomeKeys.contains(origIndexAndKey.getValue())) {
+				filteredChromosomeIndicesAndKeys.put(origIndexAndKey.getKey(), origIndexAndKey.getValue());
+			}
+		}
+
+		return filteredChromosomeIndicesAndKeys;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.datasource.netcdf;
+package org.gwaspi.operations;
 
 import java.io.IOException;
-import java.util.List;
+import org.gwaspi.model.OperationMetadata;
 
-/**
- * TODO
- * @param <VT> list value type
- */
-public interface ListSource<VT> extends List<VT> {
+public interface OperationMetadataFactory<DST extends OperationDataSet, PT extends OperationParams> {
 
-	ListSource<VT> getOrigSource() throws IOException;
+	OperationTypeInfo getTypeInfo();
 
-	List<VT> getRange(int from, int to) throws IOException;
+	OperationMetadata generateMetadata(DST operationDataSet, PT params) throws IOException;
 }
