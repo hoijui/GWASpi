@@ -29,7 +29,7 @@ public class Text {
 		public static final String memoryAvailable2 = "This will allow you to operate on +/- ";
 		public static final String memoryAvailable3 = " markers.";
 		public static final String memoryAvailable4 = "Caution! This amount of memory is likely not to be sufficient for\n" + Text.App.appName + " to perform optimally!";
-		public static final String initText = "You are running " + Text.App.appName + " for the fist time!\nYou will now be asked to choose a directory to store your data in.\nPlease provide a valid location on your local hard-drive with sufficient free disk space.";
+		public static final String initText = "You are running " + Text.App.appName + " for the first time!\nYou will now be asked to choose a directory to store your data in.\nPlease provide a valid location on your local hard-drive with sufficient free disk space.";
 		public static final String appDescription = appName + " provides the tools and integrated know-how to quickly and safley process your GWAS data, all in a single, easy to use application.\n\nOnce your genotype data is loaded into " + appName + "'s hierarchical database (netCDF), you will be able to manage, manipulate and transform it, as well as perform basic quality controls and association studies.\n" + appName + " will also generate charts, plots and reports for you.";
 		public static final String contact = "Contact information: gwaspi@upf.edu";
 		public static final String newVersionAvailable = "A new version of " + appName + " is available at http://www.gwaspi.org/.";
