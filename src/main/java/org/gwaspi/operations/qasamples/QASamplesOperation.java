@@ -67,6 +67,11 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
 					}
+
+					@Override
+					protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new InMemoryQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
 				});
 	}
 

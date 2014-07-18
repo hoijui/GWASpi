@@ -17,7 +17,7 @@
 
 package org.gwaspi.model;
 
-import org.gwaspi.datasource.netcdf.ListSource;
+import org.gwaspi.datasource.ListSource;
 
 /**
  * Allows to read the genotypes matrix, sample by sample.

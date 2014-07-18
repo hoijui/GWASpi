@@ -68,6 +68,11 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
 					}
+
+					@Override
+					protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new InMemoryQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
 				});
 	}
 

@@ -36,4 +36,9 @@ public class SimpleOperationFactory extends AbstractDefaultTypesOperationFactory
 	protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 		return new NetCdfSimpleOperationDataSet(parent.getOrigin(), parent, operationKey);
 	}
+
+	@Override
+	protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+		return new InMemorySimpleOperationDataSet(parent.getOrigin(), parent, operationKey);
+	}
 }

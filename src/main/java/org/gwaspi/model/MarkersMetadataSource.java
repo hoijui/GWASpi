@@ -19,7 +19,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.datasource.netcdf.ListSource;
+import org.gwaspi.datasource.ListSource;
 
 /**
  * TODO

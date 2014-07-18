@@ -32,7 +32,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
-import org.gwaspi.operations.AbstractOperationDataSet;
 
 public class InMemoryCombiTestOperationDataSet extends AbstractInMemoryOperationDataSet<CombiTestOperationEntry> implements CombiTestOperationDataSet {
 

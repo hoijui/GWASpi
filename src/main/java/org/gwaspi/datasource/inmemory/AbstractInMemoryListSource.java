@@ -18,55 +18,53 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.datasource.netcdf.AbstractOrigIndicesFilteredChunkedListSource;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.datasource.AbstractListSource;
+import org.gwaspi.global.Extractor;
+import org.gwaspi.global.ExtractorList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 /**
  * TODO
  * @param <VT> list value type
  */
-public abstract class AbstractInMemoryListSource<VT> extends AbstractOrigIndicesFilteredChunkedListSource<VT> {
+public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<VT> {
 
-	private final String varNameDimension;
-	private Integer size;
-	private final MatrixKey origin;
-	private DataSetSource originDataSetSource;
+	private final List<VT> items;
 
-	private AbstractInMemoryListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
-		super(chunkSize, originalIndices);
+	protected AbstractInMemoryListSource(MatrixKey origin, List<VT> items, List<Integer> originalIndices) {
+		super(origin, Integer.MAX_VALUE, originalIndices);
 
-		this.varNameDimension = varNameDimension;
-		this.size = null;
-		this.origin = origin;
-		this.rdNetCdfFile = rdNetCdfFile;
+		this.items = items;
 	}
 
-	AbstractInMemoryListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
-		this(origin, rdNetCdfFile, chunkSize, null, varNameDimension);
+	protected AbstractInMemoryListSource(MatrixKey origin, final List<VT> items) {
+		this(origin, items, null);
 	}
 
-	AbstractInMemoryListSource(MatrixKey origin, NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension, List<Integer> originalIndices) {
-		this(origin, rdNetCdfFile, chunkSize, originalIndices, varNameDimension);
+	protected List<VT> getItems() {
+		return items;
 	}
 
-	protected MatrixKey getOrigin() {
-		return origin;
+	protected static <OT, IT> List<OT> extractProperty(List<IT> items, Extractor<IT, OT> propertyExtractor) {
+
+//		final List<OT> extractedProperties = new ArrayList<OT>(items.size());
+//		for (IT item : items) {
+//			extractedProperties.add(propertyExtractor.extract(item));
+//		}
+//
+//		return extractedProperties;
+		return new ExtractorList<IT, OT>(items, propertyExtractor);
 	}
 
-	public DataSetSource getOrigDataSetSource() throws IOException {
-
-		if (originDataSetSource == null) {
-			originDataSetSource = MatrixFactory.generateMatrixDataSetSource(origin);
-		}
-
-		return originDataSetSource;
+	@Override
+	public List<VT> getRange(int from, int to) throws IOException {
+		return getItems().subList(from, to);
 	}
 
 	@Override
 	public int sizeInternal() {
-		return size;
+		return items.size();
 	}
 }

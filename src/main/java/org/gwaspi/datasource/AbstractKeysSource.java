@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.datasource.inmemory;
+package org.gwaspi.datasource;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,10 +26,16 @@ import java.util.Map;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
 
-public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryListSource<KT> {
+public abstract class AbstractKeysSource<KT> extends AbstractListSource<KT> {
 
-	public AbstractInMemoryKeysSource(MatrixKey origin, List<KT> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	private final String varOriginalIndices;
+	private final String varKeys;
+
+	public AbstractKeysSource(MatrixKey origin, int chunkSize, String varDimension, String varOriginalIndices, String varKeys) {
+		super(origin, chunkSize, varDimension);
+
+		this.varOriginalIndices = varOriginalIndices;
+		this.varKeys = varKeys;
 	}
 
 	protected abstract KeyFactory<KT> createKeyFactory();

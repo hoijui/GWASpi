@@ -87,6 +87,11 @@ public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation
 					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 						return new NetCdfCombiTestOperationDataSet(parent.getOrigin(), parent, operationKey);
 					}
+
+					@Override
+					protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+						return new InMemoryCombiTestOperationDataSet(parent.getOrigin(), parent, operationKey);
+					}
 				});
 	}
 
