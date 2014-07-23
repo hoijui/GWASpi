@@ -36,6 +36,7 @@ public abstract class AbstractDefaultTypesOperationFactory extends AbstractOpera
 	}
 
 	protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+		XXX;
 		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_MEMORY + "\" is not supported (yet).");
 	}
 
@@ -56,8 +57,21 @@ public abstract class AbstractDefaultTypesOperationFactory extends AbstractOpera
 		return generateReadOperationDataSetNetCdf(null, parent, properties);
 	}
 
+	private static class InMemoryOperationKeyListener implements OperationKeyListener {
+
+		InMemoryOperationKeyListener() {
+
+		}
+
+		@Override
+		public void operationKeySet(OperationKeySetEvent evt) {
+			c
+		}
+	}
+
 	protected OperationDataSet generateWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
-		return generateReadOperationDataSetMemory(null, parent, properties);
+		XXX;
+		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_MEMORY + "\" is not supported for writing (yet).");
 	}
 
 	@Override

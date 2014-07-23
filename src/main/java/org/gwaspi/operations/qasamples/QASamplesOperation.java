@@ -64,13 +64,32 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
 				QASamplesOperation.class, OPERATION_TYPE_INFO) {
 					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
+					protected OperationDataSet generateReadOperationDataSetNetCdf(
+							OperationKey operationKey, DataSetKey parent,
+							Map<String, Object> properties)
+							throws IOException
+					{
+						return new NetCdfQASamplesOperationDataSet(
+								parent.getOrigin(), parent, operationKey);
 					}
 
 					@Override
-					protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new InMemoryQASamplesOperationDataSet(parent.getOrigin(), parent, operationKey);
+					protected OperationDataSet generateReadOperationDataSetMemory(
+							OperationKey operationKey, DataSetKey parent,
+							Map<String, Object> properties)
+							throws IOException
+					{
+						return new InMemoryQASamplesOperationDataSet(
+								parent.getOrigin(), parent, operationKey);
+					}
+
+					@Override
+					protected OperationDataSet generateWriteOperationDataSetMemory(
+							DataSetKey parent, Map<String, Object> properties)
+							throws IOException
+					{
+						return new InMemoryQASamplesOperationDataSet(
+								parent.getOrigin(), parent, operationKey);
 					}
 				});
 	}
@@ -124,7 +143,9 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
 		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		int localSampleIndex = 0;
-		for (Map.Entry<Integer, SampleKey> sampleKeyEntry : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+		for (Map.Entry<Integer, SampleKey> sampleKeyEntry 
+				: dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet())
+		{
 			final int sampleOrigIndex = sampleKeyEntry.getKey();
 			final SampleKey sampleKey = sampleKeyEntry.getValue();
 
@@ -151,8 +172,10 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 				}
 			}
 
-			final double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
-			final double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
+			final double missingRatio = (double) missingCount
+					/ dataSetSource.getNumMarkers();
+			final double heterozygRatio = (double) heterozygCount
+					/ (dataSetSource.getNumMarkers() - missingCount);
 
 			dataSet.addEntry(new DefaultQASamplesOperationEntry(
 					sampleKey,

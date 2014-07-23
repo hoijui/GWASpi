@@ -139,7 +139,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		if (operationMetadata == null) {
 			if (operationKey == null) {
 				operationMetadata = createOperationMetadata();
-				operationKey = OperationsList.insertOperation(operationMetadata);
+				setOperationKey(OperationsList.insertOperation(operationMetadata));
 			} else {
 				operationMetadata = OperationsList.getOperationMetadata(operationKey);
 			}
@@ -307,6 +307,10 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract void setUseAllChromosomesFromParent(boolean useAll) throws IOException;
 
 	protected abstract boolean getUseAllChromosomesFromParent() throws IOException;
+
+	protected void setOperationKey(OperationKey operationKey) {
+		this.operationKey = operationKey;
+	}
 
 	public OperationKey getOperationKey() {
 		return operationKey;

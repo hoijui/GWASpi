@@ -18,14 +18,23 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersGenotypesSource;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersMetadataSource;
 import org.gwaspi.datasource.filter.IndicesFilteredSamplesGenotypesSource;
 import org.gwaspi.datasource.filter.IndicesFilteredSamplesInfosSource;
 import org.gwaspi.datasource.filter.InternalIndicesFilteredMarkersGenotypesSource;
 import org.gwaspi.datasource.filter.InternalIndicesFilteredSamplesGenotypesSource;
+import org.gwaspi.datasource.inmemory.InMemoryChromosomesInfosSource;
+import org.gwaspi.datasource.inmemory.InMemoryChromosomesKeysSource;
+import org.gwaspi.datasource.inmemory.InMemoryMarkersGenotypesSource;
+import org.gwaspi.datasource.inmemory.InMemoryMarkersKeysSource;
+import org.gwaspi.datasource.inmemory.InMemoryMarkersMetadataSource;
+import org.gwaspi.datasource.inmemory.InMemorySamplesGenotypesSource;
+import org.gwaspi.datasource.inmemory.InMemorySamplesInfosSource;
+import org.gwaspi.datasource.inmemory.InMemorySamplesKeysSource;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -40,14 +49,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.datasource.netcdf.NetCdfChromosomesInfosSource;
-import org.gwaspi.datasource.netcdf.NetCdfChromosomesKeysSource;
-import org.gwaspi.datasource.netcdf.NetCdfMarkersGenotypesSource;
-import org.gwaspi.datasource.netcdf.NetCdfMarkersKeysSource;
-import org.gwaspi.datasource.netcdf.NetCdfMarkersMetadataSource;
-import org.gwaspi.datasource.netcdf.NetCdfSamplesGenotypesSource;
-import org.gwaspi.datasource.netcdf.NetCdfSamplesInfosSource;
-import org.gwaspi.datasource.netcdf.NetCdfSamplesKeysSource;
 
 public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOperationDataSet<ET> {
 
@@ -60,6 +61,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	private Map<Integer, SampleKey> matrixIndexSampleKeys;
 	private Map<Integer, MarkerKey> matrixIndexMarkerKeys;
 	private Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys;
+	private final List<OperationKeyListener> operationKeyListeners;
 
 	public AbstractInMemoryOperationDataSet(
 			boolean markersOperationSet,
@@ -79,6 +81,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 		this.matrixIndexSampleKeys = null;
 		this.matrixIndexMarkerKeys = null;
 		this.matrixIndexChromosomeKeys = null;
+		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
 	}
 
 	public AbstractInMemoryOperationDataSet(
@@ -87,7 +90,8 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 			DataSetKey parent,
 			OperationKey operationKey)
 	{
-		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
+		this(markersOperationSet, origin, parent, operationKey,
+				getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
 	public AbstractInMemoryOperationDataSet(
@@ -101,6 +105,29 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	@Override
 	protected int getNumMarkersRaw() throws IOException {
 		return numMarkers;
+	}
+
+	@Override
+	protected void setOperationKey(OperationKey operationKey) {
+		super.setOperationKey(operationKey);
+
+		fireOperationKeySet();
+	}
+
+	public void addOperationKeyListener(OperationKeyListener lst) {
+		operationKeyListeners.add(lst);
+	}
+
+	public void removeOperationKeyListener(OperationKeyListener lst) {
+		operationKeyListeners.remove(lst);
+	}
+
+	private void fireOperationKeySet() {
+
+		final OperationKeySetEvent evt = new OperationKeySetEvent(this);
+		for (OperationKeyListener lst : operationKeyListeners) {
+			lst.operationKeySet(evt);
+		}
 	}
 
 	/**
@@ -119,7 +146,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	protected boolean getUseAllMarkersFromParent() throws IOException {
 
 		if (useAllMarkersFromParent == null) {
-			useAllMarkersFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_MARKERS).getNumericValue().intValue() != 0);
+			throw new IllegalStateException("This value has not yet been set");
 		}
 
 		return useAllMarkersFromParent;
@@ -146,7 +173,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	protected boolean getUseAllSamplesFromParent() throws IOException {
 
 		if (useAllSamplesFromParent == null) {
-			useAllSamplesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_SAMPLES).getNumericValue().intValue() != 0);
+			throw new IllegalStateException("This value has not yet been set");
 		}
 
 		return useAllSamplesFromParent;
@@ -173,7 +200,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	protected boolean getUseAllChromosomesFromParent() throws IOException {
 
 		if (useAllChromosomesFromParent == null) {
-			useAllChromosomesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_CHROMOSOMES).getNumericValue().intValue() != 0);
+			throw new IllegalStateException("This value has not yet been set");
 		}
 
 		return useAllChromosomesFromParent;
@@ -196,7 +223,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	}
 
 	@Override
-	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException {
+	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys) throws IOException {
 
 		if (!getUseAllChromosomesFromParent()) {
 			this.matrixIndexChromosomeKeys = matrixIndexChromosomeKeys;
@@ -205,14 +232,16 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
-		return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(), getNetCdfReadFile(), isMarkersOperationSet());
+		return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
+				getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
 	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
 		return new IndicesFilteredSamplesInfosSource(
 				this,
-				NetCdfSamplesInfosSource.createForMatrix(this, getOrigin().getStudyKey(), getOriginNetCdfReadFile()),
+				InMemorySamplesInfosSource.createForMatrix(this, getOrigin().getStudyKey(),
+						getOriginNetCdfReadFile()),
 				getSamplesKeysSource().getIndices());
 	}
 
@@ -220,21 +249,23 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
 		return new IndicesFilteredSamplesGenotypesSource(
 				new InternalIndicesFilteredSamplesGenotypesSource(
-						NetCdfSamplesGenotypesSource.createForMatrix(getOrigin(), getOriginNetCdfReadFile()),
+						InMemorySamplesGenotypesSource.createForMatrix(getOrigin(),
+								getOriginNetCdfReadFile()),
 						getMarkersKeysSource().getIndices()),
 				getSamplesKeysSource().getIndices());
 	}
 
 	@Override
 	protected MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
-		return NetCdfMarkersKeysSource.createForOperation(getOrigin(), getNetCdfReadFile(), isMarkersOperationSet());
+		return InMemoryMarkersKeysSource.createForOperation(getOrigin(), getInMemoryReadFile(),
+				isMarkersOperationSet());
 	}
 
 	@Override
 	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
 		return new IndicesFilteredMarkersMetadataSource(
 				this,
-				NetCdfMarkersMetadataSource.createForMatrix(this, getOriginNetCdfReadFile()),
+				InMemoryMarkersMetadataSource.createForMatrix(this, getOriginInMemoryReadFile()),
 				getMarkersKeysSource().getIndices());
 	}
 
@@ -242,18 +273,21 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
 		return new IndicesFilteredMarkersGenotypesSource(
 				new InternalIndicesFilteredMarkersGenotypesSource(
-						NetCdfMarkersGenotypesSource.createForMatrix(getOrigin(), getOriginNetCdfReadFile()),
+						InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(),
+								getOriginInMemoryReadFile()),
 						getSamplesKeysSource().getIndices()),
 				getMarkersKeysSource().getIndices());
 	}
 
 	@Override
 	protected ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
-		return NetCdfChromosomesKeysSource.createForOperation(getOrigin(), getNetCdfReadFile(), isMarkersOperationSet());
+		return InMemoryChromosomesKeysSource.createForOperation(getOrigin(),
+				getInMemoryReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
 	protected ChromosomesInfosSource getChromosomesInfosSourceRaw() throws IOException {
-		return NetCdfChromosomesInfosSource.createForOperation(getOrigin(), getOriginNetCdfReadFile(), getChromosomesKeysSource().getIndices());
+		return InMemoryChromosomesInfosSource.createForOperation(getOrigin(),
+				getOriginInMemoryReadFile(), getChromosomesKeysSource().getIndices());
 	}
 }

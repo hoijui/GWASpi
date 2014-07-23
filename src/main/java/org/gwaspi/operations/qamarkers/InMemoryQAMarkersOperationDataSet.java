@@ -85,7 +85,9 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Boolean> getMismatchStates(int from, int to) throws IOException {
 
 		List<Byte> mismatchIntegerStates = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), 
+				cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to,
+				mismatchIntegerStates, null);
 
 		List<Boolean> mismatchStates = new ArrayList<Boolean>(0);
 		for (Byte mismatchIntegerState : mismatchIntegerStates) {
@@ -112,7 +114,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Byte> getKnownMajorAllele(int from, int to) throws IOException {
 
 		List<Byte> knownMajorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
 
 		return knownMajorAllele;
 	}
@@ -121,7 +124,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException {
 
 		List<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
 
 		return knownMajorAlleleFreq;
 	}
@@ -130,7 +134,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Byte> getKnownMinorAllele(int from, int to) throws IOException {
 
 		List<Byte> knownMinorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
 
 		return knownMinorAllele;
 	}
@@ -139,7 +144,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException {
 
 		List<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
 
 		return knownMinorAlleleFreq;
 	}
@@ -148,7 +154,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Integer> getNumAAs(int from, int to) throws IOException {
 
 		List<Integer> numAAs = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, from, to, numAAs, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, from, to, numAAs, null);
 
 		return numAAs;
 	}
@@ -157,7 +164,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Integer> getNumAas(int from, int to) throws IOException {
 
 		List<Integer> numAas = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, from, to, numAas, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, from, to, numAas, null);
 
 		return numAas;
 	}
@@ -166,7 +174,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Integer> getNumaas(int from, int to) throws IOException {
 
 		List<Integer> numaas = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, from, to, numaas, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, from, to, numaas, null);
 
 		return numaas;
 	}
@@ -175,7 +184,9 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<Integer> getMissingCounts(int from, int to) throws IOException {
 
 		List<Integer> numMissings = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, from, to, numMissings, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), 
+				cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, from, to,
+				numMissings, null);
 
 		return numMissings;
 	}
@@ -184,9 +195,13 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<int[]> getAlleleCounts(int from, int to) throws IOException {
 
 //		List<Byte> appearingAllele = new ArrayList<Byte>(0);
-//		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to, appearingAllele, null);
+//		NetCdfUtils.readVariable(getNetCdfReadFile(),
+//				cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to,
+//				appearingAllele, null);
 		List<int[]> appearingAllelesCount = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to, appearingAllelesCount, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), 
+				cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to,
+				appearingAllelesCount, null);
 
 //		Map<Byte, Integer> alleleCounts = new LinkedHashMap<Byte, Integer>(appearingAllele.size());
 //		Iterator<Integer> appearingAllelesCountIt = appearingAllelesCount.iterator();
@@ -202,7 +217,9 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	public List<int[]> getGenotypeCounts(int from, int to) throws IOException {
 
 		List<int[]> appearingGenotypesCount = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, from, to, appearingGenotypesCount, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(),
+				cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, from,
+				to, appearingGenotypesCount, null);
 
 		return appearingGenotypesCount;
 	}
@@ -296,7 +313,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 		List<Boolean> mismatchStates = getMismatchStates(-1, -1);
 //		// EXCLUDE MARKER BY MISMATCH STATE
 //		Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates
-//				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+//				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile,
+//						cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 //		for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
 //			MarkerKey key = entry.getKey();
 //			Integer value = entry.getValue();
@@ -344,6 +362,8 @@ public class InMemoryQAMarkersOperationDataSet extends AbstractInMemoryOperation
 	}
 
 	@Override
-	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
+	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer)
+			throws IOException
+	{
 	}
 }
