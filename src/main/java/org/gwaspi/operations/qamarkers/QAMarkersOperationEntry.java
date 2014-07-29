@@ -17,10 +17,144 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
+
 public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
+
+	public static class MismatchStateExtractor
+			implements Extractor<QAMarkersOperationEntry, Boolean>
+	{
+		@Override
+		public Boolean extract(QAMarkersOperationEntry from) {
+			return from.getMismatchState();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Boolean> TO_MISMATCH_STATE
+			= new MismatchStateExtractor();
+
+	public static class MajorAlleleExtractor
+			implements Extractor<QAMarkersOperationEntry, Byte>
+	{
+		@Override
+		public Byte extract(QAMarkersOperationEntry from) {
+			return from.getMajorAllele();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Byte> TO_MAJOR_ALLELE
+			= new MajorAlleleExtractor();
+
+	public static class MajorAlleleFrequencyExtractor
+			implements Extractor<QAMarkersOperationEntry, Double>
+	{
+		@Override
+		public Double extract(QAMarkersOperationEntry from) {
+			return from.getMajorAlleleFrequency();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Double> TO_MAJOR_ALLELE_FREQUENCY
+			= new MajorAlleleFrequencyExtractor();
+
+	public static class MinorAlleleExtractor
+			implements Extractor<QAMarkersOperationEntry, Byte>
+	{
+		@Override
+		public Byte extract(QAMarkersOperationEntry from) {
+			return from.getMinorAllele();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Byte> TO_MINOR_ALLELE
+			= new MinorAlleleExtractor();
+
+	public static class MinorAlleleFrequencyExtractor
+			implements Extractor<QAMarkersOperationEntry, Double>
+	{
+		@Override
+		public Double extract(QAMarkersOperationEntry from) {
+			return from.getMinorAlleleFrequency();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Double> TO_MINOR_ALLELE_FREQUENCY
+			= new MinorAlleleFrequencyExtractor();
+
+	public static class AlleleAAExtractor
+			implements Extractor<QAMarkersOperationEntry, Integer>
+	{
+		@Override
+		public Integer extract(QAMarkersOperationEntry from) {
+			return from.getAlleleAA();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_AA
+			= new AlleleAAExtractor();
+
+	public static class AlleleAaExtractor
+			implements Extractor<QAMarkersOperationEntry, Integer>
+	{
+		@Override
+		public Integer extract(QAMarkersOperationEntry from) {
+			return from.getAlleleAa();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_Aa
+			= new AlleleAaExtractor();
+
+	public static class AlleleaaExtractor
+			implements Extractor<QAMarkersOperationEntry, Integer>
+	{
+		@Override
+		public Integer extract(QAMarkersOperationEntry from) {
+			return from.getAlleleaa();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_aa
+			= new AlleleaaExtractor();
+
+	public static class MissingCountExtractor
+			implements Extractor<QAMarkersOperationEntry, Integer>
+	{
+		@Override
+		public Integer extract(QAMarkersOperationEntry from) {
+			return from.getMissingCount();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Integer> TO_MISSING_COUNT
+			= new MissingCountExtractor();
+
+	public static class MissingRatioExtractor
+			implements Extractor<QAMarkersOperationEntry, Double>
+	{
+		@Override
+		public Double extract(QAMarkersOperationEntry from) {
+			return from.getMissingRatio();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, Double> TO_MISSING_RATIO
+			= new MissingRatioExtractor();
+
+	public static class AlleleCountsExtractor
+			implements Extractor<QAMarkersOperationEntry, int[]>
+	{
+		@Override
+		public int[] extract(QAMarkersOperationEntry from) {
+			return from.getAlleleCounts();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, int[]> TO_ALLELE_COUNTS
+			= new AlleleCountsExtractor();
+
+	public static class GenotypeCountsExtractor
+			implements Extractor<QAMarkersOperationEntry, int[]>
+	{
+		@Override
+		public int[] extract(QAMarkersOperationEntry from) {
+			return from.getGenotypeCounts();
+		}
+	};
+	public static final Extractor<QAMarkersOperationEntry, int[]> TO_GENOTYPE_COUNTS
+			= new GenotypeCountsExtractor();
 
 	public static enum AlleleCounts {
 		_A,

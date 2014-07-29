@@ -18,30 +18,41 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public abstract class AbstractDefaultTypesOperationFactory extends AbstractOperationFactory {
+public abstract class AbstractDefaultTypesOperationFactory<DST extends OperationDataSet>
+		extends AbstractOperationFactory<DST>
+{
 
 	public static final String PROPERTY_VALUE_TYPE_NETCDF = "netcdf";
 	public static final String PROPERTY_VALUE_TYPE_MEMORY = "memory";
 
+	private final OperationKeyListener operationKeyRegisterer;
+	private final Map<OperationKey, DST> operationKeyToDataSet;
+
 	protected AbstractDefaultTypesOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
 		super(type, typeInfo);
+
+		this.operationKeyRegisterer = new InMemoryOperationKeyListener();
+		this.operationKeyToDataSet = new HashMap<OperationKey, DST>();
 	}
 
-	protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_NETCDF + "\" is not supported (yet).");
-	}
+	protected abstract DST generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
 
-	protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_MEMORY + "\" is not supported (yet).");
+	protected DST generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+
+		final DST fetchedDataSet = operationKeyToDataSet.get(operationKey);
+		if (fetchedDataSet == null) {
+			throw new IOException("There is no data in memory for operation " + operationKey.toString());
+		}
+		return fetchedDataSet;
 	}
 
 	@Override
-	public final OperationDataSet generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+	public final DST generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 
 		final Object type = properties.get(PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {
@@ -53,29 +64,31 @@ public abstract class AbstractDefaultTypesOperationFactory extends AbstractOpera
 		}
 	}
 
-	protected OperationDataSet generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected DST generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
 		return generateReadOperationDataSetNetCdf(null, parent, properties);
 	}
 
-	private static class InMemoryOperationKeyListener implements OperationKeyListener {
+	private class InMemoryOperationKeyListener implements OperationKeyListener {
 
-		InMemoryOperationKeyListener() {
-
-		}
+		InMemoryOperationKeyListener() {}
 
 		@Override
 		public void operationKeySet(OperationKeySetEvent evt) {
-			c
+			operationKeyToDataSet.put(evt.getSource().getOperationKey(), (DST) evt.getSource());
 		}
 	}
 
-	protected OperationDataSet generateWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_MEMORY + "\" is not supported for writing (yet).");
+	protected abstract DST generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException;
+
+	protected DST generateWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
+
+		final DST specificWriteDS = generateSpecificWriteOperationDataSetMemory(parent, properties);
+		specificWriteDS.addOperationKeyListener(operationKeyRegisterer);
+		return specificWriteDS;
 	}
 
 	@Override
-	public final OperationDataSet generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	public final DST generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException {
 
 		final Object type = properties.get(PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {

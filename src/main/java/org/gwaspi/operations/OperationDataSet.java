@@ -21,13 +21,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 
-public interface OperationDataSet<ET> extends DataSetSource {
+public interface OperationDataSet<ET extends OperationDataEntry> extends DataSetSource {
 
-	boolean isMarkersOperationSet();
+	void addOperationKeyListener(OperationKeyListener lst);
+	void removeOperationKeyListener(OperationKeyListener lst);
+	OperationKey getOperationKey();
+
+	OperationTypeInfo getTypeInfo();
+
+	DataSetKey getParent();
 
 	void setNumSamples(int numSamples) throws IOException;
 	void setNumMarkers(int numMarkers) throws IOException;
@@ -37,6 +45,7 @@ public interface OperationDataSet<ET> extends DataSetSource {
 	 * @param matrixIndexSampleKeys
 	 *   the indices in the matrix, and the values (copied) of the sample keys
 	 * NetCDF variable: Variables.VAR_OPSET
+	 * @throws IOException
 	 */
 	void setSamples(Map<Integer, SampleKey> matrixIndexSampleKeys) throws IOException;
 
@@ -44,6 +53,7 @@ public interface OperationDataSet<ET> extends DataSetSource {
 	 * @param matrixIndexMarkerKeys
 	 *   the indices in the matrix, and the values (copied) of the marker keys
 	 * NetCDF variable: Variables.VAR_IMPLICITSET
+	 * @throws IOException
 	 */
 	void setMarkers(Map<Integer, MarkerKey> matrixIndexMarkerKeys) throws IOException;
 
@@ -53,6 +63,7 @@ public interface OperationDataSet<ET> extends DataSetSource {
 	 * NetCDF variable:
 	 * - Variables.VAR_CHR_IN_MATRIX [ChromosomeKey]
 	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
+	 * @throws IOException
 	 */
 	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException;
 

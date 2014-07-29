@@ -17,24 +17,12 @@
 
 package org.gwaspi.operations;
 
-public abstract class AbstractOperationFactory<DST extends OperationDataSet> implements OperationFactory<DST> {
+import java.io.IOException;
+import org.gwaspi.model.OperationMetadata;
 
-	private final Class<? extends MatrixOperation> type;
-	private final OperationTypeInfo typeInfo;
+public interface OperationMetadataFactory<DST extends OperationDataSet, PT extends OperationParams> {
 
-	protected AbstractOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
+	OperationTypeInfo getTypeInfo();
 
-		this.type = type;
-		this.typeInfo = typeInfo;
-	}
-
-	@Override
-	public Class<? extends MatrixOperation> getType() {
-		return type;
-	}
-
-	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return typeInfo;
-	}
+	OperationMetadata generateMetadata(DST operationDataSet, PT params) throws IOException;
 }

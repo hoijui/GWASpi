@@ -72,6 +72,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 
 	/**
 	 * Mingles markers and keeps samples constant.
+	 * @throws IOException
 	 */
 	@Override
 	public int processMatrix() throws IOException {

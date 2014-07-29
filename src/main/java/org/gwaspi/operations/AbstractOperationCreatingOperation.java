@@ -63,6 +63,9 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		this.operationPH = null;
 	}
 
+//	public abstract OperationMetadata createOperationMetadata(DST operationDataSet) throws IOException;
+
+
 	public int getNumItems() throws IOException {
 
 		final int numItems;

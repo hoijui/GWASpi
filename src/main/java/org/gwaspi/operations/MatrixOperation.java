@@ -45,6 +45,8 @@ public interface MatrixOperation<PT extends OperationParams> {
 //		COMPLEETED; // XXX or FINNISHED?
 //	}
 
+	OperationTypeInfo getTypeInfo();
+
 	ProgressSource getProgressSource() throws IOException;
 
 	void addOperationListener(OperationListener listener);

@@ -42,8 +42,6 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCen
 ////	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
 //	void setMarkerCensus(Collection<CensusFull> markerCensus) throws IOException;
 
-	void setParams(final MarkerCensusOperationParams params);
-
 	List<byte[]> getKnownAlleles() throws IOException;
 
 	List<Census> getCensus(Category category) throws IOException;

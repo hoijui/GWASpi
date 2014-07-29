@@ -19,8 +19,10 @@ package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersGenotypesSource;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersMetadataSource;
 import org.gwaspi.datasource.filter.IndicesFilteredSamplesGenotypesSource;
@@ -50,8 +52,9 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 
-public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOperationDataSet<ET> {
-
+public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataEntry>
+		extends AbstractOperationDataSet<ET>
+{
 	private Integer numMarkers;
 	private Integer numSamples;
 	private Integer numChromosomes;
@@ -61,16 +64,14 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 	private Map<Integer, SampleKey> matrixIndexSampleKeys;
 	private Map<Integer, MarkerKey> matrixIndexMarkerKeys;
 	private Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys;
-	private final List<OperationKeyListener> operationKeyListeners;
+	private final List<ET> elements;
 
 	public AbstractInMemoryOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent,
-			OperationKey operationKey,
-			int entriesWriteBufferSize)
+			OperationKey operationKey)
 	{
-		super(markersOperationSet, origin, parent, operationKey, entriesWriteBufferSize);
+		super(origin, parent, operationKey, 0 /* entriesWriteBufferSize, unused */);
 
 		this.numMarkers = null;
 		this.numSamples = null;
@@ -81,53 +82,28 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 		this.matrixIndexSampleKeys = null;
 		this.matrixIndexMarkerKeys = null;
 		this.matrixIndexChromosomeKeys = null;
-		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
+		this.elements = new ArrayList<ET>();
 	}
 
 	public AbstractInMemoryOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent,
 			OperationKey operationKey)
 	{
-		this(markersOperationSet, origin, parent, operationKey,
+		this(origin, parent, operationKey,
 				getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
 	public AbstractInMemoryOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent)
 	{
-		this(markersOperationSet, origin, parent, null);
+		this(origin, parent, null);
 	}
 
 	@Override
 	protected int getNumMarkersRaw() throws IOException {
 		return numMarkers;
-	}
-
-	@Override
-	protected void setOperationKey(OperationKey operationKey) {
-		super.setOperationKey(operationKey);
-
-		fireOperationKeySet();
-	}
-
-	public void addOperationKeyListener(OperationKeyListener lst) {
-		operationKeyListeners.add(lst);
-	}
-
-	public void removeOperationKeyListener(OperationKeyListener lst) {
-		operationKeyListeners.remove(lst);
-	}
-
-	private void fireOperationKeySet() {
-
-		final OperationKeySetEvent evt = new OperationKeySetEvent(this);
-		for (OperationKeyListener lst : operationKeyListeners) {
-			lst.operationKeySet(evt);
-		}
 	}
 
 	/**
@@ -228,6 +204,22 @@ public abstract class AbstractInMemoryOperationDataSet<ET> extends AbstractOpera
 		if (!getUseAllChromosomesFromParent()) {
 			this.matrixIndexChromosomeKeys = matrixIndexChromosomeKeys;
 		}
+	}
+
+	@Override
+	public void addEntry(ET entry) throws IOException {
+		elements.add(entry);
+	}
+
+	@Override
+	public List<ET> getEntries(int from, int to) throws IOException {
+		return Collections.unmodifiableList(elements);
+	}
+
+	@Override
+	protected void writeEntries(int alreadyWritten, Queue<ET> writeBuffer)
+			throws IOException
+	{
 	}
 
 	@Override

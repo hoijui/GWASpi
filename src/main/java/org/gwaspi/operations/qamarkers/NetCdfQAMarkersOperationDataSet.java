@@ -24,16 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.AlleleCounts;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry.GenotypeCounts;
 import ucar.ma2.ArrayByte;
@@ -77,6 +75,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return QAMarkersOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -141,27 +144,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_1, DataType.BYTE, genotypesSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_2, DataType.BYTE, genotypesSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, DataType.INT, genotypesSpace);
-	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
-
-		String description = "Marker Quality Assurance on "
-				+ rdDataSetMetadata.getFriendlyName()
-				+ "\nMarkers: " + getNumMarkers()
-				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				"Marker QA", // friendly name
-				description, // description
-				OPType.MARKER_QA,
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
 	}
 
 //	@Override

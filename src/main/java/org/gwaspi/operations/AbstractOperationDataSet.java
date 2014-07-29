@@ -18,6 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -40,14 +41,14 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<ET> {
+public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> implements OperationDataSet<ET> {
 
 	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_MARKERS = 10;
 	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_SAMPLES = 1;
 
 	private final Logger log = LoggerFactory.getLogger(AbstractOperationDataSet.class);
 
-	private final boolean markersOperationSet;
+//	private final boolean markersOperationSet;
 	private final MatrixKey origin;
 	private final DataSetKey parent;
 	private Integer numMarkers;
@@ -61,10 +62,9 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
-	private final int numEntriesToLog;
+	private final List<OperationKeyListener> operationKeyListeners;
 
 	public AbstractOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent,
 			OperationKey operationKey,
@@ -74,7 +74,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 //		this.origin = (operationKey == null) ? null : operationKey.getParentMatrixKey();
 		this.parent = parent;
 		this.operationKey = operationKey;
-		this.markersOperationSet = markersOperationSet;
+//		this.markersOperationSet = markersOperationSet;
 //		this.rdMatrixKey = (operationKey == null) ? null : operationKey.getParentMatrixKey();
 //		this.rdOperationKey = null;
 		this.numMarkers = null;
@@ -87,24 +87,22 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
-		this.numEntriesToLog = markersOperationSet ? 2000 : 100;
+		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
 	}
 
 	public AbstractOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent,
 			OperationKey operationKey)
 	{
-		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
+		this(origin, parent, operationKey, getDefaultEntriesWriteBufferSize(isMarkersOperationSet()));
 	}
 
 	public AbstractOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent)
 	{
-		this(markersOperationSet, origin, parent, null);
+		this(origin, parent, null);
 	}
 
 	/**
@@ -123,22 +121,24 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		return origin;
 	}
 
-	protected DataSetKey getParent() {
+	@Override
+	public DataSetKey getParent() {
 		return parent;
 	}
 
-	@Override
-	public boolean isMarkersOperationSet() {
-		return markersOperationSet;
+	private int getNumEntriesToLog() {
+		return isMarkersOperationSet() ? 2000 : 100;
 	}
 
-	protected abstract OperationMetadata createOperationMetadata() throws IOException;
+	public boolean isMarkersOperationSet() {
+		return getTypeInfo().isMarkersOriented();
+	}
 
 	protected final OperationMetadata getOperationMetadata() throws IOException {
 
 		if (operationMetadata == null) {
 			if (operationKey == null) {
-				operationMetadata = createOperationMetadata();
+				operationMetadata = OperationManager.generateOperationMetadata(getTypeInfo(), this);
 				setOperationKey(OperationsList.insertOperation(operationMetadata));
 			} else {
 				operationMetadata = OperationsList.getOperationMetadata(operationKey);
@@ -308,10 +308,31 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	protected abstract boolean getUseAllChromosomesFromParent() throws IOException;
 
-	protected void setOperationKey(OperationKey operationKey) {
-		this.operationKey = operationKey;
+	@Override
+	public void addOperationKeyListener(OperationKeyListener lst) {
+		operationKeyListeners.add(lst);
 	}
 
+	@Override
+	public void removeOperationKeyListener(OperationKeyListener lst) {
+		operationKeyListeners.remove(lst);
+	}
+
+	private void fireOperationKeySet() {
+
+		final OperationKeySetEvent evt = new OperationKeySetEvent(this);
+		for (OperationKeyListener lst : operationKeyListeners) {
+			lst.operationKeySet(evt);
+		}
+	}
+
+	protected void setOperationKey(OperationKey operationKey) {
+		this.operationKey = operationKey;
+
+		fireOperationKeySet();
+	}
+
+	@Override
 	public OperationKey getOperationKey() {
 		return operationKey;
 	}
@@ -417,7 +438,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 		writeBuffer.add(entry);
 
-		if (writeBuffer.size() >= entriesWriteBufferSize) {
+		if (writeBuffer.size() >= getEntriesWriteBufferSize()) {
 			writeCurrentEntriesBuffer();
 		}
 	}
@@ -441,6 +462,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		final int nowWritten = alreadyWritten + numWriting;
 		writeBuffer.clear();
 
+		final int numEntriesToLog = getNumEntriesToLog();
 		if ((alreadyWritten == 0) // the first entries
 				|| ((nowWritten / numEntriesToLog) != ((nowWritten - numWriting) / numEntriesToLog)) // approximately numEntriesToLog written since last log
 				|| (nowWritten == getNumEntries())) // the final entries

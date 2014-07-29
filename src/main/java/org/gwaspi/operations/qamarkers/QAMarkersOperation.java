@@ -22,23 +22,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
@@ -47,37 +41,23 @@ import org.gwaspi.progress.ProgressSource;
 
 public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			"Markers Quality Assurance",
 			""); // TODO
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					"Markers Quality Assurance",
-					"Markers Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.MARKER_QA,
-					true,
-					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				QAMarkersOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-
-					@Override
-					protected OperationDataSet generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new InMemoryQAMarkersOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new QAMarkersOperationFactory());
 	}
 
 	public QAMarkersOperation(QAMarkersOperationParams params) {
 		super(params);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return QAMarkersOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -87,7 +67,7 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

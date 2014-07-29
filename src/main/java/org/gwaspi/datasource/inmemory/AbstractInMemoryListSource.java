@@ -18,7 +18,6 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.datasource.AbstractListSource;
 import org.gwaspi.global.Extractor;
@@ -47,7 +46,7 @@ public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<
 		return items;
 	}
 
-	protected static <OT, IT> List<OT> extractProperty(List<IT> items, Extractor<IT, OT> propertyExtractor) {
+	public static <OT, IT> List<OT> extractProperty(List<IT> items, Extractor<IT, OT> propertyExtractor) {
 
 //		final List<OT> extractedProperties = new ArrayList<OT>(items.size());
 //		for (IT item : items) {

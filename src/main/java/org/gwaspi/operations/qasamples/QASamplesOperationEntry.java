@@ -17,10 +17,44 @@
 
 package org.gwaspi.operations.qasamples;
 
+import org.gwaspi.global.Extractor;
 import org.gwaspi.operations.OperationDataEntry;
 import org.gwaspi.model.SampleKey;
 
 public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
+
+	public static class MissingRatioExtractor
+			implements Extractor<QASamplesOperationEntry, Double>
+	{
+		@Override
+		public Double extract(QASamplesOperationEntry from) {
+			return from.getMissingRatio();
+		}
+	};
+	public static final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO
+			= new MissingRatioExtractor();
+
+	public static class MissingCountExtractor
+			implements Extractor<QASamplesOperationEntry, Integer>
+	{
+		@Override
+		public Integer extract(QASamplesOperationEntry from) {
+			return from.getMissingCount();
+		}
+	};
+	public static final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
+			= new MissingCountExtractor();
+
+	public static class HetzyRatioExtractor
+			implements Extractor<QASamplesOperationEntry, Double>
+	{
+		@Override
+		public Double extract(QASamplesOperationEntry from) {
+			return from.getHetzyRatio();
+		}
+	};
+	public static final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO
+			= new HetzyRatioExtractor();
 
 	/**
 	 * @return the missing ratio of this sample

@@ -17,6 +17,9 @@
 
 package org.gwaspi.operations;
 
+import org.gwaspi.global.Extractor;
+import org.gwaspi.model.MarkerMetadata;
+
 /**
  * TODO
  *

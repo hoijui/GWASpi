@@ -22,15 +22,21 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public interface OperationFactory {
+public interface OperationFactory<DST extends OperationDataSet> {
 
+	/**
+	 * Property name for the main type of OperationDataSet to generate.
+	 * This will be used in the properties parameter in {@link #generateReadOperationDataSet}.
+	 */
 	public static final String PROPERTY_NAME_TYPE = "type";
 
 	Class<? extends MatrixOperation> getType();
 
 	OperationTypeInfo getTypeInfo();
 
-	OperationDataSet generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
+	OperationMetadataFactory<DST> getOperationMetadataFactory();
 
-	OperationDataSet generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException;
+	DST generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
+
+	DST generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException;
 }

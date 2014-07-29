@@ -25,18 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.NetCdfUtils;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayInt;
@@ -47,7 +45,10 @@ import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkerCensusOperationEntry> implements MarkerCensusOperationDataSet {
+public class NetCdfMarkerCensusOperationDataSet
+		extends AbstractNetCdfOperationDataSet<MarkerCensusOperationEntry>
+		implements MarkerCensusOperationDataSet
+{
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -66,7 +67,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 	}
 
-	private MarkerCensusOperationParams params;
 	private ArrayByte.D2 netCdfKnownAlleles;
 	private ArrayInt.D2 netCdfCensusAlls;
 	private ArrayInt.D2 netCdfCensusCase;
@@ -79,6 +79,11 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return MarkerCensusOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	/**
@@ -96,11 +101,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		}
 
 		return chunkSize;
-	}
-
-	@Override
-	public void setParams(final MarkerCensusOperationParams params) {
-		this.params = params;
 	}
 
 	@Override
@@ -153,36 +153,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		// Define Genotype Variables
 		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.BYTE, allelesSpace);
 		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
-	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
-
-		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
-
-		String description = "Genotype frequency count -" + params.getName() + "- on " + rdDataSetMetadata.getFriendlyName();
-		if (params.getPhenotypeFile() != null) {
-			description += "\nCase/Control status read from file: " + params.getPhenotypeFile().getPath();
-			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
-		}
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				"Genotypes freq. - " + params.getName(), // friendly name
-				description
-					+ "\nSample missing ratio threshold: " + params.getSampleMissingRatio()
-					+ "\nSample heterozygosity ratio threshold: " + params.getSampleHetzygRatio()
-					+ "\nMarker missing ratio threshold: " + params.getMarkerMissingRatio()
-					+ "\nDiscard mismatching Markers: " + params.isDiscardMismatches()
-					+ "\nMarkers: " + getNumMarkers()
-					+ "\nSamples: " + getNumSamples(), // description
-				opType,
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
 	}
 
 	@Override
