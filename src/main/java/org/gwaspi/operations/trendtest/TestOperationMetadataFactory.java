@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.trendtest;
 
-import org.gwaspi.operations.qasamples.*;
 import java.io.IOException;
 import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.DataSetMetadata;
@@ -27,7 +26,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class TestOperationMetadataFactory implements OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> {
+public class TestOperationMetadataFactory implements OperationMetadataFactory<CommonTestOperationDataSet, TrendTestOperationParams> {
 
 	private final OperationTypeInfo typeInfo;
 
@@ -41,8 +40,9 @@ public class TestOperationMetadataFactory implements OperationMetadataFactory<QA
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(QASamplesOperationDataSet operationDataSet, QASamplesOperationParams params) throws IOException {
+	public OperationMetadata generateMetadata(CommonTestOperationDataSet operationDataSet, TrendTestOperationParams params) throws IOException {
 
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
 		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
 
 		return new OperationMetadata(
