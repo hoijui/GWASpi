@@ -144,8 +144,6 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(numMySamples);
 
-		dataSet.setParams(getParams());
-
 		dataSet.setSamples(wrSampleKeys);
 
 		//<editor-fold defaultstate="expanded" desc="PROCESSOR">

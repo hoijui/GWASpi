@@ -18,24 +18,20 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetMetadata;
-import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 
-public class InMemoryCombiTestOperationDataSet extends AbstractInMemoryOperationDataSet<CombiTestOperationEntry> implements CombiTestOperationDataSet {
+public class InMemoryCombiTestOperationDataSet
+		extends AbstractInMemoryOperationDataSet<CombiTestOperationEntry>
+		implements CombiTestOperationDataSet
+{
 
-	private List<Double> weights;
+//	private List<Double> weights;
 
 	public InMemoryCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
@@ -46,19 +42,8 @@ public class InMemoryCombiTestOperationDataSet extends AbstractInMemoryOperation
 	}
 
 	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException { // XXX this is a direct copy of the NetCdf* version of this class!
-
-		DataSetKey parentDataSetKey = getParent();
-		DataSetMetadata parentDataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
-		return new OperationMetadata(
-				parentDataSetKey, // parent data set
-				"COMBI_Test"/* + myFriendlyName*/, // friendly name
-				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
-				OPType.COMBI_ASSOC_TEST, // operationType
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
+	public OperationTypeInfo getTypeInfo() {
+		return CombiTestOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -82,22 +67,22 @@ public class InMemoryCombiTestOperationDataSet extends AbstractInMemoryOperation
 		return weights.subList(from, to);
 	}
 
-	@Override
-	public List<CombiTestOperationEntry> getEntries(int from, int to) throws IOException { // XXX this is a direct copy of the NetCdf* version of this class!
-
-		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
-		List<Double> weightsPart = getWeights(from, to);
-
-		List<CombiTestOperationEntry> entries
-				= new ArrayList<CombiTestOperationEntry>(markersKeys.size());
-		Iterator<Double> weightsIt = weightsPart.iterator();
-		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
-			entries.add(new DefaultCombiTestOperationEntry(
-					origIndicesAndKey.getValue(),
-					origIndicesAndKey.getKey(),
-					weightsIt.next()));
-		}
-
-		return entries;
-	}
+//	@Override
+//	public List<CombiTestOperationEntry> getEntries(int from, int to) throws IOException { // XXX this is a direct copy of the NetCdf* version of this class!
+//
+//		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
+//		List<Double> weightsPart = getWeights(from, to);
+//
+//		List<CombiTestOperationEntry> entries
+//				= new ArrayList<CombiTestOperationEntry>(markersKeys.size());
+//		Iterator<Double> weightsIt = weightsPart.iterator();
+//		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
+//			entries.add(new DefaultCombiTestOperationEntry(
+//					origIndicesAndKey.getValue(),
+//					origIndicesAndKey.getKey(),
+//					weightsIt.next()));
+//		}
+//
+//		return entries;
+//	}
 }

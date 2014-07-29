@@ -15,55 +15,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qasamples;
+package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 
-public class QASamplesOperationFactory
-		extends AbstractDefaultTypesOperationFactory<QASamplesOperationDataSet>
+public class CombiTestOperationFactory
+		extends AbstractDefaultTypesOperationFactory<CombiTestOperationDataSet>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
-					"Samples Quality Assurance",
-					"Samples Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.SAMPLE_QA,
-					false,
-					true);
+					"COMBI Test",
+					"Assigns a weight to each marker, rating its ability to predict the affection", // FIXME TODO We need a more elaborate description of this operation!
+					cNetCDF.Defaults.OPType.COMBI_ASSOC_TEST,
+					true,
+					false);
 
-	private final OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> operationMetadataFactory;
+	private final OperationMetadataFactory<CombiTestOperationDataSet, CombiTestOperationParams> operationMetadataFactory;
 
-	public QASamplesOperationFactory() {
-		super(QAMarkersOperation.class, OPERATION_TYPE_INFO);
+	public CombiTestOperationFactory() {
+		super(CombiTestMatrixOperation.class, OPERATION_TYPE_INFO);
 
-		this.operationMetadataFactory = new QASamplesOperationMetadataFactory();
+		this.operationMetadataFactory = new CombiTestOperationMetadataFactory();
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateReadOperationDataSetNetCdf(
+	protected CombiTestOperationDataSet generateReadOperationDataSetNetCdf(
 			OperationKey operationKey, DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
 
-		return new NetCdfQASamplesOperationDataSet(
+		return new NetCdfCombiTestOperationDataSet(
 				parent.getOrigin(), parent, operationKey);
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateSpecificWriteOperationDataSetMemory(
+	protected CombiTestOperationDataSet generateSpecificWriteOperationDataSetMemory(
 			DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
-		return new InMemoryQASamplesOperationDataSet(
+		return new InMemoryCombiTestOperationDataSet(
 				parent.getOrigin(), parent);
 	}
 
@@ -73,7 +72,7 @@ public class QASamplesOperationFactory
 	}
 
 	@Override
-	public OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> getOperationMetadataFactory() {
+	public OperationMetadataFactory<CombiTestOperationDataSet, CombiTestOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

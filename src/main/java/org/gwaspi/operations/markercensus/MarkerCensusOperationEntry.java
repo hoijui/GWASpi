@@ -17,11 +17,34 @@
 
 package org.gwaspi.operations.markercensus;
 
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
 public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {
+
+	public static class KnownAllelesExtractor
+			implements Extractor<MarkerCensusOperationEntry, byte[]>
+	{
+		@Override
+		public byte[] extract(MarkerCensusOperationEntry from) {
+			return from.getKnownAlleles();
+		}
+	};
+	public static final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
+			= new KnownAllelesExtractor();
+
+	public static class CensusExtractor
+			implements Extractor<MarkerCensusOperationEntry, CensusFull>
+	{
+		@Override
+		public CensusFull extract(MarkerCensusOperationEntry from) {
+			return from.getCensus();
+		}
+	};
+	public static final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS
+			= new CensusExtractor();
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]

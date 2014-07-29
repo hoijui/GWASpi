@@ -73,6 +73,11 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	protected ProgressSource getFilteringProgressSource() throws IOException {
 
 		if (filterPH == null) {

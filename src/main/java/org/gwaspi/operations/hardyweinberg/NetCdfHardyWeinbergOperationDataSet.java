@@ -130,22 +130,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
-				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
-					+ "\nMarkers: " + getNumMarkers() + ""
-					+ "\nSamples: " + getNumSamples(), // description
-				OPType.HARDY_WEINBERG, // operationType
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
-	}
-
-	@Override
 	public void setHardyWeinbergName(String hardyWeinbergName) {
 		this.hardyWeinbergName = hardyWeinbergName;
 	}

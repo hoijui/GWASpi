@@ -39,7 +39,7 @@ public class QAMarkersOperationFactory
 					true,
 					false);
 
-	private final OperationMetadataFactory<QAMarkersOperationDataSet> operationMetadataFactory;
+	private final OperationMetadataFactory<QAMarkersOperationDataSet, QAMarkersOperationParams> operationMetadataFactory;
 
 	public QAMarkersOperationFactory() {
 		super(QAMarkersOperation.class, OPERATION_TYPE_INFO);
@@ -70,7 +70,7 @@ public class QAMarkersOperationFactory
 	}
 
 	@Override
-	public OperationMetadataFactory<QAMarkersOperationDataSet> getOperationMetadataFactory() {
+	public OperationMetadataFactory<QAMarkersOperationDataSet, QAMarkersOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

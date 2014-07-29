@@ -26,7 +26,6 @@ import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationMetadataFactory;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 
 public class MarkerCensusOperationFactory
 		extends AbstractDefaultTypesOperationFactory<MarkerCensusOperationDataSet>
@@ -43,7 +42,7 @@ public class MarkerCensusOperationFactory
 	private final OperationMetadataFactory<MarkerCensusOperationDataSet, MarkerCensusOperationParams> operationMetadataFactory;
 
 	public MarkerCensusOperationFactory() {
-		super(QAMarkersOperation.class, OPERATION_TYPE_INFO);
+		super(MarkerCensusOperation.class, OPERATION_TYPE_INFO);
 
 		this.operationMetadataFactory = new MarkerCensusOperationMetadataFactory();
 	}

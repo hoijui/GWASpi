@@ -15,55 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qasamples;
+package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
-import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 
-public class QASamplesOperationFactory
-		extends AbstractDefaultTypesOperationFactory<QASamplesOperationDataSet>
+public class HardyWeinbergOperationFactory
+		extends AbstractDefaultTypesOperationFactory<HardyWeinbergOperationDataSet>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
-					"Samples Quality Assurance",
-					"Samples Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.SAMPLE_QA,
-					false,
-					true);
+					Text.Operation.hardyWeiberg,
+					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
+					cNetCDF.Defaults.OPType.HARDY_WEINBERG,
+					true,
+					false);
 
-	private final OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> operationMetadataFactory;
+	private final OperationMetadataFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> operationMetadataFactory;
 
-	public QASamplesOperationFactory() {
-		super(QAMarkersOperation.class, OPERATION_TYPE_INFO);
+	public HardyWeinbergOperationFactory() {
+		super(HardyWeinbergOperation.class, OPERATION_TYPE_INFO);
 
-		this.operationMetadataFactory = new QASamplesOperationMetadataFactory();
+		this.operationMetadataFactory = new HardyWeinbergOperationMetadataFactory();
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateReadOperationDataSetNetCdf(
+	protected HardyWeinbergOperationDataSet generateReadOperationDataSetNetCdf(
 			OperationKey operationKey, DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
 
-		return new NetCdfQASamplesOperationDataSet(
+		return new NetCdfHardyWeinbergOperationDataSet(
 				parent.getOrigin(), parent, operationKey);
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateSpecificWriteOperationDataSetMemory(
+	protected HardyWeinbergOperationDataSet generateSpecificWriteOperationDataSetMemory(
 			DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
-		return new InMemoryQASamplesOperationDataSet(
+		return new InMemoryHardyWeinbergOperationDataSet(
 				parent.getOrigin(), parent);
 	}
 
@@ -73,7 +73,7 @@ public class QASamplesOperationFactory
 	}
 
 	@Override
-	public OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> getOperationMetadataFactory() {
+	public OperationMetadataFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

@@ -24,7 +24,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class QASamplesOperationMetadataFactory implements OperationMetadataFactory<QASamplesOperationDataSet> {
+public class QASamplesOperationMetadataFactory implements OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> {
 
 	@Override
 	public OperationTypeInfo getTypeInfo() {
@@ -32,7 +32,7 @@ public class QASamplesOperationMetadataFactory implements OperationMetadataFacto
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(QASamplesOperationDataSet operationDataSet) throws IOException {
+	public OperationMetadata generateMetadata(QASamplesOperationDataSet operationDataSet, QASamplesOperationParams params) throws IOException {
 
 		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
 

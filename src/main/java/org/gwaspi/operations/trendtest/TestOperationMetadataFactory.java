@@ -15,36 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qamarkers;
+package org.gwaspi.operations.trendtest;
 
+import org.gwaspi.operations.qasamples.*;
 import java.io.IOException;
+import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class QAMarkersOperationMetadataFactory implements OperationMetadataFactory<QAMarkersOperationDataSet, QAMarkersOperationParams> {
+public class TestOperationMetadataFactory implements OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> {
 
-	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return QAMarkersOperationFactory.OPERATION_TYPE_INFO;
+	private final OperationTypeInfo typeInfo;
+
+	public TestOperationMetadataFactory(final OperationTypeInfo typeInfo) {
+		this.typeInfo = typeInfo;
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(QAMarkersOperationDataSet operationDataSet, QAMarkersOperationParams params) throws IOException {
+	public OperationTypeInfo getTypeInfo() {
+		return typeInfo;
+	}
 
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
+	@Override
+	public OperationMetadata generateMetadata(QASamplesOperationDataSet operationDataSet, QASamplesOperationParams params) throws IOException {
 
-		String description = "Marker Quality Assurance on "
-				+ rdDataSetMetadata.getFriendlyName()
-				+ "\nMarkers: " + operationDataSet.getNumMarkers()
-				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
+		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
 
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				"Marker QA", // friendly name
-				description, // description
+				testName, // friendly name
+				testName + " on " + markerCensusOP.getFriendlyName()
+						+ "\n" + markerCensusOP.getDescription()
+						+ "\nHardy-Weinberg threshold: "
+						+ Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
 				getTypeInfo().getType(),
 				operationDataSet.getNumMarkers(),
 				operationDataSet.getNumSamples(),

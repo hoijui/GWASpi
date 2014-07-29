@@ -18,9 +18,7 @@
 package org.gwaspi.operations.markercensus;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
@@ -29,7 +27,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
-import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
 
 public class InMemoryMarkerCensusOperationDataSet
 		extends AbstractInMemoryOperationDataSet<MarkerCensusOperationEntry>
@@ -59,20 +56,14 @@ public class InMemoryMarkerCensusOperationDataSet
 
 		return AbstractInMemoryListSource.extractProperty(
 				getEntries(from, to),
-				MarkerCensusOperationEntry.);
+				MarkerCensusOperationEntry.TO_KNOWN_ALLELES);
 	}
 
 	private List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
 
-		List<int[]> censusesRaw = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarName.get(category), from, to, censusesRaw, null);
-
-		List<Census> censusesData = new ArrayList<Census>(censusesRaw.size());
-		for (int[] censusRaw : censusesRaw) {
-			censusesData.add(new Census(censusRaw));
-		}
-
-		return censusesData;
+		return AbstractInMemoryListSource.extractProperty(
+				getEntries(from, to),
+				MarkerCensusOperationEntry.TO_CENSUS);
 	}
 
 	private List<Census> getCensusMarkerData(Category category) throws IOException {

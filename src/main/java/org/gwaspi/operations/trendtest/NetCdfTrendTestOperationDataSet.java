@@ -33,7 +33,10 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
-public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
+public class NetCdfTrendTestOperationDataSet
+		extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry>
+		implements TrendTestOperationDataSet
+{
 
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]

@@ -15,37 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qamarkers;
+package org.gwaspi.operations.combi;
 
 import java.io.IOException;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class QAMarkersOperationMetadataFactory implements OperationMetadataFactory<QAMarkersOperationDataSet, QAMarkersOperationParams> {
+public class CombiTestOperationMetadataFactory
+		implements OperationMetadataFactory<CombiTestOperationDataSet, CombiTestOperationParams>
+{
 
 	@Override
 	public OperationTypeInfo getTypeInfo() {
-		return QAMarkersOperationFactory.OPERATION_TYPE_INFO;
+		return CombiTestOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(QAMarkersOperationDataSet operationDataSet, QAMarkersOperationParams params) throws IOException {
-
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
-
-		String description = "Marker Quality Assurance on "
-				+ rdDataSetMetadata.getFriendlyName()
-				+ "\nMarkers: " + operationDataSet.getNumMarkers()
-				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-
+	public OperationMetadata generateMetadata(
+			final CombiTestOperationDataSet operationDataSet,
+			final CombiTestOperationParams params)
+			throws IOException
+	{
+		DataSetKey parentDataSetKey = operationDataSet.getParent();
+		DataSetMetadata parentDataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
 		return new OperationMetadata(
-				operationDataSet.getParent(), // parent data set
-				"Marker QA", // friendly name
-				description, // description
-				getTypeInfo().getType(),
+				parentDataSetKey, // parent data set
+				"COMBI_Test"/* + myFriendlyName*/, // friendly name
+				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
+				getTypeInfo().getType(), // operationType
 				operationDataSet.getNumMarkers(),
 				operationDataSet.getNumSamples(),
 				operationDataSet.getNumChromosomes(),
