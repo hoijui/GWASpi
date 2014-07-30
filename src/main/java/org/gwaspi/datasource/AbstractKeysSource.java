@@ -46,11 +46,7 @@
 //		List<Integer> originalIndices;
 //
 //		if (varOriginalIndices == null) {
-//			// FIXME We can make a special implementation that uses no storage for this!
-//			originalIndices = new ArrayList<Integer>(size());
-//			for (int oi = 0; oi < size(); oi++) {
-//				originalIndices.add(oi);
-//			}
+//			originalIndices = new IndicesList(size());
 //		} else {
 //			originalIndices = readVar(varOriginalIndices, from, to);
 //		}

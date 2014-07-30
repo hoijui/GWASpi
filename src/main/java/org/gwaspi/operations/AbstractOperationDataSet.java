@@ -90,20 +90,20 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
 	}
 
-	public AbstractOperationDataSet(
-			MatrixKey origin,
-			DataSetKey parent,
-			OperationKey operationKey)
-	{
-		this(origin, parent, operationKey, getDefaultEntriesWriteBufferSize(isMarkersOperationSet()));
-	}
-
-	public AbstractOperationDataSet(
-			MatrixKey origin,
-			DataSetKey parent)
-	{
-		this(origin, parent, null);
-	}
+//	public AbstractOperationDataSet(
+//			MatrixKey origin,
+//			DataSetKey parent,
+//			OperationKey operationKey)
+//	{
+//		this(origin, parent, operationKey, getDefaultEntriesWriteBufferSize(isMarkersOperationSet()));
+//	}
+//
+//	public AbstractOperationDataSet(
+//			MatrixKey origin,
+//			DataSetKey parent)
+//	{
+//		this(origin, parent, null);
+//	}
 
 	/**
 	 * TODO revise this, for performance reasons.

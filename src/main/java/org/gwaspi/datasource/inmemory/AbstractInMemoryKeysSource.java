@@ -17,14 +17,17 @@
 
 package org.gwaspi.datasource.inmemory;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.global.IndicesList;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
+import static org.gwaspi.operations.NetCdfUtils.checkDimensions;
 
 public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryListSource<KT> {
 
@@ -36,19 +39,20 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 
 	public List<Integer> getIndices(int from, int to) throws IOException {
 
-		List<Integer> originalIndices;
+		final List<Integer> indices;
 
-		if (varOriginalIndices == null) {
-			// FIXME We can make a special implementation that uses no storage for this!
-			originalIndices = new ArrayList<Integer>(size());
-			for (int oi = 0; oi < size(); oi++) {
-				originalIndices.add(oi);
-			}
+		final Dimension fromTo = new Dimension(from, to);
+		checkDimensions(size(), fromTo);
+		final int fromClean = fromTo.width;
+		final int toClean = fromTo.height;
+
+		if (getOriginalIndices() == null) {
+			indices = new IndicesList(toClean - fromClean, fromClean);
 		} else {
-			originalIndices = readVar(varOriginalIndices, from, to);
+			indices = getOriginalIndices().subList(fromClean, toClean);
 		}
 
-		return originalIndices;
+		return indices;
 	}
 
 	public List<Integer> getIndices() throws IOException {
@@ -68,7 +72,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 			entries.add(keyFactory.decode(encodedKey));
 		}
 
-		return entries;
+		return getItems().subList(from, to). ???;
 	}
 
 	public Map<Integer, KT> getIndicesMap() throws IOException {

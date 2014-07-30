@@ -18,10 +18,13 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
@@ -64,7 +67,12 @@ public class InMemoryCombiTestOperationDataSet
 
 	@Override
 	public void setWeights(List<Double> weights) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+		Iterator<Map.Entry<Integer, MarkerKey>> markerIndicesAndKeysIt
+				= getParentDataSetSource().getMarkersKeysSource().getIndicesMap().entrySet().iterator();
+		for (Double weight : weights) {
+			Map.Entry<Integer, MarkerKey> markerIndexAndKey = markerIndicesAndKeysIt.next();
+			addEntry(new DefaultCombiTestOperationEntry(markerIndexAndKey.getValue(), markerIndexAndKey.getKey(), weight));
+		}
 	}
 }

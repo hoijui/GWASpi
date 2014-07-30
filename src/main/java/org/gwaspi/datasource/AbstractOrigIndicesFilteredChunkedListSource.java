@@ -62,6 +62,10 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 		return localValues;
 	}
 
+	protected List<Integer> getOriginalIndices() {
+		return originalIndices;
+	}
+
 	@Override
 	public VT get(int index) {
 
