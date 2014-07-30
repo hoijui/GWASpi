@@ -18,9 +18,6 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
-import org.gwaspi.gui.reports.Report_Analysis;
-import org.gwaspi.model.DataSetMetadata;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -42,16 +39,13 @@ public class TestOperationMetadataFactory implements OperationMetadataFactory<Co
 	@Override
 	public OperationMetadata generateMetadata(CommonTestOperationDataSet operationDataSet, TrendTestOperationParams params) throws IOException {
 
-		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
-		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
+		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(params.getMarkerCensus());
 
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				testName, // friendly name
-				testName + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + markerCensusOP.getDescription()
-						+ "\nHardy-Weinberg threshold: "
-						+ Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
+				params.getName(), // friendly name
+				params.getName() + " on " + markerCensusOP.getFriendlyName()
+						+ "\n" + markerCensusOP.getDescription(), // description
 				getTypeInfo().getType(),
 				operationDataSet.getNumMarkers(),
 				operationDataSet.getNumSamples(),

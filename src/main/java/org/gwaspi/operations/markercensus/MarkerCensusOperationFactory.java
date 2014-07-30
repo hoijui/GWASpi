@@ -67,11 +67,6 @@ public class MarkerCensusOperationFactory
 	}
 
 	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return OPERATION_TYPE_INFO;
-	}
-
-	@Override
 	public OperationMetadataFactory<MarkerCensusOperationDataSet, MarkerCensusOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}

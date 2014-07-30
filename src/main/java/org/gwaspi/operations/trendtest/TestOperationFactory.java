@@ -15,40 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qasamples;
+package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class QASamplesOperationFactory
-		extends AbstractDefaultTypesOperationFactory<QASamplesOperationDataSet>
+public class TestOperationFactory<DST extends CommonTestOperationDataSet>
+		extends AbstractDefaultTypesOperationFactory<DST>
 {
-	static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					"Samples Quality Assurance",
-					"Samples Quality Assurance", // TODO We need a more elaborate description of this operation!
-					OPType.SAMPLE_QA,
-					false,
-					true);
+	private final OperationMetadataFactory<DST, QASamplesOperationParams> operationMetadataFactory;
 
-	private final OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> operationMetadataFactory;
+	public TestOperationFactory(final Class<? extends MatrixOperation> type, final OperationTypeInfo typeInfo) {
+		super(type, typeInfo);
 
-	public QASamplesOperationFactory() {
-		super(QASamplesOperation.class, OPERATION_TYPE_INFO);
-
-		this.operationMetadataFactory = new QASamplesOperationMetadataFactory();
+		this.operationMetadataFactory = new TestOperationMetadataFactory(typeInfo);
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateReadOperationDataSetNetCdf(
+	protected DST generateReadOperationDataSetNetCdf(
 			OperationKey operationKey, DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
@@ -58,7 +48,7 @@ public class QASamplesOperationFactory
 	}
 
 	@Override
-	protected QASamplesOperationDataSet generateSpecificWriteOperationDataSetMemory(
+	protected DST generateSpecificWriteOperationDataSetMemory(
 			DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
@@ -67,7 +57,7 @@ public class QASamplesOperationFactory
 	}
 
 	@Override
-	public OperationMetadataFactory<QASamplesOperationDataSet, QASamplesOperationParams> getOperationMetadataFactory() {
+	public OperationMetadataFactory<DST, QASamplesOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

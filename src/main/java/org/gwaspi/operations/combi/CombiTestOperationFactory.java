@@ -67,11 +67,6 @@ public class CombiTestOperationFactory
 	}
 
 	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return OPERATION_TYPE_INFO;
-	}
-
-	@Override
 	public OperationMetadataFactory<CombiTestOperationDataSet, CombiTestOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}

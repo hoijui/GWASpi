@@ -65,11 +65,6 @@ public class QAMarkersOperationFactory
 	}
 
 	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return OPERATION_TYPE_INFO;
-	}
-
-	@Override
 	public OperationMetadataFactory<QAMarkersOperationDataSet, QAMarkersOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}

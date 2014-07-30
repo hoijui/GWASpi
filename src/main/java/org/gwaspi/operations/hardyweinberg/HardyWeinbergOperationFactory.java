@@ -68,11 +68,6 @@ public class HardyWeinbergOperationFactory
 	}
 
 	@Override
-	public OperationTypeInfo getTypeInfo() {
-		return OPERATION_TYPE_INFO;
-	}
-
-	@Override
 	public OperationMetadataFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
