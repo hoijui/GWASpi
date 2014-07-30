@@ -15,22 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.trendtest;
+package org.gwaspi.operations.filter;
 
 import java.io.IOException;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
+import org.gwaspi.operations.OperationParams;
+import org.gwaspi.operations.OperationTypeInfo;
 
-public class TestOperationMetadataFactory<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams>
-		implements OperationMetadataFactory<DST, PT>
-{
+public class SimpleFilterOperationMetadataFactory<PT extends OperationParams> implements OperationMetadataFactory<SimpleOperationDataSet, PT> {
 
 	private final OperationTypeInfo typeInfo;
+	private final String filterDescription;
 
-	public TestOperationMetadataFactory(final OperationTypeInfo typeInfo) {
+	public SimpleFilterOperationMetadataFactory(OperationTypeInfo typeInfo, final String filterDescription) {
+
 		this.typeInfo = typeInfo;
+		this.filterDescription = filterDescription;
 	}
 
 	@Override
@@ -39,16 +40,13 @@ public class TestOperationMetadataFactory<DST extends CommonTestOperationDataSet
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(DST operationDataSet, PT params) throws IOException {
-
-		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(params.getMarkerCensus());
+	public OperationMetadata generateMetadata(SimpleOperationDataSet operationDataSet, PT params) throws IOException {
 
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				params.getName(), // friendly name
-				params.getName() + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + markerCensusOP.getDescription(), // description
-				getTypeInfo().getType(),
+				"Filtering_by_" + filterDescription, // friendly name
+				"Filters the markers and/or samples by " + filterDescription, // description
+				getTypeInfo().getType(), // operationType
 				operationDataSet.getNumMarkers(),
 				operationDataSet.getNumSamples(),
 				operationDataSet.getNumChromosomes(),

@@ -46,7 +46,7 @@ public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<
 		return items;
 	}
 
-	public static <OT, IT> List<OT> extractProperty(List<IT> items, Extractor<IT, OT> propertyExtractor) {
+	public static <OT, IT> List<OT> extractProperty(List<? extends IT> items, Extractor<IT, OT> propertyExtractor) {
 
 //		final List<OT> extractedProperties = new ArrayList<OT>(items.size());
 //		for (IT item : items) {

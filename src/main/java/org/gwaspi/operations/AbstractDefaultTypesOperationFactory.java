@@ -23,8 +23,8 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public abstract class AbstractDefaultTypesOperationFactory<DST extends OperationDataSet>
-		extends AbstractOperationFactory<DST>
+public abstract class AbstractDefaultTypesOperationFactory<DST extends OperationDataSet, PT extends OperationParams>
+		extends AbstractOperationFactory<DST, PT>
 {
 
 	public static final String PROPERTY_VALUE_TYPE_NETCDF = "netcdf";
@@ -54,7 +54,7 @@ public abstract class AbstractDefaultTypesOperationFactory<DST extends Operation
 	@Override
 	public final DST generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 
-		final Object type = properties.get(PROPERTY_NAME_TYPE);
+		final Object type = properties.get(OperationFactory.PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {
 			return generateReadOperationDataSetNetCdf(operationKey, parent, properties);
 		} else if (type.equals(PROPERTY_VALUE_TYPE_MEMORY)) {
@@ -90,7 +90,7 @@ public abstract class AbstractDefaultTypesOperationFactory<DST extends Operation
 	@Override
 	public final DST generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException {
 
-		final Object type = properties.get(PROPERTY_NAME_TYPE);
+		final Object type = properties.get(OperationFactory.PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {
 			return generateWriteOperationDataSetNetCdf(parent, properties);
 		} else if (type.equals(PROPERTY_VALUE_TYPE_MEMORY)) {

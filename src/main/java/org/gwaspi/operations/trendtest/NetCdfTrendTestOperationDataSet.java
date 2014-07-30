@@ -29,6 +29,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.NetCdfUtils;
+import org.gwaspi.operations.OperationTypeInfo;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -54,6 +55,11 @@ public class NetCdfTrendTestOperationDataSet
 
 	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return TrendTestOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override

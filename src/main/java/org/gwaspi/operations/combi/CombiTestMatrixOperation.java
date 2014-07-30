@@ -60,8 +60,9 @@ import org.slf4j.LoggerFactory;
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams> {
-
+public class CombiTestMatrixOperation
+		extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams>
+{
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 

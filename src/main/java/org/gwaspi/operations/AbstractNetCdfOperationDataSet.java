@@ -65,8 +65,9 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfOperationDataSet<ET extends OperationDataEntry> extends AbstractOperationDataSet<ET> {
-
+public abstract class AbstractNetCdfOperationDataSet<ET extends OperationDataEntry> 
+		extends AbstractOperationDataSet<ET>
+{
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
 //	private Integer numMarkers;
@@ -80,13 +81,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET extends OperationDataEnt
 	private NetcdfFileWriteable writeNcFile;
 
 	public AbstractNetCdfOperationDataSet(
-			boolean markersOperationSet,
 			MatrixKey origin,
 			DataSetKey parent,
 			OperationKey operationKey,
 			int entriesWriteBufferSize)
 	{
-		super(markersOperationSet, origin, parent, operationKey, entriesWriteBufferSize);
+		super(origin, parent, operationKey, entriesWriteBufferSize);
 
 //		this.numMarkers = null;
 //		this.numSamples = null;
@@ -105,7 +105,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET extends OperationDataEnt
 			DataSetKey parent,
 			OperationKey operationKey)
 	{
-		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
+		this(origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
 	public AbstractNetCdfOperationDataSet(

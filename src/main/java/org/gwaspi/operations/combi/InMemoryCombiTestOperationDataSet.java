@@ -20,6 +20,7 @@ package org.gwaspi.operations.combi;
 import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
+import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -30,11 +31,8 @@ public class InMemoryCombiTestOperationDataSet
 		extends AbstractInMemoryOperationDataSet<CombiTestOperationEntry>
 		implements CombiTestOperationDataSet
 {
-
-//	private List<Double> weights;
-
 	public InMemoryCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
-		super(true, origin, parent, operationKey);
+		super(origin, parent, operationKey);
 	}
 
 	public InMemoryCombiTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
@@ -44,12 +42,6 @@ public class InMemoryCombiTestOperationDataSet
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return CombiTestOperationFactory.OPERATION_TYPE_INFO;
-	}
-
-	@Override
-	public void setWeights(List<Double> weights) throws IOException {
-
-		this.weights = weights;
 	}
 
 	@Override
@@ -64,25 +56,15 @@ public class InMemoryCombiTestOperationDataSet
 
 	@Override
 	public List<Double> getWeights(int from, int to) throws IOException {
-		return weights.subList(from, to);
+
+		return AbstractInMemoryListSource.extractProperty(
+				getEntries(from, to),
+				CombiTestOperationEntry.TO_WEIGHTS);
 	}
 
-//	@Override
-//	public List<CombiTestOperationEntry> getEntries(int from, int to) throws IOException { // XXX this is a direct copy of the NetCdf* version of this class!
-//
-//		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
-//		List<Double> weightsPart = getWeights(from, to);
-//
-//		List<CombiTestOperationEntry> entries
-//				= new ArrayList<CombiTestOperationEntry>(markersKeys.size());
-//		Iterator<Double> weightsIt = weightsPart.iterator();
-//		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
-//			entries.add(new DefaultCombiTestOperationEntry(
-//					origIndicesAndKey.getValue(),
-//					origIndicesAndKey.getKey(),
-//					weightsIt.next()));
-//		}
-//
-//		return entries;
-//	}
+	@Override
+	public void setWeights(List<Double> weights) throws IOException {
+		XXX;
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

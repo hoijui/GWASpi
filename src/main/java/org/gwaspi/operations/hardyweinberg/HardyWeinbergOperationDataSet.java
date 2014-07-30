@@ -33,8 +33,6 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 
 	void addEntry(HardyWeinbergOperationEntry entry) throws IOException;
 
-	void setHardyWeinbergName(String hwName);
-
 	List<HardyWeinbergOperationEntry> getEntriesControl() throws IOException;
 	List<HardyWeinbergOperationEntry> getEntriesAlternate() throws IOException;
 

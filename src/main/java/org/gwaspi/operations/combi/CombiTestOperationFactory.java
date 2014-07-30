@@ -28,7 +28,7 @@ import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
 public class CombiTestOperationFactory
-		extends AbstractDefaultTypesOperationFactory<CombiTestOperationDataSet>
+		extends AbstractDefaultTypesOperationFactory<CombiTestOperationDataSet, CombiTestOperationParams>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(

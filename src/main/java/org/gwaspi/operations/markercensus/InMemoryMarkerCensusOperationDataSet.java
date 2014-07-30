@@ -63,7 +63,7 @@ public class InMemoryMarkerCensusOperationDataSet
 
 		return AbstractInMemoryListSource.extractProperty(
 				getEntries(from, to),
-				MarkerCensusOperationEntry.TO_CENSUS);
+				new MarkerCensusOperationEntry.CensusExtractor(category));
 	}
 
 	private List<Census> getCensusMarkerData(Category category) throws IOException {

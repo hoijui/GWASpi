@@ -28,7 +28,7 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationMetadataFactory;
 
 public class MarkerCensusOperationFactory
-		extends AbstractDefaultTypesOperationFactory<MarkerCensusOperationDataSet>
+		extends AbstractDefaultTypesOperationFactory<MarkerCensusOperationDataSet, MarkerCensusOperationParams>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(

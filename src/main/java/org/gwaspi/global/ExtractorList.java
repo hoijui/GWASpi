@@ -32,10 +32,10 @@ import java.util.List;
  */
 public class ExtractorList<IT, OT> extends AbstractList<OT> {
 
-	private final List<IT> originalItems;
+	private final List<? extends IT> originalItems;
 	private final Extractor<IT, OT> extractor;
 
-	public ExtractorList(List<IT> originalItems, Extractor<IT, OT> extractor) {
+	public ExtractorList(List<? extends IT> originalItems, Extractor<IT, OT> extractor) {
 
 		this.originalItems = originalItems;
 		this.extractor = extractor;

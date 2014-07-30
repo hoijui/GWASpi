@@ -18,18 +18,11 @@
 package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
-import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.AbstractAssociationTestsOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.statistics.Associations;
@@ -37,28 +30,14 @@ import org.gwaspi.statistics.Pvalue;
 
 public class GenotypicAssociationTestOperation extends AbstractAssociationTestsOperation<GenotypicAssociationTestsOperationDataSet> {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Operation.genoAssocTest,
 			Text.Operation.genoAssocTest); // TODO We need a more elaborate description of this operation!
 
-	private static final OperationTypeInfo OPERATION_TYPE_INFO
-			= new DefaultOperationTypeInfo(
-					false,
-					Text.Operation.genoAssocTest,
-					Text.Operation.genoAssocTest, // TODO We need a more elaborate description of this operation!
-					OPType.GENOTYPICTEST,
-					true,
-					false);
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new AbstractDefaultTypesOperationFactory(
-				GenotypicAssociationTestOperation.class, OPERATION_TYPE_INFO) {
-					@Override
-					protected OperationDataSet generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
-						return new NetCdfGenotypicAssociationTestsOperationDataSet(parent.getOrigin(), parent, operationKey);
-					}
-				});
+		OperationManager.registerOperationFactory(new GenotypicAssociationTestsOperationFactory());
 	}
 
 	public GenotypicAssociationTestOperation(final AssociationTestOperationParams params) {
@@ -66,8 +45,13 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 	}
 
 	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return GenotypicAssociationTestsOperationFactory.OPERATION_TYPE_INFO;
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

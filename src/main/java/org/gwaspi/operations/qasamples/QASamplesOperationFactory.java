@@ -28,7 +28,7 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationMetadataFactory;
 
 public class QASamplesOperationFactory
-		extends AbstractDefaultTypesOperationFactory<QASamplesOperationDataSet>
+		extends AbstractDefaultTypesOperationFactory<QASamplesOperationDataSet, QASamplesOperationParams>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(

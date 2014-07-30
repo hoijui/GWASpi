@@ -18,9 +18,12 @@
 package org.gwaspi.operations.markercensus;
 
 import org.gwaspi.global.Extractor;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 
 public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {
 
@@ -35,7 +38,7 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	public static final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
 			= new KnownAllelesExtractor();
 
-	public static class CensusExtractor
+	public static class CensusFullExtractor
 			implements Extractor<MarkerCensusOperationEntry, CensusFull>
 	{
 		@Override
@@ -43,8 +46,24 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 			return from.getCensus();
 		}
 	};
-	public static final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS
-			= new CensusExtractor();
+	public static final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
+			= new CensusFullExtractor();
+
+	public static class CensusExtractor
+			implements Extractor<MarkerCensusOperationEntry, Census>
+	{
+		private final Category category;
+
+		public CensusExtractor(final Category category) {
+
+			this.category = category;
+		}
+
+		@Override
+		public Census extract(MarkerCensusOperationEntry from) {
+			return from.getCensus().getCategoryCensus().get(category);
+		}
+	};
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]

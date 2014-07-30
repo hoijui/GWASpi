@@ -143,8 +143,8 @@ public class OperationManager {
 		}
 	}
 
-	public static OperationMetadata generateOperationMetadata(final Class<? extends MatrixOperation> type, OperationDataSet dataSet) throws IOException {
-		return getOperationFactory(type).getOperationMetadataFactory().generateMetadata(dataSet);
+	public static OperationMetadata generateOperationMetadata(final Class<? extends MatrixOperation> type, OperationDataSet dataSet, OperationParams params) throws IOException {
+		return getOperationFactory(type).getOperationMetadataFactory().generateMetadata(dataSet, params);
 	}
 
 	public static OperationKey censusCleanMatrixMarkers(

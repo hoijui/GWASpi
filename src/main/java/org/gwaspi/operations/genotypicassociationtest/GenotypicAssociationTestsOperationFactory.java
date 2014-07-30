@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.hardyweinberg;
+package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,51 +24,41 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
-import org.gwaspi.operations.OperationMetadataFactory;
+import org.gwaspi.operations.trendtest.AbstractTestOperationFactory;
 
-public class HardyWeinbergOperationFactory
-		extends AbstractDefaultTypesOperationFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams>
+public class GenotypicAssociationTestsOperationFactory
+		extends AbstractTestOperationFactory<GenotypicAssociationTestsOperationDataSet, AssociationTestOperationParams>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(
 					false,
-					Text.Operation.hardyWeiberg,
-					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
-					cNetCDF.Defaults.OPType.HARDY_WEINBERG,
+					Text.Operation.genoAssocTest,
+					Text.Operation.genoAssocTest, // TODO We need a more elaborate description of this operation!
+					cNetCDF.Defaults.OPType.GENOTYPICTEST,
 					true,
 					false);
 
-	private final OperationMetadataFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> operationMetadataFactory;
-
-	public HardyWeinbergOperationFactory() {
-		super(HardyWeinbergOperation.class, OPERATION_TYPE_INFO);
-
-		this.operationMetadataFactory = new HardyWeinbergOperationMetadataFactory();
+	public GenotypicAssociationTestsOperationFactory() {
+		super(GenotypicAssociationTestOperation.class, OPERATION_TYPE_INFO);
 	}
 
 	@Override
-	protected HardyWeinbergOperationDataSet generateReadOperationDataSetNetCdf(
+	protected GenotypicAssociationTestsOperationDataSet generateReadOperationDataSetNetCdf(
 			OperationKey operationKey, DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
 
-		return new NetCdfHardyWeinbergOperationDataSet(
+		return new NetCdfGenotypicAssociationTestsOperationDataSet(
 				parent.getOrigin(), parent, operationKey);
 	}
 
 	@Override
-	protected HardyWeinbergOperationDataSet generateSpecificWriteOperationDataSetMemory(
+	protected GenotypicAssociationTestsOperationDataSet generateSpecificWriteOperationDataSetMemory(
 			DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
-		return new InMemoryHardyWeinbergOperationDataSet(
+		return new InMemoryGenotypicAssociationTestsOperationDataSet(
 				parent.getOrigin(), parent);
-	}
-
-	@Override
-	public OperationMetadataFactory<HardyWeinbergOperationDataSet, HardyWeinbergOperationParams> getOperationMetadataFactory() {
-		return operationMetadataFactory;
 	}
 }

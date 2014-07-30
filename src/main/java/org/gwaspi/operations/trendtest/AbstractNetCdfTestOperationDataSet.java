@@ -21,18 +21,17 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataEntry;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNetCdfOperationDataSet<ET> {
+public abstract class AbstractNetCdfTestOperationDataSet<ET extends OperationDataEntry> extends AbstractNetCdfOperationDataSet<ET> {
 
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
@@ -102,24 +101,5 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 		if (opType == OPType.COMBI_ASSOC_TEST) {
 			// TODO FIXME What is stored for the combi test?
 		}
-	}
-
-	@Override
-	protected OperationMetadata createOperationMetadata() throws IOException {
-
-		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(markerCensusOPKey);
-
-		return new OperationMetadata(
-				getParent(), // parent data set
-				testName, // friendly name
-				testName + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + markerCensusOP.getDescription()
-						+ "\nHardy-Weinberg threshold: "
-						+ Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
-				testType,
-				getNumMarkers(),
-				getNumSamples(),
-				getNumChromosomes(),
-				isMarkersOperationSet());
 	}
 }

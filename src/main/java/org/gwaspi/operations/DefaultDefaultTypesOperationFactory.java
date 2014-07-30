@@ -25,8 +25,8 @@ import org.gwaspi.model.OperationKey;
 /**
  * The default implementation of an operation factory supporting the default types.
  */
-public abstract class DefaultDefaultTypesOperationFactory<DST extends OperationDataSet>
-		extends AbstractDefaultTypesOperationFactory<DST>
+public abstract class DefaultDefaultTypesOperationFactory<DST extends OperationDataSet, PT extends OperationParams>
+		extends AbstractDefaultTypesOperationFactory<DST, PT>
 {
 
 	protected DefaultDefaultTypesOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {

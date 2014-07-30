@@ -30,6 +30,8 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -40,6 +42,13 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 	public static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.exportMatrix,
 			Text.Trafo.exportMatrix); // TODO add more detailed info
+
+	private static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Export data",
+					"Export data to an external format",
+					null);
 
 	private final MatrixExporterParams params;
 	private final MatrixMetadata rdMatrixMetadata;
@@ -63,6 +72,11 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 		formatters.put(ExportFormat.GWASpi, new GWASpiFormatter());
 		formatters.put(ExportFormat.Spreadsheet, new SpreadsheetFormatter());
 		formatters.put(ExportFormat.MACH, new MachFormatter());
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override

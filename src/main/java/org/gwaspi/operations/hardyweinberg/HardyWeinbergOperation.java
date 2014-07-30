@@ -147,8 +147,6 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
 		dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
 
-		dataSet.setHardyWeinbergName(getParams().getName());
-
 		final Collection<MarkerCensusOperationEntry> markersCensus
 				= markerCensusOperationDataSet.getEntries();
 

@@ -17,8 +17,9 @@
 
 package org.gwaspi.operations;
 
-public abstract class AbstractOperationFactory<DST extends OperationDataSet> implements OperationFactory<DST> {
-
+public abstract class AbstractOperationFactory<DST extends OperationDataSet, PT extends OperationParams>
+		implements OperationFactory<DST, PT>
+{
 	private final Class<? extends MatrixOperation> type;
 	private final OperationTypeInfo typeInfo;
 

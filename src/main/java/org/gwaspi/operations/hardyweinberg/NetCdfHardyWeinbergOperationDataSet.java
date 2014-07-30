@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
@@ -37,6 +36,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
@@ -45,7 +45,10 @@ import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
+public class NetCdfHardyWeinbergOperationDataSet
+		extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry>
+		implements HardyWeinbergOperationDataSet
+{
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -83,7 +86,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 
-	private String hardyWeinbergName;
 	private final Map<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffers;
 	private ArrayDouble.D1 netCdfPs;
 	private ArrayDouble.D1 netCdfObsHetzys;
@@ -92,7 +94,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
 
-		this.hardyWeinbergName = null;
 		this.writeBuffers = new EnumMap<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>>(HardyWeinbergOperationEntry.Category.class);
 		for (HardyWeinbergOperationEntry.Category category : HardyWeinbergOperationEntry.Category.values()) {
 			writeBuffers.put(category, new EntryBuffer<HardyWeinbergOperationEntry>());
@@ -101,6 +102,11 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return HardyWeinbergOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -127,11 +133,6 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CASE, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT, DataType.DOUBLE, markersSpace);
-	}
-
-	@Override
-	public void setHardyWeinbergName(String hardyWeinbergName) {
-		this.hardyWeinbergName = hardyWeinbergName;
 	}
 
 	@Override

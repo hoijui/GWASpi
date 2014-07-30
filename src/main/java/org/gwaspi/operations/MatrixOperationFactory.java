@@ -22,10 +22,15 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public class MatrixOperationFactory extends AbstractOperationFactory {
+public class MatrixOperationFactory extends AbstractOperationFactory<OperationDataSet, OperationParams> {
 
 	public MatrixOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
 		super(type, typeInfo);
+	}
+
+	@Override
+	public OperationMetadataFactory getOperationMetadataFactory() {
+		throw new UnsupportedOperationException("Not supported yet."); // XXX We probably have to implement this!
 	}
 
 	@Override

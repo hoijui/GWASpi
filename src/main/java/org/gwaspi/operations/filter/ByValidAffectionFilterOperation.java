@@ -55,8 +55,12 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
-		OperationManager.registerOperationFactory(new SimpleOperationFactory(
-				ByValidAffectionFilterOperation.class, OPERATION_TYPE_INFO));
+		OperationManager.registerOperationFactory(
+				new SimpleOperationFactory<ByValidAffectionFilterOperationParams>(
+						ByValidAffectionFilterOperation.class,
+						new SimpleFilterOperationMetadataFactory(
+								OPERATION_TYPE_INFO,
+								"Removes all samples that are invalid, which means, they are neither marked as affeted nor as unaffected")));
 	}
 
 	private ProgressHandler filterPH;
@@ -65,6 +69,11 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 		super(params);
 
 		this.filterPH = null;
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override
@@ -113,10 +122,5 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 			localSampleIndex++;
 		}
 		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
-	}
-
-	@Override
-	protected String getFilterDescription() {
-		return "Removes all samples that are invalid, which means, they are neither marked as affeted nor as unaffected";
 	}
 }

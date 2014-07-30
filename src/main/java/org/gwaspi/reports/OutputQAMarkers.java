@@ -39,7 +39,9 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IndeterminateProgressHandler;
@@ -48,6 +50,7 @@ import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperProgressSource;
+import static org.gwaspi.reports.OutputHardyWeinberg.OPERATION_TYPE_INFO;
 
 /**
  * Write reports for QA Markers data.
@@ -56,12 +59,27 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 	private static final ProcessInfo qaMarkersOutputProcessInfo = new DefaultProcessInfo("Write QA Markers output to files", ""); // TODO
 
+	static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					"Output QA Markers data",
+					"Output QA Markers data", // TODO We need a more elaborate description of this operation!
+					null,
+					false,
+					false);
+
 	private ProgressHandler operationPH;
 	private ProgressHandler creatingMissingnessTablePH;
 	private ProgressHandler creatingMismatchTablePH;
 
 	public OutputQAMarkers(QAMarkersOutputParams params) {
 		super(params);
+	}
+
+	@Override
+	public OperationTypeInfo getTypeInfo() {
+		// XXX For this class, we should use a different return type on this method (ialso for the othe Output* classes)
+		return OPERATION_TYPE_INFO;
 	}
 
 	@Override

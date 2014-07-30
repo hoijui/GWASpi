@@ -28,7 +28,7 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationMetadataFactory;
 
 public class QAMarkersOperationFactory
-		extends AbstractDefaultTypesOperationFactory<QAMarkersOperationDataSet>
+		extends AbstractDefaultTypesOperationFactory<QAMarkersOperationDataSet, QAMarkersOperationParams>
 {
 	static final OperationTypeInfo OPERATION_TYPE_INFO
 			= new DefaultOperationTypeInfo(

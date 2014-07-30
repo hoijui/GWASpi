@@ -30,6 +30,7 @@ import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.filter.AbstractFilterOperation;
+import org.gwaspi.operations.filter.SimpleFilterOperationMetadataFactory;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IntegerProgressHandler;
@@ -40,7 +41,9 @@ import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 
-public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams> {
+public class ByHardyWeinbergThresholdFilterOperation 
+		extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams>
+{
 
 	public static final ProgressSource PLACEHOLDER_PS_HW_TF = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_HW_TF", null));
@@ -61,7 +64,10 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 		// NOTE When converting to OSGi, this would be done in bundle init,
 		//   or by annotations.
 		OperationManager.registerOperationFactory(new SimpleOperationFactory(
-				ByHardyWeinbergThresholdFilterOperation.class, OPERATION_TYPE_INFO));
+				ByHardyWeinbergThresholdFilterOperation.class,
+				new SimpleFilterOperationMetadataFactory<ByHardyWeinbergThresholdFilterOperationParams>(
+						OPERATION_TYPE_INFO,
+						"Removes all markers that have a Hardy & Weinberg P-value smaller then a given threshold.")));
 	}
 
 	private ProgressHandler filterPH;
@@ -144,10 +150,5 @@ public class ByHardyWeinbergThresholdFilterOperation extends AbstractFilterOpera
 		// we use all samples from the parent
 		filteredSampleOrigIndicesAndKeys.putAll(parentDataSetSource.getSamplesKeysSource().getIndicesMap());
 		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
-	}
-
-	@Override
-	protected String getFilterDescription() {
-		return "Removes all markers that have a Hardy & Weinberg P-value smaller then a given threshold.";
 	}
 }

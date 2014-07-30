@@ -88,8 +88,6 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		return null;
 	}
 
-	protected abstract String getFilterDescription();
-
 	protected abstract void filter(
 			Map<Integer, MarkerKey> filteredMarkerOrigIndicesAndKeys,
 //			Map<Integer, ChromosomeKey> filteredChromosomeOrigIndicesAndKeys,
@@ -131,8 +129,6 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
 
 		storePH.setNewStatus(ProcessStatus.RUNNING);
-		dataSet.setType(getParams().getType());
-		dataSet.setFilterDescription(getFilterDescription());
 
 		dataSet.setNumMarkers(filteredMarkerOrigIndicesAndKeys.size());
 //		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());

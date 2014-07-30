@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,45 +19,45 @@ package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
-import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.OperationMetadataFactory;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
 
-public class TestOperationFactory<DST extends CommonTestOperationDataSet>
-		extends AbstractDefaultTypesOperationFactory<DST>
+public class TrendTestOperationFactory
+		extends AbstractTestOperationFactory<TrendTestOperationDataSet, TrendTestOperationParams>
 {
-	private final OperationMetadataFactory<DST, QASamplesOperationParams> operationMetadataFactory;
+	static final OperationTypeInfo OPERATION_TYPE_INFO
+			= new DefaultOperationTypeInfo(
+					false,
+					Text.Operation.trendTest,
+					Text.Operation.trendTest, // TODO We need a more elaborate description of this operation!
+					cNetCDF.Defaults.OPType.TRENDTEST,
+					true,
+					false);
 
-	public TestOperationFactory(final Class<? extends MatrixOperation> type, final OperationTypeInfo typeInfo) {
-		super(type, typeInfo);
-
-		this.operationMetadataFactory = new TestOperationMetadataFactory(typeInfo);
+	public TrendTestOperationFactory() {
+		super(TrendTestOperation.class, OPERATION_TYPE_INFO);
 	}
 
 	@Override
-	protected DST generateReadOperationDataSetNetCdf(
+	protected TrendTestOperationDataSet generateReadOperationDataSetNetCdf(
 			OperationKey operationKey, DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
 
-		return new NetCdfQASamplesOperationDataSet(
+		return new NetCdfTrendTestOperationDataSet(
 				parent.getOrigin(), parent, operationKey);
 	}
 
 	@Override
-	protected DST generateSpecificWriteOperationDataSetMemory(
+	protected TrendTestOperationDataSet generateSpecificWriteOperationDataSetMemory(
 			DataSetKey parent, Map<String, Object> properties)
 			throws IOException
 	{
-		return new InMemoryQASamplesOperationDataSet(
+		return new InMemoryTrendTestOperationDataSet(
 				parent.getOrigin(), parent);
-	}
-
-	@Override
-	public OperationMetadataFactory<DST, QASamplesOperationParams> getOperationMetadataFactory() {
-		return operationMetadataFactory;
 	}
 }

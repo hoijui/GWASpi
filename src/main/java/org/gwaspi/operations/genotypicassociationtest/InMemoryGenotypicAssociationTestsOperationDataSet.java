@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.qasamples;
+package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,41 +25,49 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
 import org.gwaspi.operations.OperationTypeInfo;
 
-public class InMemoryQASamplesOperationDataSet
-		extends AbstractInMemoryOperationDataSet<QASamplesOperationEntry>
-		implements QASamplesOperationDataSet
+public class InMemoryGenotypicAssociationTestsOperationDataSet
+		extends AbstractInMemoryOperationDataSet<GenotypicAssociationTestOperationEntry>
+		implements GenotypicAssociationTestsOperationDataSet
 {
 
-	public InMemoryQASamplesOperationDataSet(MatrixKey origin, DataSetKey parent) {
+	public InMemoryGenotypicAssociationTestsOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		super(origin, parent);
 	}
 
 	@Override
 	public OperationTypeInfo getTypeInfo() {
-		return QASamplesOperationFactory.OPERATION_TYPE_INFO;
+		return GenotypicAssociationTestsOperationFactory.OPERATION_TYPE_INFO;
 	}
 
 	@Override
-	public List<Double> getMissingRatios(int from, int to) throws IOException {
+	public List<Double> getTs(int from, int to) throws IOException {
 
 		return AbstractInMemoryListSource.extractProperty(
 				getEntries(from, to),
-				QASamplesOperationEntry.TO_MISSING_RATIO);
+				GenotypicAssociationTestOperationEntry.TO_T);
 	}
 
 	@Override
-	public List<Integer> getMissingCounts(int from, int to) throws IOException {
+	public List<Double> getPs(int from, int to) throws IOException {
 
 		return AbstractInMemoryListSource.extractProperty(
 				getEntries(from, to),
-				QASamplesOperationEntry.TO_MISSING_COUNT);
+				GenotypicAssociationTestOperationEntry.TO_P);
 	}
 
 	@Override
-	public List<Double> getHetzyRatios(int from, int to) throws IOException {
+	public List<Double> getORs(int from, int to) throws IOException {
 
 		return AbstractInMemoryListSource.extractProperty(
 				getEntries(from, to),
-				QASamplesOperationEntry.TO_HETZY_RATIO);
+				GenotypicAssociationTestOperationEntry.TO_OR);
+	}
+
+	@Override
+	public List<Double> getOR2s(int from, int to) throws IOException {
+
+		return AbstractInMemoryListSource.extractProperty(
+				getEntries(from, to),
+				GenotypicAssociationTestOperationEntry.TO_OR2);
 	}
 }
