@@ -17,34 +17,33 @@
 
 package org.gwaspi.global;
 
-import java.util.AbstractList;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Set;
 
-/**
- * A List implementation returning a given range of indices,
- * using only constant (O(1)) amount of storage.
- */
-public class IndicesList extends AbstractList<Integer> {
+public class DoubleListBackedMap<KT, VT> extends AbstractMap<KT, VT> {
 
-	private final int size;
-	private final int start;
+	private final List<KT> keys;
+	private final List<VT> values;
 
-	public IndicesList(final int size, final int start) {
+	public DoubleListBackedMap(final List<KT> keys, final List<VT> values) {
 
-		this.size = size;
-		this.start = start;
-	}
+		if (keys.size() != values.size()) {
+			throw new IllegalArgumentException("We need the same amount of keys and values");
+		}
 
-	public IndicesList(final int size) {
-		this(size, 0);
-	}
-
-	@Override
-	public Integer get(int index) {
-		return start + index;
+		this.keys = keys;
+		this.values = values;
 	}
 
 	@Override
 	public int size() {
-		return size;
+		return keys.size();
+	}
+
+	@Override
+	public Set<Entry<KT, VT>> entrySet() {
+		// To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

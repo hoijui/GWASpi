@@ -31,8 +31,12 @@ import static org.gwaspi.operations.NetCdfUtils.checkDimensions;
 
 public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryListSource<KT> {
 
+	private final Map<Integer, KT> indicesMap;
+
 	public AbstractInMemoryKeysSource(MatrixKey origin, List<KT> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
+
+		this.indicesMap = new LinkedHashMap<Integer, KT>();
 	}
 
 	protected abstract KeyFactory<KT> createKeyFactory();
@@ -59,21 +63,21 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 		return getIndices(-1, -1);
 	}
 
-	@Override
-	public List<KT> getRange(int from, int to) throws IOException {
-
-		List<KT> entries;
-
-		List<String> keys = readVar(varKeys, from, to);
-
-		entries = new ArrayList<KT>(keys.size());
-		KeyFactory<KT> keyFactory = createKeyFactory();
-		for (String encodedKey : keys) {
-			entries.add(keyFactory.decode(encodedKey));
-		}
-
-		return getItems().subList(from, to). ???;
-	}
+//	@Override
+//	public List<KT> getRange(int from, int to) throws IOException {
+//
+//		List<KT> entries;
+//
+//		List<String> keys = readVar(varKeys, from, to);
+//
+//		entries = new ArrayList<KT>(keys.size());
+//		KeyFactory<KT> keyFactory = createKeyFactory();
+//		for (String encodedKey : keys) {
+//			entries.add(keyFactory.decode(encodedKey));
+//		}
+//
+//		return getItems().subList(from, to). ???;
+//	}
 
 	public Map<Integer, KT> getIndicesMap() throws IOException {
 		return getIndicesMap(-1, -1);
