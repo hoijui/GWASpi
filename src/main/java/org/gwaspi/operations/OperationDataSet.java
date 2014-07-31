@@ -37,6 +37,8 @@ public interface OperationDataSet<ET extends OperationDataEntry> extends DataSet
 
 	DataSetKey getParent();
 
+	void setParams(OperationParams params);
+
 	void setNumSamples(int numSamples) throws IOException;
 	void setNumMarkers(int numMarkers) throws IOException;
 	void setNumChromosomes(int numChromosomes) throws IOException;

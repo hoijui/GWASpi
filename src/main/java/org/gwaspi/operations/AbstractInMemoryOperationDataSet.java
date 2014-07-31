@@ -29,6 +29,7 @@ import org.gwaspi.datasource.filter.IndicesFilteredSamplesGenotypesSource;
 import org.gwaspi.datasource.filter.IndicesFilteredSamplesInfosSource;
 import org.gwaspi.datasource.filter.InternalIndicesFilteredMarkersGenotypesSource;
 import org.gwaspi.datasource.filter.InternalIndicesFilteredSamplesGenotypesSource;
+import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.datasource.inmemory.InMemoryChromosomesInfosSource;
 import org.gwaspi.datasource.inmemory.InMemoryChromosomesKeysSource;
 import org.gwaspi.datasource.inmemory.InMemoryMarkersGenotypesSource;
@@ -224,8 +225,19 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
-		return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
-				getNetCdfReadFile(), isMarkersOperationSet());
+		
+		if (getTypeInfo().isSamplesOriented()) {
+			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
+					(List<OperationDataEntry<SampleKey>>) getEntries(),
+					new OperationDataEntry.KeyExtractor<SampleKey>());
+			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+					getEntries(),
+					OperationDataEntry.TO_INDEX);
+			return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
+					keys, originalIndices);
+		} else {
+			return getParentDataSetSource().getSamplesKeysSource();
+		}
 	}
 
 	@Override
@@ -249,8 +261,19 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 
 	@Override
 	protected MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
-		return InMemoryMarkersKeysSource.createForOperation(getOrigin(), getInMemoryReadFile(),
-				isMarkersOperationSet());
+
+		if (getTypeInfo().isMarkersOriented()) {
+			List<MarkerKey> keys = AbstractInMemoryListSource.extractProperty(
+					(List<OperationDataEntry<MarkerKey>>) getEntries(),
+					new OperationDataEntry.KeyExtractor<MarkerKey>());
+			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+					getEntries(),
+					OperationDataEntry.TO_INDEX);
+			return InMemoryMarkersKeysSource.createForOperation(getOrigin(),
+					keys, originalIndices);
+		} else {
+			return getParentDataSetSource().getMarkersKeysSource();
+		}
 	}
 
 	@Override

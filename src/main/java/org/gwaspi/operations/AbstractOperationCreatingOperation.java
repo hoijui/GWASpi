@@ -137,7 +137,7 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 
 	protected DST generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent);
+		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent, getParams());
 
 		return operationDataSet;
 	}

@@ -63,6 +63,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
 	private final List<OperationKeyListener> operationKeyListeners;
+	private OperationParams params;
 
 	public AbstractOperationDataSet(
 			MatrixKey origin,
@@ -88,6 +89,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
 		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
+		this.params = null;
 	}
 
 //	public AbstractOperationDataSet(
@@ -134,11 +136,16 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 		return getTypeInfo().isMarkersOriented();
 	}
 
+	@Override
+	public void setParams(OperationParams params) {
+		this.params = params;
+	}
+
 	protected final OperationMetadata getOperationMetadata() throws IOException {
 
 		if (operationMetadata == null) {
 			if (operationKey == null) {
-				operationMetadata = OperationManager.generateOperationMetadata(getTypeInfo(), this);
+				operationMetadata = OperationManager.generateOperationMetadata(getTypeInfo(), this, params);
 				setOperationKey(OperationsList.insertOperation(operationMetadata));
 			} else {
 				operationMetadata = OperationsList.getOperationMetadata(operationKey);

@@ -19,7 +19,6 @@ package org.gwaspi.datasource.inmemory;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +35,20 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 	public AbstractInMemoryKeysSource(MatrixKey origin, List<KT> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 
-		this.indicesMap = new LinkedHashMap<Integer, KT>();
+		this.indicesMap = mergeListsIntoMap(originalIndices, items);
+	}
+	
+	private static <KT, VT> Map<KT, VT> mergeListsIntoMap(final List<KT> keys, final List<VT> values) {
+
+		Map<KT, VT> mergedMap = new LinkedHashMap<KT, VT>(keys.size());
+		
+		final Iterator<KT> keysIt = keys.iterator();
+		final Iterator<VT> valuesIt = values.iterator();
+		while(keysIt.hasNext()) {
+			mergedMap.put(keysIt.next(), valuesIt.next());
+		}
+
+		return mergedMap;
 	}
 
 	protected abstract KeyFactory<KT> createKeyFactory();
@@ -80,30 +92,10 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 //	}
 
 	public Map<Integer, KT> getIndicesMap() throws IOException {
-		return getIndicesMap(-1, -1);
+		return indicesMap;
 	}
 
 	public Map<Integer, KT> getIndicesMap(int from, int to) throws IOException {
-
-		Map<Integer, KT> entries;
-
-		List<String> keys = readVar(varKeys, from, to);
-
-		entries = new LinkedHashMap<Integer, KT>(keys.size());
-		KeyFactory<KT> keyFactory = createKeyFactory();
-		if (varOriginalIndices == null) {
-			int index = (from >= 0) ? from : 0;
-			for (String encodedKey : keys) {
-				entries.put(index++, keyFactory.decode(encodedKey));
-			}
-		} else {
-			List<Integer> originalIndices = readVar(varOriginalIndices, from, to);
-			Iterator<Integer> originalIndicesIt = originalIndices.iterator();
-			for (String encodedKey : keys) {
-				entries.put(originalIndicesIt.next(), keyFactory.decode(encodedKey));
-			}
-		}
-
-		return entries;
+		return mergeListsIntoMap(getIndices(from, to), getRange(from, to));
 	}
 }
