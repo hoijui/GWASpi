@@ -18,7 +18,9 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
@@ -31,6 +33,8 @@ public class InMemorySamplesInfosSource extends AbstractInMemoryListSource<Sampl
 	private final StudyKey studyKey;
 	private SamplesInfosSource originSource;
 	private final DataSetSource dataSetSource;
+	private static final Map<MatrixKey, SamplesInfosSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, SamplesInfosSource>();
 
 	private InMemorySamplesInfosSource(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items) {
 		super(origin, items);
@@ -46,13 +50,23 @@ public class InMemorySamplesInfosSource extends AbstractInMemoryListSource<Sampl
 		this.dataSetSource = dataSetSource;
 	}
 
-	public static SamplesInfosSource createForMatrix(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items) throws IOException {
-		return new InMemorySamplesInfosSource(dataSetSource, origin, studyKey, items);
+	public static SamplesInfosSource createForMatrix(final DataSetSource dataSetSource, MatrixKey key, final List<SampleInfo> items) throws IOException {
+
+		SamplesInfosSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemorySamplesInfosSource(dataSetSource, key, key.getStudyKey(), items);
+			KEY_TO_DATA.put(key, data);
+		}
+
+		return data;
 	}
 
-	public static SamplesInfosSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items, List<Integer> originalIndices) throws IOException {
-		return new InMemorySamplesInfosSource(dataSetSource, origin, studyKey, items, originalIndices);
-	}
+//	public static SamplesInfosSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items, List<Integer> originalIndices) throws IOException {
+//		return new InMemorySamplesInfosSource(dataSetSource, origin, studyKey, items, originalIndices);
+//	}
 
 	// XXX same code as in the NetCDF counterpart!
 	@Override

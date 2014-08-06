@@ -17,7 +17,6 @@
 
 package org.gwaspi.datasource.inmemory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.ChromosomeInfo;
@@ -38,7 +37,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.model.StudyKey;
 
 /**
  * TODO add description
@@ -46,18 +44,17 @@ import org.gwaspi.model.StudyKey;
  */
 public class MatrixInMemoryDataSetSource implements DataSetSource {
 
-	private StudyKey studyKey;
-	private MatrixKey matrixKey;
-	private MatrixMetadata matrixMetadata;
-	private List<Integer> originalIndices;
-	private List<GenotypesList> markerGTs;
-	private List<GenotypesList> sampleGTs;
-	private List<ChromosomeKey> chromosomeKeys;
-	private List<ChromosomeInfo> chromosomeInfos;
-	private List<MarkerKey> markerKeys;
-	private List<MarkerMetadata> markerMetadatas;
-	private List<SampleKey> sampleKeys;
-	private List<SampleInfo> sampleInfos;
+	private final MatrixKey matrixKey;
+	private final MatrixMetadata matrixMetadata;
+	private final List<Integer> originalIndices;
+	private final List<GenotypesList> markerGTs;
+	private final List<GenotypesList> sampleGTs;
+	private final List<ChromosomeKey> chromosomeKeys;
+	private final List<ChromosomeInfo> chromosomeInfos;
+	private final List<MarkerKey> markerKeys;
+	private final List<MarkerMetadata> markerMetadatas;
+	private final List<SampleKey> sampleKeys;
+	private final List<SampleInfo> sampleInfos;
 
 	public MatrixInMemoryDataSetSource(
 			MatrixKey matrixKey,
@@ -86,20 +83,6 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 		this.markerMetadatas = markerMetadatas;
 		this.sampleKeys = sampleKeys;
 		this.sampleInfos = sampleInfos;
-	}
-
-	public MatrixInMemoryDataSetSource(File netCDFpath, MatrixKey matrixKey) throws IOException {
-
-		this.studyKey = null;
-		this.matrixKey = matrixKey;
-		this.matrixMetadata = null;
-	}
-
-	public MatrixInMemoryDataSetSource(File netCDFpath, StudyKey studyKey) throws IOException {
-
-		this.studyKey = studyKey;
-		this.matrixKey = null;
-		this.matrixMetadata = null;
 	}
 
 	@Override
@@ -159,7 +142,7 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return InMemorySamplesInfosSource.createForMatrix(this, matrixKey, matrixKey.getStudyKey(), sampleInfos);
+		return InMemorySamplesInfosSource.createForMatrix(this, matrixKey, sampleInfos);
 	}
 
 	@Override

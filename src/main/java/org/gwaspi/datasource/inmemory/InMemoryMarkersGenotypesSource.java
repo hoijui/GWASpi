@@ -18,7 +18,9 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatrixKey;
@@ -26,13 +28,25 @@ import org.gwaspi.model.MatrixKey;
 public class InMemoryMarkersGenotypesSource extends AbstractInMemoryListSource<GenotypesList> implements MarkersGenotypesSource {
 
 	private MarkersGenotypesSource originSource;
+	private static final Map<MatrixKey, MarkersGenotypesSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, MarkersGenotypesSource>();
 
 	private InMemoryMarkersGenotypesSource(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 	}
 
-	public static MarkersGenotypesSource createForMatrix(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {
-		return new InMemoryMarkersGenotypesSource(origin, items, originalIndices);
+	public static MarkersGenotypesSource createForMatrix(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {
+
+		MarkersGenotypesSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryMarkersGenotypesSource(key, items, originalIndices);
+			KEY_TO_DATA.put(key, data);
+		}
+
+		return data;
 	}
 
 	@Override

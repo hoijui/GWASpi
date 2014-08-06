@@ -18,7 +18,9 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
@@ -29,6 +31,8 @@ public class InMemoryMarkersMetadataSource extends AbstractInMemoryListSource<Ma
 
 	private MarkersMetadataSource originSource;
 	private final DataSetSource dataSetSource;
+	private static final Map<MatrixKey, MarkersMetadataSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, MarkersMetadataSource>();
 
 	private InMemoryMarkersMetadataSource(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items) {
 		super(origin, items);
@@ -42,13 +46,23 @@ public class InMemoryMarkersMetadataSource extends AbstractInMemoryListSource<Ma
 		this.dataSetSource = dataSetSource;
 	}
 
-	public static MarkersMetadataSource createForMatrix(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items) throws IOException {
-		return new InMemoryMarkersMetadataSource(dataSetSource, origin, items);
+	public static MarkersMetadataSource createForMatrix(final DataSetSource dataSetSource, MatrixKey key, final List<MarkerMetadata> items) throws IOException {
+
+		MarkersMetadataSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryMarkersMetadataSource(dataSetSource, key, items);
+			KEY_TO_DATA.put(key, data);
+		}
+
+		return data;
 	}
 
-	public static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items, List<Integer> originalIndices) throws IOException {
-		return new InMemoryMarkersMetadataSource(dataSetSource, origin, items, originalIndices);
-	}
+//	public static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items, List<Integer> originalIndices) throws IOException {
+//		return new InMemoryMarkersMetadataSource(dataSetSource, origin, items, originalIndices);
+//	}
 
 	// XXX same code as in the NetCDF counterpart!
 	@Override

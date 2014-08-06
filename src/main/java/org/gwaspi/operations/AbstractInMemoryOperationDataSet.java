@@ -225,7 +225,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
-		
+
 		if (getTypeInfo().isSamplesOriented()) {
 			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
 					(List<OperationDataEntry<SampleKey>>) getEntries(),
@@ -244,8 +244,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
 		return new IndicesFilteredSamplesInfosSource(
 				this,
-				InMemorySamplesInfosSource.createForMatrix(this, getOrigin().getStudyKey(),
-						getOriginNetCdfReadFile()),
+				InMemorySamplesInfosSource.createForMatrix(this, getOrigin(), null),
 				getSamplesKeysSource().getIndices());
 	}
 
@@ -253,8 +252,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
 		return new IndicesFilteredSamplesGenotypesSource(
 				new InternalIndicesFilteredSamplesGenotypesSource(
-						InMemorySamplesGenotypesSource.createForMatrix(getOrigin(),
-								getOriginNetCdfReadFile()),
+						InMemorySamplesGenotypesSource.createForMatrix(getOrigin(), null, null),
 						getMarkersKeysSource().getIndices()),
 				getSamplesKeysSource().getIndices());
 	}
@@ -280,7 +278,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
 		return new IndicesFilteredMarkersMetadataSource(
 				this,
-				InMemoryMarkersMetadataSource.createForMatrix(this, getOriginInMemoryReadFile()),
+				InMemoryMarkersMetadataSource.createForMatrix(this, getOrigin(), null),
 				getMarkersKeysSource().getIndices());
 	}
 
@@ -288,8 +286,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
 		return new IndicesFilteredMarkersGenotypesSource(
 				new InternalIndicesFilteredMarkersGenotypesSource(
-						InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(),
-								getOriginInMemoryReadFile()),
+						InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(), null, null),
 						getSamplesKeysSource().getIndices()),
 				getMarkersKeysSource().getIndices());
 	}

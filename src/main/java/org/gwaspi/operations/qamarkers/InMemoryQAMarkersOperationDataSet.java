@@ -19,7 +19,6 @@ package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Queue;
 import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;

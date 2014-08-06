@@ -18,7 +18,9 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SamplesGenotypesSource;
@@ -26,13 +28,25 @@ import org.gwaspi.model.SamplesGenotypesSource;
 public class InMemorySamplesGenotypesSource extends AbstractInMemoryListSource<GenotypesList> implements SamplesGenotypesSource {
 
 	private SamplesGenotypesSource originSource;
+	private static final Map<MatrixKey, SamplesGenotypesSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, SamplesGenotypesSource>();
 
 	private InMemorySamplesGenotypesSource(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 	}
 
-	public static SamplesGenotypesSource createForMatrix(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {
-		return new InMemorySamplesGenotypesSource(origin, items, originalIndices);
+	public static SamplesGenotypesSource createForMatrix(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {
+
+		SamplesGenotypesSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemorySamplesGenotypesSource(key, items, originalIndices);
+			KEY_TO_DATA.put(key, data);
+		}
+
+		return data;
 	}
 
 	@Override
