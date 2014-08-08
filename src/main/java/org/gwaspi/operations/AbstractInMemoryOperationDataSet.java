@@ -38,6 +38,7 @@ import org.gwaspi.datasource.inmemory.InMemoryMarkersMetadataSource;
 import org.gwaspi.datasource.inmemory.InMemorySamplesGenotypesSource;
 import org.gwaspi.datasource.inmemory.InMemorySamplesInfosSource;
 import org.gwaspi.datasource.inmemory.InMemorySamplesKeysSource;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -52,6 +53,7 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 
 public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataEntry>
 		extends AbstractOperationDataSet<ET>
@@ -289,6 +291,16 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 						InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(), null, null),
 						getSamplesKeysSource().getIndices()),
 				getMarkersKeysSource().getIndices());
+	}
+
+	private void extractChromosomeKeys() throws IOException {
+
+		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(getMarkersMetadatasSource()., 2, 3);
+		startLoadingChromosomeMetadatas();
+		for (Map.Entry<ChromosomeKey, ChromosomeInfo> chromosomeInfoEntry : chromosomeInfo.entrySet()) {
+			addChromosomeMetadata(chromosomeInfoEntry.getKey(), chromosomeInfoEntry.getValue());
+		}
+		finishedLoadingChromosomeMetadatas();
 	}
 
 	@Override
