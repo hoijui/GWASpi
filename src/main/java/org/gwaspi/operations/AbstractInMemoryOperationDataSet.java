@@ -229,14 +229,15 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
 
 		if (getTypeInfo().isSamplesOriented()) {
-			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
-					(List<OperationDataEntry<SampleKey>>) getEntries(),
-					new OperationDataEntry.KeyExtractor<SampleKey>());
-			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
-					getEntries(),
-					OperationDataEntry.TO_INDEX);
-			return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
-					keys, originalIndices);
+//			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
+//					(List<OperationDataEntry<SampleKey>>) getEntries(),
+//					new OperationDataEntry.KeyExtractor<SampleKey>());
+//			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+//					getEntries(),
+//					OperationDataEntry.TO_INDEX);
+//			return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
+//					keys, originalIndices);
+			return InMemorySamplesKeysSource.
 		} else {
 			return getParentDataSetSource().getSamplesKeysSource();
 		}
@@ -293,18 +294,22 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 				getMarkersKeysSource().getIndices());
 	}
 
-	private void extractChromosomeKeys() throws IOException {
-
-		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(getMarkersMetadatasSource()., 2, 3);
-		startLoadingChromosomeMetadatas();
-		for (Map.Entry<ChromosomeKey, ChromosomeInfo> chromosomeInfoEntry : chromosomeInfo.entrySet()) {
-			addChromosomeMetadata(chromosomeInfoEntry.getKey(), chromosomeInfoEntry.getValue());
-		}
-		finishedLoadingChromosomeMetadatas();
-	}
-
 	@Override
 	protected ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
+
+		ChromosomeUtils.aggregateChromosomeKeys(matrixIndexChromosomeKeys, null)
+		Map<ChromosomeKey, ChromosomeInfo> aggregatedChromosomeInfos
+				= ChromosomeUtils.aggregateChromosomeInfo(getMarkersMetadatasSource());
+
+			return getParentDataSetSource().getMarkersKeysSource();
+			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+					getEntries(),
+					OperationDataEntry.TO_INDEX);
+			return InMemoryChromosomesKeysSource.createForOperation(getOrigin(),
+					keys, originalIndices);
+
+
+
 		return InMemoryChromosomesKeysSource.createForOperation(getOrigin(),
 				getInMemoryReadFile(), isMarkersOperationSet());
 	}
