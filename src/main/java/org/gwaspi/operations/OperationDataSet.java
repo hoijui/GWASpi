@@ -19,7 +19,6 @@ package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
@@ -44,30 +43,39 @@ public interface OperationDataSet<ET extends OperationDataEntry> extends DataSet
 	void setNumChromosomes(int numChromosomes) throws IOException;
 
 	/**
-	 * @param matrixIndexSampleKeys
-	 *   the indices in the matrix, and the values (copied) of the sample keys
+	 * Set the samples used by this operation.
+	 * This can only be a sub-set of the samples used by the parent operation,
+	 * and is only called if it is not the full set used by the parent.
 	 * NetCDF variable: Variables.VAR_OPSET
+	 * @param originalIndices the indices in the origin matrix
+	 * @param keys the values related to the <code>originalIndices</code>
 	 * @throws IOException
 	 */
-	void setSamples(Map<Integer, SampleKey> matrixIndexSampleKeys) throws IOException;
+	void setSamples(List<Integer> originalIndices, List<SampleKey> keys) throws IOException;
 
 	/**
-	 * @param matrixIndexMarkerKeys
-	 *   the indices in the matrix, and the values (copied) of the marker keys
+	 * Set the markers used by this operation.
+	 * This can only be a sub-set of the markers used by the parent operation,
+	 * and is only called if it is not the full set used by the parent.
 	 * NetCDF variable: Variables.VAR_IMPLICITSET
+	 * @param originalIndices the indices in the origin matrix
+	 * @param keys the values related to the <code>originalIndices</code>
 	 * @throws IOException
 	 */
-	void setMarkers(Map<Integer, MarkerKey> matrixIndexMarkerKeys) throws IOException;
+	void setMarkers(List<Integer> originalIndices, List<MarkerKey> keys) throws IOException;
 
 	/**
-	 * @param matrixIndexChromosomeKeys
-	 *   the indices in the matrix, and the values (copied) of the chromosome keys
+	 * Set the chromosomes used by this operation.
+	 * This can only be a sub-set of the chromosomes used by the parent operation,
+	 * and is only called if it is not the full set used by the parent.
 	 * NetCDF variable:
 	 * - Variables.VAR_CHR_IN_MATRIX [ChromosomeKey]
 	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
+	 * @param originalIndices the indices in the origin matrix
+	 * @param keys the values related to the <code>originalIndices</code>
 	 * @throws IOException
 	 */
-	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException;
+	void setChromosomes(List<Integer> originalIndices, List<ChromosomeKey> keys) throws IOException;
 
 	void finnishWriting() throws IOException;
 

@@ -126,30 +126,32 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		DataSetSource dataSetSource = getParentDataSetSource();
 
 		//<editor-fold defaultstate="expanded" desc="PURGE Maps">
-		Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
-		for (Map.Entry<Integer, SampleKey> origIndexKey : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+		final Map<Integer, SampleKey> samplesIndicesMap = dataSetSource.getSamplesKeysSource().getIndicesMap();
+		final List<Integer> filtereSamplesOriginalIndices = new ArrayList<Integer>(samplesIndicesMap.size());
+		final List<SampleKey> filtereSamplesKeys = new ArrayList<SampleKey>(samplesIndicesMap.size());
+		for (Map.Entry<Integer, SampleKey> origIndexKey : samplesIndicesMap.entrySet()) {
 			if (!excludeSamplesOrigIndexAndKey.containsKey(origIndexKey.getKey())) {
-				wrSampleKeys.put(origIndexKey.getKey(), origIndexKey.getValue());
+				filtereSamplesOriginalIndices.add(origIndexKey.getKey());
+				filtereSamplesKeys.add(origIndexKey.getValue());
 			}
 		}
-		List<Integer> wrSampleOrigIndices = new ArrayList<Integer>(wrSampleKeys.keySet());
 		//</editor-fold>
 
 		MarkerCensusOperationDataSet dataSet = generateFreshOperationDataSet();
 
-		final int numMySamples = wrSampleKeys.size();
+		final int numMySamples = filtereSamplesOriginalIndices.size();
 //		final int numParentSamples = dataSet.getParentDataSetSource().getNumSamples();
 
 		dataSet.setNumMarkers(dataSetSource.getNumMarkers());
 		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(numMySamples);
 
-		dataSet.setSamples(wrSampleKeys);
+		dataSet.setSamples(filtereSamplesOriginalIndices, filtereSamplesKeys);
 
 		//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 		final List<Sex> samplesSex = new ArrayList<Sex>(numMySamples);
 		final List<Affection> samplesAffection = new ArrayList<Affection>(numMySamples);
-		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, wrSampleOrigIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
+		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, filtereSamplesOriginalIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
 
 		log.info("Start Census testing markers");
 

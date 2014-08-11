@@ -20,6 +20,7 @@ package org.gwaspi.operations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -64,9 +65,15 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	private Boolean useAllMarkersFromParent;
 	private Boolean useAllSamplesFromParent;
 	private Boolean useAllChromosomesFromParent;
-	private Map<Integer, SampleKey> matrixIndexSampleKeys;
-	private Map<Integer, MarkerKey> matrixIndexMarkerKeys;
-	private Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys;
+//	private Map<Integer, SampleKey> matrixIndexSampleKeys;
+//	private Map<Integer, MarkerKey> matrixIndexMarkerKeys;
+//	private Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys;
+	private MarkersKeysSource markersKeysSource;
+	private MarkersMetadataSource markersInfosSource;
+	private SamplesKeysSource samplesKeysSource;
+	private SamplesInfosSource samplesInfosSource;
+	private ChromosomesKeysSource chromosomesKeysSource;
+	private ChromosomesInfosSource chromosomesInfosSource;
 	private final List<ET> elements;
 
 	public AbstractInMemoryOperationDataSet(
@@ -82,9 +89,12 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		this.useAllMarkersFromParent = null;
 		this.useAllSamplesFromParent = null;
 		this.useAllChromosomesFromParent = null;
-		this.matrixIndexSampleKeys = null;
-		this.matrixIndexMarkerKeys = null;
-		this.matrixIndexChromosomeKeys = null;
+		this.markersKeysSource = null;
+		this.markersInfosSource = null;
+		this.samplesKeysSource = null;
+		this.samplesInfosSource = null;
+		this.chromosomesKeysSource = null;
+		this.chromosomesInfosSource = null;
 		this.elements = new ArrayList<ET>();
 	}
 
@@ -186,26 +196,26 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	}
 
 	@Override
-	public void setSamples(Map<Integer, SampleKey> matrixIndexSampleKeys) throws IOException {
+	public void setSamples(List<Integer> originalIndices, List<SampleKey> keys) throws IOException {
 
 		if (!getUseAllSamplesFromParent()) {
-			this.matrixIndexSampleKeys = matrixIndexSampleKeys;
+			this.samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(), keys, originalIndices);
 		}
 	}
 
 	@Override
-	public void setMarkers(Map<Integer, MarkerKey> matrixIndexMarkerKeys) throws IOException {
+	public void setMarkers(List<Integer> originalIndices, List<MarkerKey> keys) throws IOException {
 
 		if (!getUseAllMarkersFromParent()) {
-			this.matrixIndexMarkerKeys = matrixIndexMarkerKeys;
+			this.markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOrigin(), keys, originalIndices);
 		}
 	}
 
 	@Override
-	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys) throws IOException {
+	public void setChromosomes(List<Integer> originalIndices, List<ChromosomeKey> keys) throws IOException {
 
 		if (!getUseAllChromosomesFromParent()) {
-			this.matrixIndexChromosomeKeys = matrixIndexChromosomeKeys;
+			this.chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(getOrigin(), keys, originalIndices);
 		}
 	}
 
@@ -228,95 +238,146 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	@Override
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
 
-		if (getTypeInfo().isSamplesOriented()) {
-//			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
-//					(List<OperationDataEntry<SampleKey>>) getEntries(),
-//					new OperationDataEntry.KeyExtractor<SampleKey>());
-//			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
-//					getEntries(),
-//					OperationDataEntry.TO_INDEX);
-//			return InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
-//					keys, originalIndices);
-			return InMemorySamplesKeysSource.
-		} else {
+		if (useAllSamplesFromParent) {
 			return getParentDataSetSource().getSamplesKeysSource();
+		} else if (samplesKeysSource == null) {
+			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
+					(List<OperationDataEntry<SampleKey>>) getEntries(),
+					new OperationDataEntry.KeyExtractor<SampleKey>());
+			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+					getEntries(),
+					OperationDataEntry.TO_INDEX);
+			samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
+					keys, originalIndices);
 		}
+
+		return samplesKeysSource;
 	}
 
 	@Override
 	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
-		return new IndicesFilteredSamplesInfosSource(
-				this,
-				InMemorySamplesInfosSource.createForMatrix(this, getOrigin(), null),
-				getSamplesKeysSource().getIndices());
+
+		if (useAllSamplesFromParent) {
+			return getParentDataSetSource().getSamplesInfosSource();
+		} else {
+			return new IndicesFilteredSamplesInfosSource(
+					this,
+					InMemorySamplesInfosSource.createForMatrix(this, getOrigin(), null),
+					getSamplesKeysSource().getIndices());
+		}
 	}
 
 	@Override
 	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
-		return new IndicesFilteredSamplesGenotypesSource(
-				new InternalIndicesFilteredSamplesGenotypesSource(
-						InMemorySamplesGenotypesSource.createForMatrix(getOrigin(), null, null),
-						getMarkersKeysSource().getIndices()),
-				getSamplesKeysSource().getIndices());
+
+		if (useAllSamplesFromParent && useAllMarkersFromParent) {
+			return getParentDataSetSource().getSamplesGenotypesSource();
+		} else {
+			return new IndicesFilteredSamplesGenotypesSource(
+					new InternalIndicesFilteredSamplesGenotypesSource(
+							InMemorySamplesGenotypesSource.createForMatrix(getOrigin(), null, null),
+							getMarkersKeysSource().getIndices()),
+					getSamplesKeysSource().getIndices());
+		}
 	}
 
 	@Override
 	protected MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
 
-		if (getTypeInfo().isMarkersOriented()) {
+		if (useAllMarkersFromParent) {
+			return getParentDataSetSource().getMarkersKeysSource();
+		} else if (markersKeysSource == null) {
 			List<MarkerKey> keys = AbstractInMemoryListSource.extractProperty(
 					(List<OperationDataEntry<MarkerKey>>) getEntries(),
 					new OperationDataEntry.KeyExtractor<MarkerKey>());
 			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
 					getEntries(),
 					OperationDataEntry.TO_INDEX);
-			return InMemoryMarkersKeysSource.createForOperation(getOrigin(),
+			markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOrigin(),
 					keys, originalIndices);
-		} else {
-			return getParentDataSetSource().getMarkersKeysSource();
 		}
+
+		return markersKeysSource;
 	}
 
 	@Override
 	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
-		return new IndicesFilteredMarkersMetadataSource(
-				this,
-				InMemoryMarkersMetadataSource.createForMatrix(this, getOrigin(), null),
-				getMarkersKeysSource().getIndices());
+
+		if (useAllMarkersFromParent) {
+			return getParentDataSetSource().getMarkersMetadatasSource();
+		} else {
+			return new IndicesFilteredMarkersMetadataSource(
+					this,
+					InMemoryMarkersMetadataSource.createForMatrix(this, getOrigin(), null),
+					getMarkersKeysSource().getIndices());
+		}
 	}
 
 	@Override
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
-		return new IndicesFilteredMarkersGenotypesSource(
-				new InternalIndicesFilteredMarkersGenotypesSource(
-						InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(), null, null),
-						getSamplesKeysSource().getIndices()),
-				getMarkersKeysSource().getIndices());
+
+		if (useAllSamplesFromParent && useAllMarkersFromParent) {
+			return getParentDataSetSource().getMarkersGenotypesSource();
+		} else {
+			return new IndicesFilteredMarkersGenotypesSource(
+					new InternalIndicesFilteredMarkersGenotypesSource(
+							InMemoryMarkersGenotypesSource.createForMatrix(getOrigin(), null, null),
+							getSamplesKeysSource().getIndices()),
+					getMarkersKeysSource().getIndices());
+		}
 	}
 
 	@Override
 	protected ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
 
-		ChromosomeUtils.aggregateChromosomeKeys(matrixIndexChromosomeKeys, null)
-		Map<ChromosomeKey, ChromosomeInfo> aggregatedChromosomeInfos
-				= ChromosomeUtils.aggregateChromosomeInfo(getMarkersMetadatasSource());
+		if (useAllChromosomesFromParent) {
+			return getParentDataSetSource().getChromosomesKeysSource();
+		} else if (chromosomesKeysSource == null) {
+			Map<Integer, ChromosomeKey> aggregateChromosomeKeys
+					= ChromosomeUtils.aggregateChromosomeKeys(
+							getParentDataSetSource().getChromosomesKeysSource().getIndicesMap(),
+							getMarkersMetadatasSource());
+			chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(
+					getOrigin(),
+					new ArrayList<ChromosomeKey>(aggregateChromosomeKeys.values()),
+					new ArrayList<Integer>(aggregateChromosomeKeys.keySet()));
+		}
 
-			return getParentDataSetSource().getMarkersKeysSource();
-			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
-					getEntries(),
-					OperationDataEntry.TO_INDEX);
-			return InMemoryChromosomesKeysSource.createForOperation(getOrigin(),
-					keys, originalIndices);
-
-
-
-		return InMemoryChromosomesKeysSource.createForOperation(getOrigin(),
-				getInMemoryReadFile(), isMarkersOperationSet());
+		return chromosomesKeysSource;
 	}
 
 	@Override
 	protected ChromosomesInfosSource getChromosomesInfosSourceRaw() throws IOException {
-		return InMemoryChromosomesInfosSource.createForOperation(getOrigin(),
-				getOriginInMemoryReadFile(), getChromosomesKeysSource().getIndices());
+
+		if (useAllChromosomesFromParent) {
+			return getParentDataSetSource().getChromosomesInfosSource();
+		} else if (chromosomesInfosSource == null) {
+			final List<Integer> originalIndices = getChromosomesKeysSource().getIndices();
+
+			final List<ChromosomeInfo> values = new ArrayList<ChromosomeInfo>(originalIndices.size());
+			if (!originalIndices.isEmpty()) {
+				// filter the info entries by the filtered keys indices
+				final ChromosomesInfosSource originChromosomesInfosSource = getOriginDataSetSource().getChromosomesInfosSource();
+				final Iterator<Integer> filteredOriginalIndicesIt = originalIndices.iterator();
+				Integer currentOrigIndex = filteredOriginalIndicesIt.next();
+				int index = 0;
+				for (ChromosomeInfo chromosomeInfo : originChromosomesInfosSource) {
+					if (currentOrigIndex == index) {
+						values.add(chromosomeInfo);
+						if (filteredOriginalIndicesIt.hasNext()) {
+							currentOrigIndex = filteredOriginalIndicesIt.next();
+						} else {
+							break;
+						}
+					}
+					index++;
+				}
+			}
+
+			chromosomesInfosSource = InMemoryChromosomesInfosSource.createForOperation(getOrigin(),
+					values, originalIndices);
+		}
+
+		return chromosomesInfosSource;
 	}
 }
