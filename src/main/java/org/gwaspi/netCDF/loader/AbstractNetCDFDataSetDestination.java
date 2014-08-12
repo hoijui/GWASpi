@@ -135,7 +135,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, matrixMetadata.getStudyKey().getId());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_ID, matrixMetadata.getMatrixId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName().toString());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
