@@ -23,10 +23,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.datasource.filter.IndicesFilteredList;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationParams;
@@ -104,7 +108,7 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		final SuperProgressSource progressHandler = getSuperProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
-		DataSetSource parentDataSetSource = getParentDataSetSource();
+		final DataSetSource parentDataSetSource = getParentDataSetSource();
 		Map<Integer, MarkerKey> filteredMarkerOrigIndicesAndKeys
 				= new LinkedHashMap<Integer, MarkerKey>(parentDataSetSource.getNumMarkers());
 //		Map<Integer, ChromosomeKey> filteredChromosomeOrigIndicesAndKeys
@@ -129,8 +133,16 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 
 		final List<Integer> filtereMarkersOriginalIndices = new ArrayList<Integer>(filteredMarkerOrigIndicesAndKeys.keySet());
 		final List<MarkerKey> filtereMarkersKeys = new ArrayList<MarkerKey>(filteredMarkerOrigIndicesAndKeys.values());
+
 		final List<Integer> filtereSamplesOriginalIndices = new ArrayList<Integer>(filteredSampleOrigIndicesAndKeys.keySet());
 		final List<SampleKey> filtereSamplesKeys = new ArrayList<SampleKey>(filteredSampleOrigIndicesAndKeys.values());
+
+		final Map<Integer, ChromosomeKey> filteredChromosomeOrigIndicesAndKeys
+					= ChromosomeUtils.aggregateChromosomeIndicesAndKeys(
+							parentDataSetSource.getChromosomesKeysSource().getIndicesMap(),
+							ChromosomeUtils.aggregateChromosomeKeys(new IndicesFilteredList<String>(MatrixFactory.generateMatrixDataSetSource(getParentKey().getOrigin()).getMarkersMetadatasSource().getChromosomes(), filtereMarkersOriginalIndices)));
+		final List<Integer> filtereChromosomesOriginalIndices = new ArrayList<Integer>(filteredChromosomeOrigIndicesAndKeys.keySet());
+		final List<ChromosomeKey> filtereChromosomesKeys = new ArrayList<ChromosomeKey>(filteredChromosomeOrigIndicesAndKeys.values());
 
 		storePH.setNewStatus(ProcessStatus.INITIALIZING);
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
@@ -138,12 +150,11 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		storePH.setNewStatus(ProcessStatus.RUNNING);
 
 		dataSet.setNumMarkers(filteredMarkerOrigIndicesAndKeys.size());
-//		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());
-		dataSet.setNumChromosomes(filteredSampleOrigIndicesAndKeys.size());
+		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());
 		dataSet.setNumSamples(filteredSampleOrigIndicesAndKeys.size());
 
 		dataSet.setMarkers(filtereMarkersOriginalIndices, filtereMarkersKeys);
-//		dataSet.setChromosomes(filteredChromosomeOrigIndicesAndKeys);
+		dataSet.setChromosomes(filtereChromosomesOriginalIndices, filtereChromosomesKeys);
 		dataSet.setSamples(filtereSamplesOriginalIndices, filtereSamplesKeys);
 		storePH.setNewStatus(ProcessStatus.FINALIZING);
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
