@@ -100,15 +100,6 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 
 	public AbstractInMemoryOperationDataSet(
 			MatrixKey origin,
-			DataSetKey parent,
-			OperationKey operationKey)
-	{
-		this(origin, parent, operationKey,
-				getDefaultEntriesWriteBufferSize(markersOperationSet));
-	}
-
-	public AbstractInMemoryOperationDataSet(
-			MatrixKey origin,
 			DataSetKey parent)
 	{
 		this(origin, parent, null);
@@ -334,9 +325,9 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 			return getParentDataSetSource().getChromosomesKeysSource();
 		} else if (chromosomesKeysSource == null) {
 			Map<Integer, ChromosomeKey> aggregateChromosomeKeys
-					= ChromosomeUtils.aggregateChromosomeKeys(
+					= ChromosomeUtils.aggregateChromosomeIndicesAndKeys(
 							getParentDataSetSource().getChromosomesKeysSource().getIndicesMap(),
-							getMarkersMetadatasSource());
+							ChromosomeUtils.aggregateChromosomeKeys(getMarkersMetadatasSource().getChromosomes()));
 			chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(
 					getOrigin(),
 					new ArrayList<ChromosomeKey>(aggregateChromosomeKeys.values()),

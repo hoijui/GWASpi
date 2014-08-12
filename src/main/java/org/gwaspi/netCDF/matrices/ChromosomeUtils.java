@@ -69,17 +69,22 @@ public class ChromosomeUtils {
 		return chrSetMap;
 	}
 
-	public static Map<Integer, ChromosomeKey> aggregateChromosomeKeys(
-			final Map<Integer, ChromosomeKey> originalChromosomeKeys,
-			final Collection<MarkerMetadata> filteredMarkers)
+	public static Collection<ChromosomeKey> aggregateChromosomeKeys(
+			final Collection<String> filteredMarkersChrs)
 	{
-		final Set<ChromosomeKey> filteredChromosomeKeys
-				= new HashSet<ChromosomeKey>(originalChromosomeKeys.size());
+		final Set<ChromosomeKey> filteredChromosomeKeys = new HashSet<ChromosomeKey>();
 
-		for (MarkerMetadata metaInfo : filteredMarkers) {
-			filteredChromosomeKeys.add(ChromosomeKey.valueOf(metaInfo.getChr()));
+		for (String markerChr : filteredMarkersChrs) {
+			filteredChromosomeKeys.add(ChromosomeKey.valueOf(markerChr));
 		}
 
+		return filteredChromosomeKeys;
+	}
+
+	public static Map<Integer, ChromosomeKey> aggregateChromosomeIndicesAndKeys(
+			final Map<Integer, ChromosomeKey> originalChromosomeKeys,
+			final Collection<ChromosomeKey> filteredChromosomeKeys)
+	{
 		final Map<Integer, ChromosomeKey> filteredChromosomeIndicesAndKeys
 				= new LinkedHashMap<Integer, ChromosomeKey>(filteredChromosomeKeys.size());
 
