@@ -63,7 +63,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 		final int toClean = fromTo.height;
 
 		if (getOriginalIndices() == null) {
-			indices = new IndicesList(toClean - fromClean, fromClean);
+			indices = new IndicesList(toClean - fromClean + 1, fromClean);
 		} else {
 			indices = getOriginalIndices().subList(fromClean, toClean);
 		}
