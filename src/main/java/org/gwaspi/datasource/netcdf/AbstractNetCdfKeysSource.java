@@ -54,7 +54,7 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 		final int toClean = fromTo.height;
 
 		if (varOriginalIndices == null) {
-			originalIndices = new IndicesList(toClean - fromClean, fromClean);
+			originalIndices = new IndicesList(toClean - fromClean + 1, fromClean);
 		} else {
 			originalIndices = readVar(varOriginalIndices, fromClean, toClean);
 		}
