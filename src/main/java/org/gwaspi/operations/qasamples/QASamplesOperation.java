@@ -31,7 +31,6 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
@@ -151,7 +150,7 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
-		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		resultOpId = dataSet.getOperationKey().getId();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);

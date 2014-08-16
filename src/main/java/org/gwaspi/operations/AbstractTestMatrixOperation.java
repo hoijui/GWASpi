@@ -165,7 +165,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
-		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		resultOpId = dataSet.getOperationKey().getId();
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
