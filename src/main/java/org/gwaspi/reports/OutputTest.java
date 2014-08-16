@@ -55,7 +55,6 @@ import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperProgressSource;
-import static org.gwaspi.reports.OutputHardyWeinberg.OPERATION_TYPE_INFO;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;

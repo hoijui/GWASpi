@@ -26,7 +26,7 @@ import java.util.Map;
 import org.gwaspi.global.IndicesList;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
-import static org.gwaspi.operations.NetCdfUtils.checkDimensions;
+import org.gwaspi.operations.NetCdfUtils;
 
 public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryListSource<KT> {
 
@@ -37,11 +37,11 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 
 		this.indicesMap = mergeListsIntoMap(originalIndices, items);
 	}
-	
+
 	private static <KT, VT> Map<KT, VT> mergeListsIntoMap(final List<KT> keys, final List<VT> values) {
 
 		Map<KT, VT> mergedMap = new LinkedHashMap<KT, VT>(keys.size());
-		
+
 		final Iterator<KT> keysIt = keys.iterator();
 		final Iterator<VT> valuesIt = values.iterator();
 		while(keysIt.hasNext()) {
@@ -58,7 +58,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 		final List<Integer> indices;
 
 		final Dimension fromTo = new Dimension(from, to);
-		checkDimensions(size(), fromTo);
+		NetCdfUtils.checkDimensions(size(), fromTo);
 		final int fromClean = fromTo.width;
 		final int toClean = fromTo.height;
 
