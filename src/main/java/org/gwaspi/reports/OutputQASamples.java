@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -172,7 +173,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		String sep = cExport.separator_REPORTS;
 
 		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
-		List<QASamplesOperationEntry> qaSamplesOperationEntries = (List<QASamplesOperationEntry>) qaSamplesOperationDataSet.getEntries(); // HACK This might not be a List!
+		List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 
 		// WRITE HEADER OF FILE
