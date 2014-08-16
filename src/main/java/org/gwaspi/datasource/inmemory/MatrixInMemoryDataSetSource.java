@@ -47,14 +47,14 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 	private final MatrixKey matrixKey;
 	private final MatrixMetadata matrixMetadata;
 	private final List<Integer> originalIndices;
-	private final List<GenotypesList> markerGTs;
-	private final List<GenotypesList> sampleGTs;
-	private final List<ChromosomeKey> chromosomeKeys;
-	private final List<ChromosomeInfo> chromosomeInfos;
-	private final List<MarkerKey> markerKeys;
-	private final List<MarkerMetadata> markerMetadatas;
-	private final List<SampleKey> sampleKeys;
-	private final List<SampleInfo> sampleInfos;
+	private final ChromosomesKeysSource chromosomesKeysSource;
+	private final ChromosomesInfosSource chromosomesInfosSource;
+	private final MarkersKeysSource markersKeysSource;
+	private final MarkersMetadataSource markersMetadataSource;
+	private final MarkersGenotypesSource markersGenotypesSource;
+	private final SamplesKeysSource samplesKeysSource;
+	private final SamplesInfosSource samplesInfosSource;
+	private final SamplesGenotypesSource samplesGenotypesSource;
 
 	public MatrixInMemoryDataSetSource(
 			MatrixKey matrixKey,
@@ -75,14 +75,14 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 		this.matrixMetadata = matrixMetadata;
 		this.originalIndices = null;
 
-		this.markerGTs = markerGTs;
-		this.sampleGTs = sampleGTs;
-		this.chromosomeKeys = chromosomeKeys;
-		this.chromosomeInfos = chromosomeInfos;
-		this.markerKeys = markerKeys;
-		this.markerMetadatas = markerMetadatas;
-		this.sampleKeys = sampleKeys;
-		this.sampleInfos = sampleInfos;
+		this.chromosomesKeysSource = InMemoryChromosomesKeysSource.createForMatrix(matrixKey, chromosomeKeys);
+		this.chromosomesInfosSource = InMemoryChromosomesInfosSource.createForMatrix(matrixKey, chromosomeInfos);
+		this.markersKeysSource = InMemoryMarkersKeysSource.createForMatrix(matrixKey, markerKeys);
+		this.markersMetadataSource = InMemoryMarkersMetadataSource.createForMatrix(this, matrixKey, markerMetadatas);
+		this.markersGenotypesSource = InMemoryMarkersGenotypesSource.createForMatrix(matrixKey, markerGTs, originalIndices);
+		this.samplesGenotypesSource = InMemorySamplesGenotypesSource.createForMatrix(matrixKey, sampleGTs, originalIndices);
+		this.samplesInfosSource = InMemorySamplesInfosSource.createForMatrix(this, matrixKey, sampleInfos);
+		this.samplesKeysSource = InMemorySamplesKeysSource.createForMatrix(matrixKey, matrixKey.getStudyKey(), sampleKeys);
 	}
 
 	@Override
@@ -93,16 +93,6 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
 		return matrixMetadata;
-	}
-
-	@Override
-	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
-		return InMemoryMarkersGenotypesSource.createForMatrix(matrixKey, markerGTs, originalIndices);
-	}
-
-	@Override
-	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-		return InMemoryMarkersMetadataSource.createForMatrix(this, matrixKey, markerMetadatas);
 	}
 
 	@Override
@@ -122,31 +112,41 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 
 	@Override
 	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
-		return InMemoryChromosomesKeysSource.createForMatrix(matrixKey, chromosomeKeys);
+		return chromosomesKeysSource;
 	}
 
 	@Override
 	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
-		return InMemoryChromosomesInfosSource.createForMatrix(matrixKey, chromosomeInfos);
+		return chromosomesInfosSource;
 	}
 
 	@Override
 	public MarkersKeysSource getMarkersKeysSource() throws IOException {
-		return InMemoryMarkersKeysSource.createForMatrix(matrixKey, markerKeys);
+		return markersKeysSource;
+	}
+
+	@Override
+	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
+		return markersMetadataSource;
+	}
+
+	@Override
+	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
+		return markersGenotypesSource;
 	}
 
 	@Override
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
-		return InMemorySamplesGenotypesSource.createForMatrix(matrixKey, sampleGTs, originalIndices);
+		return samplesGenotypesSource;
 	}
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return InMemorySamplesInfosSource.createForMatrix(this, matrixKey, sampleInfos);
+		return samplesInfosSource;
 	}
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
-		return InMemorySamplesKeysSource.createForMatrix(matrixKey, matrixKey.getStudyKey(), sampleKeys);
+		return samplesKeysSource;
 	}
 }
