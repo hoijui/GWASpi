@@ -30,7 +30,6 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.filter.SimpleOperationDataSet;
-import static org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation.PROCESS_INFO;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -68,10 +67,10 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		if (progressSource == null) {
 			final int numItems = getNumItems();
 			filterPH = new IntegerProgressHandler(
-					new SubProcessInfo(PROCESS_INFO, getParams().getName() + " filtering", null),
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
 					0, numItems - 1);
 			testPH = new IntegerProgressHandler(
-					new SubProcessInfo(PROCESS_INFO, getParams().getName() + " testing", null),
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " testing", null),
 					0, numItems - 1);
 
 			final Map<ProgressSource, Double> subProgressSourcesAndWeights;
@@ -81,7 +80,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 			tmpSubProgressSourcesAndWeights.put(testPH, 0.5);
 			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 
-			progressSource = new SuperProgressSource(PROCESS_INFO, subProgressSourcesAndWeights);
+			progressSource = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
 		}
 
 		return progressSource;

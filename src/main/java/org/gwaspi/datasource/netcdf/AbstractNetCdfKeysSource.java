@@ -27,7 +27,7 @@ import java.util.Map;
 import org.gwaspi.global.IndicesList;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
-import static org.gwaspi.operations.NetCdfUtils.checkDimensions;
+import org.gwaspi.operations.NetCdfUtils;
 import ucar.nc2.NetcdfFile;
 
 public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSource<KT> {
@@ -49,7 +49,7 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 		List<Integer> originalIndices;
 
 		final Dimension fromTo = new Dimension(from, to);
-		checkDimensions(size(), fromTo);
+		NetCdfUtils.checkDimensions(size(), fromTo);
 		final int fromClean = fromTo.width;
 		final int toClean = fromTo.height;
 

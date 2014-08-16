@@ -37,7 +37,7 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
-import static org.gwaspi.netCDF.matrices.MatrixFactory.generateMatrixNetCDFNameByDate;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 @Entity
 @Table(name = "matrixMetadata")
@@ -103,7 +103,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		this.parent2MatrixId = -1;
 		this.inputLocation = "";
 		this.creationDate = new Date();
-		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
+		this.simpleName = MatrixFactory.generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		this.parent2MatrixId = MatrixKey.NULL_ID;
 		this.inputLocation = "";
 		this.creationDate = new Date();
-		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
+		this.simpleName = MatrixFactory.generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		this(
 				new MatrixKey(studyKey, MatrixKey.NULL_ID), // key
 				friendlyName,
-				generateMatrixNetCDFNameByDate(creationDate), // simpleName
+				MatrixFactory.generateMatrixNetCDFNameByDate(creationDate), // simpleName
 				technology,
 				Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null), // gwaspiDBVersion
 				description,
