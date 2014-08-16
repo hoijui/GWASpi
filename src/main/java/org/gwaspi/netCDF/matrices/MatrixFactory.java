@@ -100,7 +100,7 @@ public class MatrixFactory {
 	}
 
 	public static <PT extends MatrixCreatingOperationParams> DataSetDestination generateMatrixDataSetDestination(PT params, MatrixMetadataFactory<DataSet, PT> metadataFactory) {
-		return generateMatrixDataSetDestination(params, metadataFactory, OperationManager.FACTORY_DEFAULT_PROPERTIES);
+		return generateMatrixDataSetDestination(params, metadataFactory, OperationManager.getDefaultFactoryProperties());
 	}
 
 	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey, Map<String, Object> properties) {
@@ -123,6 +123,6 @@ public class MatrixFactory {
 	}
 
 	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {
-		return generateMatrixDataSetSource(matrixKey, OperationManager.FACTORY_DEFAULT_PROPERTIES);
+		return generateMatrixDataSetSource(matrixKey, OperationManager.getDefaultFactoryProperties());
 	}
 }

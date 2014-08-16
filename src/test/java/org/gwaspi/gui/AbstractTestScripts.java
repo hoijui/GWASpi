@@ -27,9 +27,11 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.global.Config;
@@ -209,7 +211,7 @@ public abstract class AbstractTestScripts {
 	@BeforeClass
 	public static void createTempDataDirs() throws IOException {
 
-		StudyList.PERSISTENCE_UNIT_NAME = "gwaspiTesting";
+		StartGWASpi.inMemoryStorage = true; // HACK
 		Config.clearNonPersistentConfig(); // HACK
 		StudyList.clearListsInternalServices(); // HACK
 		StudyList.clearListsInternalServices(); // HACK
@@ -226,7 +228,7 @@ public abstract class AbstractTestScripts {
 		} catch (SQLException ex) {
 			log.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
 		}
-		StudyList.PERSISTENCE_UNIT_NAME = "gwaspi"; // HACK
+		StartGWASpi.inMemoryStorage = false; // HACK
 
 		MatrixInMemoryDataSetSource.clearAllInMemoryStorage();
 
@@ -234,13 +236,18 @@ public abstract class AbstractTestScripts {
 		setup = null;
 	}
 
-	protected static void startGWASpi(String[] args) throws Exception {
+	protected static void startGWASpi(final String[] args) throws Exception {
+
+		final List<String> argsList = new ArrayList<String>(Arrays.asList(args));
+		// not really necessary, as we already set that through code directly.
+		// see StartGWASpi.inMemoryStorage
+		argsList.add(StartGWASpi.COMMAND_LINE_SWITCH_IN_MEMORY);
 
 //		StartGWASpi.main(args); // NOTE overrides all args!!
 
 // FIXME BAD THREADDING!!! fix it first, and then all will resolve into wohlgefallen!
 		StartGWASpi startGWASpi = new StartGWASpi();
-		startGWASpi.start(Arrays.asList(args));
+		startGWASpi.start(argsList);
 
 		int sum = 999;
 		do {

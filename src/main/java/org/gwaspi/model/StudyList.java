@@ -24,6 +24,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.dao.jpa.JPAStudyService;
+import org.gwaspi.gui.StartGWASpi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +37,13 @@ public class StudyList {
 			= LoggerFactory.getLogger(JPAStudyService.class);
 
 	/**
-	 * This will be changed by the unit testing environment during runtime.
-	 * HACK
+	 * The name of the default, file-system based persistence unit.
 	 */
-	public static String PERSISTENCE_UNIT_NAME = "gwaspi";
+	public static final String PERSISTENCE_UNIT_NAME_DEFAULT = "gwaspi";
+	/**
+	 * The name of the non-persistent (in-memory only) persistence unit.
+	 */
+	public static final String PERSISTENCE_UNIT_NAME_IN_MEMORY = "gwaspiInMemory";
 
 	private static EntityManagerFactory emf = null;
 	private static StudyService studyService = null;
@@ -66,7 +70,11 @@ public class StudyList {
 
 		if (emf == null) {
 			try {
-				emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+				final String persistenceUnitName
+						= StartGWASpi.inMemoryStorage
+						? PERSISTENCE_UNIT_NAME_IN_MEMORY
+						: PERSISTENCE_UNIT_NAME_DEFAULT;
+				emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 				log.info("NOTE: The above warning (HHH015016) can be neglected.");
 				// ... as we do actually use hte correct/new provider,
 				// but due to the way JPA works, it issues this warning anyway.
