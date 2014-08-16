@@ -44,38 +44,12 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET extends OperationDat
 	//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 	// }
 
-	private OperationKey markerCensusOPKey;
-	private double hardyWeinbergThreshold;
-	private String testName;
-	private OPType testType;
-
 	public AbstractNetCdfTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
 		super(true, origin, parent, operationKey);
-
-		this.markerCensusOPKey = null;
-		this.hardyWeinbergThreshold = Double.MIN_VALUE;
-		this.testName = null;
-		this.testType = null;
 	}
 
 	public AbstractNetCdfTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
-	}
-
-	public void setMarkerCensusOPKey(OperationKey markerCensusOPKey) {
-		this.markerCensusOPKey = markerCensusOPKey;
-	}
-
-	public void setTestName(String testName) {
-		this.testName = testName;
-	}
-
-	public void setTestType(OPType testType) {
-		this.testType = testType;
-	}
-
-	public void setHardyWeinbergThreshold(double hardyWeinbergThreshold) {
-		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
 	}
 
 	@Override
