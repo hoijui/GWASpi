@@ -35,7 +35,6 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
-import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.progress.IntegerProgressHandler;
@@ -123,15 +122,15 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		MarkerCensusOperationDataSet markerCensusOperationDataSet
 				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(getParams().getMarkerCensus());
 
-		AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) generateFreshOperationDataSet();
+		OperationDataSet dataSet = generateFreshOperationDataSet();
 
 		dataSet.setNumMarkers(filteredOperationDataSet.getNumMarkers());
 		dataSet.setNumSamples(filteredOperationDataSet.getNumSamples());
 		dataSet.setNumChromosomes(filteredOperationDataSet.getNumChromosomes());
 
-		dataSet.setMarkerCensusOPKey(getParams().getMarkerCensus()); // HACK
-		dataSet.setTestType(getParams().getType()); // HACK
-		dataSet.setTestName(getParams().getName()); // HACK
+//		dataSet.setMarkerCensusOPKey(getParams().getMarkerCensus()); // HACK
+//		dataSet.setTestType(getParams().getType()); // HACK
+//		dataSet.setTestName(getParams().getName()); // HACK
 
 		Map<Integer, MarkerKey> censusOpMarkers = markerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
 		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filteredOperationDataSet.getMarkersKeysSource().getIndicesMap();
