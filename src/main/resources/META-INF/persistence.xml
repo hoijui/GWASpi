@@ -19,7 +19,7 @@
 
 	</persistence-unit>
 
-	<persistence-unit name="gwaspiTesting" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="gwaspiInMemory" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<properties>

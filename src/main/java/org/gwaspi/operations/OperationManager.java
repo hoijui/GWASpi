@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
@@ -103,9 +104,19 @@ public class OperationManager {
 		return getOperationFactory(type).getTypeInfo();
 	}
 
-	public static final Map<String, Object> FACTORY_DEFAULT_PROPERTIES = new HashMap<String, Object>();
-	static {
-		FACTORY_DEFAULT_PROPERTIES.put(OperationFactory.PROPERTY_NAME_TYPE, AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
+	public static Map<String, Object> getDefaultFactoryProperties() {
+
+		Map<String, Object> defaultFactoryProperties = new HashMap<String, Object>();
+
+		final String storageType;
+		if (StartGWASpi.inMemoryStorage) {
+			storageType = AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_MEMORY;
+		} else {
+			storageType = AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF;
+		}
+		defaultFactoryProperties.put(OperationFactory.PROPERTY_NAME_TYPE, storageType);
+
+		return defaultFactoryProperties;
 	}
 
 	/**
@@ -126,7 +137,7 @@ public class OperationManager {
 			OperationParams params)
 			throws IOException
 	{
-		return generateOperationDataSet(type, null, origin, parent, FACTORY_DEFAULT_PROPERTIES, params);
+		return generateOperationDataSet(type, null, origin, parent, getDefaultFactoryProperties(), params);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
@@ -135,7 +146,7 @@ public class OperationManager {
 		OPType oldType = operationMetadata.getOperationType();
 		final Class<? extends MatrixOperation> type = oldToNewType.get(oldType);
 
-		return generateOperationDataSet(type, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent(), FACTORY_DEFAULT_PROPERTIES, null);
+		return generateOperationDataSet(type, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent(), getDefaultFactoryProperties(), null);
 	}
 
 	private static OperationDataSet generateOperationDataSet(

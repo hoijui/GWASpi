@@ -53,12 +53,14 @@ public class StartGWASpi extends JFrame {
 	public static final String COMMAND_LINE_SWITCH_LOG = "log";
 	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
 	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
+	public static final String COMMAND_LINE_SWITCH_IN_MEMORY = "memory";
 
 	// create a JFrame to hold everything
 	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
 	private static boolean logToFile = false;
 	public static boolean logOff = false;
+	public static boolean inMemoryStorage = false;
 	private static String logPath;
 	public static JFrame mainGUIFrame = new JFrame(cGlobal.APP_NAME);
 	public static JTabbedPane allTabs = new JTabbedPane();
@@ -91,6 +93,8 @@ public class StartGWASpi extends JFrame {
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
 		maxProcessMarkers = Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
+
+		inMemoryStorage = args.contains(COMMAND_LINE_SWITCH_IN_MEMORY);
 
 		if (args.contains(COMMAND_LINE_SWITCH_SCRIPT)) {
 			guiMode = false;
