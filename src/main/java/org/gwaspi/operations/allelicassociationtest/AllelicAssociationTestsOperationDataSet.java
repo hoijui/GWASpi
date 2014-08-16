@@ -33,7 +33,5 @@ public interface AllelicAssociationTestsOperationDataSet extends CommonTestOpera
 //	 */
 //	void setORs(List<Double> markerORs);
 
-	void addEntry(AllelicAssociationTestOperationEntry entry) throws IOException;
-
 	List<Double> getORs(int from, int to) throws IOException;
 }

@@ -32,8 +32,6 @@ public interface GenotypicAssociationTestsOperationDataSet extends CommonTestOpe
 //	 */
 //	void setOR2s(List<Double> markerOR2s);
 
-	void addEntry(GenotypicAssociationTestOperationEntry entry) throws IOException;
-
 	List<Double> getORs(int from, int to) throws IOException;
 	List<Double> getOR2s(int from, int to) throws IOException;
 }

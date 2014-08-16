@@ -17,9 +17,6 @@
 
 package org.gwaspi.operations.trendtest;
 
-import java.io.IOException;
-
 public interface TrendTestOperationDataSet extends CommonTestOperationDataSet<TrendTestOperationEntry> {
 
-	void addEntry(TrendTestOperationEntry entry) throws IOException;
 }

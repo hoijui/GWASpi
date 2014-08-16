@@ -25,4 +25,6 @@ public interface CommonTestOperationDataSet<ET extends TrendTestOperationEntry> 
 
 	List<Double> getTs(int from, int to) throws IOException;
 	List<Double> getPs(int from, int to) throws IOException;
+
+	void addEntry(ET entry) throws IOException;
 }
