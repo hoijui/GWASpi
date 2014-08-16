@@ -17,6 +17,7 @@
 
 package org.gwaspi.global;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
  * @param <IT> input/original type
  * @param <OT> output/result type
  */
-public class ExtractorList<IT, OT> extends AbstractList<OT> {
+public class ExtractorList<IT, OT> extends AbstractList<OT> implements Serializable {
 
 	private final List<? extends IT> originalItems;
 	private final Extractor<IT, OT> extractor;

@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import java.io.Serializable;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
@@ -25,7 +26,8 @@ import org.gwaspi.operations.OperationDataEntry;
 public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	public static class MismatchStateExtractor
-			implements Extractor<QAMarkersOperationEntry, Boolean>
+			implements Extractor<QAMarkersOperationEntry, Boolean>,
+			Serializable
 	{
 		@Override
 		public Boolean extract(QAMarkersOperationEntry from) {
@@ -36,7 +38,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MismatchStateExtractor();
 
 	public static class MajorAlleleExtractor
-			implements Extractor<QAMarkersOperationEntry, Byte>
+			implements Extractor<QAMarkersOperationEntry, Byte>,
+			Serializable
 	{
 		@Override
 		public Byte extract(QAMarkersOperationEntry from) {
@@ -47,7 +50,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MajorAlleleExtractor();
 
 	public static class MajorAlleleFrequencyExtractor
-			implements Extractor<QAMarkersOperationEntry, Double>
+			implements Extractor<QAMarkersOperationEntry, Double>,
+			Serializable
 	{
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
@@ -58,7 +62,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MajorAlleleFrequencyExtractor();
 
 	public static class MinorAlleleExtractor
-			implements Extractor<QAMarkersOperationEntry, Byte>
+			implements Extractor<QAMarkersOperationEntry, Byte>,
+			Serializable
 	{
 		@Override
 		public Byte extract(QAMarkersOperationEntry from) {
@@ -69,7 +74,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MinorAlleleExtractor();
 
 	public static class MinorAlleleFrequencyExtractor
-			implements Extractor<QAMarkersOperationEntry, Double>
+			implements Extractor<QAMarkersOperationEntry, Double>,
+			Serializable
 	{
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
@@ -80,7 +86,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MinorAlleleFrequencyExtractor();
 
 	public static class AlleleAAExtractor
-			implements Extractor<QAMarkersOperationEntry, Integer>
+			implements Extractor<QAMarkersOperationEntry, Integer>,
+			Serializable
 	{
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
@@ -91,7 +98,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new AlleleAAExtractor();
 
 	public static class AlleleAaExtractor
-			implements Extractor<QAMarkersOperationEntry, Integer>
+			implements Extractor<QAMarkersOperationEntry, Integer>,
+			Serializable
 	{
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
@@ -102,7 +110,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new AlleleAaExtractor();
 
 	public static class AlleleaaExtractor
-			implements Extractor<QAMarkersOperationEntry, Integer>
+			implements Extractor<QAMarkersOperationEntry, Integer>,
+			Serializable
 	{
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
@@ -113,7 +122,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new AlleleaaExtractor();
 
 	public static class MissingCountExtractor
-			implements Extractor<QAMarkersOperationEntry, Integer>
+			implements Extractor<QAMarkersOperationEntry, Integer>,
+			Serializable
 	{
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
@@ -124,7 +134,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MissingCountExtractor();
 
 	public static class MissingRatioExtractor
-			implements Extractor<QAMarkersOperationEntry, Double>
+			implements Extractor<QAMarkersOperationEntry, Double>,
+			Serializable
 	{
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
@@ -135,7 +146,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MissingRatioExtractor();
 
 	public static class AlleleCountsExtractor
-			implements Extractor<QAMarkersOperationEntry, int[]>
+			implements Extractor<QAMarkersOperationEntry, int[]>,
+			Serializable
 	{
 		@Override
 		public int[] extract(QAMarkersOperationEntry from) {
@@ -146,7 +158,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new AlleleCountsExtractor();
 
 	public static class GenotypeCountsExtractor
-			implements Extractor<QAMarkersOperationEntry, int[]>
+			implements Extractor<QAMarkersOperationEntry, int[]>,
+			Serializable
 	{
 		@Override
 		public int[] extract(QAMarkersOperationEntry from) {
