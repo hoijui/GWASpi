@@ -17,11 +17,13 @@
 
 package org.gwaspi.operations.qamarkers;
 
+import java.io.Serializable;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.AbstractOperationDataEntry;
 
-public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements QAMarkersOperationEntry {
-
+public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> 
+		implements QAMarkersOperationEntry, Serializable
+{
 	private final boolean mismatchState;
 	private final byte majorAllele;
 	private final double majorAlleleFrequency;
