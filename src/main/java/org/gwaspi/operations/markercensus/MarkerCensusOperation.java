@@ -42,7 +42,6 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
 import org.gwaspi.operations.OperationManager;
@@ -263,7 +262,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		//</editor-fold>
 
 		dataSet.finnishWriting();
-		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		resultOpId = dataSet.getOperationKey().getId();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);

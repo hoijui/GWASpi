@@ -25,7 +25,6 @@ import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -166,7 +165,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 		progressSource.setNewStatus(ProcessStatus.FINALIZING);
 		dataSet.finnishWriting();
-		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		resultOpId = dataSet.getOperationKey().getId();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);

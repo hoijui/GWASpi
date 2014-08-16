@@ -31,7 +31,6 @@ import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
@@ -156,7 +155,7 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 		//</editor-fold>
 
 		dataSet.finnishWriting();
-		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		resultOpId = dataSet.getOperationKey().getId();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
