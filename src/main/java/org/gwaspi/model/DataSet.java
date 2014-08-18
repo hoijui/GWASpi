@@ -43,7 +43,7 @@ public class DataSet {
 		this.matrixMetadata = null;
 		// NOTE We use LinkedHashSet to:
 		//   - preserve insertion order of the first insertion;
-		//     for example: first dummies get inserted, as compleete set,
+		//     for example: first dummies get inserted, as complete set,
 		//     in the correct order,
 		//     then eventually real/extended info is inserted,
 		//     possibly in a chaotic order (Linked)

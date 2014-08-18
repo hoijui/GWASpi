@@ -53,7 +53,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 		this.addedMarkerInfos = 0;
 	}
 
-	public DataSet getDataSet() {
+	protected DataSet getDataSet() {
 		return dataSet;
 	}
 

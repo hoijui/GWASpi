@@ -23,9 +23,14 @@ import java.util.Collection;
 /**
  * TODO
  */
-public class InMemorySamplesReceiver extends AbstractDataSetDestination implements DataSetDestination {
+public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
 	public InMemorySamplesReceiver() {
+	}
+
+	@Override
+	public void finishedLoadingSampleInfos() throws IOException {
+		getDataSet().getSampleInfos()
 	}
 
 	@Override
@@ -43,5 +48,20 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination implemen
 	@Override
 	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 		getDataSet().setMarkerAlleles(markerIndex, markerAlleles);
+	}
+
+	@Override
+	public void finishedLoadingAlleles() throws IOException {
+
+	}
+
+	@Override
+	public void done() throws IOException {
+//		new MatrixInMemoryDataSetSource(
+//				null,
+//				getDataSet().getMatrixMetadata(),
+//				getDataSet().get,
+//				getDataSet().equals(this),
+//				getDataSet()., null, null, null, null, null, null)
 	}
 }
