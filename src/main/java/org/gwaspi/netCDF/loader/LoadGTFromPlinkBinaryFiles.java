@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -168,7 +169,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 //						guessedGTCode = Utils.detectGTEncoding(sampleSetMap); // FIXME ???
 //					}
 
-					samplesReceiver.addMarkerGTAlleles(rowCounter, mappedGenotypes.values());
+					samplesReceiver.addMarkerGTAlleles(rowCounter, new ArrayList<byte[]>(mappedGenotypes.values()));
 				} catch (EOFException ex) {
 					log.info("End of File", ex);
 					break;

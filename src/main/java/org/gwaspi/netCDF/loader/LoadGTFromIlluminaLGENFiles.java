@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,7 +171,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 					// WRITING GENOTYPE DATA INTO netCDF FILE
 					int sampleIndex = sampleKeys.indexOf(currentSampleKey);
 					if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-						samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
+						samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(sortedAlleles.values()));
 					}
 				}
 
@@ -210,7 +211,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		// WRITING GENOTYPE DATA INTO netCDF FILE
 		int sampleIndex = sampleKeys.indexOf(currentSampleKey);
 		if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-			samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
+			samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(sortedAlleles.values()));
 		}
 	}
 

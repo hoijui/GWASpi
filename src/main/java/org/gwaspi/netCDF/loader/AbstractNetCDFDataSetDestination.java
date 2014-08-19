@@ -445,7 +445,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+	public void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException {
 		super.addSampleGTAlleles(sampleIndex, sampleAlleles);
 
 		if (!alleleLoadPerSample) {
@@ -461,7 +461,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+	public void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException {
 		super.addMarkerGTAlleles(markerIndex, markerAlleles);
 
 		if (alleleLoadPerSample) {

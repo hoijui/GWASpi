@@ -147,7 +147,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 				wrComboSortedMarkerGTs.add(genotype);
 			}
 
-			addSampleGTAlleles(wrSampleIndex, wrComboSortedMarkerGTs);
+			addSampleGTAlleles(wrSampleIndex, new ArrayList<byte[]>(wrComboSortedMarkerGTs));
 			wrSampleIndex++;
 		}
 		getDataSetDestination().finishedLoadingAlleles();

@@ -18,6 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -332,7 +333,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 				SampleKey sampleKey = samplesKeysSourceIt.next();
 				Collection<byte[]> translatedGTs = genotypeTranslator.translateBySamples(sampleKey, sampleGenotypes);
 
-				dataSetDestination.addSampleGTAlleles(sampleIndex, translatedGTs);
+				dataSetDestination.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(translatedGTs));
 
 				if (sampleIndex % 100 == 0) {
 					log.info("Samples translated: {}", sampleIndex);
@@ -347,7 +348,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 				MarkerKey markerKey = markersKeysSourceIt.next();
 				Collection<byte[]> translatedGTs = genotypeTranslator.translateByMarkers(markerKey, markerGenotypes);
 
-				dataSetDestination.addMarkerGTAlleles(markerIndex, translatedGTs);
+				dataSetDestination.addMarkerGTAlleles(markerIndex, new ArrayList<byte[]>(translatedGTs));
 
 				if (markerIndex % 100 == 0) {
 					log.info("Samples translated: {}", markerIndex);

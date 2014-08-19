@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -112,7 +113,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 
 			// SAVING GENOTYPE DATA
 			try {
-				samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
+				samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(alleles.values()));
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
 			}

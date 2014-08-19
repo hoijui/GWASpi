@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -96,7 +97,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 						getGuessedGTCode());
 
 				// WRITING GENOTYPE DATA INTO netCDF FILE
-				samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
+				samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(alleles.values()));
 			} catch (IOException ex) {
 				log.warn(null, ex);
 			}

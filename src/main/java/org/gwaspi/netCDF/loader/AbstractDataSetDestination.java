@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -170,7 +171,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+	public void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException {
 
 		if (progressHandler != null) {
 			progressHandler.getGenotypesProgressHandler().setProgress(sampleIndex);
@@ -178,7 +179,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+	public void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException {
 
 		if (progressHandler != null) {
 			progressHandler.getGenotypesProgressHandler().setProgress(markerIndex);
