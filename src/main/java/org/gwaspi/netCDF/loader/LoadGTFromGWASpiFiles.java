@@ -84,8 +84,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-
 		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
 		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
 
