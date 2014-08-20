@@ -139,10 +139,6 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			}
 
 			sampleIndex++;
-			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
-				log.info("Done processing sample {} / {}", sampleIndex,
-						dataSet.getSampleInfos().size());
-			}
 		}
 	}
 

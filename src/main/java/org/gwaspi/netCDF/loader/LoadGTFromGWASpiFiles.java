@@ -282,10 +282,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 //			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
 			samplesReceiver.addSampleGTAlleles(sampleWrIndex, genotypesList);
 			sampleWrIndex++;
-			if ((sampleWrIndex == 1) || (sampleWrIndex % 100 == 0)) {
-				log.info("Done processing sample {} / {}", sampleWrIndex,
-						dataSetSource.getNumSamples());
-			}
 		}
 		//</editor-fold>
 

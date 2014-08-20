@@ -119,10 +119,6 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			}
 
 			sampleIndex++;
-			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
-				log.info("Done processing sample {} / {}", sampleIndex,
-						dataSet.getSampleInfos().size());
-			}
 		}
 	}
 

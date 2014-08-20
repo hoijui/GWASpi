@@ -91,10 +91,6 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 					loadDescription,
 					samplesReceiver,
 					gtFilesToImport[i]);
-
-			if (i % 10 == 0) {
-				log.info("Done processing file " + i);
-			}
 		}
 	}
 
