@@ -134,8 +134,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		Map<SampleKey, Integer> sampleOrderMap = new LinkedHashMap<SampleKey, Integer>();
 
 		String sampleHeader = inputBufferReader.readLine();
-		String[] headerFields = null;
-		headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+		String[] headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 		for (int i = 0; i < headerFields.length; i++) {
 			if (!headerFields[i].isEmpty()) {
 				String sampleId = headerFields[i];

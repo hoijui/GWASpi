@@ -28,7 +28,7 @@ import org.gwaspi.model.SampleKey;
 
 /**
  * Is the receiving end of a whole data-set loading process.
- * This might store to ram, to an other format directly,
+ * This might store to RAM, to an other format directly,
  * to this softwares internal format using NetCDF,
  * or ...?
  */
@@ -40,6 +40,7 @@ public interface DataSetDestination {
 	 * dummy means here, that these infos are used, if there are no real,
 	 * full sample infos available for one, multiple
 	 * or all samples in the data-set.
+	 * @throws IOException
 	 */
 	void startLoadingDummySampleInfos() throws IOException;
 	void finishedLoadingDummySampleInfos() throws IOException;
@@ -63,14 +64,18 @@ public interface DataSetDestination {
 	 * Adds all the GTs/SNPs for a single sample (one GT per marker).
 	 * @param sampleIndex  index in relation to the samples infos
 	 *   (as in, the index of a list created in the order they were added)
+	 * @param sampleAlleles
 	 * @see #addSampleInfo
+	 * @throws IOException
 	 */
 	void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException;
 	/**
 	 * Adds all the GTs/SNPs for a single marker (one GT per sample).
 	 * @param markerIndex  index in relation to the markers meta-data
 	 *   (as in, the index of a list created in the order they were added)
+	 * @param markerAlleles
 	 * @see #addMarkerMetadata
+	 * @throws IOException
 	 */
 	void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException;
 	void finishedLoadingAlleles() throws IOException;

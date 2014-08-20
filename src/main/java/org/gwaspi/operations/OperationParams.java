@@ -35,7 +35,7 @@ public interface OperationParams {
 
 	/**
 	 * Returns a set of all matrices (excluding the newly created one, if any)
-	 * that are participating the the process of this operation.
+	 * that are participating in the process of this operation.
 	 * This is mainly used for locking.
 	 * @return
 	 */
