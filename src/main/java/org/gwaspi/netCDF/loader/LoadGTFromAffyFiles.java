@@ -35,13 +35,8 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
-
-	private final Logger log
-			= LoggerFactory.getLogger(LoadGTFromAffyFiles.class);
 
 	static interface Standard {
 		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
@@ -122,11 +117,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 					gtFilesToImport[i],
 					alleles,
 					sampleKeys);
-
-			if ((i == 1) || ((i+1) % 100 == 0)) {
-				log.info("Done processing sample {} / {}", i,
-						sampleKeys.size());
-			}
 		}
 	}
 
