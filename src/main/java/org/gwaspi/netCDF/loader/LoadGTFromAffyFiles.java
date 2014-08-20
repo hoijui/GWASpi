@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -80,11 +81,11 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
 
 		// PURGE alleles
-		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 

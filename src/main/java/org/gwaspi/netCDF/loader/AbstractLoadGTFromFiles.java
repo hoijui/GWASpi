@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -119,6 +120,10 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
+		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
+
 		File gtFile = new File(loadDescription.getGtDirPath());
 		File[] gtFilesToImport;
 		if (gtFile.isDirectory()) {
@@ -127,11 +132,9 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
 		}
 		int sampleIndex = 0;
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
-		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
+		for (SampleInfo sampleInfo : sampleInfos) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 			for (File gtFileToImport : gtFilesToImport) {
 				try {
@@ -162,7 +165,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			sampleIndex++;
 			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
 				log.info("Done processing sample {} / {}", sampleIndex,
-						dataSet.getSampleInfos().size());
+						sampleInfos.size());
 			}
 		}
 	}

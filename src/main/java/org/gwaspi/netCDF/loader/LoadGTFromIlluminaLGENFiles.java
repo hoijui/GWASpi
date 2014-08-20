@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -107,10 +108,9 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 //			GenotypeEncoding guessedGTCode)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
-
-		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
+		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
 
 		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);
@@ -149,7 +149,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			} else {
 				if (!currentSampleKey.getSampleId().equals("")) { // EXCEPT FIRST TIME ROUND
 					// INIT AND PURGE SORTEDMARKERSET Map
-					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 					// WRITE Map TO MATRIX
 					for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
@@ -184,7 +184,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 
 		// WRITE LAST SAMPLE Map TO MATRIX
 		// INIT AND PURGE SORTEDMARKERSET Map
-		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 		for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 			byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;

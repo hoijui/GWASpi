@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -108,10 +109,9 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
-
-		Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
+		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
 
 		File[] gtFilesToImport = extractGTFilesToImport(loadDescription);
 
@@ -124,7 +124,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 			for (File gtFileToImport : gtFilesToImport) {
 				loadIndividualFiles(
