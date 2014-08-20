@@ -31,7 +31,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
-import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
+import org.gwaspi.netCDF.loader.NullDataSetDestination;
+import org.gwaspi.netCDF.loader.SampleInfoExtractorDataSetDestination;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
@@ -130,13 +131,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
 					log.info("Updating Sample Info in DB");
-					InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
+					final SampleInfoExtractorDataSetDestination sampleInfoExtractor
+							= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
 					SamplesParserManager.scanSampleInfo(
 							markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
 							cImport.ImportFormat.GWASpi,
 							phenotypeFile.getPath(),
-							inMemorySamplesReceiver);
-					Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
+							sampleInfoExtractor);
+					Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
 					SampleInfoList.insertSampleInfos(sampleInfos);
 
 					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();

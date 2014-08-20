@@ -26,11 +26,13 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.netCDF.loader.AbstractDataSetDestination;
 import org.gwaspi.netCDF.loader.DataSetDestinationProgressHandler;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
+import org.gwaspi.netCDF.loader.SampleInfoExtractorDataSetDestination;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
@@ -102,12 +104,14 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		final LoadingNetCDFDataSetDestination samplesReceiver = new LoadingNetCDFDataSetDestination(loadDescription); // HACK FIXME
+		final LoadingNetCDFDataSetDestination dataReceiver = new LoadingNetCDFDataSetDestination(loadDescription); // HACK FIXME
 //		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
 //		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
 		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(loadGTsProcessInfo);
-		samplesReceiver.setProgressHandler(dataSetDestinationProgressHandler);
+		dataReceiver.setProgressHandler(dataSetDestinationProgressHandler);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);
+		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
+				= new SampleInfoExtractorDataSetDestination(dataReceiver);
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
@@ -115,8 +119,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getSampleFilePath(),
 				loadDescription.getGtDirPath(),
 				loadDescription.getAnnotationFilePath(),
-				samplesReceiver);
-		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(samplesReceiver.getDataSet().getSampleInfos());
+				sampleInfoExtractor);
+		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoExtractor.getSampleInfos().values());
 
 		final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
 
@@ -124,9 +128,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			LoadManager.dispatchLoadByFormat(
 					loadDescription,
-					samplesReceiver);
-			MatrixKey matrixKey = samplesReceiver.getResultMatrixKey();
-			samplesReceiver.done();
+					dataReceiver);
+			MatrixKey matrixKey = dataReceiver.getResultMatrixKey();
+			dataReceiver.done();
 			MultiOperations.printCompleted("Loading Genotypes");
 			parent = new DataSetKey(matrixKey);
 		} else {
