@@ -91,11 +91,11 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		//<editor-fold defaultstate="expanded" desc="SAMPLES GATHERING">
 		// GET SAMPLES FROM FILES
 		List<SampleKey> sampleKeys = new ArrayList<SampleKey>();
-		for (int i = 0; i < gtFilesToImport.length; i++) {
+		for (File gtFileToImport : gtFilesToImport) {
 			SampleKey sampleKey;
 			switch (loadDescription.getFormat()) {
 				case Affymetrix_GenomeWide6:
-					sampleKey = getAffySampleId(loadDescription.getStudyKey(), gtFilesToImport[i]);
+					sampleKey = getAffySampleId(loadDescription.getStudyKey(), gtFileToImport);
 					break;
 				default:
 					sampleKey = new SampleKey(loadDescription.getStudyKey(), "", SampleKey.FAMILY_ID_NONE);
@@ -110,11 +110,11 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		//</editor-fold>
 
 		// START PROCESS OF LOADING GENOTYPES
-		for (int i = 0; i < gtFilesToImport.length; i++) {
+		for (File gtFileToImport : gtFilesToImport) {
 			loadIndividualFiles(
 					loadDescription,
 					samplesReceiver,
-					gtFilesToImport[i],
+					gtFileToImport,
 					alleles,
 					sampleKeys);
 		}

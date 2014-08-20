@@ -116,8 +116,8 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		File[] gtFilesToImport = extractGTFilesToImport(loadDescription);
 
 		// TODO check if real sample files coincides with sampleInfoFile
-		for (int i = 0; i < gtFilesToImport.length; i++) {
-			Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyKey(), gtFilesToImport[i]);
+		for (File gtFileToImport : gtFilesToImport) {
+			Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyKey(), gtFileToImport);
 			sampleInfos.addAll(tempSamplesMap);
 		}
 
@@ -126,10 +126,10 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
-			for (int i = 0; i < gtFilesToImport.length; i++) {
+			for (File gtFileToImport : gtFilesToImport) {
 				loadIndividualFiles(
 						loadDescription.getStudyKey(),
-						gtFilesToImport[i],
+						gtFileToImport,
 						sampleInfo.getKey(),
 						alleles,
 						getGuessedGTCode());
