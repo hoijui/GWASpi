@@ -129,7 +129,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		if (gtFile.isDirectory()) {
 			gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 		} else {
-			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
+			gtFilesToImport = new File[] {new File(loadDescription.getGtDirPath())};
 		}
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
