@@ -87,15 +87,10 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
-			//log.info("Input file: "+i);
 			loadIndividualFiles(
 					loadDescription,
 					samplesReceiver,
 					gtFilesToImport[i]);
-//					ncfile,
-//					markerSetMap,
-//					sampleIds,
-//					guessedGTCode);
 
 			if (i % 10 == 0) {
 				log.info("Done processing file " + i);

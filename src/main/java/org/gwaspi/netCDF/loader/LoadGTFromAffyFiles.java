@@ -116,7 +116,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 
 		// START PROCESS OF LOADING GENOTYPES
 		for (int i = 0; i < gtFilesToImport.length; i++) {
-			//log.info("Input file: "+i);
 			loadIndividualFiles(
 					loadDescription,
 					samplesReceiver,
@@ -149,7 +148,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		//Skip header rows
+		// Skip header rows
 		String header = null;
 		while (header == null) {
 			header = inputBufferReader.readLine();
@@ -157,7 +156,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 				header = null;
 			}
 		}
-
 
 		// GET ALLELES
 		Map<MarkerKey, byte[]> tempMarkerSet = new HashMap<MarkerKey, byte[]>();

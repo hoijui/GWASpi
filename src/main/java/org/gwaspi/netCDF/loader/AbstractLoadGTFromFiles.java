@@ -135,11 +135,6 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				try {
-//					loadIndividualFiles(
-//							loadDescription.getStudyKey(),
-//							gtFilesToImport[i],
-//							sampleInfo.getKey(),
-//							alleles);
 					Iterator<Map.Entry<MarkerKey, byte[]>> markerGtIt = iterator(
 							loadDescription.getStudyKey(),
 							sampleInfo.getKey(),
@@ -185,18 +180,13 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	/**
 	 * Loads all the alleles from a single sample.
-	 * @param file to load the sample from
+	 * @param studyKey the sample is going to be stored in this study
 	 * @param sampleKey uniquely specifies the sample to be loaded
 	 *   (in the containing set)
-	 * @param alleles maps marker-keys to an allele pairs;
-	 *   the values are usually of type byte[2]
+	 * @param file to load the sample from
+	 * @return
+	 * @throws IOException
 	 */
-//	public abstract void loadIndividualFiles(
-//			StudyKey studyKey,
-//			File file,
-//			SampleKey sampleKey,
-//			Map<MarkerKey, byte[]> alleles)
-//			throws IOException, InvalidRangeException;
 	protected abstract Iterator<Map.Entry<MarkerKey, byte[]>> iterator(
 			StudyKey studyKey,
 			SampleKey sampleKey,

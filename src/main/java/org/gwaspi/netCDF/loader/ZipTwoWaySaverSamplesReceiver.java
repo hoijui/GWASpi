@@ -45,7 +45,6 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 			= LoggerFactory.getLogger(ZipTwoWaySaverSamplesReceiver.class);
 
 	private final GenotypesLoadDescription loadDescription;
-	private AbstractLoadGTFromFiles gtLoader; // HACK
 	private String startTime;
 	private MatrixKey resultMatrixKey;
 //	private int curAlleleSampleIndex;
@@ -64,7 +63,6 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 			GenotypesLoadDescription loadDescription)
 	{
 		this.loadDescription = loadDescription;
-		this.gtLoader = null;
 //		this.curAlleleSampleIndex = -1;
 		this.curAllelesMarkerIndex = -1;
 		this.alleleLoadPerSample = null;
@@ -74,10 +72,6 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 
 	public MatrixKey getResultMatrixKey() {
 		return resultMatrixKey;
-	}
-
-	public void setGTLoader(AbstractLoadGTFromFiles gtLoader) {
-		this.gtLoader = gtLoader;
 	}
 
 	@Override
