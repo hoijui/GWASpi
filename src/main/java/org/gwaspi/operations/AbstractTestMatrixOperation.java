@@ -45,8 +45,9 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams> extends AbstractOperationCreatingOperation<DST, PT> {
-
+public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams> 
+		extends AbstractOperationCreatingOperation<DST, PT>
+{
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 

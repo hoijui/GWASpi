@@ -40,7 +40,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -48,14 +47,11 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
-import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
+import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -334,29 +330,30 @@ public class MatrixTrafoPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
-				try {
+//				try {
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
 					}
 
-					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
-					MatrixOperation validationMatrixOperation = new MatrixTranslator(
-								dataSetSource,
-								null);
-
-					if (validationMatrixOperation.isValid()) {
+					final MatrixGenotypesTranslatorParams params = new MatrixGenotypesTranslatorParams(
+							new DataSetKey(parentMatrixKey),
+							description,
+							newMatrixName);
+//					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+//					MatrixOperation validationMatrixOperation = new MatrixTranslator(
+//								dataSetSource,
+//								null);
+//
+//					if (validationMatrixOperation.isValid()) {
 						// HACK use doMatrixOperation instead!
-						MultiOperations.doTranslateAB12ToACGT(
-								parentMatrixKey,
-								newMatrixName,
-								description);
-					} else {
-						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
-					}
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+						MultiOperations.doTranslateAB12ToACGT(params);
+//					} else {
+//						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
+//					}
+//				} catch (IOException ex) {
+//					log.error(null, ex);
+//				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
 			}
@@ -393,33 +390,35 @@ public class MatrixTrafoPanel extends JPanel {
 
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
-				try {
+//				try {
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
 					}
 
-					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
-					MatrixOperation validationMatrixOperation = new MatrixGenotypesFlipper(
-								dataSetSource,
-								null,
-								null);
-
-					if (validationMatrixOperation.isValid()) {
-						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+//					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+//					MatrixGenotypesFlipperParams params = new MatrixGenotypesFlipperParams(
+//							new DataSetKey(parentMatrixKey),
+//							description,
+//							newMatrixName,
+//							null);
+//					MatrixOperation validationMatrixOperation = new MatrixGenotypesFlipper(params, dataSet);
+//
+//					if (validationMatrixOperation.isValid()) {
+						final File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+						final MatrixGenotypesFlipperParams params = new MatrixGenotypesFlipperParams(
+							new DataSetKey(parentMatrixKey),
+							description,
+							newMatrixName,
+							flipMarkersFile);
 						// HACK use doMatrixOperation instead!
-						MultiOperations.doStrandFlipMatrix(
-								parentMatrixKey,
-								cNetCDF.Variables.VAR_MARKERSET,
-								flipMarkersFile,
-								newMatrixName,
-								description);
-					} else {
-						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
-					}
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+						MultiOperations.doStrandFlipMatrix(params);
+//					} else {
+//						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
+//					}
+//				} catch (IOException ex) {
+//					log.error(null, ex);
+//				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
 			}

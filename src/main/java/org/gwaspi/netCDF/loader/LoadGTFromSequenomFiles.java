@@ -28,8 +28,8 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -79,20 +79,19 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
-
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);
 
 		// INIT AND PURGE SORTEDMARKERSET Map
 		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
+		for (SampleInfo sampleInfo : sampleInfos.values()) {
 			// PURGE MarkerIdMap on current sample
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerInfos.keySet(), Defaults.DEFAULT_GT);
 
 			// PARSE ALL FILES FOR ANY DATA ON CURRENT SAMPLE
 			for (int i = 0; i < gtFilesToImport.length; i++) {

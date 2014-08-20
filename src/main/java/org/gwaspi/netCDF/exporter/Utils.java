@@ -29,78 +29,81 @@ public class Utils {
 
 	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key) throws IOException {
 
-		SampleInfo sampleInfo = SampleInfoList.getSample(key);
+		SampleInfo baseSampleInfo = SampleInfoList.getSample(key);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (sampleInfo == null) {
+		if (baseSampleInfo == null) {
 			throw new IOException("No sample-info found in the DB for sample-key: " + key.toString());
 		} else {
-			SampleInfo baseSampleInfo = sampleInfo;
-
-			// XXX maybe we should make use of the familyId in key instead (or at least aswell, checking this value against it)
-			String familyId = baseSampleInfo.getFamilyId();
-			if (familyId == null) {
-				familyId = "0";
-			}
-
-			String fatherId = baseSampleInfo.getFatherId();
-			if (fatherId == null) {
-				fatherId = "0";
-			}
-
-			String motherId = baseSampleInfo.getMotherId();
-			if (motherId == null) {
-				motherId = "0";
-			}
-
-			SampleInfo.Sex sex = baseSampleInfo.getSex();
-			if (sex == null) {
-				sex = SampleInfo.Sex.UNKNOWN;
-			}
-
-			SampleInfo.Affection affection = baseSampleInfo.getAffection();
-			if (affection == null) {
-				affection = SampleInfo.Affection.UNKNOWN;
-			}
-
-			String disease = baseSampleInfo.getDisease();
-			if (disease == null) {
-				disease = "0";
-			}
-
-			String category = baseSampleInfo.getCategory();
-			if (category == null) {
-				category = "0";
-			}
-
-			String population = baseSampleInfo.getPopulation();
-			if (population == null) {
-				population = "0";
-			}
-
-			int age = baseSampleInfo.getAge();
-			if (age == -1) {
-				age = 0;
-			}
-
-			sampleInfo = new SampleInfo(
-					baseSampleInfo.getStudyKey(),
-					key.getSampleId(),
-					familyId,
-					baseSampleInfo.getOrderId(),
-					fatherId,
-					motherId,
-					sex,
-					affection,
-					category,
-					disease,
-					population,
-					age,
-					baseSampleInfo.getFilter(),
-					baseSampleInfo.getApproved(),
-					baseSampleInfo.getStatus());
+			baseSampleInfo = formatSampleInfo(baseSampleInfo);
 		}
 
-		return sampleInfo;
+		return baseSampleInfo;
+	}
+
+	public static SampleInfo formatSampleInfo(final SampleInfo baseSampleInfo) throws IOException {
+
+		// XXX maybe we should make use of the familyId in key instead (or at least aswell, checking this value against it)
+		String familyId = baseSampleInfo.getFamilyId();
+		if (familyId == null) {
+			familyId = "0";
+		}
+
+		String fatherId = baseSampleInfo.getFatherId();
+		if (fatherId == null) {
+			fatherId = "0";
+		}
+
+		String motherId = baseSampleInfo.getMotherId();
+		if (motherId == null) {
+			motherId = "0";
+		}
+
+		SampleInfo.Sex sex = baseSampleInfo.getSex();
+		if (sex == null) {
+			sex = SampleInfo.Sex.UNKNOWN;
+		}
+
+		SampleInfo.Affection affection = baseSampleInfo.getAffection();
+		if (affection == null) {
+			affection = SampleInfo.Affection.UNKNOWN;
+		}
+
+		String disease = baseSampleInfo.getDisease();
+		if (disease == null) {
+			disease = "0";
+		}
+
+		String category = baseSampleInfo.getCategory();
+		if (category == null) {
+			category = "0";
+		}
+
+		String population = baseSampleInfo.getPopulation();
+		if (population == null) {
+			population = "0";
+		}
+
+		int age = baseSampleInfo.getAge();
+		if (age == -1) {
+			age = 0;
+		}
+
+		return new SampleInfo(
+				baseSampleInfo.getStudyKey(),
+				baseSampleInfo.getSampleId(),
+				familyId,
+				baseSampleInfo.getOrderId(),
+				fatherId,
+				motherId,
+				sex,
+				affection,
+				category,
+				disease,
+				population,
+				age,
+				baseSampleInfo.getFilter(),
+				baseSampleInfo.getApproved(),
+				baseSampleInfo.getStatus());
 	}
 }

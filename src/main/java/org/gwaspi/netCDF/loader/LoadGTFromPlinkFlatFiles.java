@@ -29,8 +29,9 @@ import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 
@@ -68,6 +69,8 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
@@ -75,9 +78,8 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
-		final int numMarkers = dataSet.getMarkerMetadatas().size();
+		final List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.keySet());
+		final int numMarkers = markerInfos.size();
 
 		// GET ALLELES
 		String l;

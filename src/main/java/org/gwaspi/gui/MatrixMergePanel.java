@@ -54,6 +54,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.operations.merge.MergeMatrixOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -396,31 +397,15 @@ public class MatrixMergePanel extends JPanel {
 							description = "";
 						}
 
-						if (mergeMarkers.isSelected()) {
-							MultiOperations.doMergeMatrix(
-									parentMatrixKey,
-									addMatrixKey,
-									newMatrixName.getText(),
-									description,
-									false);
-						}
+						final MergeMatrixOperationParams params = MergeMatrixOperationParams.create(
+								new DataSetKey(parentMatrixKey),
+								new DataSetKey(addMatrixKey),
+								newMatrixName.getText(),
+								description,
+								mergeSamples.isSelected() || mergeAll.isSelected(),
+								mergeMarkers.isSelected() || mergeAll.isSelected());
 
-						if (mergeSamples.isSelected()) {
-							MultiOperations.doMergeMatrixAddSamples(
-									parentMatrixKey,
-									addMatrixKey,
-									newMatrixName.getText(),
-									description);
-						}
-
-						if (mergeAll.isSelected()) {
-							MultiOperations.doMergeMatrix(
-									parentMatrixKey,
-									addMatrixKey,
-									newMatrixName.getText(),
-									description,
-									true);
-						}
+						MultiOperations.doMergeMatrix(params);
 					}
 				} else { // GENOTYPE ENCODING IS NOT EQUAL!! CAN'T PERFORM MERGER
 					Dialogs.showWarningDialogue(Text.Trafo.warnMatrixEncMismatch);

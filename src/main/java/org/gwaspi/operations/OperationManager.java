@@ -103,7 +103,7 @@ public class OperationManager {
 		return getOperationFactory(type).getTypeInfo();
 	}
 
-	private static final Map<String, Object> FACTORY_DEFAULT_PROPERTIES = new HashMap<String, Object>();
+	public static final Map<String, Object> FACTORY_DEFAULT_PROPERTIES = new HashMap<String, Object>();
 	static {
 		FACTORY_DEFAULT_PROPERTIES.put(OperationFactory.PROPERTY_NAME_TYPE, AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
 	}
@@ -144,7 +144,7 @@ public class OperationManager {
 			MatrixKey origin,
 			DataSetKey parent,
 			Map<String, Object> properties,
-			OperationParams params) 
+			OperationParams params)
 			throws IOException
 	{
 		final OperationFactory operationFactory = getOperationFactory(type);

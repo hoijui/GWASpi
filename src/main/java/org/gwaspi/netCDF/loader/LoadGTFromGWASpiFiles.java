@@ -19,12 +19,12 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MatricesList;
@@ -81,11 +81,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver)
+	public void processData(
+			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
+		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		NetcdfFile gwaspiStorageFile = NetcdfFile.open(loadDescription.getGtDirPath());
@@ -93,7 +95,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
-		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
+		Collection<SampleKey> sampleKeys = sampleInfos.keySet();
 		for (SampleKey key : samplesKeysSource) {
 			if (!sampleKeys.contains(key)) {
 				testExcessSamplesInMatrix = true;
@@ -101,7 +103,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 		}
 
-		for (SampleInfo sampleInfo : sampleInfos) {
+		for (SampleInfo sampleInfo : sampleInfos2) {
 			if (!samplesKeysSource.contains(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;

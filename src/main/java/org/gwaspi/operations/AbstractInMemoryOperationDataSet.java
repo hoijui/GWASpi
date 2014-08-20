@@ -190,7 +190,10 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	public void setSamples(List<Integer> originalIndices, List<SampleKey> keys) throws IOException {
 
 		if (!getUseAllSamplesFromParent()) {
-			this.samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(), keys, originalIndices);
+//			this.samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOperationKey(), getOrigin().getStudyKey(), keys, originalIndices);
+			// temporary store here, and store it in the back storage when we know our operationKey
+			this.sampleOriginalIndices = originalIndices;
+			this.sampleKeys = keys;
 		}
 	}
 
@@ -198,15 +201,44 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	public void setMarkers(List<Integer> originalIndices, List<MarkerKey> keys) throws IOException {
 
 		if (!getUseAllMarkersFromParent()) {
-			this.markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOrigin(), keys, originalIndices);
+//			this.markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOperationKey(), keys, originalIndices);
+			// temporary store here, and store it in the back storage when we know our operationKey
+			this.markerOriginalIndices = originalIndices;
+			this.markerKeys = keys;
 		}
 	}
+
+	private List<Integer> sampleOriginalIndices;
+	private List<SampleKey> sampleKeys;
+	private List<Integer> markerOriginalIndices;
+	private List<MarkerKey> markerKeys;
+	private List<Integer> chromosomeOriginalIndices;
+	private List<ChromosomeKey> chromosomeKeys;
 
 	@Override
 	public void setChromosomes(List<Integer> originalIndices, List<ChromosomeKey> keys) throws IOException {
 
 		if (!getUseAllChromosomesFromParent()) {
-			this.chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(getOrigin(), keys, originalIndices);
+//			this.chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(getOperationKey(), keys, originalIndices);
+			// temporary store here, and store it in the back storage when we know our operationKey
+			this.chromosomeOriginalIndices = originalIndices;
+			this.chromosomeKeys = keys;
+		}
+	}
+
+	@Override
+	public void finnishWriting() throws IOException {
+		super.finnishWriting();
+
+		// we have to do this stuff so late, because we do not have the operation key before
+		if (sampleOriginalIndices != null) {
+			this.samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOperationKey(), getOrigin().getStudyKey(), sampleKeys, sampleOriginalIndices);
+		}
+		if (markerOriginalIndices != null) {
+			this.markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOperationKey(), markerKeys, markerOriginalIndices);
+		}
+		if (chromosomeOriginalIndices != null) {
+			this.chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(getOperationKey(), chromosomeKeys, chromosomeOriginalIndices);
 		}
 	}
 
@@ -232,14 +264,26 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		if (useAllSamplesFromParent) {
 			return getParentDataSetSource().getSamplesKeysSource();
 		} else if (samplesKeysSource == null) {
-			List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
-					(List<OperationDataEntry<SampleKey>>) getEntries(),
-					new OperationDataEntry.KeyExtractor<SampleKey>());
-			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
-					getEntries(),
-					OperationDataEntry.TO_INDEX);
-			samplesKeysSource = InMemorySamplesKeysSource.createForOperation(getOrigin(), getOrigin().getStudyKey(),
-					keys, originalIndices);
+			// check if it is already stored in the backend storage
+			samplesKeysSource = InMemorySamplesKeysSource.createForOperation(
+					getOperationKey(),
+					getOrigin().getStudyKey(),
+					null,
+					null);
+			if (samplesKeysSource == null) {
+				// ... if not, create it
+				List<SampleKey> keys = AbstractInMemoryListSource.extractProperty(
+						(List<OperationDataEntry<SampleKey>>) getEntries(),
+						new OperationDataEntry.KeyExtractor<SampleKey>());
+				List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+						getEntries(),
+						OperationDataEntry.TO_INDEX);
+				samplesKeysSource = InMemorySamplesKeysSource.createForOperation(
+						getOperationKey(),
+						getOrigin().getStudyKey(),
+						keys,
+						originalIndices);
+			}
 		}
 
 		return samplesKeysSource;
@@ -278,14 +322,24 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		if (useAllMarkersFromParent) {
 			return getParentDataSetSource().getMarkersKeysSource();
 		} else if (markersKeysSource == null) {
-			List<MarkerKey> keys = AbstractInMemoryListSource.extractProperty(
-					(List<OperationDataEntry<MarkerKey>>) getEntries(),
-					new OperationDataEntry.KeyExtractor<MarkerKey>());
-			List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
-					getEntries(),
-					OperationDataEntry.TO_INDEX);
-			markersKeysSource = InMemoryMarkersKeysSource.createForOperation(getOrigin(),
-					keys, originalIndices);
+			// check if it is already stored in the backend storage
+			markersKeysSource = InMemoryMarkersKeysSource.createForOperation(
+					getOperationKey(),
+					null,
+					null);
+			if (markersKeysSource == null) {
+				// ... if not, create it
+				List<MarkerKey> keys = AbstractInMemoryListSource.extractProperty(
+						(List<OperationDataEntry<MarkerKey>>) getEntries(),
+						new OperationDataEntry.KeyExtractor<MarkerKey>());
+				List<Integer> originalIndices = AbstractInMemoryListSource.extractProperty(
+						getEntries(),
+						OperationDataEntry.TO_INDEX);
+				markersKeysSource = InMemoryMarkersKeysSource.createForOperation(
+						getOperationKey(),
+						keys,
+						originalIndices);
+			}
 		}
 
 		return markersKeysSource;
@@ -324,14 +378,22 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		if (useAllChromosomesFromParent) {
 			return getParentDataSetSource().getChromosomesKeysSource();
 		} else if (chromosomesKeysSource == null) {
-			Map<Integer, ChromosomeKey> aggregateChromosomeKeys
-					= ChromosomeUtils.aggregateChromosomeIndicesAndKeys(
-							getParentDataSetSource().getChromosomesKeysSource().getIndicesMap(),
-							ChromosomeUtils.aggregateChromosomeKeys(getMarkersMetadatasSource().getChromosomes()));
+			// check if it is already stored in the backend storage
 			chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(
-					getOrigin(),
-					new ArrayList<ChromosomeKey>(aggregateChromosomeKeys.values()),
-					new ArrayList<Integer>(aggregateChromosomeKeys.keySet()));
+					getOperationKey(),
+					null,
+					null);
+			if (chromosomesKeysSource == null) {
+				// ... if not, create it
+				Map<Integer, ChromosomeKey> aggregateChromosomeKeys
+						= ChromosomeUtils.aggregateChromosomeIndicesAndKeys(
+								getParentDataSetSource().getChromosomesKeysSource().getIndicesMap(),
+								ChromosomeUtils.aggregateChromosomeKeys(getMarkersMetadatasSource().getChromosomes()));
+				chromosomesKeysSource = InMemoryChromosomesKeysSource.createForOperation(
+						getOperationKey(),
+						new ArrayList<ChromosomeKey>(aggregateChromosomeKeys.values()),
+						new ArrayList<Integer>(aggregateChromosomeKeys.keySet()));
+			}
 		}
 
 		return chromosomesKeysSource;

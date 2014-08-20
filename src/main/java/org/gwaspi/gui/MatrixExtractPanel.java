@@ -59,6 +59,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -645,18 +646,21 @@ public class MatrixExtractPanel extends JPanel {
 						description = "";
 					}
 
-					MultiOperations.doExtractData(
-							parentMatrixKey,
-							newMatrixName,
+					final MatrixDataExtractorParams params = new MatrixDataExtractorParams(
+							new DataSetKey(parentMatrixKey),
 							description,
-							markerPickCase,
-							samplePickCase,
-							markerPickVar,
-							samplePickVar,
-							markerCriteria,
-							sampleCriteria,
+							newMatrixName,
 							markerCriteriaFile,
-							sampleCriteriaFile);
+							sampleCriteriaFile,
+							markerPickCase,
+							markerPickVar,
+							samplePickCase,
+							samplePickVar,
+							Integer.MIN_VALUE, // Filter pos, not used now
+							markerCriteria,
+							sampleCriteria);
+
+					MultiOperations.doExtractData(params);
 				} else {
 					Dialogs.showWarningDialogue(Text.Matrix.pleaseInsertMatrixName);
 				}

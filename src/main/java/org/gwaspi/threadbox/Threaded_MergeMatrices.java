@@ -21,18 +21,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.merge.MatrixMergeSamples;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.merge.MergeAllMatrixOperation;
 import org.gwaspi.operations.merge.MergeMarkersMatrixOperation;
-import org.gwaspi.operations.merge.MergeMatrixNetCDFDataSetDestination;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.merge.MergeMatrixMetadataFactory;
+import org.gwaspi.operations.merge.MergeMatrixOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -59,38 +57,18 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	protected final MatrixKey parentMatrixKey1;
-	protected final MatrixKey parentMatrixKey2;
-	protected final String newMatrixName;
-	protected final String description;
-	/**
-	 * Whether to merge all, or only the marked samples
-	 * TODO the previous sentence needs revising
-	 */
-	private final boolean samples;
-	private final boolean markers;
+	private final MergeMatrixOperationParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_MergeMatrices(
-			MatrixKey parentMatrixKey1,
-			MatrixKey parentMatrixKey2,
-			String newMatrixName,
-			String description,
-			boolean samples,
-			boolean markers)
-	{
+	public Threaded_MergeMatrices(final MergeMatrixOperationParams params) {
+
 		super(
 				"Merge Matrices",
 				"Merging Data",
-				"Merge Matrices: " + newMatrixName,
+				"Merge Matrices: " + params.getMatrixFriendlyName(),
 				"Merging Matrices");
 
-		this.parentMatrixKey1 = parentMatrixKey1;
-		this.parentMatrixKey2 = parentMatrixKey2;
-		this.newMatrixName = newMatrixName;
-		this.description = description;
-		this.samples = samples;
-		this.markers = markers;
+		this.params = params;
 		this.progressSource = new SuperProgressSource(fullMergeMatricesProcessInfo, subProgressSourcesAndWeights);
 	}
 
@@ -104,56 +82,23 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 		return LoggerFactory.getLogger(Threaded_MergeMatrices.class);
 	}
 
-	private AbstractNetCDFDataSetDestination createMatrixDataSetDestination(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2)
-			throws IOException
-	{
-		final String humanReadableMethodName;
-		final String methodDescription;
-		if (samples) {
-			humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
-			methodDescription = Text.Trafo.mergeMethodSampleJoin;
-		} else if (markers) {
-			humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
-			methodDescription = Text.Trafo.mergeMethodMarkerJoin;
-		} else {
-			humanReadableMethodName = Text.Trafo.mergeAll;
-			methodDescription = Text.Trafo.mergeMethodMergeAll;
-		}
-		AbstractNetCDFDataSetDestination dataSetDestination
-				= new MergeMatrixNetCDFDataSetDestination(
-				dataSetSource1,
-				dataSetSource2,
-				newMatrixName,
-				description,
-				humanReadableMethodName,
-				methodDescription);
-
-		return dataSetDestination;
-	}
-
 	private MatrixOperation createMatrixOperation(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2,
-			AbstractNetCDFDataSetDestination dataSetDestination)
+			MergeMatrixOperationParams params,
+			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		final MatrixOperation joinMatrices;
-		if (samples) {
+		if (params.isMergeSamples()) {
 			joinMatrices = new MatrixMergeSamples(
-					dataSetSource1,
-					dataSetSource2,
+					params,
 					dataSetDestination);
-		} else if (markers) {
+		} else if (params.isMergeMarkers()) {
 			joinMatrices = new MergeMarkersMatrixOperation(
-					dataSetSource1,
-					dataSetSource2,
+					params,
 					dataSetDestination);
 		} else {
 			joinMatrices = new MergeAllMatrixOperation(
-					dataSetSource1,
-					dataSetSource2,
+					params,
 					dataSetDestination);
 		}
 
@@ -165,11 +110,9 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final DataSetSource dataSetSource1 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey1);
-			final DataSetSource dataSetSource2 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey2);
-
-			final AbstractNetCDFDataSetDestination dataSetDestination = createMatrixDataSetDestination(dataSetSource1, dataSetSource2);
-			final MatrixOperation matrixOperation = createMatrixOperation(dataSetSource1, dataSetSource2, dataSetDestination);
+			final DataSetDestination dataSetDestination
+					= MatrixFactory.generateMatrixDataSetDestination(params, MergeMatrixMetadataFactory.SINGLETON);
+			final MatrixOperation matrixOperation = createMatrixOperation(params, dataSetDestination);
 
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MERGE, matrixOperation.getProgressSource(), null);
 			progressSource.setNewStatus(ProcessStatus.RUNNING);

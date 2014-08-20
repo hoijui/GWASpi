@@ -32,6 +32,7 @@ import java.util.zip.ZipOutputStream;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
@@ -70,6 +71,7 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 		this.hyperSlabRows = -1;
 	}
 
+	@Override
 	public MatrixKey getResultMatrixKey() {
 		return resultMatrixKey;
 	}
@@ -128,9 +130,20 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 
 		Map<MarkerKey, MarkerMetadata> markerMetadatas = getDataSet().getMarkerMetadatas();
 		markerKeys = new ArrayList<MarkerKey>(markerMetadatas.keySet());
-		sampleKeys = LoadingNetCDFDataSetDestination.extractKeys(getDataSet().getSampleInfos());
+		sampleKeys = extractKeys(getDataSet().getSampleInfos());
 
 		log.info("Writing genotypes to zip files");
+	}
+
+	private static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
+
+		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
+
+		for (SampleInfo sampleInfo : sampleInfos) {
+			sampleKeys.add(sampleInfo.getKey());
+		}
+
+		return sampleKeys;
 	}
 
 	@Override

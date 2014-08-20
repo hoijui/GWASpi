@@ -19,10 +19,20 @@ package org.gwaspi.netCDF.matrices;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
+import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.datasource.netcdf.NetCDFDataSetSource;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
+import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
+import org.gwaspi.operations.MatrixCreatingNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixCreatingOperationParams;
+import org.gwaspi.operations.MatrixMetadataFactory;
+import org.gwaspi.operations.OperationFactory;
 import org.gwaspi.operations.OperationManager;
 
 public class MatrixFactory {
@@ -55,12 +65,64 @@ public class MatrixFactory {
 		}
 	}
 
-	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {
+	private static String getOrDefaultString(
+			Map<String, Object> properties,
+			String key,
+			String defaultValue)
+	{
+		// in Java 8 we could do this
+//		return (String) properties.getOrDefault(key, defaultValue);
+
+		// ... but as we do not rely on that yet, we do this
+		String value = (String) properties.get(key);
+		if (value == null) {
+			value = defaultValue;
+		}
+		return value;
+	}
+
+	public static <PT extends MatrixCreatingOperationParams> DataSetDestination generateMatrixDataSetDestination(
+			PT params,
+			MatrixMetadataFactory<DataSet, PT> metadataFactory,
+			Map<String, Object> properties)
+	{
+		final String storageType = getOrDefaultString(
+				properties,
+				OperationFactory.PROPERTY_NAME_TYPE,
+				AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
+		if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF)) {
+			return new MatrixCreatingNetCDFDataSetDestination<PT>(params, metadataFactory);
+		} else if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_MEMORY)) {
+			return new InMemorySamplesReceiver<PT>(params, metadataFactory); // TODO somehow give it the params nad metadataFactory too?
+		} else {
+			throw new IllegalArgumentException("Storage type not suported: " + storageType);
+		}
+	}
+
+	public static <PT extends MatrixCreatingOperationParams> DataSetDestination generateMatrixDataSetDestination(PT params, MatrixMetadataFactory<DataSet, PT> metadataFactory) {
+		return generateMatrixDataSetDestination(params, metadataFactory, OperationManager.FACTORY_DEFAULT_PROPERTIES);
+	}
+
+	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey, Map<String, Object> properties) {
 
 		try {
-			return new NetCDFDataSetSource(matrixKey);
+			final String storageType = getOrDefaultString(
+					properties,
+					OperationFactory.PROPERTY_NAME_TYPE,
+					AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
+			if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF)) {
+				return new NetCDFDataSetSource(matrixKey);
+			} else if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_MEMORY)) {
+				return new MatrixInMemoryDataSetSource(matrixKey);
+			} else {
+				throw new IllegalArgumentException("Storage type not suported: " + storageType);
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {
+		return generateMatrixDataSetSource(matrixKey, OperationManager.FACTORY_DEFAULT_PROPERTIES);
 	}
 }

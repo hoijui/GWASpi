@@ -34,8 +34,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -106,23 +106,24 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
-		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
+		final Collection<SampleInfo> sampleInfos2 = new ArrayList<SampleInfo>(sampleInfos.values());
+		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
 		File[] gtFilesToImport = extractGTFilesToImport(loadDescription);
 
 		// TODO check if real sample files coincides with sampleInfoFile
 		for (File gtFileToImport : gtFilesToImport) {
 			Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyKey(), gtFileToImport);
-			sampleInfos.addAll(tempSamplesMap);
+			sampleInfos2.addAll(tempSamplesMap);
 		}
 
 		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : sampleInfos) {
+		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 

@@ -18,14 +18,22 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomeKeyFactory;
 import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 
 public class InMemoryChromosomesKeysSource extends AbstractInMemoryKeysSource<ChromosomeKey> implements ChromosomesKeysSource {
+
+	private static final Map<MatrixKey, ChromosomesKeysSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, ChromosomesKeysSource>();
+	private static final Map<OperationKey, ChromosomesKeysSource> KEY2_TO_DATA
+			= new HashMap<OperationKey, ChromosomesKeysSource>();
 
 	private ChromosomesKeysSource originSource;
 
@@ -35,12 +43,37 @@ public class InMemoryChromosomesKeysSource extends AbstractInMemoryKeysSource<Ch
 		this.originSource = null;
 	}
 
-	public static ChromosomesKeysSource createForMatrix(MatrixKey origin, List<ChromosomeKey> items) throws IOException {
-		return new InMemoryChromosomesKeysSource(origin, items, null);
+	public static ChromosomesKeysSource createForMatrix(MatrixKey key, List<ChromosomeKey> items) throws IOException {
+//		return createForOperation(key, items, null);
+
+		ChromosomesKeysSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryChromosomesKeysSource(key, items, null);
+			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
+		}
+
+		return data;
 	}
 
-	public static ChromosomesKeysSource createForOperation(MatrixKey origin, List<ChromosomeKey> items, List<Integer> originalIndices) throws IOException {
-		return new InMemoryChromosomesKeysSource(origin, items, originalIndices);
+	public static ChromosomesKeysSource createForOperation(OperationKey key, List<ChromosomeKey> items, List<Integer> originalIndices) throws IOException {
+
+		ChromosomesKeysSource data = KEY2_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryChromosomesKeysSource(key.getParentMatrixKey(), items, originalIndices);
+			KEY2_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
+		}
+
+		return data;
 	}
 
 	@Override

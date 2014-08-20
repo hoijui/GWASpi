@@ -30,8 +30,8 @@ import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -77,11 +77,12 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
+		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 
 		Map<MarkerKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
 				loadDescription.getAnnotationFilePath(),
@@ -92,7 +93,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
 
-		int sampleNb = sampleInfos.size();
+		int sampleNb = sampleInfos2.size();
 //		int markerNb = bimSamples.size();
 		int bytesPerSNP;
 		if (sampleNb % 4 == 0) { // Nb OF BYTES IN EACH ROW
@@ -102,7 +103,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		}
 
 		Iterator<String[]> itMarkerSet = bimSamples.values().iterator();
-		Iterator<SampleInfo> itSampleSet = sampleInfos.iterator();
+		Iterator<SampleInfo> itSampleSet = sampleInfos2.iterator();
 
 		// SKIP HEADER
 		bedIS.readByte();
@@ -134,7 +135,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 					// READ ALL SAMPLE GTs FOR CURRENT SNP
 					int check = bedIS.read(rowBytes, 0, bytesPerSNP);
 					int bitsPerRow = 1;
-					itSampleSet = sampleInfos.iterator();
+					itSampleSet = sampleInfos2.iterator();
 					for (int j = 0; j < bytesPerSNP; j++) { // ITERATE THROUGH ROWS (READING BYTES PER ROW)
 						byteData = rowBytes[j];
 						for (int i = 0; i < 8; i = i + 2) { // FOR EACH BYTE IN ROW, EAT 2 BITS AT A TIME

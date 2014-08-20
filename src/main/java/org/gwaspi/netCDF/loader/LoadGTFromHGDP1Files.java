@@ -32,8 +32,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -79,15 +79,16 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
-		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
+		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
+		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
 		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : sampleInfos) {
+		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 

@@ -20,35 +20,27 @@ package org.gwaspi.operations.genotypestranslator;
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.DataSet;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
-public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
+public class MatrixTranslatorMetadataFactory
+		implements MatrixMetadataFactory<DataSet, MatrixGenotypesTranslatorParams> {
 
-	private final DataSetSource dataSetSource;
-	private final String matrixDescription;
-	private final String matrixFriendlyName;
-
-	public MatrixTranslatorNetCDFDataSetDestination(
-			DataSetSource dataSetSource,
-			String matrixDescription,
-			String matrixFriendlyName)
-	{
-		this.dataSetSource = dataSetSource;
-		this.matrixDescription = matrixDescription;
-		this.matrixFriendlyName = matrixFriendlyName;
-	}
+	public static final MatrixTranslatorMetadataFactory SINGLETON
+			= new MatrixTranslatorMetadataFactory();
 
 	@Override
-	protected MatrixMetadata createMatrixMetadata() throws IOException {
+	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixGenotypesTranslatorParams params) throws IOException {
 
-		final int numMarkers = getDataSet().getMarkerMetadatas().size();
-		final int numSamples = getDataSet().getSampleInfos().size();
-		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+		final int numMarkers = dataSet.getMarkerMetadatas().size();
+		final int numSamples = dataSet.getSampleInfos().size();
+		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
+		final MatrixMetadata sourceMatrixMetadata
+				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
 
 		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
 		String translationMethodDesc;
@@ -70,9 +62,9 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
 		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 		description.append("\nTranslation method: ").append(translationMethodDesc);
-		if (!matrixDescription.isEmpty()) {
+		if (!params.getMatrixDescription().isEmpty()) {
 			description.append("\n\nDescription: ");
-			description.append(matrixDescription);
+			description.append(params.getMatrixDescription());
 			description.append("\n");
 		}
 		description.append("\nGenotype encoding: ");
@@ -83,7 +75,7 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),
-				matrixFriendlyName,
+				params.getMatrixFriendlyName(),
 				sourceMatrixMetadata.getTechnology(),
 				description.toString(),
 				GenotypeEncoding.ACGT0, // New matrix genotype encoding
@@ -97,12 +89,12 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 	}
 
 	@Override
-	protected String getStrandFlag() {
+	public String getStrandFlag() {
 		return null;
 	}
 
 	@Override
-	protected GenotypeEncoding getGuessedGTCode() {
+	public GenotypeEncoding getGuessedGTCode(MatrixGenotypesTranslatorParams params) {
 		return GenotypeEncoding.ACGT0;
 	}
 }

@@ -24,21 +24,46 @@ import java.util.Map;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
+import org.gwaspi.model.GenotypesListManager;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.TransposedGenotypesListList;
+import org.gwaspi.operations.MatrixCreatingOperationParams;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
 /**
  * TODO
  */
-public class InMemorySamplesReceiver extends AbstractDataSetDestination {
+public class InMemorySamplesReceiver<PT extends MatrixCreatingOperationParams> 
+		extends AbstractDataSetDestination
+{
+	private final PT params;
+	private final MatrixMetadataFactory<DataSet, PT> metadataFactory;
+	private MatrixKey resultMatrixKey;
+	private List<GenotypesList> markerGenotypes;
+	private List<GenotypesList> sampleGenotypes;
+	private final GenotypesListFactory genotypesListFactory;
+	private Boolean loadAllelesPerSample;
 
-	public InMemorySamplesReceiver() {
+	public InMemorySamplesReceiver(
+			PT params,
+			MatrixMetadataFactory<DataSet, PT> metadataFactory)
+	{
+		this.params = params;
+		this.metadataFactory = metadataFactory;
+		this.resultMatrixKey = null;
+		this.markerGenotypes = null;
+		this.sampleGenotypes = null;
+		this.genotypesListFactory = GenotypesListManager.getCommon();
+		this.loadAllelesPerSample = null;
 	}
 
 //	@Override
@@ -57,11 +82,6 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 //	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 //		getDataSet().setMarkerAlleles(markerIndex, markerAlleles);
 //	}
-
-	private List<GenotypesList> markerGenotypes;
-	private List<GenotypesList> sampleGenotypes;
-	private GenotypesListFactory genotypesListFactory;
-	private boolean loadAllelesPerSample;
 
 	@Override
 	public void startLoadingAlleles(boolean perSample) throws IOException {
@@ -92,11 +112,13 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {
+		super.finishedLoadingAlleles();
 
+		// XXX Maybe instead of using the transposed view directly, use it only as a source, and rather create an actual copy of the list. this woudl speed thigns up, but use mor memory. alternatively, keep always the same view (markers!?) as the actual list one (fast), and always the other (samples) as the view (slower) one
 		if (loadAllelesPerSample) {
-//			markerGenotypes = ...; // TODO read from sampleGenotypes and store here
+			markerGenotypes = new TransposedGenotypesListList(sampleGenotypes);
 		} else {
-//			sampleGenotypes = ...; // TODO read from markerGenotypes and store here
+			sampleGenotypes = new TransposedGenotypesListList(markerGenotypes);
 		}
 	}
 
@@ -119,12 +141,14 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 		final List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(markerKeysAndMetadatas.keySet());
 		final List<MarkerMetadata> markerMetadatas = new ArrayList<MarkerMetadata>(markerKeysAndMetadatas.values());
 
-		final MatrixMetadata matrixMetadata = getDataSet().getMatrixMetadata();
-		final MatrixKey matrixKey = MatrixKey.valueOf(matrixMetadata);
+//		final MatrixMetadata matrixMetadata = getDataSet().getMatrixMetadata();
+		final MatrixMetadata matrixMetadata = metadataFactory.generateMetadata(this.getDataSet(), params);
+		resultMatrixKey = MatricesList.insertMatrixMetadata(matrixMetadata);
+		getDataSet().setMatrixMetadata(matrixMetadata);
 
 		// register/store in the in-memory storage
 		new MatrixInMemoryDataSetSource(
-				matrixKey,
+				resultMatrixKey,
 				matrixMetadata,
 				markerGenotypes,
 				sampleGenotypes,
@@ -134,5 +158,10 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 				markerMetadatas,
 				sampleKeys,
 				sampleInfos);
+	}
+
+	@Override
+	public MatrixKey getResultMatrixKey() {
+		return resultMatrixKey;
 	}
 }

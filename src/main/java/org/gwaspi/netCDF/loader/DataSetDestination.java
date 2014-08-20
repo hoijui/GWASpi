@@ -23,6 +23,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 
@@ -81,4 +82,6 @@ public interface DataSetDestination {
 	void finishedLoadingAlleles() throws IOException;
 
 	void done() throws IOException;
+
+	MatrixKey getResultMatrixKey();
 }

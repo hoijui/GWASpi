@@ -17,17 +17,15 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
-import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractor;
-import org.gwaspi.operations.dataextractor.MatrixDataExtractorNetCDFDataSetDestination;
+import org.gwaspi.operations.dataextractor.MatrixDataExtractorMetadataFactory;
+import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -53,49 +51,17 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final DataSetSource dataSetSource;
-	private final String newMatrixName;
-	private final String description;
-	private final SetMarkerPickCase markerPickCase;
-	private final SetSamplePickCase samplePickCase;
-	private final String markerPickVar;
-	private final String samplePickVar;
-	private final Set<Object> markerCriteria;
-	private final Set<Object> sampleCriteria;
-	private final File markerCriteriaFile;
-	private final File sampleCriteriaFile;
+	private final MatrixDataExtractorParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_ExtractMatrix(
-			DataSetSource dataSetSource,
-			String newMatrixName,
-			String description,
-			SetMarkerPickCase markerPickCase,
-			SetSamplePickCase samplePickCase,
-			String markerPickVar,
-			String samplePickVar,
-			Set<Object> markerCriteria,
-			Set<Object> sampleCriteria,
-			File markerCriteriaFile,
-			File sampleCriteriaFile)
-	{
+	public Threaded_ExtractMatrix(MatrixDataExtractorParams params) {
 		super(
 				"Data Extract",
 				"Extracting Data",
-				"Data Extract: " + newMatrixName,
+				"Data Extract: " + params.getMatrixFriendlyName(),
 				"Extracting");
 
-		this.dataSetSource = dataSetSource;
-		this.newMatrixName = newMatrixName;
-		this.description = description;
-		this.markerPickCase = markerPickCase;
-		this.samplePickCase = samplePickCase;
-		this.markerPickVar = markerPickVar;
-		this.samplePickVar = samplePickVar;
-		this.markerCriteria = markerCriteria;
-		this.sampleCriteria = sampleCriteria;
-		this.markerCriteriaFile = markerCriteriaFile;
-		this.sampleCriteriaFile = sampleCriteriaFile;
+		this.params = params;
 		this.progressSource = new SuperProgressSource(fullExtractMatrixInfo, subProgressSourcesAndWeights);
 	}
 
@@ -113,30 +79,9 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixDataExtractorNetCDFDataSetDestination dataSetDestination
-					= new MatrixDataExtractorNetCDFDataSetDestination(
-					dataSetSource,
-					description,
-					newMatrixName,
-					markerCriteriaFile,
-					sampleCriteriaFile,
-					markerPickCase,
-					markerPickVar,
-					samplePickCase,
-					samplePickVar);
-			MatrixDataExtractor matrixOperation = new MatrixDataExtractor(
-					dataSetSource,
-					dataSetDestination,
-					markerPickCase,
-					samplePickCase,
-					markerPickVar,
-					samplePickVar,
-					markerCriteria,
-					sampleCriteria,
-					Integer.MIN_VALUE, // Filter pos, not used now
-					markerCriteriaFile,
-					sampleCriteriaFile);
-			dataSetDestination.setMatrixDataExtractor(matrixOperation); // HACK!
+			final DataSetDestination dataSetDestination
+					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixDataExtractorMetadataFactory.SINGLETON);
+			MatrixDataExtractor matrixOperation = new MatrixDataExtractor(params, dataSetDestination);
 
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_EXTRACTION, matrixOperation.getProgressSource(), null);
 			matrixOperation.processMatrix();

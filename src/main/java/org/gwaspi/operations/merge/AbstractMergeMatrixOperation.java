@@ -38,6 +38,7 @@ import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractMatrixCreatingOperation;
 import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
@@ -47,19 +48,20 @@ public abstract class AbstractMergeMatrixOperation extends AbstractMatrixCreatin
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 
+	protected final MergeMatrixOperationParams params;
 	protected final DataSetSource dataSetSource1;
 	protected final DataSetSource dataSetSource2;
 
 	protected AbstractMergeMatrixOperation(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2,
+			MergeMatrixOperationParams params,
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		super(dataSetDestination);
 
-		this.dataSetSource1 = dataSetSource1;
-		this.dataSetSource2 = dataSetSource2;
+		this.params = params;
+		this.dataSetSource1 = MatrixFactory.generateMatrixDataSetSource(params.getParent().getMatrixParent());
+		this.dataSetSource2 = MatrixFactory.generateMatrixDataSetSource(params.getSource2().getMatrixParent());
 	}
 
 	@Override

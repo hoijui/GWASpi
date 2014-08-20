@@ -18,29 +18,42 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.MatrixKey;
 
 public class InMemoryChromosomesInfosSource extends AbstractInMemoryListSource<ChromosomeInfo> implements ChromosomesInfosSource {
 
+	private static final Map<MatrixKey, ChromosomesInfosSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, ChromosomesInfosSource>();
+
 	private ChromosomesInfosSource originSource;
 
-	private InMemoryChromosomesInfosSource(MatrixKey origin, final List<ChromosomeInfo> items) {
-		super(origin, items);
+	private InMemoryChromosomesInfosSource(MatrixKey key, final List<ChromosomeInfo> items, List<Integer> originalIndices) {
+		super(key, items, originalIndices);
 	}
 
-	private InMemoryChromosomesInfosSource(MatrixKey origin, final List<ChromosomeInfo> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	public static ChromosomesInfosSource createForMatrix(MatrixKey key, final List<ChromosomeInfo> items) throws IOException {
+		return createForOperation(key, items, null);
 	}
 
-	public static ChromosomesInfosSource createForMatrix(MatrixKey origin, final List<ChromosomeInfo> items) throws IOException {
-		return new InMemoryChromosomesInfosSource(origin, items);
-	}
+	public static ChromosomesInfosSource createForOperation(MatrixKey key, final List<ChromosomeInfo> items, List<Integer> originalIndices) throws IOException {
 
-	public static ChromosomesInfosSource createForOperation(MatrixKey origin, final List<ChromosomeInfo> items, List<Integer> originalIndices) throws IOException {
-		return new InMemoryChromosomesInfosSource(origin, items, originalIndices);
+		ChromosomesInfosSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryChromosomesInfosSource(key, items, originalIndices);
+			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
+		}
+
+		return data;
 	}
 
 	// XXX same code as in the NetCDF counterpart!

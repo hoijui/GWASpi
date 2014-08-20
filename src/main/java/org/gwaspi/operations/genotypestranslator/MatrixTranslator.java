@@ -33,11 +33,13 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractMatrixCreatingOperation;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.MatrixOperationFactory;
@@ -70,17 +72,17 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 				MatrixTranslator.class, OPERATION_TYPE_INFO));
 	}
 
-	private final DataSetSource dataSetSource;
+	private final MatrixGenotypesTranslatorParams params;
 	private final boolean translateBySamples; // ... or markers
 
 	public MatrixTranslator(
-			DataSetSource dataSetSource,
+			MatrixGenotypesTranslatorParams params,
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		super(dataSetDestination);
 
-		this.dataSetSource = dataSetSource;
+		this.params = params;
 		this.translateBySamples = true;
 	}
 
@@ -105,15 +107,16 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		String problemDescription = null;
 
 		try {
-			MatrixMetadata parentMatrixMetadata = dataSetSource.getMatrixMetadata();
-			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
+			final MatrixMetadata sourceMetadata
+					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+			GenotypeEncoding genotypeEncoding = sourceMetadata.getGenotypeEncoding();
 			if (!genotypeEncoding.equals(GenotypeEncoding.AB0)
 					&& !genotypeEncoding.equals(GenotypeEncoding.O12)
 					&& !genotypeEncoding.equals(GenotypeEncoding.O1234))
 			{
 				problemDescription = Text.Trafo.warnNotAB12 +  " & " + Text.Trafo.warnNot1234;
 			} else if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
-					&& !parentMatrixMetadata.getHasDictionary()) {
+					&& !sourceMetadata.getHasDictionary()) {
 				problemDescription = Text.Trafo.warnNoDictionary;
 			}
 		} catch (IOException ex) {
@@ -292,6 +295,8 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 	}
 
 	private void translateToACGT() throws IOException {
+
+		final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(params.getParent());
 
 		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
 

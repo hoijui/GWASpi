@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.global.IndicesList;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.NetCdfUtils;
@@ -35,7 +34,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 	public AbstractInMemoryKeysSource(MatrixKey origin, List<KT> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 
-		this.indicesMap = mergeListsIntoMap(originalIndices, items);
+		this.indicesMap = mergeListsIntoMap(getOriginalIndices(), items);
 	}
 
 	private static <KT, VT> Map<KT, VT> mergeListsIntoMap(final List<KT> keys, final List<VT> values) {
@@ -62,11 +61,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 		final int fromClean = fromTo.width;
 		final int toClean = fromTo.height;
 
-		if (getOriginalIndices() == null) {
-			indices = new IndicesList(toClean - fromClean + 1, fromClean);
-		} else {
-			indices = getOriginalIndices().subList(fromClean, toClean);
-		}
+		indices = getOriginalIndices(fromClean, toClean - fromClean + 1);
 
 		return indices;
 	}

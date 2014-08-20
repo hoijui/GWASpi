@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.gwaspi.global.IndicesList;
 
 /**
  * TODO
@@ -62,8 +63,26 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 		return localValues;
 	}
 
-	protected List<Integer> getOriginalIndices() {
+	protected List<Integer> getOriginalIndicesRaw() {
 		return originalIndices;
+	}
+
+	protected List<Integer> getOriginalIndices() {
+
+		if (getOriginalIndicesRaw() == null) {
+			return new IndicesList(size());
+		} else {
+			return getOriginalIndicesRaw();
+		}
+	}
+
+	protected List<Integer> getOriginalIndices(final int fromClean, final int toClean) {
+
+		if (getOriginalIndicesRaw() == null) {
+			return new IndicesList(toClean - fromClean + 1, fromClean);
+		} else {
+			return getOriginalIndicesRaw().subList(fromClean, toClean);
+		}
 	}
 
 	@Override

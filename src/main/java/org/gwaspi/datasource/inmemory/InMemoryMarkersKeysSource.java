@@ -18,29 +18,62 @@
 package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerKeyFactory;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 
 public class InMemoryMarkersKeysSource extends AbstractInMemoryKeysSource<MarkerKey> implements MarkersKeysSource {
 
+	private static final Map<MatrixKey, MarkersKeysSource> KEY_TO_DATA
+			= new HashMap<MatrixKey, MarkersKeysSource>();
+	private static final Map<OperationKey, MarkersKeysSource> KEY2_TO_DATA
+			= new HashMap<OperationKey, MarkersKeysSource>();
+
 	private MarkersKeysSource originSource;
 
-	private InMemoryMarkersKeysSource(MatrixKey origin, List<MarkerKey> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	private InMemoryMarkersKeysSource(MatrixKey key, List<MarkerKey> items, List<Integer> originalIndices) {
+		super(key, items, originalIndices);
 
 		this.originSource = null;
 	}
 
-	public static MarkersKeysSource createForMatrix(MatrixKey origin, List<MarkerKey> items) throws IOException {
-		return new InMemoryMarkersKeysSource(origin, items, null);
+	public static MarkersKeysSource createForMatrix(MatrixKey key, List<MarkerKey> items) throws IOException {
+//		return createForOperation(key, items, null);
+
+		MarkersKeysSource data = KEY_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryMarkersKeysSource(key, items, null);
+			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
+		}
+
+		return data;
 	}
 
-	public static MarkersKeysSource createForOperation(MatrixKey origin, List<MarkerKey> items, List<Integer> originalIndices) throws IOException {
-		return new InMemoryMarkersKeysSource(origin, items, originalIndices);
+	public static MarkersKeysSource createForOperation(OperationKey key, List<MarkerKey> items, List<Integer> originalIndices) throws IOException {
+
+		MarkersKeysSource data = KEY2_TO_DATA.get(key);
+		if (data == null) {
+			if (items == null) {
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+			}
+			data = new InMemoryMarkersKeysSource(key.getParentMatrixKey(), items, originalIndices);
+			KEY2_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
+		}
+
+		return data;
 	}
 
 	@Override

@@ -39,7 +39,6 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
-import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -267,7 +266,7 @@ public class CombiTestMatrixOperation
 
 		LOG.debug("finished");
 
-		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		return dataSet.getOperationKey().getId();
 	}
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections) {

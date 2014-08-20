@@ -17,15 +17,16 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperNetCDFDataSetDestination;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperMetadataFactory;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -51,30 +52,18 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final DataSetSource parentDataSetSource;
-	private final String newMatrixName;
-	private final String description;
-	private final File markerFlipFile;
+	private final MatrixGenotypesFlipperParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_FlipStrandMatrix(
-			DataSetSource parentDataSetSource,
-			String newMatrixName,
-			String description,
-			File markerFlipFile)
-			throws IOException
-	{
+	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) throws IOException {
 		super(
 				"Flip Strand Matrix",
 				"Flipping Genotypes",
-				"Flip Strand Matrix ID: " + parentDataSetSource.getMatrixMetadata().getKey().getMatrixId(),
+				"Flip Strand Matrix ID: " + params.getParent().getMatrixParent().getMatrixId(),
 				"Extracting");
 
 
-		this.parentDataSetSource = parentDataSetSource;
-		this.newMatrixName = newMatrixName;
-		this.description = description;
-		this.markerFlipFile = markerFlipFile;
+		this.params = params;
 		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);
 	}
 
@@ -92,16 +81,9 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixGenotypesFlipperNetCDFDataSetDestination dataSetDestination
-					= new MatrixGenotypesFlipperNetCDFDataSetDestination(
-					parentDataSetSource,
-					newMatrixName,
-					description,
-					markerFlipFile);
-			MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(
-					parentDataSetSource,
-					dataSetDestination,
-					markerFlipFile);
+			final DataSetDestination dataSetDestination
+					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixGenotypesFlipperMetadataFactory.SINGLETON);
+			MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(params, dataSetDestination);
 
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
 			matrixOperation.processMatrix();
