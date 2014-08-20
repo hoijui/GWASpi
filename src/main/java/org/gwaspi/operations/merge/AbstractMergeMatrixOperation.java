@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations;
+package org.gwaspi.operations.merge;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -38,6 +38,8 @@ import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.AbstractMatrixCreatingOperation;
+import org.gwaspi.operations.OperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

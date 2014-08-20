@@ -15,35 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations;
+package org.gwaspi.operations.genotypestranslator;
 
-import java.io.File;
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 
-public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
+public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
 	private final String matrixFriendlyName;
-	private final File flipperFile;
 
-	public MatrixGenotypesFlipperNetCDFDataSetDestination(
+	public MatrixTranslatorNetCDFDataSetDestination(
 			DataSetSource dataSetSource,
 			String matrixDescription,
-			String matrixFriendlyName,
-			File flipperFile)
+			String matrixFriendlyName)
 	{
 		this.dataSetSource = dataSetSource;
 		this.matrixDescription = matrixDescription;
 		this.matrixFriendlyName = matrixFriendlyName;
-		this.flipperFile = flipperFile;
 	}
 
 	@Override
@@ -55,19 +50,33 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
 
-		StringBuilder description = new StringBuilder();
-		description.append(Text.Matrix.descriptionHeader1);
+		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
+		String translationMethodDesc;
+		if (gtEncoding.equals(GenotypeEncoding.AB0)
+				|| gtEncoding.equals(GenotypeEncoding.O12))
+		{
+			translationMethodDesc = "AB0 or 012 to ACGT0 using the parent's dictionnary";
+		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
+			translationMethodDesc = "O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T";
+		} else {
+			throw new IllegalStateException(
+					"Can not convert genotype-encoding: "
+					+ gtEncoding.toString() + " to "
+					+ GenotypeEncoding.ACGT0.toString());
+		}
+
+		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
+		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
 		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
-		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
+		description.append("\nTranslation method: ").append(translationMethodDesc);
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");
 			description.append(matrixDescription);
 			description.append("\n");
 		}
 		description.append("\nGenotype encoding: ");
-		description.append(sourceMatrixMetadata.getGenotypeEncoding());
+		description.append(GenotypeEncoding.ACGT0.toString());
 		description.append("\n");
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
@@ -77,14 +86,14 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 				matrixFriendlyName,
 				sourceMatrixMetadata.getTechnology(),
 				description.toString(),
-				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-				StrandType.fromString("FLP"), // FIXME this will fail at runtime
-				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
+				GenotypeEncoding.ACGT0, // New matrix genotype encoding
+				sourceMatrixMetadata.getStrand(),
+				sourceMatrixMetadata.getHasDictionary(),
 				numMarkers,
 				numSamples,
 				numChromosomes,
 				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
-				MatrixKey.NULL_ID); // orig/parent matrix 2 key
+				MatrixKey.NULL_ID); // Orig matrixId 2
 	}
 
 	@Override
@@ -94,10 +103,6 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 
 	@Override
 	protected GenotypeEncoding getGuessedGTCode() {
-		try {
-			return dataSetSource.getMatrixMetadata().getGenotypeEncoding();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		return GenotypeEncoding.ACGT0;
 	}
 }

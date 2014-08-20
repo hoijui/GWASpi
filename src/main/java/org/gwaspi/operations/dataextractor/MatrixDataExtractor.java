@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations;
+package org.gwaspi.operations.dataextractor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -48,6 +48,12 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.operations.AbstractMatrixCreatingOperation;
+import org.gwaspi.operations.DefaultOperationTypeInfo;
+import org.gwaspi.operations.MatrixOperationFactory;
+import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.OperationParams;
+import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 
