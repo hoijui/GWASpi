@@ -133,10 +133,10 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 						sampleInfo.getKey(),
 						alleles,
 						getGuessedGTCode());
-
-				// WRITING GENOTYPE DATA INTO netCDF FILE
-				samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(alleles.values()));
 			}
+
+			// WRITING GENOTYPE DATA INTO netCDF FILE
+			samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(alleles.values()));
 
 			sampleIndex++;
 		}
