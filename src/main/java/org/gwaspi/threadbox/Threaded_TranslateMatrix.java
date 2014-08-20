@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslatorNetCDFDataSetDestination;
@@ -90,7 +90,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			final DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
-			final AbstractNetCDFDataSetDestination dataSetDestination
+			final DataSetDestination dataSetDestination
 					= new MatrixTranslatorNetCDFDataSetDestination(
 					dataSetSource,
 					newMatrixName,

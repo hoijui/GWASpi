@@ -37,6 +37,7 @@ import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.merge.MergeMatrixOperationParams;
 
 public class MultiOperations {
 
@@ -252,47 +253,14 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doMergeMatrix(
-			final MatrixKey parentMatrixKey1,
-			final MatrixKey parentMatrixKey2,
-			final String newMatrixName,
-			final String description,
-			final boolean all)
-	{
-		CommonRunnable task = new Threaded_MergeMatrices(
-				parentMatrixKey1,
-				parentMatrixKey2,
-				newMatrixName,
-				description,
-				false,
-				!all);
+	public static void doMergeMatrix(final MergeMatrixOperationParams params) {
+
+		CommonRunnable task = new Threaded_MergeMatrices(params);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
-		lockProperties.getMatricesIds().add(parentMatrixKey1.getMatrixId());
-		lockProperties.getMatricesIds().add(parentMatrixKey2.getMatrixId());
-
-		queueTask(task, lockProperties);
-	}
-
-	public static void doMergeMatrixAddSamples(
-			final MatrixKey parentMatrixKey1,
-			final MatrixKey parentMatrixKey2,
-			final String newMatrixName,
-			final String description)
-	{
-		CommonRunnable task = new Threaded_MergeMatrices(
-				parentMatrixKey1,
-				parentMatrixKey2,
-				newMatrixName,
-				description,
-				true,
-				false);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
-		lockProperties.getMatricesIds().add(parentMatrixKey1.getMatrixId());
-		lockProperties.getMatricesIds().add(parentMatrixKey2.getMatrixId());
+		lockProperties.getStudyIds().add(params.getParent().getMatrixParent().getStudyKey().getId());
+		lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
+		lockProperties.getMatricesIds().add(params.getSource2().getMatrixParent().getMatrixId());
 
 		queueTask(task, lockProperties);
 	}

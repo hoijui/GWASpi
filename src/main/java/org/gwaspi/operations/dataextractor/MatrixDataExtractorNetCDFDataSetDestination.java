@@ -100,7 +100,9 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 
 		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix extraction from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId()).append(" - ").append(sourceMatrixMetadata.getFriendlyName());
+		description.append("\nThrough Matrix extraction from parent Matrix MX: ")
+				.append(sourceMatrixMetadata.getMatrixId()).append(" - ")
+				.append(sourceMatrixMetadata.getFriendlyName());
 
 		description.append("\nMarker Filter Variable: ");
 		String pickPrefix = "All Markers";
