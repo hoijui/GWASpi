@@ -133,12 +133,12 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
-			for (int i = 0; i < gtFilesToImport.length; i++) {
+			for (File gtFileToImport : gtFilesToImport) {
 				try {
 					Iterator<Map.Entry<MarkerKey, byte[]>> markerGtIt = iterator(
 							loadDescription.getStudyKey(),
 							sampleInfo.getKey(),
-							gtFilesToImport[i]);
+							gtFileToImport);
 					while (markerGtIt.hasNext()) {
 						Map.Entry<MarkerKey, byte[]> markerGt = markerGtIt.next();
 						alleles.put(markerGt.getKey(), markerGt.getValue());
