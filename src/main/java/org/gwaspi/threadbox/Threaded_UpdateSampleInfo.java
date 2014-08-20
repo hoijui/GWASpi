@@ -25,7 +25,8 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
-import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
+import org.gwaspi.netCDF.loader.NullDataSetDestination;
+import org.gwaspi.netCDF.loader.SampleInfoExtractorDataSetDestination;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IndeterminateProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -74,14 +75,15 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
-		InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
+		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
+				= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
 		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		SamplesParserManager.scanSampleInfo(
 				studyKey,
 				ImportFormat.GWASpi,
 				sampleInfoFile.getPath(),
-				inMemorySamplesReceiver);
-		Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
+				sampleInfoExtractor);
+		Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
 		SampleInfoList.insertSampleInfos(sampleInfos);
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 

@@ -24,7 +24,6 @@ import java.util.Map;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkerKey;
@@ -40,11 +39,6 @@ import org.gwaspi.model.SampleKey;
 public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
 	public InMemorySamplesReceiver() {
-	}
-
-	@Override
-	public DataSet getDataSet() {
-		return super.getDataSet();
 	}
 
 //	@Override
