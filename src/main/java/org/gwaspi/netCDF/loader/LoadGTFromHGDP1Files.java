@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -80,13 +82,14 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
+		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
 
 		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
+		for (SampleInfo sampleInfo : sampleInfos) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 			try {
 				loadIndividualFiles(

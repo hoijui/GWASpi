@@ -86,8 +86,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	{
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		NetcdfFile gwaspiStorageFile = NetcdfFile.open(loadDescription.getGtDirPath());
@@ -103,7 +103,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 		}
 
-		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
+		for (SampleInfo sampleInfo : sampleInfos) {
 			if (!samplesKeysSource.contains(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;

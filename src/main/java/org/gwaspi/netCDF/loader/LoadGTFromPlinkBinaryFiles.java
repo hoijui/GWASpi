@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,8 +80,8 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		// HACK
-		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
+		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
+		final Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
 
 		Map<MarkerKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
 				loadDescription.getAnnotationFilePath(),
@@ -91,7 +92,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
 
-		int sampleNb = dataSet.getSampleInfos().size();
+		int sampleNb = sampleInfos.size();
 //		int markerNb = bimSamples.size();
 		int bytesPerSNP;
 		if (sampleNb % 4 == 0) { // Nb OF BYTES IN EACH ROW
@@ -101,7 +102,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		}
 
 		Iterator<String[]> itMarkerSet = bimSamples.values().iterator();
-		Iterator<SampleInfo> itSampleSet = dataSet.getSampleInfos().iterator();
+		Iterator<SampleInfo> itSampleSet = sampleInfos.iterator();
 
 		// SKIP HEADER
 		bedIS.readByte();
@@ -133,7 +134,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 					// READ ALL SAMPLE GTs FOR CURRENT SNP
 					int check = bedIS.read(rowBytes, 0, bytesPerSNP);
 					int bitsPerRow = 1;
-					itSampleSet = dataSet.getSampleInfos().iterator();
+					itSampleSet = sampleInfos.iterator();
 					for (int j = 0; j < bytesPerSNP; j++) { // ITERATE THROUGH ROWS (READING BYTES PER ROW)
 						byteData = rowBytes[j];
 						for (int i = 0; i < 8; i = i + 2) { // FOR EACH BYTE IN ROW, EAT 2 BITS AT A TIME
