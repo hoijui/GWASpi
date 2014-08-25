@@ -36,14 +36,12 @@ import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
 
 	public AbstractMergeMarkersMatrixOperation(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2,
+			MergeMatrixOperationParams params,
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		super(
-				dataSetSource1,
-				dataSetSource2,
+				params,
 				dataSetDestination);
 	}
 

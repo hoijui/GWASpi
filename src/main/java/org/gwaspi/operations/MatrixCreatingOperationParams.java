@@ -18,13 +18,10 @@
 package org.gwaspi.operations;
 
 import org.gwaspi.model.DataSetKey;
-//import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public interface MatrixCreatingOperationParams {
 
 	DataSetKey getParent();
-
-//	DataSetDestination getDataSetDestination();
 
 	String getMatrixDescription();
 

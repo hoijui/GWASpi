@@ -15,20 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations;
+package org.gwaspi.operations.genotypestranslator;
 
-import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.model.DataSet;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.operations.AbstractMatrixCreatingOperationParams;
 
-public interface MatrixMetadataFactory<DST extends DataSet, PT extends MatrixCreatingOperationParams> {
+public class MatrixGenotypesTranslatorParams extends AbstractMatrixCreatingOperationParams {
 
-//	OperationTypeInfo getTypeInfo();
-
-	MatrixMetadata generateMetadata(DST dataSet, PT params) throws IOException;
-
-	String getStrandFlag();
-
-	GenotypeEncoding getGuessedGTCode(PT params);
+	public MatrixGenotypesTranslatorParams(
+			DataSetKey parent,
+			String matrixDescription,
+			String matrixFriendlyName)
+	{
+		super(parent, matrixDescription, matrixFriendlyName);
+	}
 }

@@ -32,8 +32,9 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -82,6 +83,8 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
@@ -90,6 +93,8 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		for (File gtFileToImport : gtFilesToImport) {
 			loadIndividualFiles(
 					loadDescription,
+					sampleInfos,
+					markerInfos,
 					samplesReceiver,
 					gtFileToImport);
 		}
@@ -100,6 +105,8 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver,
 			File file)
 //			NetcdfFileWriteable ncfile,
@@ -108,9 +115,8 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 //			GenotypeEncoding guessedGTCode)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
-		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
+		final List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.keySet());
+		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
 		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);

@@ -20,31 +20,31 @@ package org.gwaspi.netCDF.loader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 
 /**
  * Forwards all method calls to the internally stored DataSetDestination,
- * and keeps a log of the stored samples.
+ * and keeps a log of the stored markers.
  */
-public class SampleInfoExtractorDataSetDestination extends ForwardingDataSetDestination {
+public class MarkerInfoExtractorDataSetDestination extends ForwardingDataSetDestination {
 
-	private final Map<SampleKey, SampleInfo> sampleInfos;
+	private final Map<MarkerKey, MarkerMetadata> markerInfos;
 
-	public SampleInfoExtractorDataSetDestination(final DataSetDestination internalDataSetDestination) {
+	public MarkerInfoExtractorDataSetDestination(final DataSetDestination internalDataSetDestination) {
 		super(internalDataSetDestination);
 
-		this.sampleInfos = new LinkedHashMap<SampleKey, SampleInfo>();
+		this.markerInfos = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 	}
 
-	public Map<SampleKey, SampleInfo> getSampleInfos() {
-		return sampleInfos;
+	public Map<MarkerKey, MarkerMetadata> getMarkerInfos() {
+		return markerInfos;
 	}
 
 	@Override
-	public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
-		getInternalDataSetDestination().addSampleInfo(sampleInfo);
+	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
+		getInternalDataSetDestination().addMarkerMetadata(markerMetadata);
 
-		sampleInfos.put(SampleKey.valueOf(sampleInfo), sampleInfo);
+		markerInfos.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
 	}
 }

@@ -17,53 +17,41 @@
 
 package org.gwaspi.operations.genotypesflipper;
 
-import java.io.File;
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.DataSet;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
-public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
+public class MatrixGenotypesFlipperMetadataFactory
+		implements MatrixMetadataFactory<DataSet, MatrixGenotypesFlipperParams> {
 
-	private final DataSetSource dataSetSource;
-	private final String matrixDescription;
-	private final String matrixFriendlyName;
-	private final File flipperFile;
-
-	public MatrixGenotypesFlipperNetCDFDataSetDestination(
-			DataSetSource dataSetSource,
-			String matrixDescription,
-			String matrixFriendlyName,
-			File flipperFile)
-	{
-		this.dataSetSource = dataSetSource;
-		this.matrixDescription = matrixDescription;
-		this.matrixFriendlyName = matrixFriendlyName;
-		this.flipperFile = flipperFile;
-	}
+	public static final MatrixGenotypesFlipperMetadataFactory SINGLETON
+			= new MatrixGenotypesFlipperMetadataFactory();
 
 	@Override
-	protected MatrixMetadata createMatrixMetadata() throws IOException {
+	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixGenotypesFlipperParams params) throws IOException {
 
-		final int numMarkers = getDataSet().getMarkerMetadatas().size();
-		final int numSamples = getDataSet().getSampleInfos().size();
-		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+		final int numMarkers = dataSet.getMarkerMetadatas().size();
+		final int numSamples = dataSet.getSampleInfos().size();
+		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
+		final MatrixMetadata sourceMatrixMetadata
+				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
 
 		StringBuilder description = new StringBuilder();
 		description.append(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
 		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
-		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
-		if (!matrixDescription.isEmpty()) {
+		description.append("\nUsed list of markers to be flipped: ").append(params.getFlipperFile().getPath());
+		if (!params.getMatrixDescription().isEmpty()) {
 			description.append("\n\nDescription: ");
-			description.append(matrixDescription);
+			description.append(params.getMatrixDescription());
 			description.append("\n");
 		}
 		description.append("\nGenotype encoding: ");
@@ -74,7 +62,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),
-				matrixFriendlyName,
+				params.getMatrixFriendlyName(),
 				sourceMatrixMetadata.getTechnology(),
 				description.toString(),
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
@@ -88,14 +76,16 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	}
 
 	@Override
-	protected String getStrandFlag() {
+	public String getStrandFlag() {
 		return null;
 	}
 
 	@Override
-	protected GenotypeEncoding getGuessedGTCode() {
+	public GenotypeEncoding getGuessedGTCode(MatrixGenotypesFlipperParams params) {
 		try {
-			return dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			final MatrixMetadata sourceMatrixMetadata
+					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+			return sourceMatrixMetadata.getGenotypeEncoding();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

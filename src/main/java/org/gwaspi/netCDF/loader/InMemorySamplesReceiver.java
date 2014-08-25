@@ -38,7 +38,11 @@ import org.gwaspi.model.SampleKey;
  */
 public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
+	private MatrixKey resultMatrixKey;
+
 	public InMemorySamplesReceiver() {
+
+		this.resultMatrixKey = null;
 	}
 
 //	@Override
@@ -92,6 +96,7 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {
+		super.finishedLoadingAlleles();
 
 		if (loadAllelesPerSample) {
 //			markerGenotypes = ...; // TODO read from sampleGenotypes and store here
@@ -120,11 +125,11 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 		final List<MarkerMetadata> markerMetadatas = new ArrayList<MarkerMetadata>(markerKeysAndMetadatas.values());
 
 		final MatrixMetadata matrixMetadata = getDataSet().getMatrixMetadata();
-		final MatrixKey matrixKey = MatrixKey.valueOf(matrixMetadata);
+		resultMatrixKey = MatrixKey.valueOf(matrixMetadata);
 
 		// register/store in the in-memory storage
 		new MatrixInMemoryDataSetSource(
-				matrixKey,
+				resultMatrixKey,
 				matrixMetadata,
 				markerGenotypes,
 				sampleGenotypes,
@@ -134,5 +139,10 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 				markerMetadatas,
 				sampleKeys,
 				sampleInfos);
+	}
+
+	@Override
+	public MatrixKey getResultMatrixKey() {
+		return resultMatrixKey;
 	}
 }

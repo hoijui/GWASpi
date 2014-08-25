@@ -33,9 +33,12 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractMatrixCreatingOperation;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.MatrixOperationFactory;
@@ -68,8 +71,7 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 				MatrixGenotypesFlipper.class, OPERATION_TYPE_INFO));
 	}
 
-	private final DataSetSource dataSetSource;
-	private final File flipperFile;
+	private final MatrixGenotypesFlipperParams params;
 	private final Set<MarkerKey> markersToFlip;
 
 	/**
@@ -77,16 +79,14 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 	 * by passing a variable and the criteria to filter items by.
 	 */
 	public MatrixGenotypesFlipper(
-			DataSetSource dataSetSource,
-			DataSetDestination dataSetDestination,
-			File flipperFile)
+			MatrixGenotypesFlipperParams params,
+			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		super(dataSetDestination);
 
-		this.dataSetSource = dataSetSource;
-		this.flipperFile = flipperFile;
-		this.markersToFlip = loadMarkerKeys(this.flipperFile);
+		this.params = params;
+		this.markersToFlip = loadMarkerKeys(params.getFlipperFile());
 	}
 
 	@Override
@@ -137,7 +137,9 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 		String problemDescription = null;
 
 		try {
-			GenotypeEncoding genotypeEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			final MatrixMetadata sourceMetadata
+					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+			final GenotypeEncoding genotypeEncoding = sourceMetadata.getGenotypeEncoding();
 			if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
 					&& !genotypeEncoding.equals(GenotypeEncoding.ACGT0))
 			{
@@ -154,6 +156,8 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 	public int processMatrix() throws IOException {
 
 		int resultMatrixId = MatrixKey.NULL_ID;
+
+		final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(params.getParent());
 
 		final DataSetDestination dataSetDestination = getDataSetDestination();
 

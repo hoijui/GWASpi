@@ -23,6 +23,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 
@@ -135,5 +136,10 @@ public class ForwardingDataSetDestination implements DataSetDestination {
 	@Override
 	public void done() throws IOException {
 		internalDataSetDestination.done();
+	}
+
+	@Override
+	public MatrixKey getResultMatrixKey() {
+		return internalDataSetDestination.getResultMatrixKey();
 	}
 }

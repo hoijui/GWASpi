@@ -18,30 +18,21 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
+import org.gwaspi.operations.MatrixCreatingOperationParams;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
-/**
- * Used when loading a data-set from an external source
- * directly into the NetCDF storage format.
- * For example, from a set of PLink files.
- */
-public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private String startTime;
+public class LoadingMatrixMetadataFactory
+		implements MatrixMetadataFactory<DataSet, MatrixCreatingOperationParams>
+{
 	private final GenotypesLoadDescription loadDescription;
 	private AbstractLoadGTFromFiles gtLoader; // HACK
 
-	public LoadingNetCDFDataSetDestination(
-			GenotypesLoadDescription loadDescription)
-	{
+	public LoadingMatrixMetadataFactory(GenotypesLoadDescription loadDescription) {
+
 		this.loadDescription = loadDescription;
 		this.gtLoader = null;
 	}
@@ -51,18 +42,11 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	public void init() throws IOException {
-		super.init();
+	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixCreatingOperationParams params) throws IOException {
 
-		startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-	}
-
-	@Override
-	protected MatrixMetadata createMatrixMetadata() throws IOException {
-
-		final int numMarkers = getDataSet().getMarkerMetadatas().size();
-		final int numSamples = getDataSet().getSampleInfos().size();
-		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+		final int numMarkers = dataSet.getMarkerMetadatas().size();
+		final int numSamples = dataSet.getSampleInfos().size();
+		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
 		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -107,7 +91,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	protected String getStrandFlag() {
+	public String getStrandFlag() {
 
 		String strandFlag;
 		if (gtLoader.getMetadataLoader().isHasStrandInfo()) { // NOTE ... and here!
@@ -122,48 +106,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	public void finishedLoadingMarkerMetadatas() throws IOException {
-		super.finishedLoadingMarkerMetadatas();
-
-		extractChromosomeInfos();
-	}
-
-	@Override
-	public void finishedLoadingAlleles() throws IOException {
-		super.finishedLoadingAlleles();
-
-		logAsWhole(
-				startTime,
-				loadDescription.getStudyKey().getId(),
-				loadDescription.getGtDirPath(),
-				loadDescription.getFormat(),
-				loadDescription.getFriendlyName(),
-				loadDescription.getDescription());
-	}
-
-	@Override
-	protected GenotypeEncoding getGuessedGTCode() {
+	public GenotypeEncoding getGuessedGTCode(MatrixCreatingOperationParams params) {
 		return gtLoader.getGuessedGTCode();
-	}
-
-	private static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {
-		// LOG OPERATION IN STUDY HISTORY
-		StringBuilder operation = new StringBuilder("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: ").append(startTime).append("\n");
-		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
-		operation.append("Data stored in matrix ").append(matrixName).append(".\n");
-		operation.append("Description: ").append(description).append(".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-	}
-
-	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
-
-		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
-
-		for (SampleInfo sampleInfo : sampleInfos) {
-			sampleKeys.add(sampleInfo.getKey());
-		}
-
-		return sampleKeys;
 	}
 }

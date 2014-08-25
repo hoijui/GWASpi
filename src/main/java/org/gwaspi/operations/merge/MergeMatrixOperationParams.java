@@ -27,6 +27,8 @@ public class MergeMatrixOperationParams extends AbstractMatrixCreatingOperationP
 	private final DataSetKey source2;
 	private final String humanReadableMethodName;
 	private final String methodDescription;
+	private final boolean mergeSamples;
+	private final boolean mergeMarkers;
 
 	public MergeMatrixOperationParams(
 			DataSetKey source1,
@@ -34,13 +36,17 @@ public class MergeMatrixOperationParams extends AbstractMatrixCreatingOperationP
 			String matrixDescription,
 			String matrixFriendlyName,
 			String humanReadableMethodName,
-			String methodDescription)
+			String methodDescription,
+			boolean mergeSamples,
+			boolean mergeMarkers)
 	{
 		super(source1, matrixDescription, matrixFriendlyName);
 
 		this.source2 = source2;
 		this.humanReadableMethodName = humanReadableMethodName;
 		this.methodDescription = methodDescription;
+		this.mergeSamples = mergeSamples;
+		this.mergeMarkers = mergeMarkers;
 	}
 
 	public static MergeMatrixOperationParams create(
@@ -48,16 +54,16 @@ public class MergeMatrixOperationParams extends AbstractMatrixCreatingOperationP
 			final DataSetKey source2,
 			final String newMatrixName,
 			final String description,
-			final boolean samples,
-			final boolean markers)
+			final boolean mergeSamples,
+			final boolean mergeMarkers)
 			throws IOException
 	{
 		final String humanReadableMethodName;
 		final String methodDescription;
-		if (samples) {
+		if (mergeSamples && !mergeMarkers) {
 			humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
 			methodDescription = Text.Trafo.mergeMethodSampleJoin;
-		} else if (markers) {
+		} else if (mergeMarkers && !mergeSamples) {
 			humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
 			methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 		} else {
@@ -71,7 +77,9 @@ public class MergeMatrixOperationParams extends AbstractMatrixCreatingOperationP
 				newMatrixName,
 				description,
 				humanReadableMethodName,
-				methodDescription);
+				methodDescription,
+				mergeSamples,
+				mergeMarkers);
 	}
 
 	public DataSetKey getSource2() {
@@ -84,5 +92,17 @@ public class MergeMatrixOperationParams extends AbstractMatrixCreatingOperationP
 
 	public String getMethodDescription() {
 		return methodDescription;
+	}
+
+	public boolean isMergeSamples() {
+		return (mergeSamples && !mergeMarkers);
+	}
+
+	public boolean isMergeMarkers() {
+		return (mergeMarkers && !mergeSamples);
+	}
+
+	public boolean isMergeAll() {
+		return (mergeSamples == mergeMarkers);
 	}
 }

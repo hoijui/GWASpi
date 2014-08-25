@@ -32,6 +32,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -106,23 +107,30 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
+	public void processData(
+			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			DataSetDestination dataReceiver)
+			throws Exception
+	{
+		final MarkerInfoExtractorDataSetDestination markerInfoExtractor
+				= new MarkerInfoExtractorDataSetDestination(dataReceiver);
+		loadMarkerMetadata(loadDescription, markerInfoExtractor);
 
-		loadMarkerMetadata(loadDescription, samplesReceiver);
-
-		samplesReceiver.startLoadingAlleles(isLoadAllelePerSample());
-		loadGenotypes(loadDescription, samplesReceiver);
-		samplesReceiver.finishedLoadingAlleles();
+		dataReceiver.startLoadingAlleles(isLoadAllelePerSample());
+		loadGenotypes(loadDescription, sampleInfos, markerInfoExtractor.getMarkerInfos(), dataReceiver);
+		dataReceiver.finishedLoadingAlleles();
 	}
 
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
-		final DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
-		final Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
-		final Set<MarkerKey> markerKeys = dataSet.getMarkerMetadatas().keySet();
+		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
+		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
 		File gtFile = new File(loadDescription.getGtDirPath());
 		File[] gtFilesToImport;
@@ -132,7 +140,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			gtFilesToImport = new File[] {new File(loadDescription.getGtDirPath())};
 		}
 		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : sampleInfos) {
+		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
 

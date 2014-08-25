@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
+import org.gwaspi.operations.MatrixCreatingNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
 public class LoadManager {
 
@@ -44,21 +48,25 @@ public class LoadManager {
 
 	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
-			DataSetDestination samplesReceiver)
+			Map<SampleKey, SampleInfo> sampleInfos,
+			DataSetDestination dataReceiver)
 			throws Exception
 	{
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
 
-		if (samplesReceiver instanceof LoadingNetCDFDataSetDestination
+		if (dataReceiver instanceof MatrixCreatingNetCDFDataSetDestination
 				&& genotypesLoader instanceof AbstractLoadGTFromFiles)
 		{
-			((LoadingNetCDFDataSetDestination) samplesReceiver).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader); // HACK
+			final MatrixMetadataFactory metadataFactory = ((MatrixCreatingNetCDFDataSetDestination) dataReceiver).getMetadataFactory();
+			if (metadataFactory instanceof LoadingMatrixMetadataFactory) {
+				((LoadingMatrixMetadataFactory) metadataFactory).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader); // HACK
+			}
 		}
 
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			genotypesLoader.processData(loadDescription, samplesReceiver);
+			genotypesLoader.processData(loadDescription, sampleInfos, dataReceiver);
 		}
 	}
 }

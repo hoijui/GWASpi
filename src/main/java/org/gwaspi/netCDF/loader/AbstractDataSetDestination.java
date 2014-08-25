@@ -54,6 +54,9 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 		this.addedMarkerInfos = 0;
 	}
 
+	/**
+	 * @deprecated get rid of this and the whole dataSet, if possible, to reduce memory footprint
+	 */
 	protected DataSet getDataSet() {
 		return dataSet;
 	}

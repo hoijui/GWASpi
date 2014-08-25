@@ -78,6 +78,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		this.hyperSlabRows = -1;
 	}
 
+	@Override
 	public MatrixKey getResultMatrixKey() {
 		return resultMatrixKey;
 	}

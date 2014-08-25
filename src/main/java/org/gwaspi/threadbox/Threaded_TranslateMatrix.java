@@ -20,12 +20,12 @@ package org.gwaspi.threadbox;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
-import org.gwaspi.operations.genotypestranslator.MatrixTranslatorNetCDFDataSetDestination;
+import org.gwaspi.operations.genotypestranslator.MatrixTranslatorMetadataFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -52,25 +52,18 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final MatrixKey parentMatrixKey;
-	private final String newMatrixName;
-	private final String description;
+	private final MatrixGenotypesTranslatorParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_TranslateMatrix(
-			MatrixKey parentMatrixKey,
-			String newMatrixName,
-			String description)
+	public Threaded_TranslateMatrix(MatrixGenotypesTranslatorParams params)
 	{
 		super(
 				"Translate Matrix",
 				"Translating Matrix",
-				"Translate Matrix: " + newMatrixName,
+				"Translate Matrix: " + params.getParent().getMatrixParent().toRawIdString(),
 				"Translating Matrix");
 
-		this.parentMatrixKey = parentMatrixKey;
-		this.newMatrixName = newMatrixName;
-		this.description = description;
+		this.params = params;
 		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);
 	}
 
@@ -89,15 +82,10 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+
 			final DataSetDestination dataSetDestination
-					= new MatrixTranslatorNetCDFDataSetDestination(
-					dataSetSource,
-					newMatrixName,
-					description);
-			final MatrixTranslator matrixOperation = new MatrixTranslator(
-					dataSetSource,
-					dataSetDestination);
+					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
+			MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
 			progressSource.setNewStatus(ProcessStatus.RUNNING);
 
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);

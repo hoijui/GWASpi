@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,45 +22,13 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.operations.MatrixMetadataFactory;
 
 public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet, MergeMatrixOperationParams> {
 
-	private final DataSetSource dataSetSource1;
-	private final DataSetSource dataSetSource2;
-	private final String matrixDescription;
-	private final String matrixFriendlyName;
-	private final String humanReadableMethodName;
-	private final String methodDescription;
-
-	public MergeMatrixMetadataFactory(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2,
-			String matrixDescription,
-			String matrixFriendlyName,
-			String humanReadableMethodName,
-			String methodDescription)
-	{
-		this.dataSetSource1 = dataSetSource1;
-		this.dataSetSource2 = dataSetSource2;
-		this.matrixDescription = matrixDescription;
-		this.matrixFriendlyName = matrixFriendlyName;
-		this.humanReadableMethodName = humanReadableMethodName;
-		this.methodDescription = methodDescription;
-//
-//		if () {
-//			this.humanReadableMethodName = Text.Trafo.mergeAll;
-//			this.methodDescription = Text.Trafo.mergeMethodMergeAll;
-//		} else if () {
-//			this.humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
-//			this.methodDescription = Text.Trafo.mergeMethodMarkerJoin;
-//		} else {
-//			this.humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
-//			this.methodDescription = Text.Trafo.mergeMethodSampleJoin;
-//		}
-	}
+	public static final MergeMatrixMetadataFactory SINGLETON = new MergeMatrixMetadataFactory();
 
 	@Override
 	public MatrixMetadata generateMetadata(DataSet dataSet, MergeMatrixOperationParams params) throws IOException {
@@ -69,18 +37,20 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 		final int numSamples = dataSet.getSampleInfos().size();
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		final MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
-		final MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
+		final MatrixMetadata rdMatrix1Metadata = MatricesList.getMatrixMetadataById(
+				params.getParent().getMatrixParent());
+		final MatrixMetadata rdMatrix2Metadata = MatricesList.getMatrixMetadataById(
+				params.getSource2().getMatrixParent());
 
 		final boolean hasDictionary = (rdMatrix1Metadata.getHasDictionary() && rdMatrix2Metadata.getHasDictionary());
-		final GenotypeEncoding gtEncoding = getGuessedGTCode();
+		final GenotypeEncoding gtEncoding = getGuessedGTCode(params);
 		ImportFormat technology = ImportFormat.UNKNOWN;
 		if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
 			technology = rdMatrix1Metadata.getTechnology();
 		}
 
 		StringBuilder description = new StringBuilder();
-		description.append(matrixDescription);
+		description.append(params.getMatrixDescription());
 		description.append("\n\n");
 		description.append(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -90,24 +60,24 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 		description.append("\n");
 		description.append(Text.Trafo.mergedFrom);
 		description.append("\nMX-");
-		description.append(rdMatrix1Metadata.getMatrixId());
+		description.append(params.getParent().getMatrixParent().getMatrixId());
 		description.append(" - ");
 		description.append(rdMatrix1Metadata.getFriendlyName());
 		description.append("\nMX-");
-		description.append(rdMatrix2Metadata.getMatrixId());
+		description.append(params.getSource2().getMatrixParent().getMatrixId());
 		description.append(" - ");
 		description.append(rdMatrix2Metadata.getFriendlyName());
 		description.append("\n\n");
 		description.append("Merge Method - ");
-		description.append(humanReadableMethodName);
+		description.append(params.getHumanReadableMethodName());
 		description.append(":\n");
-		description.append(methodDescription);
+		description.append(params.getMethodDescription());
 		description.append("\nGenotype encoding: ");
 		description.append(gtEncoding.toString());
 
 		return new MatrixMetadata(
-				rdMatrix1Metadata.getStudyKey(),
-				matrixFriendlyName,
+				params.getParent().getMatrixParent().getStudyKey(),
+				params.getMatrixFriendlyName(),
 				technology,
 				description.toString(),
 				gtEncoding,
@@ -116,8 +86,8 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 				numMarkers,
 				numSamples,
 				numChromosomes,
-				rdMatrix1Metadata.getKey().getMatrixId(), // Parent matrix 1 key
-				rdMatrix2Metadata.getKey().getMatrixId()); // Parent matrix 2 key
+				params.getParent().getMatrixParent().getMatrixId(), // Parent matrix 1 key
+				params.getSource2().getMatrixParent().getMatrixId()); // Parent matrix 2 key
 	}
 
 	@Override
@@ -126,11 +96,13 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 	}
 
 	@Override
-	public GenotypeEncoding getGuessedGTCode() {
+	public GenotypeEncoding getGuessedGTCode(MergeMatrixOperationParams params) {
 
 		try {
-			MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
-			MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
+			final MatrixMetadata rdMatrix1Metadata = MatricesList.getMatrixMetadataById(
+					params.getParent().getMatrixParent());
+			final MatrixMetadata rdMatrix2Metadata = MatricesList.getMatrixMetadataById(
+					params.getSource2().getMatrixParent());
 
 			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
 			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {

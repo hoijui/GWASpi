@@ -17,76 +17,39 @@
 
 package org.gwaspi.operations.dataextractor;
 
-import java.io.File;
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
-import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.DataSet;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.operations.MatrixMetadataFactory;
 
-public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final DataSetSource dataSetSource;
-	private final String matrixDescription;
-	private final String matrixFriendlyName;
-	private final File markerCriteriaFile;
-	private final File sampleCriteriaFile;
-	private final SetMarkerPickCase markerPickCase;
-	private final String markerPickerVar;
-	private final SetSamplePickCase samplePickCase;
-	private final String samplePickerVar;
-
-	/**
-	 * HACK This field should not exist.
-	 */
-	private MatrixDataExtractor matrixDataExtractor = null;
-
-	public MatrixDataExtractorNetCDFDataSetDestination(
-			DataSetSource dataSetSource,
-			String matrixDescription,
-			String matrixFriendlyName,
-			File markerCriteriaFile,
-			File sampleCriteriaFile,
-			SetMarkerPickCase markerPickCase,
-			String markerPickerVar,
-			SetSamplePickCase samplePickCase,
-			String samplePickerVar)
-	{
-		this.dataSetSource = dataSetSource;
-		this.matrixDescription = matrixDescription;
-		this.matrixFriendlyName = matrixFriendlyName;
-		this.markerCriteriaFile = markerCriteriaFile;
-		this.sampleCriteriaFile = sampleCriteriaFile;
-		this.markerPickCase = markerPickCase;
-		this.markerPickerVar = markerPickerVar;
-		this.samplePickCase = samplePickCase;
-		this.samplePickerVar = samplePickerVar;
-	}
+public class MatrixDataExtractorMetadataFactory
+		implements MatrixMetadataFactory<DataSet, MatrixDataExtractorParams>
+{
+	public static final MatrixDataExtractorMetadataFactory SINGLETON
+			= new MatrixDataExtractorMetadataFactory();
 
 	@Override
-	protected MatrixMetadata createMatrixMetadata() throws IOException {
+	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixDataExtractorParams params) throws IOException {
 
-//		wrSampleSetMap.size();
-//		wrMarkerKeys.size()
-//		rdChromosomeInfo.size();
-		final int numMarkers = getDataSet().getMarkerMetadatas().size();
-		final int numSamples = getDataSet().getSampleInfos().size();
-		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+		final int numMarkers = dataSet.getMarkerMetadatas().size();
+		final int numSamples = dataSet.getSampleInfos().size();
+		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
+		final MatrixMetadata sourceMatrixMetadata
+				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
 
 		StringBuilder markerPickerCriteria = new StringBuilder();
-		for (Object value : matrixDataExtractor.getFullMarkerCriteria()) {
+		for (Object value : params.getFullMarkerCriteria()) {
 			markerPickerCriteria.append(value.toString());
 			markerPickerCriteria.append(",");
 		}
 
 		StringBuilder samplePickerCriteria = new StringBuilder();
-		for (Object value : matrixDataExtractor.getFullSampleCriteria()) {
+		for (Object value : params.getFullSampleCriteria()) {
 			samplePickerCriteria.append(value.toString());
 			samplePickerCriteria.append(",");
 		}
@@ -106,15 +69,15 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 
 		description.append("\nMarker Filter Variable: ");
 		String pickPrefix = "All Markers";
-		if (markerPickCase.toString().contains("EXCLUDE")) {
+		if (params.getMarkerPickCase().toString().contains("EXCLUDE")) {
 			pickPrefix = "Exclude by ";
-		} else if (markerPickCase.toString().contains("INCLUDE")) {
+		} else if (params.getMarkerPickCase().toString().contains("INCLUDE")) {
 			pickPrefix = "Include by ";
 		}
-		description.append(pickPrefix).append(markerPickerVar.replaceAll("_", " ").toUpperCase());
-		if (markerCriteriaFile.isFile()) {
+		description.append(pickPrefix).append(params.getMarkerPickerVar().replaceAll("_", " ").toUpperCase());
+		if (params.getMarkerCriteriaFile().isFile()) {
 			description.append("\nMarker Criteria File: ");
-			description.append(markerCriteriaFile.getPath());
+			description.append(params.getMarkerCriteriaFile().getPath());
 		} else if (!pickPrefix.equals("All Markers")) {
 			description.append("\nMarker Criteria: ");
 			description.append(markerPickerCriteria.deleteCharAt(markerPickerCriteria.length() - 1));
@@ -122,23 +85,23 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 
 		description.append("\nSample Filter Variable: ");
 		pickPrefix = "All Samples";
-		if (samplePickCase.toString().contains("EXCLUDE")) {
+		if (params.getSamplePickCase().toString().contains("EXCLUDE")) {
 			pickPrefix = "Exclude by ";
-		} else if (samplePickCase.toString().contains("INCLUDE")) {
+		} else if (params.getSamplePickCase().toString().contains("INCLUDE")) {
 			pickPrefix = "Include by ";
 		}
-		description.append(pickPrefix).append(samplePickerVar.replaceAll("_", " ").toUpperCase());
-		if (sampleCriteriaFile.isFile()) {
+		description.append(pickPrefix).append(params.getSamplePickerVar().replaceAll("_", " ").toUpperCase());
+		if (params.getSampleCriteriaFile().isFile()) {
 			description.append("\nSample Criteria File: ");
-			description.append(sampleCriteriaFile.getPath());
+			description.append(params.getSampleCriteriaFile().getPath());
 		} else if (!pickPrefix.equals("All Samples")) {
 			description.append("\nSample Criteria: ");
 			description.append(samplePickerCriteria.deleteCharAt(samplePickerCriteria.length() - 1));
 		}
 
-		if (!matrixDescription.isEmpty()) {
+		if (!params.getMatrixDescription().isEmpty()) {
 			description.append("\n\nDescription: ");
-			description.append(matrixDescription);
+			description.append(params.getMatrixDescription());
 			description.append("\n");
 		}
 //		description.append("\nGenotype encoding: ");
@@ -149,7 +112,7 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),
-				matrixFriendlyName,
+				params.getMatrixFriendlyName(),
 				sourceMatrixMetadata.getTechnology(),
 				description.toString(),
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
@@ -163,23 +126,18 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	}
 
 	@Override
-	protected String getStrandFlag() {
+	public String getStrandFlag() {
 		return null;
 	}
 
 	@Override
-	protected GenotypeEncoding getGuessedGTCode() {
+	public GenotypeEncoding getGuessedGTCode(MatrixDataExtractorParams params) {
 		try {
-			return dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			final MatrixMetadata sourceMatrixMetadata
+					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+			return sourceMatrixMetadata.getGenotypeEncoding();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	/**
-	 * HACK This method should not exist.
-	 */
-	public void setMatrixDataExtractor(MatrixDataExtractor matrixDataExtractor) {
-		this.matrixDataExtractor = matrixDataExtractor;
 	}
 }

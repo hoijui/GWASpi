@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
@@ -57,14 +56,12 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	}
 
 	public MergeMarkersMatrixOperation(
-			DataSetSource dataSetSource1,
-			DataSetSource dataSetSource2,
+			MergeMatrixOperationParams params,
 			DataSetDestination dataSetDestination)
 			throws IOException
 	{
 		super(
-				dataSetSource1,
-				dataSetSource2,
+				params,
 				dataSetDestination);
 	}
 
