@@ -28,8 +28,9 @@ import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 
-public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOperationDataSet> extends AbstractTestMatrixOperation<DST, AssociationTestOperationParams> {
-
+public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOperationDataSet> 
+		extends AbstractTestMatrixOperation<DST, AssociationTestOperationParams>
+{
 	public AbstractAssociationTestsOperation(final AssociationTestOperationParams params) {
 		super(params);
 	}

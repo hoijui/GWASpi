@@ -27,12 +27,13 @@ import org.gwaspi.model.MatrixKey;
 
 public class InMemoryMarkersGenotypesSource extends AbstractInMemoryListSource<GenotypesList> implements MarkersGenotypesSource {
 
-	private MarkersGenotypesSource originSource;
 	private static final Map<MatrixKey, MarkersGenotypesSource> KEY_TO_DATA
 			= new HashMap<MatrixKey, MarkersGenotypesSource>();
 
-	private InMemoryMarkersGenotypesSource(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	private MarkersGenotypesSource originSource;
+
+	private InMemoryMarkersGenotypesSource(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) {
+		super(key, items, originalIndices);
 	}
 
 	public static MarkersGenotypesSource createForMatrix(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {
@@ -44,6 +45,8 @@ public class InMemoryMarkersGenotypesSource extends AbstractInMemoryListSource<G
 			}
 			data = new InMemoryMarkersGenotypesSource(key, items, originalIndices);
 			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
 		}
 
 		return data;

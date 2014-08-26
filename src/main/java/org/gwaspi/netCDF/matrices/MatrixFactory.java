@@ -93,7 +93,7 @@ public class MatrixFactory {
 		if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF)) {
 			return new MatrixCreatingNetCDFDataSetDestination<PT>(params, metadataFactory);
 		} else if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_MEMORY)) {
-			return new InMemorySamplesReceiver(); // TODO somehow give it the params nad metadataFactory too?
+			return new InMemorySamplesReceiver<PT>(params, metadataFactory); // TODO somehow give it the params nad metadataFactory too?
 		} else {
 			throw new IllegalArgumentException("Storage type not suported: " + storageType);
 		}

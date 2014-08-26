@@ -26,47 +26,40 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.model.StudyKey;
 
 public class InMemorySamplesInfosSource extends AbstractInMemoryListSource<SampleInfo> implements SamplesInfosSource {
 
-	private final StudyKey studyKey;
-	private SamplesInfosSource originSource;
-	private final DataSetSource dataSetSource;
 	private static final Map<MatrixKey, SamplesInfosSource> KEY_TO_DATA
 			= new HashMap<MatrixKey, SamplesInfosSource>();
 
-	private InMemorySamplesInfosSource(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items) {
-		super(origin, items);
+	private SamplesInfosSource originSource;
+	private final DataSetSource dataSetSource;
 
-		this.studyKey = studyKey;
-		this.dataSetSource = dataSetSource;
-	}
-
-	private InMemorySamplesInfosSource(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items, List<Integer> originalIndices) {
+	private InMemorySamplesInfosSource(final DataSetSource dataSetSource, MatrixKey origin, final List<SampleInfo> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 
-		this.studyKey = studyKey;
 		this.dataSetSource = dataSetSource;
 	}
 
 	public static SamplesInfosSource createForMatrix(final DataSetSource dataSetSource, MatrixKey key, final List<SampleInfo> items) throws IOException {
+		return createForOperation(dataSetSource, key, items, null);
+	}
+
+	private static SamplesInfosSource createForOperation(final DataSetSource dataSetSource, MatrixKey key, final List<SampleInfo> items, List<Integer> originalIndices) throws IOException {
 
 		SamplesInfosSource data = KEY_TO_DATA.get(key);
 		if (data == null) {
 			if (items == null) {
 				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
 			}
-			data = new InMemorySamplesInfosSource(dataSetSource, key, key.getStudyKey(), items);
+			data = new InMemorySamplesInfosSource(dataSetSource, key, items, originalIndices);
 			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
 		}
 
 		return data;
 	}
-
-//	public static SamplesInfosSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, StudyKey studyKey, final List<SampleInfo> items, List<Integer> originalIndices) throws IOException {
-//		return new InMemorySamplesInfosSource(dataSetSource, origin, studyKey, items, originalIndices);
-//	}
 
 	// XXX same code as in the NetCDF counterpart!
 	@Override

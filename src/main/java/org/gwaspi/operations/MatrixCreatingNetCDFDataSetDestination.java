@@ -37,10 +37,6 @@ public class MatrixCreatingNetCDFDataSetDestination<PT extends MatrixCreatingOpe
 		this.metadataFactory = metadataFactory;
 	}
 
-	public MatrixMetadataFactory<DataSet, PT> getMetadataFactory() {
-		return metadataFactory;
-	}
-
 	@Override
 	protected MatrixMetadata createMatrixMetadata() throws IOException {
 		return metadataFactory.generateMetadata(this.getDataSet(), params);

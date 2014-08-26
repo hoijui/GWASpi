@@ -30,6 +30,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -84,9 +85,9 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 		this.samplesKeysSource = InMemorySamplesKeysSource.createForMatrix(matrixKey, matrixKey.getStudyKey(), sampleKeys);
 	}
 
-	/** Use this if stuff is in memory already! */
+	/** Use this if the actual data is in memory already! */
 	public MatrixInMemoryDataSetSource(MatrixKey matrixKey) throws IOException {
-		this(matrixKey, null, null, null, null, null, null, null, null, null);
+		this(matrixKey, MatricesList.getMatrixMetadataById(matrixKey), null, null, null, null, null, null, null, null);
 	}
 
 	@Override

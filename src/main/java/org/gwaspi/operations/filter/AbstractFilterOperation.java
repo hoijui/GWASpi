@@ -32,7 +32,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
-import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationParams;
 import org.gwaspi.progress.IndeterminateProgressHandler;
 import org.gwaspi.progress.ProcessStatus;
@@ -163,6 +162,6 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		storePH.setNewStatus(ProcessStatus.COMPLEETED);
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
+		return dataSet.getOperationKey().getId();
 	}
 }

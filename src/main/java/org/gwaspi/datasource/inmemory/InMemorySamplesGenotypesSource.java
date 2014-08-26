@@ -27,12 +27,13 @@ import org.gwaspi.model.SamplesGenotypesSource;
 
 public class InMemorySamplesGenotypesSource extends AbstractInMemoryListSource<GenotypesList> implements SamplesGenotypesSource {
 
-	private SamplesGenotypesSource originSource;
 	private static final Map<MatrixKey, SamplesGenotypesSource> KEY_TO_DATA
 			= new HashMap<MatrixKey, SamplesGenotypesSource>();
 
-	private InMemorySamplesGenotypesSource(MatrixKey origin, final List<GenotypesList> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	private SamplesGenotypesSource originSource;
+
+	private InMemorySamplesGenotypesSource(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) {
+		super(key, items, originalIndices);
 	}
 
 	public static SamplesGenotypesSource createForMatrix(MatrixKey key, final List<GenotypesList> items, List<Integer> originalIndices) throws IOException {

@@ -49,18 +49,14 @@ public class LoadManager {
 	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
 			Map<SampleKey, SampleInfo> sampleInfos,
-			DataSetDestination dataReceiver)
+			DataSetDestination dataReceiver,
+			final LoadingMatrixMetadataFactory loadingMatrixMetadataFactory)
 			throws Exception
 	{
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
 
-		if (dataReceiver instanceof MatrixCreatingNetCDFDataSetDestination
-				&& genotypesLoader instanceof AbstractLoadGTFromFiles)
-		{
-			final MatrixMetadataFactory metadataFactory = ((MatrixCreatingNetCDFDataSetDestination) dataReceiver).getMetadataFactory();
-			if (metadataFactory instanceof LoadingMatrixMetadataFactory) {
-				((LoadingMatrixMetadataFactory) metadataFactory).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader); // HACK
-			}
+		if (loadingMatrixMetadataFactory != null) {
+			loadingMatrixMetadataFactory.setGTLoader((AbstractLoadGTFromFiles) genotypesLoader); // HACK
 		}
 
 		if (genotypesLoader == null) {

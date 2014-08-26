@@ -107,7 +107,11 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		final AbstractDataSetDestination innerDataReceiver = (AbstractDataSetDestination) MatrixFactory.generateMatrixDataSetDestination(null, new LoadingMatrixMetadataFactory(loadDescription)); // HACK FIXME
+		final LoadingMatrixMetadataFactory loadingMatrixMetadataFactory
+				= new LoadingMatrixMetadataFactory(loadDescription);
+		final AbstractDataSetDestination innerDataReceiver
+				= (AbstractDataSetDestination) MatrixFactory.generateMatrixDataSetDestination(
+						null, loadingMatrixMetadataFactory); // HACK FIXME
 		final DataSetDestination dataReceiver = new LoadingDataSetDestination(innerDataReceiver, loadDescription); // HACK FIXME
 //		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
 //		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
@@ -133,9 +137,10 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			LoadManager.dispatchLoadByFormat(
 					loadDescription,
 					sampleInfoExtractor.getSampleInfos(),
-					dataReceiver);
-			MatrixKey matrixKey = dataReceiver.getResultMatrixKey();
+					dataReceiver,
+					loadingMatrixMetadataFactory);
 			dataReceiver.done();
+			MatrixKey matrixKey = dataReceiver.getResultMatrixKey();
 			MultiOperations.printCompleted("Loading Genotypes");
 			parent = new DataSetKey(matrixKey);
 		} else {

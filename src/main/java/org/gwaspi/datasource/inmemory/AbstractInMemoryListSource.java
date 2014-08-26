@@ -59,7 +59,7 @@ public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<
 
 	@Override
 	public List<VT> getRange(int from, int to) throws IOException {
-		return getItems().subList(from, to);
+		return getItems().subList(from, to + 1);
 	}
 
 	@Override

@@ -29,40 +29,42 @@ import org.gwaspi.model.MatrixKey;
 
 public class InMemoryMarkersMetadataSource extends AbstractInMemoryListSource<MarkerMetadata> implements MarkersMetadataSource {
 
-	private MarkersMetadataSource originSource;
-	private final DataSetSource dataSetSource;
 	private static final Map<MatrixKey, MarkersMetadataSource> KEY_TO_DATA
 			= new HashMap<MatrixKey, MarkersMetadataSource>();
 
-	private InMemoryMarkersMetadataSource(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items) {
-		super(origin, items);
+	private MarkersMetadataSource originSource;
+	private final DataSetSource dataSetSource;
 
-		this.dataSetSource = dataSetSource;
-	}
-
-	private InMemoryMarkersMetadataSource(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items, List<Integer> originalIndices) {
-		super(origin, items, originalIndices);
+	private InMemoryMarkersMetadataSource(final DataSetSource dataSetSource, MatrixKey key, final List<MarkerMetadata> items, List<Integer> originalIndices) {
+		super(key, items, originalIndices);
 
 		this.dataSetSource = dataSetSource;
 	}
 
 	public static MarkersMetadataSource createForMatrix(final DataSetSource dataSetSource, MatrixKey key, final List<MarkerMetadata> items) throws IOException {
+		return createForOperation(dataSetSource, key, items, null);
+	}
+
+	private static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey key, final List<MarkerMetadata> items, List<Integer> originalIndices) throws IOException {
 
 		MarkersMetadataSource data = KEY_TO_DATA.get(key);
 		if (data == null) {
 			if (items == null) {
 				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
 			}
-			data = new InMemoryMarkersMetadataSource(dataSetSource, key, items);
+			data = new InMemoryMarkersMetadataSource(dataSetSource, key, items, originalIndices);
 			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
 		}
 
 		return data;
 	}
 
-//	public static MarkersMetadataSource createForOperation(final DataSetSource dataSetSource, MatrixKey origin, final List<MarkerMetadata> items, List<Integer> originalIndices) throws IOException {
-//		return new InMemoryMarkersMetadataSource(dataSetSource, origin, items, originalIndices);
-//	}
+	@Override
+	public MarkerMetadata get(int index) {
+		return super.get(index);
+	}
 
 	// XXX same code as in the NetCDF counterpart!
 	@Override
