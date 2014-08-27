@@ -170,36 +170,36 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 
 	private static void createSortedSampleMissingnessReport(OperationKey samplesQAopKey, final File sampleMissOutFile) throws IOException {
 
-		String sep = cExport.separator_REPORTS;
+		final String sep = cExport.separator_REPORTS;
 
-		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
-		List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());
+		final QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
+		final List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 
 		// WRITE HEADER OF FILE
-		FileWriter tempFW = new FileWriter(sampleMissOutFile);
-		BufferedWriter tempBW = new BufferedWriter(tempFW);
+		final FileWriter tempFW = new FileWriter(sampleMissOutFile);
+		final BufferedWriter tempBW = new BufferedWriter(tempFW);
 
-		String header = "FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tAge\tCategory\tDisease\tPopulation\tMissing Ratio\n";
+		final String header = "FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tAge\tCategory\tDisease\tPopulation\tMissing Ratio\n";
 		tempBW.append(header);
 
 		// GET SAMPLE INFO FROM DB
 		for (QASamplesOperationEntry entry : qaSamplesOperationEntries) {
-			SampleKey tempSampleKey = entry.getKey();
-			SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey);
+			final SampleKey tempSampleKey = entry.getKey();
+			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey); // read from DB
 
-			String familyId = sampleInfo.getFamilyId();
-			String fatherId = sampleInfo.getFatherId();
-			String motherId = sampleInfo.getMotherId();
-			String sex = sampleInfo.getSexStr();
-			String affection = sampleInfo.getAffectionStr();
-			String category = sampleInfo.getCategory();
-			String desease = sampleInfo.getDisease();
-			String population = sampleInfo.getPopulation();
-//			String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
-			String age = String.valueOf(sampleInfo.getAge());
+			final String familyId = sampleInfo.getFamilyId();
+			final String fatherId = sampleInfo.getFatherId();
+			final String motherId = sampleInfo.getMotherId();
+			final String sex = sampleInfo.getSexStr();
+			final String affection = sampleInfo.getAffectionStr();
+			final String category = sampleInfo.getCategory();
+			final String desease = sampleInfo.getDisease();
+			final String population = sampleInfo.getPopulation();
+//			final String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
+			final String age = String.valueOf(sampleInfo.getAge());
 
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append(familyId);
 			sb.append(sep);
 			sb.append(tempSampleKey.getSampleId());
