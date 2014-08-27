@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +177,12 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		final List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 
+		qaSamplesOperationDataSet.getSamplesInfosSource();
+		final Map<SampleKey, SampleInfo> sampleKeyToInfo = new HashMap<SampleKey, SampleInfo>();
+		for (SampleInfo sampleInfo : qaSamplesOperationDataSet.getSamplesInfosSource()) {
+			sampleKeyToInfo.put(SampleKey.valueOf(sampleInfo), sampleInfo);
+		}
+
 		// WRITE HEADER OF FILE
 		final FileWriter tempFW = new FileWriter(sampleMissOutFile);
 		final BufferedWriter tempBW = new BufferedWriter(tempFW);
@@ -186,7 +193,8 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		// GET SAMPLE INFO FROM DB
 		for (QASamplesOperationEntry entry : qaSamplesOperationEntries) {
 			final SampleKey tempSampleKey = entry.getKey();
-			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey); // read from DB
+//			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey); // read from DB
+			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleKeyToInfo.get(tempSampleKey)); // read from backend storage
 
 			final String familyId = sampleInfo.getFamilyId();
 			final String fatherId = sampleInfo.getFatherId();
