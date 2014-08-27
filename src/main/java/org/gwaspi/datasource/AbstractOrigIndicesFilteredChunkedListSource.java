@@ -79,7 +79,7 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 	protected List<Integer> getOriginalIndices(final int fromClean, final int toClean) {
 
 		if (getOriginalIndicesRaw() == null) {
-			return new IndicesList(toClean - fromClean + 1, fromClean);
+			return new IndicesList(toClean - fromClean, fromClean);
 		} else {
 			return getOriginalIndicesRaw().subList(fromClean, toClean);
 		}
