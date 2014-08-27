@@ -19,6 +19,7 @@ package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.gwaspi.datasource.inmemory.AbstractInMemoryListSource;
 import org.gwaspi.model.DataSetKey;
@@ -69,8 +70,8 @@ public class InMemoryHardyWeinbergOperationDataSet
 		tmpEntriesControl.trimToSize();
 		tmpEntriesAlternate.trimToSize();
 
-		entriesControl = tmpEntriesControl;
-		entriesAlternate = tmpEntriesAlternate;
+		entriesControl = Collections.unmodifiableList(tmpEntriesControl);
+		entriesAlternate = Collections.unmodifiableList(tmpEntriesAlternate);
 	}
 
 	@Override
