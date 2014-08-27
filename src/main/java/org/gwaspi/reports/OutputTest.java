@@ -318,7 +318,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	private void createSortedAssociationReport(String reportName) throws IOException {
 
 		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationManager.generateOperationDataSet(getParams().getTestOperationKey());
-		List<? extends TrendTestOperationEntry> testOperationEntries = (List) testOperationDataSet.getEntries(); // HACK This might not be a List!
+		List<? extends TrendTestOperationEntry> testOperationEntries = new ArrayList<TrendTestOperationEntry>(testOperationDataSet.getEntries());
 		Collections.sort(testOperationEntries, new TrendTestOperationEntry.PValueComparator());
 
 		List<Integer> sortedOrigIndices = new ArrayList<Integer>(testOperationEntries.size());
