@@ -56,6 +56,11 @@ public class InMemoryChromosomesInfosSource extends AbstractInMemoryListSource<C
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+	}
+
 	// XXX same code as in the NetCDF counterpart!
 	@Override
 	public ChromosomesInfosSource getOrigSource() throws IOException {

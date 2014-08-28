@@ -90,6 +90,18 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 		this(matrixKey, MatricesList.getMatrixMetadataById(matrixKey), null, null, null, null, null, null, null, null);
 	}
 
+	public static void clearAllInMemoryStorage() {
+
+		InMemorySamplesKeysSource.clearStorage();
+		InMemorySamplesInfosSource.clearStorage();
+		InMemorySamplesGenotypesSource.clearStorage();
+		InMemoryMarkersMetadataSource.clearStorage();
+		InMemoryMarkersKeysSource.clearStorage();
+		InMemoryMarkersGenotypesSource.clearStorage();
+		InMemoryChromosomesKeysSource.clearStorage();
+		InMemoryChromosomesInfosSource.clearStorage();
+	}
+
 	@Override
 	public DataSetSource getOriginDataSetSource() throws IOException {
 		return this;

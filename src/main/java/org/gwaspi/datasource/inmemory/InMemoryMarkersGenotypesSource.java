@@ -52,6 +52,11 @@ public class InMemoryMarkersGenotypesSource extends AbstractInMemoryListSource<G
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+	}
+
 	@Override
 	public MarkersGenotypesSource getOrigSource() throws IOException {
 
