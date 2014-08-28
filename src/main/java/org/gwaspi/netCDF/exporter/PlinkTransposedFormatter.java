@@ -28,7 +28,6 @@ import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +103,8 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -123,7 +122,7 @@ public class PlinkTransposedFormatter implements Formatter {
 
 				tfamBW.append(familyId);
 				tfamBW.append(sep);
-				tfamBW.append(sampleKey.getSampleId());
+				tfamBW.append(sampleInfo.getSampleId());
 				tfamBW.append(sep);
 				tfamBW.append(fatherId);
 				tfamBW.append(sep);

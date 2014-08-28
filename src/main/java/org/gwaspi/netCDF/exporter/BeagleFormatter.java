@@ -38,7 +38,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
@@ -97,8 +96,8 @@ class BeagleFormatter implements Formatter {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
 				sampleLine.append(sep);
 				sampleLine.append(sampleInfo.getSampleId());

@@ -28,7 +28,6 @@ import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +62,8 @@ public class PlinkFormatter implements Formatter {
 			// Iterate through all samples
 			int sampleNb = 0;
 			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -83,7 +82,7 @@ public class PlinkFormatter implements Formatter {
 				pedBW.append(familyId);
 				pedBW.append(sepBig);
 
-				pedBW.append(sampleKey.getSampleId());
+				pedBW.append(sampleInfo.getSampleId());
 				pedBW.append(sep);
 				pedBW.append(fatherId);
 				pedBW.append(sep);

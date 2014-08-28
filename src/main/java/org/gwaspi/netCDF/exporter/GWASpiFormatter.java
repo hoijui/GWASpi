@@ -26,7 +26,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,7 @@ public class GWASpiFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 //				FamilyID
 //				SampleID
 //				FatherID
@@ -73,7 +72,7 @@ public class GWASpiFormatter implements Formatter {
 //				Population
 //				Age
 
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -87,7 +86,7 @@ public class GWASpiFormatter implements Formatter {
 
 				sampleInfoBW.write(familyId);
 				sampleInfoBW.write(sep);
-				sampleInfoBW.write(sampleKey.getSampleId());
+				sampleInfoBW.write(sampleInfo.getSampleId());
 				sampleInfoBW.write(sep);
 				sampleInfoBW.write(fatherId);
 				sampleInfoBW.write(sep);

@@ -38,7 +38,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
@@ -251,8 +250,8 @@ public class PlinkBinaryFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -275,7 +274,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 				tfamBW.append(familyId);
 				tfamBW.append(sep);
-				tfamBW.append(sampleKey.getSampleId());
+				tfamBW.append(sampleInfo.getSampleId());
 				tfamBW.append(sep);
 				tfamBW.append(fatherId);
 				tfamBW.append(sep);
