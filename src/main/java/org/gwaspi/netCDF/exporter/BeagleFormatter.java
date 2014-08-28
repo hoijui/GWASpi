@@ -190,8 +190,7 @@ class BeagleFormatter implements Formatter {
 			// get MARKER_QA Operation
 			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(MatrixKey.valueOf(rdMatrixMetadata));
 			OperationKey markersQAopKey = null;
-			for (int i = 0; i < operations.size(); i++) {
-				OperationMetadata op = operations.get(i);
+			for (OperationMetadata op : operations) {
 				if (op.getType().equals(OPType.MARKER_QA)) {
 					markersQAopKey = OperationKey.valueOf(op);
 				}
