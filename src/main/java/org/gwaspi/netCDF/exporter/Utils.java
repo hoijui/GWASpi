@@ -18,13 +18,25 @@
 package org.gwaspi.netCDF.exporter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesInfosSource;
 
 public class Utils {
 
 	private Utils() {
+	}
+
+	public static Map<SampleKey, SampleInfo> createSampleKeyToInfoMap(final SamplesInfosSource samplesInfosSource) {
+
+		final Map<SampleKey, SampleInfo> sampleKeyToInfo = new HashMap<SampleKey, SampleInfo>();
+		for (SampleInfo sampleInfo : samplesInfosSource) {
+			sampleKeyToInfo.put(SampleKey.valueOf(sampleInfo), sampleInfo);
+		}
+		return sampleKeyToInfo;
 	}
 
 	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key) throws IOException {

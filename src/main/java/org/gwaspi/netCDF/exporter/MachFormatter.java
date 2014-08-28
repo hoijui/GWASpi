@@ -31,7 +31,6 @@ import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +51,6 @@ public class MachFormatter implements Formatter {
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
 		}
-
-		boolean result = false;
 
 		List<Iterator<byte[]>> samplesGenotypesIterators = new ArrayList<Iterator<byte[]>>(dataSetSource.getSamplesGenotypesSource().size());
 		for (GenotypesList sampleGenotypesList : dataSetSource.getSamplesGenotypesSource()) {
@@ -90,9 +87,7 @@ public class MachFormatter implements Formatter {
 		exportChromosomeToMped(exportDir, dataSetName, dataSetSource, samplesGenotypesIterators, tmpChr, start, end);
 		exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
 
-		result = true;
-
-		return result;
+		return true;
 	}
 
 	private void exportChromosomeToMped(File exportDir, String dataSetName, DataSetSource dataSetSource, List<Iterator<byte[]>> samplesGenotypesIterators, String chr, int startPos, int endPos) throws IOException {
@@ -106,8 +101,9 @@ public class MachFormatter implements Formatter {
 			// Iterate through all samples
 			int sampleNb = 0;
 			Iterator<Iterator<byte[]>> samplesGenotypesIt = samplesGenotypesIterators.iterator();
-			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
+
 				String sexStr = "0";
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -128,7 +124,7 @@ public class MachFormatter implements Formatter {
 
 				pedBW.append(familyId);
 				pedBW.append(SEP);
-				pedBW.append(sampleKey.getSampleId());
+				pedBW.append(sampleInfo.getSampleId());
 				pedBW.append(SEP);
 				pedBW.append(fatherId);
 				pedBW.append(SEP);

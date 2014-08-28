@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,11 +176,8 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		final List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 
-		qaSamplesOperationDataSet.getSamplesInfosSource();
-		final Map<SampleKey, SampleInfo> sampleKeyToInfo = new HashMap<SampleKey, SampleInfo>();
-		for (SampleInfo sampleInfo : qaSamplesOperationDataSet.getSamplesInfosSource()) {
-			sampleKeyToInfo.put(SampleKey.valueOf(sampleInfo), sampleInfo);
-		}
+		final Map<SampleKey, SampleInfo> sampleKeyToInfo
+				= org.gwaspi.netCDF.exporter.Utils.createSampleKeyToInfoMap(qaSamplesOperationDataSet.getSamplesInfosSource());
 
 		// WRITE HEADER OF FILE
 		final FileWriter tempFW = new FileWriter(sampleMissOutFile);
