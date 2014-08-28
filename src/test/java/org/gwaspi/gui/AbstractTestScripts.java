@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
@@ -217,7 +218,7 @@ public abstract class AbstractTestScripts {
 	}
 
 	@AfterClass
-	public static void cleanupTempDataDirs() throws IOException {
+	public static void cleanupTempData() throws IOException {
 
 		// Delete and shutdown the (in-memory) database
 		try {
@@ -226,6 +227,8 @@ public abstract class AbstractTestScripts {
 			log.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
 		}
 		StudyList.PERSISTENCE_UNIT_NAME = "gwaspi"; // HACK
+
+		MatrixInMemoryDataSetSource.clearAllInMemoryStorage();
 
 		setup.cleanupTemp();
 		setup = null;

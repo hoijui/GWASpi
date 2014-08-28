@@ -61,6 +61,11 @@ public class InMemorySamplesInfosSource extends AbstractInMemoryListSource<Sampl
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+	}
+
 	// XXX same code as in the NetCDF counterpart!
 	@Override
 	public SamplesInfosSource getOrigSource() throws IOException {

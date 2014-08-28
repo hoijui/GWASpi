@@ -76,6 +76,12 @@ public class InMemoryMarkersKeysSource extends AbstractInMemoryKeysSource<Marker
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+		KEY2_TO_DATA.clear();
+	}
+
 	@Override
 	public MarkersKeysSource getOrigSource() throws IOException {
 

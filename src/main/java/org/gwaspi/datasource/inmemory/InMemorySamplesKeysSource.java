@@ -79,6 +79,12 @@ public class InMemorySamplesKeysSource extends AbstractInMemoryKeysSource<Sample
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+		KEY2_TO_DATA.clear();
+	}
+
 	@Override
 	public SamplesKeysSource getOrigSource() throws IOException {
 

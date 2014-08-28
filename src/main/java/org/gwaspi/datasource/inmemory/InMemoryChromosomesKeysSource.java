@@ -76,6 +76,12 @@ public class InMemoryChromosomesKeysSource extends AbstractInMemoryKeysSource<Ch
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+		KEY2_TO_DATA.clear();
+	}
+
 	@Override
 	public ChromosomesKeysSource getOrigSource() throws IOException {
 

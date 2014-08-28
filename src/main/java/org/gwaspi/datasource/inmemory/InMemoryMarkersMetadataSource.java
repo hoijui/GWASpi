@@ -61,6 +61,11 @@ public class InMemoryMarkersMetadataSource extends AbstractInMemoryListSource<Ma
 		return data;
 	}
 
+	public static void clearStorage() {
+
+		KEY_TO_DATA.clear();
+	}
+
 	@Override
 	public MarkerMetadata get(int index) {
 		return super.get(index);
