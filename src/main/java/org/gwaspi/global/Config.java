@@ -294,9 +294,12 @@ public class Config {
 		File derbyCenter = initDataBaseVars(dataDir);
 
 		if (!derbyCenter.exists()) {
-			// STUDY_1 SPECIFIC DATA
-			StudyKey newStudy = StudyList.insertNewStudy(new Study("Study 1", "")); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
-			GWASpiExplorerNodes.insertStudyNode(newStudy);
+			// HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
+			StudyKey newStudy = StudyList.insertNewStudy(new Study("Study 1", ""));
+			// We do not have to add it to the GUI,
+			// as the GUI is not yet initialized,
+			// and it will be read from the DB and added there later on
+//			GWASpiExplorerNodes.insertStudyNode(newStudy);
 		}
 
 		Utils.createFolder(dataDir.getPath(), "genotypes");
