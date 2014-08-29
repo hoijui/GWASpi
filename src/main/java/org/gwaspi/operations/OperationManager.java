@@ -232,10 +232,14 @@ public class OperationManager {
 
 			resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
 
-			if (parent.isMatrix()) {
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
-			} else {
-				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+			final boolean opHasResultView
+					= (OperationsList.getOperationMetadata(resultOperationKey) != null); // HACK maybe better add a getter to OperationType or so
+			if (opHasResultView) {
+				if (parent.isMatrix()) {
+					GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
+				} else {
+					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
+				}
 			}
 		} else {
 			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
