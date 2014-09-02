@@ -150,7 +150,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			} else {
 				// BY DB AFFECTION
 				// use Sample Info from the DB to extract affection state
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(markerCensusOperationParams.getParent());
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.collectAffectionStates(markerCensusOperationParams.getParent());
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
