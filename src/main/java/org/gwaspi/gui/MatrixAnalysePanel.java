@@ -241,7 +241,7 @@ public class MatrixAnalysePanel extends JPanel {
 				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentKey);
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
-				Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentKey);
+				Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(parentKey);
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(Affection.UNAFFECTED)
@@ -615,7 +615,7 @@ public class MatrixAnalysePanel extends JPanel {
 					log.info(Text.All.processing);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 					// use Sample Info affection state from the DB
-					Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(observedElementKey);
+					Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(observedElementKey);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 					if (affectionStates.contains(Affection.UNAFFECTED)
 							&& affectionStates.contains(Affection.AFFECTED))

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.global.ExtractorList;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
@@ -46,6 +47,7 @@ public class SamplesParserManager {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(SamplesParserManager.class);
+	private static final boolean USE_DB = false;
 
 	private static final Map<ImportFormat, SamplesParser> sampleParsers;
 
@@ -65,29 +67,57 @@ public class SamplesParserManager {
 	private SamplesParserManager() {
 	}
 
-	//<editor-fold defaultstate="expanded" desc="DB SAMPLE INFO PROVIDERS">
-	public static Set<Affection> getDBAffectionStates(final DataSetKey dataSetKey) {
-
-		Set<Affection> affections = EnumSet.noneOf(Affection.class);
+	public static Set<Affection> collectAffectionStates(final DataSetKey dataSetKey) {
 
 		try {
 			DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(dataSetKey);
-			log.info("Getting Sample Affection info for: {}",
-					dataSetMetadata.getFriendlyName());
 			DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(dataSetKey);
-			for (SampleKey key : dataSetSource.getSamplesKeysSource()) {
-				SampleInfo sampleInfo = SampleInfoList.getSample(key);
-				if (sampleInfo != null) {
-					affections.add(sampleInfo.getAffection());
-				}
+			if (USE_DB) {
+				return collectAffectionStatesFromDB(dataSetSource, dataSetMetadata.getFriendlyName());
+			} else {
+				return collectAffectionStatesFromBackendStorage(dataSetSource, dataSetMetadata.getFriendlyName());
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 
+		return EnumSet.noneOf(Affection.class);
+	}
+
+	private static Set<Affection> collectAffectionStatesFromBackendStorage(
+			final DataSetSource dataSetSource,
+			String dataSourceFriendlyName)
+			throws IOException
+	{
+		Set<Affection> affections = EnumSet.noneOf(Affection.class);
+
+		log.info("Getting Sample Affection info from backend-storage for: {}",
+				dataSourceFriendlyName);
+		affections.addAll(new ExtractorList<SampleInfo, SampleInfo.Affection>(
+				dataSetSource.getSamplesInfosSource(),
+				SampleInfo.TO_AFFECTION));
+
 		return affections;
 	}
-	//</editor-fold>
+
+	private static Set<Affection> collectAffectionStatesFromDB(
+			final DataSetSource dataSetSource,
+			String dataSourceFriendlyName)
+			throws IOException
+	{
+		Set<Affection> affections = EnumSet.noneOf(Affection.class);
+
+		log.info("Getting Sample Affection info from DB for: {}",
+				dataSourceFriendlyName);
+		for (SampleKey key : dataSetSource.getSamplesKeysSource()) {
+			SampleInfo sampleInfo = SampleInfoList.getSample(key);
+			if (sampleInfo != null) {
+				affections.add(sampleInfo.getAffection());
+			}
+		}
+
+		return affections;
+	}
 
 	public static void scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath, DataSetDestination samplesReceiver) throws Exception {
 		sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath, samplesReceiver);
