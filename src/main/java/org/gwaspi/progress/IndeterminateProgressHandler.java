@@ -24,7 +24,7 @@ package org.gwaspi.progress;
 public class IndeterminateProgressHandler extends AbstractProgressHandler<Object> {
 
 	public IndeterminateProgressHandler(ProcessInfo processInfo) {
-		super(processInfo, null);
+		super(processInfo, 0);
 	}
 
 	@Override
