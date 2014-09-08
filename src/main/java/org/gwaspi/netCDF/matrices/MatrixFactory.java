@@ -65,12 +65,29 @@ public class MatrixFactory {
 		}
 	}
 
+	private static String getOrDefaultString(
+			Map<String, Object> properties,
+			String key,
+			String defaultValue)
+	{
+		// in Java 8 we could do this
+//		return (String) properties.getOrDefault(key, defaultValue);
+
+		// ... but as we do not rely on that yet, we do this
+		String value = (String) properties.get(key);
+		if (value == null) {
+			value = defaultValue;
+		}
+		return value;
+	}
+
 	public static <PT extends MatrixCreatingOperationParams> DataSetDestination generateMatrixDataSetDestination(
 			PT params,
 			MatrixMetadataFactory<DataSet, PT> metadataFactory,
 			Map<String, Object> properties)
 	{
-		final String storageType = (String) properties.getOrDefault(
+		final String storageType = getOrDefaultString(
+				properties,
 				OperationFactory.PROPERTY_NAME_TYPE,
 				AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
 		if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF)) {
@@ -89,7 +106,8 @@ public class MatrixFactory {
 	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey, Map<String, Object> properties) {
 
 		try {
-			final String storageType = (String) properties.getOrDefault(
+			final String storageType = getOrDefaultString(
+					properties,
 					OperationFactory.PROPERTY_NAME_TYPE,
 					AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF);
 			if (storageType.equals(AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF)) {
