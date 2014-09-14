@@ -45,6 +45,7 @@ import org.gwaspi.progress.ProcessDetailsChangeEvent;
 import org.gwaspi.progress.ProcessStatusChangeEvent;
 import org.gwaspi.progress.ProgressEvent;
 import org.gwaspi.progress.ProgressListener;
+import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperSwingProgressListener;
 import org.gwaspi.progress.SwingProgressListener;
 import org.gwaspi.threadbox.SwingDeleterItem;
@@ -188,9 +189,14 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 	@Override
 	public void taskRegistered(TaskEvent evt) {
 
-		evt.getTask().getProgressSource().addProgressListener(this);
+		final ProgressSource progressSource = evt.getTask().getProgressSource();
 
-		SwingProgressListener taskProgressDisplay = SuperSwingProgressListener.newDisplay(evt.getTask().getProgressSource());
+		progressSource.addProgressListener(this);
+
+		SwingProgressListener taskProgressDisplay
+				= SuperSwingProgressListener.newDisplay(progressSource);
+		progressSource.addProgressListener(taskProgressDisplay);
+
 		pnl_progress.add(taskProgressDisplay.getMainComponent());
 		taskProgressDisplays.add(taskProgressDisplay);
 
