@@ -85,12 +85,11 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		log.info("read and pre-parse raw marker info");
 		// chr, markerId, genetic distance, position
 		SortedMap<String, String> tempTM = parseAndSortMapFile(mapPath);
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info("parse raw data into marker metadata objects");
-
+		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -117,7 +116,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		logAsWhole(startTime, mapPath, description, studyKey.getId());
+		logAsWhole(log, startTime, mapPath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAndSortMapFile(String mapPath) throws IOException {
@@ -180,12 +179,24 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		return origMarkerIdSetMap;
 	}
 
-	static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
-		// LOG OPERATION IN STUDY HISTORY
-		StringBuilder operation = new StringBuilder("\nLoaded MAP metadata in path " + dirPath + ".\n");
-		operation.append("Start Time: ").append(startTime).append("\n");
-		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
-		operation.append("Description: ").append(description).append(".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
+	/**
+	 * LOG OPERATION IN STUDY HISTORY
+	 * @param log
+	 * @param startTime
+	 * @param dirPath
+	 * @param description
+	 * @param studyId
+	 * @throws IOException
+	 */
+	static void logAsWhole(Logger log, String startTime, String dirPath, String description, int studyId) throws IOException {
+		
+		if (log.isDebugEnabled()) {
+			final StringBuilder operation = new StringBuilder("\nLoaded MAP metadata in path " + dirPath + ".\n");
+			operation.append("Start Time: ").append(startTime).append("\n");
+			operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
+			operation.append("Description: ").append(description).append(".\n");
+			org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
+			log.debug("Study {}:\n{}", studyId, operation.toString());
+		}
 	}
 }

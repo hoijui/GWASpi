@@ -64,12 +64,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		log.info("read and pre-parse raw marker info");
 		// chr, markerId, genetic distance, position
 		SortedMap<String, String> tempTM = parseAndSortBimFile(bimPath);
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info("parse raw data into marker metadata objects");
-
+		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -100,7 +99,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
+		MetadataLoaderPlink.logAsWhole(log, startTime, bimPath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAndSortBimFile(String bimPath) throws IOException {
