@@ -74,13 +74,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos;
-			try {
-				pos = Integer.parseInt(keyValues[3]);
-			} catch (Exception ex) {
-				pos = 0;
-				log.warn(null, ex);
-			}
+			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[3]);
 
 			// valValues = rsId;strand;alleles
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);

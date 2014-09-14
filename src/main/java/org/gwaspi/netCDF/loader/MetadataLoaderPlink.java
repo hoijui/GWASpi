@@ -93,13 +93,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos;
-			try {
-				pos = Integer.parseInt(keyValues[1]);
-			} catch (Exception ex) {
-				pos = 0;
-				log.warn(null, ex);
-			}
+			int pos = fixPosIfRequired(keyValues[1]);
 
 			// rsId
 			String[] valValues = new String[] {entry.getValue()};
@@ -177,6 +171,19 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		inputMapBR.close();
 
 		return origMarkerIdSetMap;
+	}
+
+	static int fixPosIfRequired(String posStr) throws IOException {
+
+		int pos;
+		try {
+			pos = Integer.parseInt(posStr);
+		} catch (Exception ex) {
+			pos = 0;
+//			log.warn("Bad marker position " + posStr + ", using " + pos, ex);
+		}
+
+		return pos;
 	}
 
 	/**

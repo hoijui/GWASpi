@@ -81,13 +81,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
-			int pos;
-			try {
-				pos = Integer.parseInt(keyValues[1]);
-			} catch (Exception ex) {
-				pos = 0;
-				log.warn(null, ex);
-			}
+			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[1]);
 
 			MarkerMetadata markerInfo = new MarkerMetadata(
 					keyValues[2], // markerid
