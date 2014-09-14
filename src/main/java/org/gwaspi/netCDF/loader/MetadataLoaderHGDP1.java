@@ -70,13 +70,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos;
-			try {
-				pos = Integer.parseInt(keyValues[1]);
-			} catch (Exception ex) {
-				pos = 0;
-				log.warn(null, ex);
-			}
+			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[1]);
 
 			String valValues = entry.getValue();
 
