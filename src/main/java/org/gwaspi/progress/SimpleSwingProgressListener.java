@@ -36,6 +36,7 @@ public class SimpleSwingProgressListener<ST>
 
 		this.bar = new JProgressBar();
 		numIntervalsChanged(progressSource);
+		updateToolTipText(progressSource);
 
 		getContentContainer().add(bar, BorderLayout.CENTER);
 	}
@@ -54,11 +55,26 @@ public class SimpleSwingProgressListener<ST>
 		}
 	}
 
+	protected void setToolTipText(String toolTipText) {
+
+		bar.setToolTipText(toolTipText);
+		getMainComponent().setToolTipText(toolTipText);
+	}
+
+	protected void updateToolTipText(final ProgressSource progressSource) {
+
+		setToolTipText(progressSource.getInfo().getShortName()
+				+ " - " + progressSource.getStatus().toString());
+	}
+
 	@Override
 	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
 		super.processDetailsChanged(evt);
 
-		numIntervalsChanged(evt.getProgressSource());
+		final ProgressSource progressSource = evt.getProgressSource();
+
+		numIntervalsChanged(progressSource);
+		updateToolTipText(progressSource);
 	}
 
 	@Override
