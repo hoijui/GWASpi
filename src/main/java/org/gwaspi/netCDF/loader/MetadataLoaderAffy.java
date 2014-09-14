@@ -66,12 +66,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		log.info("read and pre-parse raw marker info");
 		// affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(annotationPath);
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info("parse raw data into marker metadata objects");
-
+		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -102,7 +101,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		MetadataLoaderPlink.logAsWhole(startTime, annotationPath, description, studyKey.getId());
+		MetadataLoaderPlink.logAsWhole(log, startTime, annotationPath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile(String annotationPath) throws IOException {
@@ -141,7 +140,8 @@ public class MetadataLoaderAffy implements MetadataLoader {
 				sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
 				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.strand]); // 1 => strand
 				sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
-				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleA]).append(affy6Vals[Affymetrix_GenomeWide6.alleleB]); // 2 => alleles
+				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleA]);
+				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleB]); // 2 => alleles
 
 				sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 			}

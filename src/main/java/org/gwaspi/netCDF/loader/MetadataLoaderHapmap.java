@@ -73,12 +73,11 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		log.info("read and pre-parse raw marker info");
 		// rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(hapmapPath);
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info("parse raw data into marker metadata objects");
-
+		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
@@ -102,7 +101,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyKey.getId());
+		MetadataLoaderPlink.logAsWhole(log, startTime, hapmapPath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile(String hapmapPath) throws IOException {

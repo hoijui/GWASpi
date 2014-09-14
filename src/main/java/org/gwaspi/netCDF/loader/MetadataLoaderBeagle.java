@@ -60,11 +60,10 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		log.info("read and pre-parse raw marker info");
 		SortedMap<String, String> tempTM = parseAndSortMarkerFile(markerFilePath, chr); // chr, markerId, genetic distance, position
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info("parse raw data into marker metadata objects");
-
+		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -90,7 +89,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		MetadataLoaderPlink.logAsWhole(startTime, markerFilePath, description, studyKey.getId());
+		MetadataLoaderPlink.logAsWhole(log, startTime, markerFilePath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAndSortMarkerFile(String markerFilePath, String chr) throws IOException {
@@ -119,7 +118,8 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 			// rsId;alleles
 			StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbVal.append(markerVals[Beagle_Standard.allele1].trim()).append(markerVals[Beagle_Standard.allele2].trim()); //1 => alleles
+			sbVal.append(markerVals[Beagle_Standard.allele1].trim());
+			sbVal.append(markerVals[Beagle_Standard.allele2].trim()); // 1 => alleles
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
