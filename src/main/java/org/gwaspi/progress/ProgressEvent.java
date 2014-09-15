@@ -48,7 +48,7 @@ public class ProgressEvent<ST> extends EventObject {
 	private final ST currentState;
 
 	public ProgressEvent(
-			Object source,
+			ProgressSource source,
 			long time,
 			int intervalIndex,
 			double completionFraction,
@@ -60,6 +60,11 @@ public class ProgressEvent<ST> extends EventObject {
 		this.intervalIndex = intervalIndex;
 		this.completionFraction = completionFraction;
 		this.currentState = currentState;
+	}
+
+	@Override
+	public ProgressSource getSource() {
+		return (ProgressSource) super.getSource();
 	}
 
 	/**
