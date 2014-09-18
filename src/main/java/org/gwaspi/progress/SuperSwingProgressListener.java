@@ -18,6 +18,7 @@
 package org.gwaspi.progress;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,6 +33,7 @@ import javax.swing.JPanel;
  */
 public class SuperSwingProgressListener<ST>
 		extends SimpleSwingProgressListener<ST>
+		implements SuperProgressListener<ST>
 {
 	private final Map<ProgressSource, SubTaskProgressListener> subProgressSourcesToContainer;
 //	private SwingProgressListener subProgressSourcesDisplay;
@@ -60,23 +62,22 @@ public class SuperSwingProgressListener<ST>
 		this.subBarsGBC = new GridBagConstraints();
 		this.subBarsGBC.fill = GridBagConstraints.HORIZONTAL;
 		subContainer.add(this.subBars, BorderLayout.NORTH);
-		
+
 		this.activeSubDisplays = new JPanel();
 		this.activeSubDisplays.setLayout(new FlowLayout());
 		subContainer.add(this.activeSubDisplays, BorderLayout.SOUTH);
-
-		for (Map.Entry<ProgressSource, Double> subProgressSourceAndWeight : subProgressSourcesAndWeights.entrySet()) {
-			addSubProgressSource(subProgressSourceAndWeight.getKey(), subProgressSourceAndWeight.getValue());
-		}
 	}
 
-	private void addSubProgressSource(final ProgressSource subProgressSource, final double weight) {
+	@Override
+	public void subProcessAdded(final SubProcessAddedEvent evt) {
+
+		final ProgressSource subProgressSource = evt.getAddedSubProcess();
 
 		final SwingProgressListener gui = newDisplay(subProgressSource);
 		subProgressSource.addProgressListener(gui);
 
-		subBarsGBC.weightx = weight;
-		subBars.add(gui.getProgressBar(), subBarsGBC);
+		subBarsGBC.weightx = evt.getWeight();
+		subBars.add(gui.getProgressBar(), subBarsGBC, evt.getIndex());
 
 		final SubTaskProgressListener subTaskProgressListener
 				= new SubTaskProgressListener(subProgressSource, gui);
@@ -86,7 +87,17 @@ public class SuperSwingProgressListener<ST>
 		subProgressSource.addProgressListener(subTaskProgressListener);
 	}
 
-	private void removeSubProgressSource(final ProgressSource subProgressSource) {
+	@Override
+	public void subProcessReplaced(final SubProcessReplacedEvent evt) {
+
+		subProcessRemoved(new SubProcessRemovedEvent(evt.getSource(), evt.getIndex(), evt.getReplacedSubProcess()));
+		subProcessAdded(new SubProcessAddedEvent(evt.getSource(), evt.getIndex(), evt.getReplacingSubProcess(), evt.getReplacingWeight()));
+	}
+
+	@Override
+	public void subProcessRemoved(final SubProcessRemovedEvent evt) {
+
+		final ProgressSource subProgressSource = evt.getRemovedSubProcess();
 
 		final SubTaskProgressListener subTaskProgressListener
 				= subProgressSourcesToContainer.get(subProgressSource);
@@ -149,9 +160,11 @@ public class SuperSwingProgressListener<ST>
 		SwingProgressListener swingProgressListener;
 
 		if (progressSource instanceof SuperProgressSource) {
-			swingProgressListener =  new SuperSwingProgressListener((SuperProgressSource) progressSource);
+			final SuperProgressSource superProgressSource = (SuperProgressSource) progressSource;
+			swingProgressListener = new SuperSwingProgressListener(superProgressSource);
+			superProgressSource.addSuperProgressListener((SuperProgressListener) swingProgressListener, true);
 		} else {
-			swingProgressListener =  new SimpleSwingProgressListener(progressSource);
+			swingProgressListener = new SimpleSwingProgressListener(progressSource);
 		}
 //		progressSource.addProgressListener(swingProgressListener);
 
@@ -190,10 +203,15 @@ public class SuperSwingProgressListener<ST>
 		} else if (wasActive && !isActive) {
 			activeSubDisplays.remove(subTaskProgressListener.getGui().getMainComponent());
 		}
-		
+
 		if (wasActive != isActive) {
 			// actualize GUI
-			getContentContainer().getTopLevelAncestor().validate();
+			final Container topLevelAncestor = getContentContainer().getTopLevelAncestor();
+			// only validate if we are actually in some container,
+			// as otherwise we are not visible anyway
+			if (topLevelAncestor != null) {
+				topLevelAncestor.validate();
+			}
 			// actualize state for next time
 			subTaskProgressListener.setWasActive(isActive);
 		}
