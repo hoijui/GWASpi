@@ -480,6 +480,7 @@ public class CombiTestMatrixOperation
 		}
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 
+//		XXX; // this loop uses lots of time!
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
@@ -487,6 +488,7 @@ public class CombiTestMatrixOperation
 			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
+//		XXX; // this loop uses lots of time!
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.FINALIZING);
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
