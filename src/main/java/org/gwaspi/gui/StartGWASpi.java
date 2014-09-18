@@ -34,6 +34,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.OceanTheme;
 import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
@@ -60,6 +62,24 @@ public class StartGWASpi extends JFrame {
 	public static long maxProcessMarkers = 0;
 
 	public StartGWASpi() {
+	}
+
+	private static void ensureColorableProgressBars() {
+
+		// Since Java 6, the new Java default Look & Feel is Metal with the Nimbus theme.
+		// The problem with this is, that it does not allwo to change the color of progress bars;
+		// they are always orange.
+		// Thus we use the previous default Metal theme, called Ocean.
+		if (UIManager.getLookAndFeel().getClass().equals(MetalLookAndFeel.class)) {
+			try {
+				// If L&F = "Metal", set the theme
+				MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+				UIManager.setLookAndFeel(new MetalLookAndFeel());
+			} catch (UnsupportedLookAndFeelException ex) {
+				log.warn("Unable to switch to the Ocean theme for the Metal Look & Feel. "
+						+ "This means we will not have colored progress bars.", ex);
+			}
+		}
 	}
 
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
@@ -102,6 +122,8 @@ public class StartGWASpi extends JFrame {
 			if (args.contains("nolog")) {
 				logOff = true;
 			}
+
+			ensureColorableProgressBars();
 
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
 				@Override
