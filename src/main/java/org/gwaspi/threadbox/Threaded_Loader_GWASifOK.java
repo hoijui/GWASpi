@@ -50,23 +50,33 @@ import org.slf4j.LoggerFactory;
 public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	private static final ProcessInfo loadAndFullGwasProcessInfo
-			= new DefaultProcessInfo("Load GTs & GWAS",
+			= new DefaultProcessInfo("Load GTs & QA & GWAS",
 					"Load Genotypes and conduct a full GWAS on them"); // TODO
-	private static final ProcessInfo loadGTsProcessInfo
+	private static final ProcessInfo loadOnlyProcessInfo // this includes loading data (info & GTs) followed by QA
+			= new DefaultProcessInfo("Load GTs & QA",
+					"Load Genotypes and run QA on them"); // TODO
+	private static final ProcessInfo pureLoadProcessInfo // this is only loading data (info & GTs)
 			= new DefaultProcessInfo("Load GTs",
 					"Load Genotypes"); // TODO
 	private static final ProgressSource PLACEHOLDER_PS_LOAD_GTS = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_LOAD_GTS", null));
 	public static final ProgressSource PLACEHOLDER_PS_GWAS = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_GWAS", null));
-	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeightsLoadOnly;
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeightsFull;
 	static {
-		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+		LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_LOAD_GTS, 0.5);
+		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.5);
+		subProgressSourcesAndWeightsLoadOnly = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+
+		tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(3);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_LOAD_GTS, 0.2);
 		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.2);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GWAS, 0.6);
-		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+		subProgressSourcesAndWeightsFull = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
 	private final boolean dummySamples;
@@ -91,7 +101,11 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		this.dummySamples = dummySamples;
 		this.performGwas = performGwas;
 		this.gwasParams = gwasParams;
-		this.progressSource = new SuperProgressSource(loadAndFullGwasProcessInfo, subProgressSourcesAndWeights);
+		if (performGwas) {
+			this.progressSource = new SuperProgressSource(loadAndFullGwasProcessInfo, subProgressSourcesAndWeightsFull);
+		} else {
+			this.progressSource = new SuperProgressSource(loadOnlyProcessInfo, subProgressSourcesAndWeightsLoadOnly);
+		}
 	}
 
 	@Override
@@ -115,7 +129,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		final DataSetDestination dataReceiver = new LoadingDataSetDestination(innerDataReceiver, loadDescription); // HACK FIXME
 //		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
 //		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
-		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(loadGTsProcessInfo);
+		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(pureLoadProcessInfo);
 		innerDataReceiver.setProgressHandler(dataSetDestinationProgressHandler);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);
 		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
