@@ -50,6 +50,10 @@ public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
+	public static final String COMMAND_LINE_SWITCH_LOG = "log";
+	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
+	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
+
 	// create a JFrame to hold everything
 	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
@@ -88,14 +92,14 @@ public class StartGWASpi extends JFrame {
 		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
 		maxProcessMarkers = Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
 
-		if (args.contains("script")) {
+		if (args.contains(COMMAND_LINE_SWITCH_SCRIPT)) {
 			guiMode = false;
-			if (args.contains("log")) {
+			if (args.contains(COMMAND_LINE_SWITCH_LOG)) {
 				logToFile = true;
-				logPath = args.get(args.indexOf("log") + 1);
+				logPath = args.get(args.indexOf(COMMAND_LINE_SWITCH_LOG) + 1);
 			}
 
-			File scriptFile = new File(args.get(args.indexOf("script") + 1));
+			File scriptFile = new File(args.get(args.indexOf(COMMAND_LINE_SWITCH_SCRIPT) + 1));
 			if (scriptFile.exists()) {
 				if (maxHeapSize > 254) {
 					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
@@ -119,7 +123,7 @@ public class StartGWASpi extends JFrame {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
 			}
 		} else {
-			if (args.contains("nolog")) {
+			if (args.contains(COMMAND_LINE_SWITCH_NOLOG)) {
 				logOff = true;
 			}
 
