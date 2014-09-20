@@ -18,6 +18,7 @@
 package org.gwaspi.global;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -174,7 +175,7 @@ public class Config {
 		}
 	}
 
-	public static boolean initPreferences(boolean _startWithGUI, File scriptFile) {
+	public static boolean initPreferences(boolean startWithGUI, File scriptFile, final Component dialogParent) {
 
 		boolean isInitiated = false;
 		//startWithGUI = _startWithGUI;
@@ -185,20 +186,21 @@ public class Config {
 			// CHECK FOR RECENT GWASPI VERSION
 			checkUpdates();
 
-			if (_startWithGUI) { // GUI MODE
+			if (startWithGUI) { // GUI MODE
 				if (dirToData.getPath().equals("")) {
-					JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.initText);
+					JOptionPane.showMessageDialog(dialogParent, Text.App.initText);
 					File dataDir = Dialogs.selectDirectoryDialog(
 							PROPERTY_DATA_DIR,
-							"Choose your " + Text.App.appName + " data directory");
+							"Choose your " + Text.App.appName + " data directory",
+							dialogParent);
 
 					if (dataDir != null) {
 						try {
 							createDataStructure(dataDir);
-							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 							isInitiated = true;
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.warnUnableToInitForFirstTime);
+							JOptionPane.showMessageDialog(dialogParent, Text.App.warnUnableToInitForFirstTime);
 							log.error(Text.App.warnUnableToInitForFirstTime, ex);
 						}
 					}
@@ -208,13 +210,14 @@ public class Config {
 						int recreateDataFolder = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
 						if (recreateDataFolder == JOptionPane.OK_OPTION) {
 							createDataStructure(dirToData);
-							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.NO_OPTION) {
 							dirToData = Dialogs.selectDirectoryDialog(
 									dirToData,
-									"Choose your " + Text.App.appName + " data directory");
+									"Choose your " + Text.App.appName + " data directory",
+									dialogParent);
 							createDataStructure(dirToData);
-							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.CANCEL_OPTION) {
 							throw new RuntimeException("The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable, and the user chose not to create it");
 						}

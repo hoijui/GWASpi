@@ -327,7 +327,10 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 			FileWriter writer = null;
 			try {
 				// XXX This would be better done by letting the user choose the file directly, not just the directory, right? With sane defaults, it can be just as easy, but more powerfull
-				final File selectedPath = Dialogs.selectDirectoryDialog(Config.PROPERTY_LOG_DIR, "Choose directory to save '" + LOG_FILE_NAME + "' to");
+				final File selectedPath = Dialogs.selectDirectoryDialog(
+						Config.PROPERTY_LOG_DIR,
+						"Choose directory to save '" + LOG_FILE_NAME + "' to",
+						processLog);
 				if (selectedPath == null) {
 					return;
 				}

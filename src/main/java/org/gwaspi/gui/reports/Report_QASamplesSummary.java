@@ -394,22 +394,22 @@ public class Report_QASamplesSummary extends JPanel {
 
 			switch (decision) {
 				case JOptionPane.YES_OPTION:
-					actionSaveReportViewAs();
+					actionSaveReportViewAs(nRows);
 					break;
 				case JOptionPane.NO_OPTION:
-					actionSaveCompleteReportAs();
+					actionSaveCompleteReportAs(nRows);
 					break;
 				default: // JOptionPane.CANCEL_OPTION
 					break;
 			}
 		}
 
-		private void actionSaveReportViewAs() {
+		private void actionSaveReportViewAs(final Component dialogParent) {
 
 			FileWriter writer = null;
 			try {
 				final String newFileName = nRows.getText() + "rows_" + chartPath;
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName, dialogParent);
 				final File newFile = new File(newDir, newFileName);
 				writer = new FileWriter(newFile);
 
@@ -462,11 +462,11 @@ public class Report_QASamplesSummary extends JPanel {
 			}
 		}
 
-		private void actionSaveCompleteReportAs() {
+		private void actionSaveCompleteReportAs(final Component dialogParent) {
 			try {
 				final String reportPath = Study.constructReportsPath(studyKey);
 				final File origFile = new File(reportPath, chartPath);
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath, dialogParent);
 				final File newFile = new File(newDir, chartPath);
 				if (origFile.exists()) {
 					org.gwaspi.global.Utils.copyFile(origFile, newFile);

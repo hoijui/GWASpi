@@ -512,11 +512,14 @@ public abstract class Report_Analysis extends JPanel {
 			this(studyKey, reportFileName, reportTable, nRows, 0);
 		}
 
-		private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
+		private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath, final Component dialogParent) {
 			try {
 				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
-				File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose a new directory for " + chartPath);
+				File newDir = Dialogs.selectDirectoryDialog(
+						Config.PROPERTY_EXPORT_DIR,
+						"Choose a new directory for " + chartPath,
+						dialogParent);
 				if (newDir == null) {
 					// the user has not choosen a directory to save to
 					return;
@@ -537,10 +540,13 @@ public abstract class Report_Analysis extends JPanel {
 			}
 		}
 
-		private void actionSaveReportViewAs(String chartPath) {
+		private void actionSaveReportViewAs(String chartPath, final Component dialogParent) {
 			try {
 				final String newFileName = nRows.getText() + "rows_" + chartPath;
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(
+						Config.PROPERTY_EXPORT_DIR,
+						"Choose the new directory for " + newFileName,
+						dialogParent);
 				final File newFile = new File(newDir, newFileName);
 				final FileWriter writer = new FileWriter(newFile);
 
@@ -592,10 +598,10 @@ public abstract class Report_Analysis extends JPanel {
 
 			switch (decision) {
 				case JOptionPane.YES_OPTION:
-					actionSaveReportViewAs(reportFileName);
+					actionSaveReportViewAs(reportFileName, nRows);
 					break;
 				case JOptionPane.NO_OPTION:
-					actionSaveCompleteReportAs(studyKey, reportFileName);
+					actionSaveCompleteReportAs(studyKey, reportFileName, nRows);
 					break;
 				default: // JOptionPane.CANCEL_OPTION
 					break;

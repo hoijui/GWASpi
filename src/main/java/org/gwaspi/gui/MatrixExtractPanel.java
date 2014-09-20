@@ -683,7 +683,7 @@ public class MatrixExtractPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			txtA_MarkersCriteria.setText("");
 			// Use standard file opener
-			Dialogs.selectAndSetFileDialog(evt, btn_MarkersCriteriaBrowse, txt_MarkersCriteriaFile, "");
+			Dialogs.selectAndSetFileDialog(txt_MarkersCriteriaFile, "");
 		}
 	}
 
@@ -698,7 +698,7 @@ public class MatrixExtractPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			txtA_SamplesCriteria.setText("");
 			// Use standard file opener
-			Dialogs.selectAndSetFileDialog(evt, btn_SamplesCriteriaBrowse, txt_SamplesCriteriaFile, "");
+			Dialogs.selectAndSetFileDialog(txt_SamplesCriteriaFile, "");
 		}
 	}
 
