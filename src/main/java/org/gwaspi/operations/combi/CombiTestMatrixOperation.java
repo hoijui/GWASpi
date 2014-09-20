@@ -203,7 +203,7 @@ public class CombiTestMatrixOperation
 	@Override
 	public int processMatrix() throws IOException {
 
-		LOG.debug("init");
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 //		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
@@ -242,7 +242,7 @@ public class CombiTestMatrixOperation
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
-		LOG.debug("start");
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
 
 		List<Double> weights = runEncodingAndSVM(
 				markerKeys,
@@ -260,11 +260,13 @@ public class CombiTestMatrixOperation
 		// TODO sort the weights (should already be absolute? .. hopefully not!)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
 
+		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+
 		dataSet.setWeights(weights);
 
 		dataSet.finnishWriting();
 
-		LOG.debug("finished");
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return dataSet.getOperationKey().getId();
 	}

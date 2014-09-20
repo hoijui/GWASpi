@@ -84,6 +84,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	@Override
 	public int processMatrix() throws IOException {
 
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
 
 		String prefix = ReportsList.getReportNamePrefix(op);
@@ -91,6 +92,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		String markMissOutName = prefix + "markmissing.txt";
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
 		createSortedMarkerMissingnessReport(getParams().getMarkersQAOpKey(), markMissOutName);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
@@ -118,6 +120,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Marker Mismatch QA Report");
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.COMPLEETED);
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;
 	}

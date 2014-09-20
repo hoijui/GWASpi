@@ -33,6 +33,7 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -105,8 +106,10 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 			final MatrixOperation operation = new HardyWeinbergOperation(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW, operation.getProgressSource(), null);
+			progressSource.setNewStatus(ProcessStatus.RUNNING);
 			hardyWeinbergOperationKey = performOperation(operation);
 
 			final HardyWeinbergOutputParams hardyWeinbergOutputParams
@@ -115,6 +118,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 					= new OutputHardyWeinberg(hardyWeinbergOutputParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW_REPORTS, outputHardyWeinberg.getProgressSource(), null);
 			performOperation(outputHardyWeinberg);
+			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
 	}
 }

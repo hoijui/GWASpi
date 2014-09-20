@@ -29,6 +29,7 @@ import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -82,8 +83,10 @@ public class Threaded_GWAS extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GTFREQ_HW, threaded_GTFreq_HW.getProgressSource(), null);
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW, thisSwi);
 
 //		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
@@ -93,6 +96,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		OperationKey censusOpKey = threaded_GTFreq_HW.getMarkerCensusOperationKey();
 		OperationKey hwOpKey = threaded_GTFreq_HW.getHardyWeinbergOperationKey();
 		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey, progressSource);
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws Exception {

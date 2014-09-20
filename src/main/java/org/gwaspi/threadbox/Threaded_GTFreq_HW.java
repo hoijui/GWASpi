@@ -200,6 +200,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		markerCensusOperationKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
 
 		// HW ON GENOTYPE FREQ.
@@ -211,7 +212,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
 			CommonRunnable.doRunNowInThread(threaded_HardyWeinberg, thisSwi);
+			progressSource.setNewStatus(ProcessStatus.FINALIZING);
 			hardyWeinbergOperationKey = threaded_HardyWeinberg.getHardyWeinbergOperationKey();
+			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
 	}
 }
