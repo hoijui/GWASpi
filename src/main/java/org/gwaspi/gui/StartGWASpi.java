@@ -24,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -50,6 +51,7 @@ public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
+	public static final String COMMAND_LINE_SWITCH_HELP = "help";
 	public static final String COMMAND_LINE_SWITCH_LOG = "log";
 	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
 	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
@@ -113,7 +115,25 @@ public class StartGWASpi extends JFrame {
 		}
 	}
 
+	public static void printHelp(PrintStream out) {
+
+		out.println(Text.App.appName);
+		out.println(Text.App.appDescription);
+		out.println(Text.App.license);
+		out.println();
+		out.println("command line switches:");
+		out.println("\t" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info");
+		out.println("\t" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
+		out.println("\t" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
+		out.println("\t" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
+	}
+
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+
+		if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_HELP)) {
+			printHelp(System.out);
+			return;
+		}
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
