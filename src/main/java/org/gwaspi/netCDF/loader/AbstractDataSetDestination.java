@@ -30,6 +30,8 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +69,20 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void init() throws IOException {
+
+		if (progressHandler == null) {
+			// add basically a Null* (effectless) progress handler, so we do not have to check for == null in many places
+			// NOTE this would be even better wiht a real Null* implementation, though it is a bit tricky to implement that
+			progressHandler = new DataSetDestinationProgressHandler(new DefaultProcessInfo());
+		}
+
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 	}
 
 	@Override
 	public void startLoadingDummySampleInfos() throws IOException {
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.RUNNING);
 	}
 
 	@Override
@@ -79,6 +91,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException {
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 	}
 
 	@Override
@@ -93,9 +106,8 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 		Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
 		sampleInfos.add(sampleInfo);
-		if (progressHandler != null) {
-			progressHandler.getSampleInfosProgressHandler().setProgress(addedSampleInfos++);
-		}
+		progressHandler.getSampleInfosProgressHandler().setProgress(addedSampleInfos);
+		addedSampleInfos++;
 
 		if ((sampleInfos.size() % 100) == 0) {
 			logParsedSampleInfos();
@@ -108,11 +120,17 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void finishedLoadingSampleInfos() throws IOException {
+
+		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.FINALIZING);
 		logParsedSampleInfos();
+		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	@Override
 	public void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException {
+
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.getMarkerInfosProgressHandler().setNewStatus(ProcessStatus.RUNNING);
 	}
 
 	@Override
@@ -130,13 +148,13 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
 
 		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
-		if (progressHandler != null) {
-			progressHandler.getMarkerInfosProgressHandler().setProgress(addedMarkerInfos++);
-		}
+		progressHandler.getMarkerInfosProgressHandler().setProgress(addedMarkerInfos);
+		addedMarkerInfos++;
 	}
 
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
+		progressHandler.getMarkerInfosProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	public void extractChromosomeInfos() throws IOException {
@@ -151,49 +169,53 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void startLoadingChromosomeMetadatas() throws IOException {
+		progressHandler.getChromosomeInfosProgressHandler().setNewStatus(ProcessStatus.RUNNING);
 	}
 
 	@Override
 	public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {
+
 		dataSet.getChromosomeInfos().put(chromosomeKey, chromosomeInfo);
+		progressHandler.getChromosomeInfosProgressHandler().setProgress(dataSet.getChromosomeInfos().size() - 1);
 	}
 
 	@Override
 	public void finishedLoadingChromosomeMetadatas() throws IOException {
+		progressHandler.getChromosomeInfosProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	@Override
 	public void startLoadingAlleles(boolean perSample) throws IOException {
 
+		progressHandler.getGenotypesProgressHandler().setNewStatus(ProcessStatus.INITIALIZING);
 		progressHandler.getGenotypesProgressHandler().setStartState(0);
 		if (perSample) {
 			progressHandler.getGenotypesProgressHandler().setEndState(dataSet.getSampleInfos().size() - 1);
 		} else {
 			progressHandler.getGenotypesProgressHandler().setEndState(dataSet.getMarkerMetadatas().size() - 1);
 		}
+		progressHandler.getGenotypesProgressHandler().setNewStatus(ProcessStatus.RUNNING);
 	}
 
 	@Override
 	public void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException {
-
-		if (progressHandler != null) {
-			progressHandler.getGenotypesProgressHandler().setProgress(sampleIndex);
-		}
+		progressHandler.getGenotypesProgressHandler().setProgress(sampleIndex);
 	}
 
 	@Override
 	public void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException {
-
-		if (progressHandler != null) {
-			progressHandler.getGenotypesProgressHandler().setProgress(markerIndex);
-		}
+		progressHandler.getGenotypesProgressHandler().setProgress(markerIndex);
 	}
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {
+
+		progressHandler.getGenotypesProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 	}
 
 	@Override
 	public void done() throws IOException {
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }
