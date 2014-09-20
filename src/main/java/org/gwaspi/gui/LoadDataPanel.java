@@ -835,7 +835,7 @@ public class LoadDataPanel extends JPanel {
 		lbl_File2.setForeground(Color.black);
 		lbl_FileSampleInfo.setForeground(Color.black);
 
-		boolean[] buttonsOK = new boolean[]{false, false, false};
+		boolean[] buttonsOK = new boolean[] {false, false, false};
 
 		File file1 = new File(txt_File1.getText());
 		File file2 = new File(txt_File2.getText());

@@ -67,8 +67,7 @@ public class Dialogs {
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
 			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
-			for (int i = 0; i < operationsList.size(); i++) {
-				OperationMetadata op = operationsList.get(i);
+			for (OperationMetadata op : operationsList) {
 				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -150,8 +149,7 @@ public class Dialogs {
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
 			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
-			for (int i = 0; i < operationsList.size(); i++) {
-				OperationMetadata op = operationsList.get(i);
+			for (OperationMetadata op : operationsList) {
 				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
