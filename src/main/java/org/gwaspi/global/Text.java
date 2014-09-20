@@ -24,6 +24,8 @@ public class Text {
 	public static class App {
 
 		public static final String appName = "GWASpi";
+		public static final String inMemoryNoteShort = "in-memory mode";
+		public static final String inMemoryNote = inMemoryNoteShort + "; the data is lost when the application terminates!";
 		public static final String memoryAvailable1 = "MB have been allocated to run " + Text.App.appName + ".";
 		public static final String memoryAvailable2 = "This will allow you to operate on +/- ";
 		public static final String memoryAvailable3 = " markers.";

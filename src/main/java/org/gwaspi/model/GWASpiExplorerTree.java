@@ -44,6 +44,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.IntroPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.MatrixMarkerQAPanel;
+import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.StudyManagementPanel;
 import org.gwaspi.gui.reports.ChartDefaultDisplay;
 import org.gwaspi.gui.reports.ManhattanChartDisplay;
@@ -99,7 +100,7 @@ public class GWASpiExplorerTree {
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
 				NodeElementInfo.NODE_ID_NONE,
 				NodeElementInfo.NodeType.ROOT,
-				Text.App.appName,
+				StartGWASpi.constructHighlyVisibleApplicationName(),
 				null));
 		GWASpiExplorerNodes.addNode(null, top, false);
 		growTree(top);
