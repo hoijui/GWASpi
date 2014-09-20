@@ -83,6 +83,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 	@Override
 	public int processMatrix() throws IOException {
 
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
@@ -92,6 +93,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		final String sampleMissOutName = prefix + "samplmissing.txt";
 		final File sampleMissOutFile = new File(reportPath, sampleMissOutName);
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
 		createSortedSampleMissingnessReport(getParams().getSampleQAOpKey(), sampleMissOutFile);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
@@ -125,6 +127,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 //			}
 //		}
 		creatingHetzyPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;
 	}

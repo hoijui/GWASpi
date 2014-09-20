@@ -41,6 +41,7 @@ import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -121,6 +122,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final LoadingMatrixMetadataFactory loadingMatrixMetadataFactory
 				= new LoadingMatrixMetadataFactory(loadDescription);
 		final AbstractDataSetDestination innerDataReceiver
@@ -134,6 +136,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);
 		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
 				= new SampleInfoExtractorDataSetDestination(dataReceiver);
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
@@ -178,5 +181,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
 			CommonRunnable.doRunNowInThread(threaded_GWAS, thisSwi);
 		}
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

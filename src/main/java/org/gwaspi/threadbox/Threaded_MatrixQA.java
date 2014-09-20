@@ -36,6 +36,7 @@ import org.gwaspi.operations.qasamples.QASamplesOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -120,11 +121,12 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		List<OPType> necessaryOpTypes = new ArrayList<OPType>();
 		necessaryOpTypes.add(OPType.SAMPLE_QA);
 		necessaryOpTypes.add(OPType.MARKER_QA);
 		List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOpTypes, parentKey, true);
-
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
 
 		if (missingOPs.contains(OPType.SAMPLE_QA)) {
 			final QASamplesOperationParams qaSamplesOperationParams = new QASamplesOperationParams(parentKey);
@@ -152,6 +154,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 				OperationManager.performOperation(outputQAMarkers);
 			}
 		}
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	static OperationKey[] matrixCompleeted(SwingWorkerItem thisSwi, MatrixKey matrixKey, final SuperProgressSource superProgressSource)

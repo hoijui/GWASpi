@@ -139,10 +139,10 @@ public class Threaded_Test extends CommonRunnable {
 				final MatrixOperation operation = new OutputTest(testOutputParams);
 				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_REPORTS, operation.getProgressSource(), null);
 				operation.processMatrix();
+				progressSource.setNewStatus(ProcessStatus.FINALIZING);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 			}
 		}
-//		progressSource.setNewStatus(ProcessStatus.FINALIZING);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

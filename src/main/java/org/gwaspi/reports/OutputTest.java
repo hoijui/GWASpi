@@ -187,6 +187,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	@Override
 	public int processMatrix() throws IOException {
 
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
 		final StudyKey studyKey = getParams().getTestOperationKey().getParentMatrixKey().getStudyKey();
 
@@ -196,6 +197,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving {} test", testName);
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.RUNNING);
 		writeManhattanPlotFromAssociationData(manhattanName, 4000, 500);
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.FINALIZING);
@@ -241,8 +243,10 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 				testName + " Tests Values",
 				studyKey));
 		writingAssociationReportPH.setNewStatus(ProcessStatus.COMPLEETED);
+		operationPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		org.gwaspi.global.Utils.sysoutCompleted(testName + " Test Reports & Charts");
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;
 	}

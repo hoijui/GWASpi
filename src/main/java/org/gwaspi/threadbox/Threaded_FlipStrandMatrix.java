@@ -30,6 +30,7 @@ import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -81,15 +82,18 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 			final DataSetDestination dataSetDestination
 					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixGenotypesFlipperMetadataFactory.SINGLETON);
 			MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(params, dataSetDestination);
 
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
+			progressSource.setNewStatus(ProcessStatus.RUNNING);
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
+			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
 	}
 }

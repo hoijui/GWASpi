@@ -37,6 +37,7 @@ import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -115,6 +116,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		OperationKey combiTestOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			progressSource.setNewStatus(ProcessStatus.RUNNING);
 			final MatrixOperation operation = new CombiTestMatrixOperation(paramsTest);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, operation.getProgressSource(), null);
 			combiTestOpKey = OperationManager.performOperation(operation);
@@ -156,6 +158,7 @@ public class Threaded_Combi extends CommonRunnable {
 				OperationManager.performOperation(testOutputOperation);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 			}
+			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
 	}
 }
