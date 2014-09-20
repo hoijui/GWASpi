@@ -173,12 +173,9 @@ public class SuperSwingProgressListener<ST>
 
 		if (wasActive != isActive) {
 			// actualize GUI
-			final Container topLevelAncestor = getContentContainer().getTopLevelAncestor();
-			// only validate if we are actually in some container,
-			// as otherwise we are not visible anyway
-			if (topLevelAncestor != null) {
-				topLevelAncestor.validate();
-			}
+			activeSubDisplays.revalidate();
+			activeSubDisplays.repaint();
+
 			// actualize state for next time
 			subTaskProgressListener.setWasActive(isActive);
 		}
