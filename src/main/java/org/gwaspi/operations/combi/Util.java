@@ -457,6 +457,7 @@ public class Util {
 					genotypeEncoder,
 					new NullProgressHandler<Integer>(null),
 					new NullProgressHandler<Integer>(null),
+					new NullProgressHandler(null),
 					new NullProgressHandler<Integer>(null));
 		} catch (Exception ex) {
 			ex.printStackTrace();
