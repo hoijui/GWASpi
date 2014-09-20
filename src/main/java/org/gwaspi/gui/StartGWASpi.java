@@ -38,7 +38,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import org.gwaspi.cli.CliExecutor;
-import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
@@ -64,7 +63,7 @@ public class StartGWASpi extends JFrame {
 	public static boolean logOff = false;
 	public static boolean inMemoryStorage = false;
 	private static String logPath;
-	public static JFrame mainGUIFrame = new JFrame(cGlobal.APP_NAME);
+	public static JFrame mainGUIFrame = new JFrame(Text.App.appName);
 	public static JTabbedPane allTabs = new JTabbedPane();
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
