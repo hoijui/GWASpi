@@ -70,6 +70,20 @@ public class StartGWASpi extends JFrame {
 	public StartGWASpi() {
 	}
 
+	/**
+	 * The name returned from this may considerably vary in length,
+	 * and will be used in places like the main window title.
+	 * @return application name, possibly extended by important info
+	 */
+	public static String constructHighlyVisibleApplicationName() {
+
+		String highlyVisibleApplicationName = Text.App.appName;
+		if (inMemoryStorage) {
+			highlyVisibleApplicationName += " - " + Text.App.inMemoryNoteShort;
+		}
+		return highlyVisibleApplicationName;
+	}
+
 	private static void ensureColorableProgressBars() {
 
 		// Since Java 6, the new Java default Look & Feel is Metal with the Nimbus theme.
@@ -218,7 +232,7 @@ public class StartGWASpi extends JFrame {
 
 		final JFrame mainGUIFrame;
 		if (startWithGUI) {
-			mainGUIFrame = new JFrame(Text.App.appName);
+			mainGUIFrame = new JFrame(constructHighlyVisibleApplicationName());
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent we) {
