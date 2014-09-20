@@ -314,8 +314,8 @@ public class Config {
 		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
 
 		Document localDom = getLocalVersionDom();
-		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
+		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 	}
 
 	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
@@ -382,8 +382,8 @@ public class Config {
 		setConfigValue(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG, lastSampleQAMissingratio);
 
 		Document localDom = getLocalVersionDom();
-		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
+		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 
 		setDBSystemDir(derbyCenter.getPath());
 	}
@@ -396,8 +396,8 @@ public class Config {
 			if (localDom != null) { // Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");
 
-				List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+				List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
+				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 
 				URL remoteVersionPath = new URL(cGlobal.REMOTE_VERSION_XML);
 				Document remoteDom = null;
@@ -416,7 +416,7 @@ public class Config {
 					Date localUpdateDate = XMLParser.getDateValue(localElements.get(0), "Date");
 					String localVersionNumber = XMLParser.getTextValue(localElements.get(0), "Number");
 
-					List<Element> remoteElements = XMLParser.parseDocument(remoteDom, "GWASpi");
+					List<Element> remoteElements = XMLParser.parseDocument(remoteDom, Text.App.appName);
 					Date remoteUpdateDate = XMLParser.getDateValue(remoteElements.get(0), "Date");
 					String remoteVersionNumber = XMLParser.getTextValue(remoteElements.get(0), "Number");
 					String remoteCompatibilityNumber = XMLParser.getTextValue(remoteElements.get(0), "Compatibility");

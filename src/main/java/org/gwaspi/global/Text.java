@@ -17,7 +17,6 @@
 
 package org.gwaspi.global;
 
-import org.gwaspi.constants.cGlobal;
 import org.gwaspi.constants.cNetCDF;
 
 public class Text {
@@ -41,7 +40,7 @@ public class Text {
 //				+ "\nThis is free software, and you are welcome to redistribute it"
 //				+ "\nunder certain conditions; see the LICENSE file.";
 		public static final String cite = "Please cite Genome-wide Association Studies Pipeline (GWASpi): A desktop application for genome-wide SNP analysis and management, as in http://bioinformatics.oxfordjournals.org/content/early/2011/05/16/bioinformatics.btr301.abstract";
-		public static final String warnUnableToInitForFirstTime = cGlobal.APP_NAME + " was unable to create the database on the \nspecified path. Please check if the write rights are enabled on \nthe given path or if there is enough space available";
+		public static final String warnUnableToInitForFirstTime = Text.App.appName + " was unable to create the database on the \nspecified path. Please check if the write rights are enabled on \nthe given path or if there is enough space available";
 		public static final String Tab0 = Text.App.appName + " Management";
 		public static final String Tab1 = "Process Overview";
 		public static final String Tab2 = "Study Log";

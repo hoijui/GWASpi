@@ -22,7 +22,6 @@ import javax.swing.UIManager;
 
 public class cGlobal {
 
-	public static final String APP_NAME = "GWASpi";
 	public static final String OSNAME = System.getProperty("os.name");
 	public static final String OSARCH = System.getProperty("os.arch");
 	public static final String SORT_SINGLE_DIR_CONFIG = "SSdir";
