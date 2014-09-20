@@ -138,6 +138,11 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 			}
 			curIndex++;
 		}
+		final boolean oldFound = (oldWeight != null);
+		if (!oldFound) {
+			throw new IllegalArgumentException("Could not find old progress source: " + oldProgressSource.toString());
+		}
+
 		subProgressSourcesAndWeights.clear();
 		subProgressSourcesAndWeights.putAll(newPSs);
 
