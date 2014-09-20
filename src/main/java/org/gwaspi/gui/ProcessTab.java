@@ -19,6 +19,8 @@ package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -31,10 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
@@ -74,10 +80,13 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 		this.scrl_Overview = new JScrollPane();
 //		final JPanel pnl_Logo = new JPanel();
 //		final JLabel lbl_Logo = new JLabel();
+		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
+		this.pnl_progress.setLayout(new GridLayout(0, 1));
+		scrl_progress.setViewportView(this.pnl_progress);
 		pnl_top.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
 		pnl_top.add(scrl_Overview, BorderLayout.NORTH);
-		pnl_top.add(pnl_progress, BorderLayout.CENTER);
+		pnl_top.add(scrl_progress, BorderLayout.CENTER);
 
 		final JPanel pnl_center = new JPanel();
 		final JScrollPane scrl_ProcessLog = new JScrollPane();
@@ -197,7 +206,16 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 				= SuperSwingProgressListener.newDisplay(progressSource);
 		progressSource.addProgressListener(taskProgressDisplay);
 
-		pnl_progress.add(taskProgressDisplay.getMainComponent());
+		final JComponent taskGUI = taskProgressDisplay.getMainComponent();
+		final Insets allEdgedsSmall = new Insets(
+				CurrentStudyPanel.GAP_SMALL,
+				CurrentStudyPanel.GAP_SMALL,
+				CurrentStudyPanel.GAP_SMALL,
+				CurrentStudyPanel.GAP_SMALL);
+		taskGUI.setBorder(new CompoundBorder(
+				new EmptyBorder(allEdgedsSmall),
+				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgedsSmall))));
+		pnl_progress.add(taskGUI);
 		taskProgressDisplays.add(taskProgressDisplay);
 
 		updateProcessOverview();
