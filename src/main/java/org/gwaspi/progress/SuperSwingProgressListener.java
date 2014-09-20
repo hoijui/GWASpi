@@ -18,7 +18,6 @@
 package org.gwaspi.progress;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -36,7 +35,6 @@ public class SuperSwingProgressListener<ST>
 		implements SuperProgressListener<ST>
 {
 	private final Map<ProgressSource, SubTaskProgressListener> subProgressSourcesToContainer;
-//	private SwingProgressListener subProgressSourcesDisplay;
 	private final JPanel activeSubDisplays;
 	private final JPanel subBars;
 	private final GridBagConstraints subBarsGBC;
@@ -50,7 +48,6 @@ public class SuperSwingProgressListener<ST>
 
 		this.subProgressSourcesToContainer
 				= new HashMap<ProgressSource, SubTaskProgressListener>(numSubs);
-//		this.subProgressSourcesDisplay = null;
 
 		final JPanel subContainer = new JPanel();
 		subContainer.setLayout(new BorderLayout());
@@ -113,14 +110,12 @@ public class SuperSwingProgressListener<ST>
 	private class SubTaskProgressListener extends AbstractProgressListener<ST> {
 
 		private final ProgressSource progressSource;
-//		private final JProgressBar progressBar;
 		private final SwingProgressListener gui;
 		private boolean wasActive;
 
-		SubTaskProgressListener(final ProgressSource progressSource, /*final JProgressBar progressBar, */final SwingProgressListener gui) {
+		SubTaskProgressListener(final ProgressSource progressSource, final SwingProgressListener gui) {
 
 			this.progressSource = progressSource;
-//			this.progressBar = progressBar;
 			this.gui = gui;
 			this.wasActive = progressSource.getStatus().isActive();
 		}
@@ -128,14 +123,6 @@ public class SuperSwingProgressListener<ST>
 		public ProgressSource getProgressSource() {
 			return progressSource;
 		}
-
-//		public JProgressBar getProgressBar() {
-//			return progressBar;
-//		}
-
-//		public void setGui(SwingProgressListener gui) {
-//			this.gui = gui;
-//		}
 
 		public SwingProgressListener getGui() {
 			return gui;
@@ -166,40 +153,20 @@ public class SuperSwingProgressListener<ST>
 		} else {
 			swingProgressListener = new SimpleSwingProgressListener(progressSource);
 		}
-//		progressSource.addProgressListener(swingProgressListener);
 
 		return swingProgressListener;
 	}
 
 	private void visualizeSubTaskStatus(final SubTaskProgressListener subTaskProgressListener) {
 
-//		final JProgressBar subProgressBar = subTaskProgressListener.getProgressBar();
 		final boolean wasActive = subTaskProgressListener.isWasActive();
 		final boolean isActive = subTaskProgressListener.getProgressSource().getStatus().isActive();
 
-//		final SwingProgressListener subDisplay = subTaskProgressListener.getGui();
-//		subProgressBar.setToolTipText(String.valueOf(status));
-//
 //		if (status.isEnd()) {
 //			subProgressBar.setValue(100);
 //		}
 		if (!wasActive && isActive) {
 			activeSubDisplays.add(subTaskProgressListener.getGui().getMainComponent());
-//			subProgressBar.setIndeterminate(status.isActive());
-//			SwingProgressListener subDisplay = subTaskProgressListener.getGui();
-//			if (subDisplay == null) {
-//				subDisplay = newDisplay(subTaskProgressListener.getProgressSource());
-//				subTaskProgressListener.setGui(subDisplay);
-//			}
-//			if (subProgressSourcesDisplay != subDisplay) { // is not yet in details display
-//				if (subProgressSourcesDisplay != null) {
-//					// remove the previous display
-//					getContentContainer().remove(subProgressSourcesDisplay.getMainComponent());
-//				}
-//				getContentContainer().add(subDisplay.getMainComponent(), BorderLayout.CENTER);
-//				getContentContainer().getTopLevelAncestor().validate();
-//				subProgressSourcesDisplay = subDisplay;
-//			}
 		} else if (wasActive && !isActive) {
 			activeSubDisplays.remove(subTaskProgressListener.getGui().getMainComponent());
 		}
