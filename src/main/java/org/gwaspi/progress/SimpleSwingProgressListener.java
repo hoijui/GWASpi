@@ -81,6 +81,7 @@ public class SimpleSwingProgressListener<ST>
 	public void statusChanged(ProcessStatusChangeEvent evt) {
 		super.statusChanged(evt);
 
+		updateToolTipText(evt.getProgressSource());
 		bar.setIndeterminate(!numIntervallsKnown && evt.getNewStatus().isActive());
 		bar.setForeground(statusToColor(evt.getNewStatus())); // the color of the bar before the current value
 //		bar.setBackground(statusToColor(evt.getNewStatus())); // the color of the bar after the current value
