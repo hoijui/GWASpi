@@ -63,7 +63,6 @@ public class StartGWASpi extends JFrame {
 	public static boolean logOff = false;
 	public static boolean inMemoryStorage = false;
 	private static String logPath;
-	public static JFrame mainGUIFrame = new JFrame(Text.App.appName);
 	public static JTabbedPane allTabs = new JTabbedPane();
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
@@ -177,21 +176,6 @@ public class StartGWASpi extends JFrame {
 
 			ensureColorableProgressBars();
 
-			mainGUIFrame.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent we) {
-					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
-					if (jobsPending == 0) {
-						we.getWindow().setVisible(false);
-					} else {
-						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
-						if (decision == JOptionPane.YES_OPTION) {
-							we.getWindow().setVisible(false);
-						}
-					}
-				}
-			});
-
 			try {
 				// Set cross-platform Java L&F (also called "Metal")
 				//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -227,12 +211,32 @@ public class StartGWASpi extends JFrame {
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}
-
-			mainGUIFrame.setExtendedState(MAXIMIZED_BOTH);
 		}
 	}
 
 	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
+
+		final JFrame mainGUIFrame;
+		if (startWithGUI) {
+			mainGUIFrame = new JFrame(Text.App.appName);
+			mainGUIFrame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent we) {
+					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
+					if (jobsPending == 0) {
+						we.getWindow().setVisible(false);
+					} else {
+						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
+						if (decision == JOptionPane.YES_OPTION) {
+							we.getWindow().setVisible(false);
+						}
+					}
+				}
+			});
+			mainGUIFrame.setExtendedState(MAXIMIZED_BOTH);
+		} else {
+			mainGUIFrame = null;
+		}
 
 		// initialize configuration of moapi
 		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile, mainGUIFrame);
