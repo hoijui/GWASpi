@@ -88,22 +88,47 @@ public class StartGWASpi extends JFrame {
 		}
 	}
 
+	private static boolean hasCommandLineSwitch(final List<String> args, final String switchName) {
+		return (args.contains(switchName) || args.contains("--" + switchName));
+	}
+
+	private static String fetchCommandLineSwitchArgument(final List<String> args, final String switchName) {
+
+		final int switchLocation = locateCommandLineSwitch(args, switchName);
+		if (switchLocation >= 0) {
+			return args.get(switchLocation + 1);
+		} else {
+			return null;
+		}
+	}
+
+	private static int locateCommandLineSwitch(final List<String> args, final String switchName) {
+
+		if (args.contains(switchName)) {
+			return args.indexOf(switchName);
+		} else if (args.contains("--" + switchName)) {
+			return args.indexOf("--" + switchName);
+		} else {
+			return -1;
+		}
+	}
+
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
 		maxProcessMarkers = Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
 
-		inMemoryStorage = args.contains(COMMAND_LINE_SWITCH_IN_MEMORY);
+		inMemoryStorage = hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_IN_MEMORY);
 
-		if (args.contains(COMMAND_LINE_SWITCH_SCRIPT)) {
+		if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_SCRIPT)) {
 			guiMode = false;
-			if (args.contains(COMMAND_LINE_SWITCH_LOG)) {
+			if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_LOG)) {
 				logToFile = true;
-				logPath = args.get(args.indexOf(COMMAND_LINE_SWITCH_LOG) + 1);
+				logPath = fetchCommandLineSwitchArgument(args, COMMAND_LINE_SWITCH_LOG);
 			}
 
-			File scriptFile = new File(args.get(args.indexOf(COMMAND_LINE_SWITCH_SCRIPT) + 1));
+			File scriptFile = new File(fetchCommandLineSwitchArgument(args, COMMAND_LINE_SWITCH_SCRIPT));
 			if (scriptFile.exists()) {
 				if (maxHeapSize > 254) {
 					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
@@ -127,7 +152,7 @@ public class StartGWASpi extends JFrame {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
 			}
 		} else {
-			if (args.contains(COMMAND_LINE_SWITCH_NOLOG)) {
+			if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_NOLOG)) {
 				logOff = true;
 			}
 
