@@ -70,8 +70,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(2);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MARKER_CENSUS, 0.8);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_HARDY_WEINBERG, 0.2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_PREPARE_MARKER_CENSUS, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MARKER_CENSUS, 0.2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_HARDY_WEINBERG, 0.7);
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
