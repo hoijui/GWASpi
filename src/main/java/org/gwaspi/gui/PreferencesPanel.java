@@ -387,7 +387,8 @@ public class PreferencesPanel extends JPanel {
 				if (currentDataDirPath != null) {
 					File newDataDir = Dialogs.selectDirectoryDialog(
 							Config.PROPERTY_DATA_DIR,
-							"Choose a new " + Text.App.appName + " data directory");
+							"Choose a new " + Text.App.appName + " data directory",
+							preferencesTable);
 
 					try {
 						File origFile = new File(currentDataDirPath + "/datacenter");

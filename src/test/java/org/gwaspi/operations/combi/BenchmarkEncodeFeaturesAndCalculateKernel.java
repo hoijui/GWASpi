@@ -43,7 +43,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 
 	public static void main(String[] args) throws Exception {
 
-		boolean isInitiated = Config.initPreferences(true, null);
+		boolean isInitiated = Config.initPreferences(true, null, null);
 
 		MatrixKey matrix = MatricesList.getMatrixList().get(0);
 		OperationMetadata qaMarkersOperation = OperationsList.getOffspringOperationsMetadata(matrix, OPType.MARKER_QA).get(0);

@@ -235,7 +235,7 @@ public class StartGWASpi extends JFrame {
 	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
 
 		// initialize configuration of moapi
-		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
+		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile, mainGUIFrame);
 
 		if (isInitiated) {
 			if (startWithGUI) {

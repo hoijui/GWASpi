@@ -392,7 +392,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				.addContainerGap(14, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Save.setAction(new SaveAsAction());
+		btn_Save.setAction(new SaveAsAction(this));
 
 		btn_Reset.setAction(new ResetAction(testOpKey));
 
@@ -725,8 +725,11 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	private class SaveAsAction extends AbstractAction {
 
-		SaveAsAction() {
+		private final Component dialogParent;
 
+		SaveAsAction(final Component dialogParent) {
+
+			this.dialogParent = dialogParent;
 			putValue(NAME, Text.All.save);
 		}
 
@@ -734,7 +737,10 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				final String newFileName = "zoom_" + origMarkerKey + ".png";
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(
+						Config.PROPERTY_EXPORT_DIR,
+						"Choose the new directory for " + newFileName,
+						dialogParent);
 				final File newFile = new File(newDir, newFileName);
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {

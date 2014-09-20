@@ -23,7 +23,6 @@ import java.util.List;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
-import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
@@ -65,9 +64,9 @@ public class SwingDeleterItemList {
 	}
 
 	public static void deleteAllListed() {
-		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
-		}
+//		if (StartGWASpi.guiMode) {
+//			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
+//		}
 
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (currentSdi.getQueueState().equals(QueueState.QUEUED)) {
@@ -132,7 +131,7 @@ public class SwingDeleterItemList {
 
 		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
 		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
+//			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 			try {
 				MultiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {

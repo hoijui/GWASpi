@@ -113,7 +113,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_desc));
 		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
-		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study));
+		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study, this));
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
 		btn_Back.setAction(new BackAction());
@@ -170,10 +170,12 @@ public class CurrentStudyPanel extends JPanel {
 	private static class LoadSampleInfoAction extends AbstractAction {
 
 		private final Study study;
+		private final Component dialogParent;
 
-		LoadSampleInfoAction(Study study) {
+		LoadSampleInfoAction(Study study, final Component dialogParent) {
 
 			this.study = study;
+			this.dialogParent = dialogParent;
 			putValue(NAME, Text.Study.updateSampleInfo);
 		}
 
@@ -181,7 +183,7 @@ public class CurrentStudyPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Dialogs.showInfoDialogue(Text.Study.infoSampleInfo);
-				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, dialogParent);
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
 					ProcessTab.getSingleton().showTab();
 

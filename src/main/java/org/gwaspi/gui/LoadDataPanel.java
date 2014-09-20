@@ -716,7 +716,7 @@ public class LoadDataPanel extends JPanel {
 			// CHECK IF HOMONYM .PED FILE EXISTS IN PLINK CASE
 			if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(evt, btn_File1, txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, "");
 				if (!txt_File1.getText().isEmpty()) {
 					File pedFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".ped");
 					if (txt_File2.getText().isEmpty() && pedFile.exists()) {
@@ -730,7 +730,7 @@ public class LoadDataPanel extends JPanel {
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(evt, btn_File1, txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, "");
 				if (!txt_File1.getText().isEmpty()) {
 					File bimFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".bim");
 					File famFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".fam");
@@ -751,10 +751,10 @@ public class LoadDataPanel extends JPanel {
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
 				// Use directory selector
-				Dialogs.selectAndSetDirectoryDialog(evt, btn_File1, txt_File1, "", ""); //only dirs
+				Dialogs.selectAndSetDirectoryDialog(txt_File1, "", ""); // only dirs
 			} else {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(evt, btn_File1, txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, "");
 			}
 		}
 	}
@@ -771,7 +771,7 @@ public class LoadDataPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
 			if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
-				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File mapFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".map");
 					if (txt_File1.getText().isEmpty() && mapFile.exists()) {
@@ -784,7 +784,7 @@ public class LoadDataPanel extends JPanel {
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
-				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File bedFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".bed");
 					File famFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".fam");
@@ -804,13 +804,13 @@ public class LoadDataPanel extends JPanel {
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.BEAGLE)) {
-				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, "");
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.HGDP1)) {
-				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, "");
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
-				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, "");
 			} else {
-				Dialogs.selectAndSetDirectoryDialog(evt, btn_File2, txt_File2, "", ""); //only dirs
+				Dialogs.selectAndSetDirectoryDialog(txt_File2, "", ""); // only dirs
 			}
 		}
 	}
@@ -826,7 +826,7 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
-			Dialogs.selectAndSetFileDialog(evt, btn_FileSampleInfo, txt_FileSampleInfo, "");
+			Dialogs.selectAndSetFileDialog(txt_FileSampleInfo, "");
 		}
 	}
 

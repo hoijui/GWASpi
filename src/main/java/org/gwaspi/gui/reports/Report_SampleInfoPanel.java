@@ -148,7 +148,7 @@ public class Report_SampleInfoPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
+		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable, this));
 		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInfoReport));
 
@@ -228,12 +228,12 @@ public class Report_SampleInfoPanel extends JPanel {
 		tbl_ReportTable.setRowSorter(sorter);
 	}
 
-	private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
+	private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath, final Component dialogParent) {
 
 		try {
 			final String reportPath = Study.constructReportsPath(studyKey);
 			final File origFile = new File(reportPath + chartPath);
-			final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+			final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath, dialogParent);
 			final File newFile = new File(newDir, chartPath);
 			if (origFile.exists()) {
 				Utils.copyFile(origFile, newFile);
@@ -253,10 +253,12 @@ public class Report_SampleInfoPanel extends JPanel {
 	private static class SaveReportViewAsAction extends AbstractAction {
 
 		private final JTable reportTable;
+		private final Component dialogParent;
 
-		SaveReportViewAsAction(JTable reportTable) {
+		SaveReportViewAsAction(JTable reportTable, final Component dialogParent) {
 
 			this.reportTable = reportTable;
+			this.dialogParent = dialogParent;
 			putValue(NAME, Text.All.save);
 		}
 
@@ -265,7 +267,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 			try {
 				final String newFileName = "sampleInfo.txt";
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName, dialogParent);
 				final File newFile = new File(newDir, newFileName);
 				FileWriter writer = new FileWriter(newFile);
 

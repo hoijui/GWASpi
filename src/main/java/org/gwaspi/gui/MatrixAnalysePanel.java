@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -96,7 +98,7 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-		Action gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams);
+		Action gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams, this);
 		gwasInOneGoAction.setEnabled(currentOP == null);
 
 //		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(observedElementKey);
@@ -180,7 +182,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_operationsTable));
 		btn_1_1.setAction(gwasInOneGoAction);
-		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams);
+		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams, this);
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 		btn_1_3.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
@@ -240,9 +242,10 @@ public class MatrixAnalysePanel extends JPanel {
 			try {
 				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentKey);
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
+				final Window windowAncestor = SwingUtilities.getWindowAncestor(dialogParent);
+				windowAncestor.setCursor(CursorUtils.WAIT_CURSOR);
 				Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(parentKey);
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
+				windowAncestor.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(Affection.UNAFFECTED)
 						&& affectionStates.contains(Affection.AFFECTED))
@@ -362,11 +365,13 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private final DataSetKey parentKey;
 		private GWASinOneGOParams gwasParams;
+		private final Component dialogParent;
 
-		GenFreqAndHWAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams) {
+		GenFreqAndHWAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams, final Component dialogParent) {
 
 			this.parentKey = parentKey;
 			this.gwasParams = gwasParams;
+			this.dialogParent = dialogParent;
 			putValue(NAME, Text.Operation.htmlGTFreqAndHW);
 		}
 
@@ -398,7 +403,7 @@ public class MatrixAnalysePanel extends JPanel {
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				if (choice == JOptionPane.NO_OPTION) {
 					// BY EXTERNAL PHENOTYPE FILE
-					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, dialogParent);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
 						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
@@ -554,11 +559,13 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
+		private final Component dialogParent;
 
-		GwasInOneGoAction(DataSetKey observedElementKey, GWASinOneGOParams gwasParams) {
+		GwasInOneGoAction(DataSetKey observedElementKey, GWASinOneGOParams gwasParams, final Component dialogParent) {
 
 			this.observedElementKey = observedElementKey;
 			this.gwasParams = gwasParams;
+			this.dialogParent = dialogParent;
 			setEnabled(false);
 			putValue(NAME, Text.Operation.gwasInOneGo);
 		}
@@ -580,7 +587,7 @@ public class MatrixAnalysePanel extends JPanel {
 					technology = ((MatrixMetadata) observedElementMetadata).getTechnology();
 				}
 				if (choice == JOptionPane.NO_OPTION) { // BY EXTERNAL PHENOTYPE FILE
-					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, dialogParent);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
 						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
@@ -613,10 +620,11 @@ public class MatrixAnalysePanel extends JPanel {
 				{
 					// At least one test has been picked
 					log.info(Text.All.processing);
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
+					final Window windowAncestor = SwingUtilities.getWindowAncestor(dialogParent);
+					windowAncestor.setCursor(CursorUtils.WAIT_CURSOR);
 					// use Sample Info affection state from the DB
 					Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(observedElementKey);
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
+					windowAncestor.setCursor(CursorUtils.DEFAULT_CURSOR);
 					if (affectionStates.contains(Affection.UNAFFECTED)
 							&& affectionStates.contains(Affection.AFFECTED))
 					{

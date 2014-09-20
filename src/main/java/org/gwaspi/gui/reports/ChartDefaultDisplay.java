@@ -18,6 +18,7 @@
 package org.gwaspi.gui.reports;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class ChartDefaultDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath));
+		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
 
 		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
 
@@ -151,11 +152,13 @@ public class ChartDefaultDisplay extends JPanel {
 
 		private final StudyKey studyKey;
 		private final String chartPath;
+		private final Component dialogParent;
 
-		SaveAsAction(StudyKey studyKey, String chartPath) {
+		SaveAsAction(StudyKey studyKey, String chartPath, final Component dialogParent) {
 
 			this.studyKey = studyKey;
 			this.chartPath = chartPath;
+			this.dialogParent = dialogParent;
 			putValue(NAME, Text.All.save);
 		}
 
@@ -164,7 +167,10 @@ public class ChartDefaultDisplay extends JPanel {
 			try {
 				final String reportPath = Study.constructReportsPath(studyKey);
 				final File origFile = new File(reportPath, chartPath);
-				final File newChartDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath);
+				final File newChartDir = Dialogs.selectDirectoryDialog(
+						Config.PROPERTY_EXPORT_DIR,
+						"Choose the new directory for " + chartPath,
+						dialogParent);
 				final File newFile = new File(newChartDir, chartPath);
 
 				if (origFile.exists()) {

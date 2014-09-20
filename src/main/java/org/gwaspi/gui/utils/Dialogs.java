@@ -17,15 +17,15 @@
 
 package org.gwaspi.gui.utils;
 
-import java.awt.event.ActionEvent;
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
@@ -337,14 +337,24 @@ public class Dialogs {
 	//</editor-fold>
 
 	// <editor-fold defaultstate="expanded" desc="FILE OPEN DIALOGUES">
-	public static void selectAndSetFileDialog(ActionEvent evt, JButton openButton, JTextField textField, final String filter) {
-		selectAndSetFileInCurrentDirDialog(evt, openButton, cGlobal.HOMEDIR, textField, filter);
+	public static void selectAndSetFileDialog(JTextField textField, final String filter) {
+		selectAndSetFileInCurrentDirDialog(cGlobal.HOMEDIR, textField, filter);
 	}
 
-	public static void selectAndSetFileInCurrentDirDialog(ActionEvent evt, JButton openButton, String dir, JTextField textField, final String filter) {
+	public static void selectAndSetFileInCurrentDirDialog(String dir, JTextField textField, final String filter) {
+		selectAndSetDialog(textField, dir, filter, JFileChooser.FILES_AND_DIRECTORIES);
+	}
+
+	public static File selectAndSetDirectoryDialog(JTextField textField, String dir, final String filter) {
+		return selectAndSetDialog(textField, dir, filter, JFileChooser.DIRECTORIES_ONLY);
+	}
+
+	private static File selectAndSetDialog(JTextField textField, String dir, final String filter, final int fileSelectionMode) {
+
+		File resultFile = null;
 		// Create a file chooser
 		fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.setFileSelectionMode(fileSelectionMode);
 
 		// getting the latest opened dir
 		try {
@@ -357,15 +367,16 @@ public class Dialogs {
 			log.error(null, ex);
 		}
 
-		// displaying only necessary files as requested by "filter"
 		fc.setFileFilter(new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(filter) || f.isDirectory();
 			}
 
+			@Override
 			public String getDescription() {
 				String filterDesc;
-				if (filter.equals("")) {
+				if (filter.isEmpty()) {
 					filterDesc = "All files";
 				} else {
 					filterDesc = filter + " files";
@@ -373,93 +384,33 @@ public class Dialogs {
 				return filterDesc;
 			}
 		});
-
-		int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
+		final Component windowAncestor = SwingUtilities.getWindowAncestor(textField);
+		int returnVal = fc.showOpenDialog(windowAncestor);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			textField.setText(file.getAbsolutePath());
+			resultFile = fc.getSelectedFile();
+			textField.setText(resultFile.getPath());
 
 			// setting the directory to latest opened dir
 			try {
-				Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, file.getParent());
+				Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 			} catch (IOException ex) {
 				log.error(null, ex);
-			}
-		}
-	}
-
-	public static File selectAndSetDirectoryDialog(ActionEvent evt, JButton openButton, JTextField textField, String dir, final String filter) {
-
-		File resultFile = null;
-		// Create a file chooser
-		fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-		// Handle open button action.
-		if (evt.getSource() == openButton) {
-
-			// getting the latest opened dir
-			try {
-//				File tmpFile = new File(dir);
-//				if(!tmpFile.exists()){
-				String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-				fc.setCurrentDirectory(new File(tmpDir));
-//				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-
-			fc.setFileFilter(new FileFilter() {
-				public boolean accept(File f) {
-					return f.getName().toLowerCase().endsWith(filter) || f.isDirectory();
-				}
-
-				public String getDescription() {
-					String filterDesc;
-					if (filter.isEmpty()) {
-						filterDesc = "All files";
-					} else {
-						filterDesc = filter + " files";
-					}
-					return filterDesc;
-				}
-			});
-			int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
-
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				resultFile = fc.getSelectedFile();
-				textField.setText(resultFile.getPath());
-
-				// setting the directory to latest opened dir
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
 			}
 		}
 
 		return resultFile;
 	}
 
-	/**
-	 * @deprecated use {@link #selectDirectoryDialog(java.io.File, java.lang.String, java.lang.String)} instead!
-	 * @return
-	 */
-	public static File selectDirectoryDialog() {
-		return selectDirectoryDialog(null, null, null);
+	public static File selectDirectoryDialog(String propertyName, String dialogTitle, final Component dialogParent) {
+		return selectDirectoryDialog(null, propertyName, dialogTitle, dialogParent);
 	}
 
-	public static File selectDirectoryDialog(String propertyName, String dialogTitle) {
-		return selectDirectoryDialog(null, propertyName, dialogTitle);
+	public static File selectDirectoryDialog(File currentSelection, String dialogTitle, final Component dialogParent) {
+		return selectDirectoryDialog(currentSelection, null, dialogTitle, dialogParent);
 	}
 
-	public static File selectDirectoryDialog(File currentSelection, String dialogTitle) {
-		return selectDirectoryDialog(currentSelection, null, dialogTitle);
-	}
-
-	private static File selectDirectoryDialog(File currentSelection, String propertyName, String dialogTitle) {
+	private static File selectDirectoryDialog(File currentSelection, String propertyName, String dialogTitle, final Component dialogParent) {
 
 		File resultFile = null;
 
@@ -489,7 +440,7 @@ public class Dialogs {
 		}
 
 		// show the dialog
-		final int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
+		final int returnVal = fc.showOpenDialog(dialogParent);
 		// process the users choise
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			resultFile = fc.getSelectedFile();
@@ -505,7 +456,7 @@ public class Dialogs {
 		return resultFile;
 	}
 
-	public static File selectFilesAndDirectoriesDialog(int okOption) {
+	public static File selectFilesAndDirectoriesDialog(int okOption, final Component dialogParent) {
 
 		File resultFile = null;
 		// Create a file chooser
@@ -523,7 +474,7 @@ public class Dialogs {
 				log.error(null, ex);
 			}
 
-			int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
+			int returnVal = fc.showOpenDialog(dialogParent);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				resultFile = fc.getSelectedFile();
