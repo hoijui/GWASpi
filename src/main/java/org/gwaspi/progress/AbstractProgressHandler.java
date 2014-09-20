@@ -25,6 +25,11 @@ public abstract class AbstractProgressHandler<ST> extends AbstractProgressSource
 
 	@Override
 	public void setNewStatus(ProcessStatus newStatus) {
+
+		if (getStatus() == newStatus) {
+			return;
+		}
+
 		fireStatusChanged(newStatus);
 	}
 }

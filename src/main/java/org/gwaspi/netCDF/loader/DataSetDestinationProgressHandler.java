@@ -27,6 +27,7 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 //	private DataSetDestination dataSetDestination;
 	private final IntegerProgressHandler sampleInfosPH;
 	private final IntegerProgressHandler markerInfosPH;
+	private final IntegerProgressHandler chromosomeInfosPH;
 	private final IntegerProgressHandler genotypesPH;
 
 	public DataSetDestinationProgressHandler(ProcessInfo processInfo) {
@@ -37,12 +38,15 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 				new SubProcessInfo(processInfo, "SampleInfos", "Storing sample infos"), -1, -1);
 		markerInfosPH = new IntegerProgressHandler(
 				new SubProcessInfo(processInfo, "MarkerInfos", "Storing marker infos"), -1, -1);
+		chromosomeInfosPH = new IntegerProgressHandler(
+				new SubProcessInfo(processInfo, "ChromosomeInfos", "Storing chromosome infos"), -1, -1);
 		genotypesPH = new IntegerProgressHandler(
 				new SubProcessInfo(processInfo, "Genotypes",   "Storing genotypes"), -1, -1);
 
-		addSubProgressSource(sampleInfosPH, 0.001);
-		addSubProgressSource(markerInfosPH, 0.009);
-		addSubProgressSource(genotypesPH, 0.99);
+		addSubProgressSource(sampleInfosPH, 0.002);
+		addSubProgressSource(markerInfosPH, 0.017);
+		addSubProgressSource(chromosomeInfosPH, 0.001);
+		addSubProgressSource(genotypesPH, 0.98);
 	}
 
 //	private static Map<ProgressSource, Double> createSubProgressSourcesAndWeights(ProcessInfo superProcessInfo) {
@@ -69,6 +73,10 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 
 	public IntegerProgressHandler getMarkerInfosProgressHandler() {
 		return markerInfosPH;
+	}
+
+	public IntegerProgressHandler getChromosomeInfosProgressHandler() {
+		return chromosomeInfosPH;
 	}
 
 	public IntegerProgressHandler getGenotypesProgressHandler() {
