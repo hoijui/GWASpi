@@ -143,10 +143,12 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 							parentMarkersEntry.getKey(),
 							parentMarkersEntry.getValue());
 			}
-			// We omit progress reporting, because it would be too huge
-			// a percentual performance penalty for this leightweight operation.
-//			operationPH.setProgress(mi);
+			// NOTE We omit progress reporting, because it would be too huge
+			//   a percentual performance penalty for this leight-weight operation.
+//			filterPH.setProgress(mi);
 		}
+		// NOTE Here we report 100% compleetion (see also the note above)
+		filterPH.setProgress(parentMarkersOrigIndicesAndKeys.size() - 1);
 		filterPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		// we use all samples from the parent
