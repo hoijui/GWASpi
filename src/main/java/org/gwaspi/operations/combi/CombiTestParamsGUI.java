@@ -162,6 +162,14 @@ public class CombiTestParamsGUI extends JPanel {
 				}
 			}
 		});
+		// TODO XXX implement resampling based threshold calibration and remove these lines!
+		final String notYetImplemented = "Not yet implemented!";
+		this.useThresholdCalibrationLabel.setToolTipText(notYetImplemented);
+		this.useThresholdCalibrationValue.setToolTipText(notYetImplemented);
+		this.useThresholdCalibrationP.setToolTipText(notYetImplemented);
+		this.useThresholdCalibrationLabel.setEnabled(false);
+		this.useThresholdCalibrationValue.setEnabled(false);
+		this.useThresholdCalibrationWarning.setEnabled(false);
 
 		this.resultMatrixLabel.setText("Result matrix name");
 		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
