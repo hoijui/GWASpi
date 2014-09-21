@@ -85,6 +85,8 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 			// We have to handle this case (only one interval) separately,
 			// to prevent div-by-0 -> NaN.
 			completionFraction = currentState.equals(endState) ? 1.0 : 0.0;
+		} else if (getNumIntervals() == null) {
+			completionFraction = 0.5;
 		} else {
 			completionFraction = (double) Math.abs((double) (currentState - startState) / getNumIntervals());
 		}
