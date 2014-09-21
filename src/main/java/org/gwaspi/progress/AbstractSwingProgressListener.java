@@ -110,6 +110,6 @@ public abstract class AbstractSwingProgressListener<ST>
 
 	@Override
 	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
-		updateInfos(evt.getProgressSource());
+		updateInfos(evt.getSource());
 	}
 }

@@ -25,7 +25,8 @@ public class ProcessDetailsChangeEvent extends EventObject {
 		super(source);
 	}
 
-	public ProgressSource getProgressSource() {
-		return (ProgressSource) getSource();
+	@Override
+	public ProgressSource getSource() {
+		return (ProgressSource) super.getSource();
 	}
 }

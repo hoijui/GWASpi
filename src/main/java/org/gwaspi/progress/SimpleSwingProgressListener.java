@@ -85,7 +85,7 @@ public class SimpleSwingProgressListener<ST>
 	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
 		super.processDetailsChanged(evt);
 
-		final ProgressSource progressSource = evt.getProgressSource();
+		final ProgressSource progressSource = evt.getSource();
 
 		numIntervalsChanged(progressSource);
 		updateToolTipText(progressSource);
