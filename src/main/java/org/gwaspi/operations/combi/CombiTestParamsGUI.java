@@ -76,7 +76,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
 	private final JCheckBox useThresholdCalibrationValue;
-	private final JLabel useThresholdCalibrationDefault;
+	private final JLabel useThresholdCalibrationWarning;
 
 	private final JLabel resultMatrixLabel;
 	private final JPanel resultMatrixP;
@@ -102,7 +102,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
 		this.useThresholdCalibrationValue = new JCheckBox();
-		this.useThresholdCalibrationDefault = new JLabel();
+		this.useThresholdCalibrationWarning = new JLabel();
 
 		this.resultMatrixLabel = new JLabel();
 		this.resultMatrixP = new JPanel();
@@ -114,7 +114,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP.add(this.genotypeEncoderDefault);
 
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
-		this.useThresholdCalibrationP.add(this.useThresholdCalibrationDefault);
+		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
 
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
@@ -150,15 +150,15 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.setLayout(contentPanelLayout);
-		this.useThresholdCalibrationDefault.setText("");
-		this.useThresholdCalibrationDefault.setForeground(Color.RED);
+		this.useThresholdCalibrationWarning.setText("");
+		this.useThresholdCalibrationWarning.setForeground(Color.RED);
 		this.useThresholdCalibrationValue.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent evt) {
 				if (useThresholdCalibrationValue.isSelected()) {
-					useThresholdCalibrationDefault.setText("very slow!");
+					useThresholdCalibrationWarning.setText("very slow!");
 				} else {
-					useThresholdCalibrationDefault.setText("");
+					useThresholdCalibrationWarning.setText("");
 				}
 			}
 		});
