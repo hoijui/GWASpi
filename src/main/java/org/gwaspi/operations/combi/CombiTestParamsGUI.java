@@ -65,7 +65,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
 
-	private final JLabel qaMarkersOperationLabel; // TODO This is not yet setup correctly! see hw* stuff below for example!
+	private final JLabel qaMarkersOperationLabel;
 	private final JComboBox qaMarkersOperationValue;
 
 	private final JLabel genotypeEncoderLabel;
