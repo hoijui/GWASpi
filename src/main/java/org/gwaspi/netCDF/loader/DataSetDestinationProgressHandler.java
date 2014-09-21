@@ -41,7 +41,7 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 		chromosomeInfosPH = new IntegerProgressHandler(
 				new SubProcessInfo(processInfo, "ChromosomeInfos", "Storing chromosome infos"), -1, -1);
 		genotypesPH = new IntegerProgressHandler(
-				new SubProcessInfo(processInfo, "Genotypes",   "Storing genotypes"), -1, -1);
+				new SubProcessInfo(processInfo, "Genotypes", "Storing genotypes"), -1, -1);
 
 		addSubProgressSource(sampleInfosPH, 0.002);
 		addSubProgressSource(markerInfosPH, 0.017);
