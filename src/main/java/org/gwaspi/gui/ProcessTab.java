@@ -19,6 +19,7 @@ package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
@@ -90,10 +91,11 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 
 		final JPanel pnl_center = new JPanel();
 		final JScrollPane scrl_ProcessLog = new JScrollPane();
+		scrl_progress.setMinimumSize(new Dimension(300, 250));
 		final JTextArea txtA_ProcessLog = new JTextArea();
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
 		pnl_center.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_center.add(scrl_ProcessLog, BorderLayout.NORTH);
+		pnl_center.add(scrl_ProcessLog, BorderLayout.CENTER);
 
 		final JPanel pnl_bottom = new JPanel();
 		final JPanel pnl_bottomButtonsEast = new JPanel();
@@ -216,6 +218,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 				new EmptyBorder(allEdgesSmall),
 				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgesSmall))));
 		pnl_progress.add(taskGUI);
+		pnl_progress.add(taskGUI, 0); // TODO maybe we should instead replace the compleeted ones? and/or add at the bottom and scroll down?
 		taskProgressDisplays.add(taskProgressDisplay);
 
 		updateProcessOverview();
