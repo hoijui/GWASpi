@@ -41,7 +41,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 
 			Double currentSubCompletionFraction = evt.getCompletionFraction();
 			if (currentSubCompletionFraction != null) {
-				ProgressSource progressSource = (ProgressSource) evt.getSource();
+				final ProgressSource progressSource = evt.getSource();
 				final double weight = subProgressSourcesAndWeights.get(progressSource);
 				final Double lastSubCompletionFraction = subProgressSourcesAndLastCompletionFraction.get(progressSource);
 				fireAdditionalProgressHappened((currentSubCompletionFraction - lastSubCompletionFraction) * weight / weightSum);
