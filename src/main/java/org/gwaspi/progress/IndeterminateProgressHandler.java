@@ -24,12 +24,21 @@ package org.gwaspi.progress;
 public class IndeterminateProgressHandler extends AbstractProgressHandler<Object> {
 
 	public IndeterminateProgressHandler(ProcessInfo processInfo) {
-		super(processInfo, 0);
+		super(processInfo, 1);
 	}
 
 	@Override
 	public void setProgress(Object currentState) {
 		throw new UnsupportedOperationException(
 				"This progress handler does by design not support progress reporting");
+	}
+
+	@Override
+	protected void fireStatusChanged(final ProcessStatusChangeEvent evt) {
+		super.fireStatusChanged(evt);
+
+		if (evt.getNewStatus() == ProcessStatus.FINALIZING) {
+			fireProgressHappened(1.0, 0);
+		}
 	}
 }
