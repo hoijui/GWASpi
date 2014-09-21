@@ -207,14 +207,14 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 		progressSource.addProgressListener(taskProgressDisplay);
 
 		final JComponent taskGUI = taskProgressDisplay.getMainComponent();
-		final Insets allEdgedsSmall = new Insets(
+		final Insets allEdgesSmall = new Insets(
 				CurrentStudyPanel.GAP_SMALL,
 				CurrentStudyPanel.GAP_SMALL,
 				CurrentStudyPanel.GAP_SMALL,
 				CurrentStudyPanel.GAP_SMALL);
 		taskGUI.setBorder(new CompoundBorder(
-				new EmptyBorder(allEdgedsSmall),
-				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgedsSmall))));
+				new EmptyBorder(allEdgesSmall),
+				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgesSmall))));
 		pnl_progress.add(taskGUI);
 		taskProgressDisplays.add(taskProgressDisplay);
 
