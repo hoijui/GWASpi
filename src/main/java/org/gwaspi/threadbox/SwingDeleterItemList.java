@@ -60,7 +60,8 @@ public class SwingDeleterItemList {
 			deleteAllListed();
 		}
 
-		SwingWorkerItemList.fireTaskRegistered(sdi);
+		final TaskEvent taskEvent = new TaskEvent(sdi, sdi.getProgressSource());
+		SwingWorkerItemList.fireTaskRegistered(taskEvent);
 	}
 
 	public static void deleteAllListed() {

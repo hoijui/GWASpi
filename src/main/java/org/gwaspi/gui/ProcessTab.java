@@ -200,7 +200,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 
 		final ProgressSource progressSource = evt.getTask().getProgressSource();
 
-		progressSource.addProgressListener(this);
+		evt.getProgressSource().addProgressListener(this); // XXX This is not very nice.. to have two different, yet very similar progress sources, one for the outer task (Swing*Item) and one for the inner task (CommonRunnable (in case of SwingWorkerItem), SwingDeleterItem (in case of SwingDeleterItem))
 
 		SwingProgressListener taskProgressDisplay
 				= SuperSwingProgressListener.newDisplay(progressSource);
