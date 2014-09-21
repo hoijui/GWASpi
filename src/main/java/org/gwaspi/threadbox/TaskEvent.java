@@ -18,17 +18,26 @@
 package org.gwaspi.threadbox;
 
 import java.util.EventObject;
+import org.gwaspi.progress.ProgressSource;
 
 /**
  * Contains details about a task that is being registered or deleted.
  */
 public class TaskEvent extends EventObject {
 
-	public TaskEvent(CommonRunnable source) {
+	private final ProgressSource progressSource;
+
+	public TaskEvent(CommonRunnable source, ProgressSource progressSource) {
 		super(source);
+
+		this.progressSource = progressSource;
 	}
 
 	public CommonRunnable getTask() {
 		return (CommonRunnable) getSource();
+	}
+
+	public ProgressSource getProgressSource() {
+		return progressSource;
 	}
 }

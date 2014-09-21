@@ -50,9 +50,8 @@ public class SwingWorkerItemList {
 		return taskListeners;
 	}
 
-	static void fireTaskRegistered(CommonRunnable task) {
+	static void fireTaskRegistered(final TaskEvent taskEvent) {
 
-		final TaskEvent taskEvent = new TaskEvent(task);
 		for (TasksListener tasksListener : getTaskListeners()) {
 			tasksListener.taskRegistered(taskEvent);
 		}
@@ -84,7 +83,8 @@ public class SwingWorkerItemList {
 			swi.setQueueState(QueueState.PROCESSING);
 		}
 
-		fireTaskRegistered(swi.getTask());
+		final TaskEvent taskEvent = new TaskEvent(swi.getTask(), swi);
+		fireTaskRegistered(taskEvent);
 	}
 
 	public static void startNext() {

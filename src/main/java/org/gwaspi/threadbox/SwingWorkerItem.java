@@ -36,18 +36,18 @@ public class SwingWorkerItem extends AbstractProgressSource {
 	private final Collection<Integer> parentOperationsIds;
 
 	SwingWorkerItem(
-			CommonRunnable swingWorker,
+			CommonRunnable task,
 			Integer[] parentStudyIds)
 	{
-		this(swingWorker, parentStudyIds, new Integer[] {});
+		this(task, parentStudyIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
-			CommonRunnable swingWorker,
+			CommonRunnable task,
 			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds)
 	{
-		this(swingWorker, parentStudyIds, parentMatricesIds, new Integer[] {});
+		this(task, parentStudyIds, parentMatricesIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
