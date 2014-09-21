@@ -29,7 +29,13 @@ public class SimpleSwingProgressListener<ST>
 		extends AbstractSwingProgressListener<ST>
 {
 	private final JProgressBar bar;
-	private boolean numIntervallsKnown;
+	/**
+	 * Whether we can show a meaningful/useful completion ratio.
+	 * We can do that, if the number of intervals is known, and more then 1.
+	 * If it is only 1, it makes more sense to signal "active"
+	 * instead of showing the actual progress, which could be only 0% or 100%.
+	 */
+	private boolean indeterminateProgress;
 
 	public SimpleSwingProgressListener(ProgressSource progressSource) {
 		super(progressSource);
@@ -49,10 +55,18 @@ public class SimpleSwingProgressListener<ST>
 	private void numIntervalsChanged(ProgressSource progressSource) {
 
 		final Integer numIntervals = progressSource.getNumIntervals();
-		numIntervallsKnown = (numIntervals != null);
-		if (numIntervallsKnown) {
+		indeterminateProgress = ((numIntervals == null) || (numIntervals == 1));
+		if (indeterminateProgress) {
+			bar.setMaximum(100);
+		} else {
 			bar.setMaximum(numIntervals);
 		}
+		resetIndeterminateBarState(progressSource);
+	}
+
+	private void resetIndeterminateBarState(ProgressSource progressSource) {
+		bar.setIndeterminate(progressSource.getStatus().isActive()
+				&& (indeterminateProgress || (progressSource.getStatus() != ProcessStatus.RUNNING)));
 	}
 
 	protected void setToolTipText(String toolTipText) {
@@ -82,16 +96,32 @@ public class SimpleSwingProgressListener<ST>
 		super.statusChanged(evt);
 
 		updateToolTipText(evt.getProgressSource());
-		bar.setIndeterminate(!numIntervallsKnown && evt.getNewStatus().isActive());
 		bar.setForeground(statusToColor(evt.getNewStatus())); // the color of the bar before the current value
 //		bar.setBackground(statusToColor(evt.getNewStatus())); // the color of the bar after the current value
+		bar.setIndeterminate(evt.getNewStatus().isActive());
+		if (indeterminateProgress) {
+			final int progressValue;
+			switch (evt.getNewStatus()) {
+				case NONE: progressValue = 0; break;
+				case INITIALIZING: progressValue = 10; break;
+				case FAILED: progressValue = 20; break;
+				case ABORTED: progressValue = 30; break;
+				case RUNNING: progressValue = 50; break;
+				case PAUSED: progressValue = 50; break;
+				case FINALIZING: progressValue = 90; break;
+				case COMPLEETED: progressValue = 100; break;
+				default: throw new UnsupportedOperationException("Unsupported status: " + evt.getNewStatus());
+			}
+			bar.setValue(progressValue);
+		}
+		resetIndeterminateBarState(evt.getProgressSource());
 	}
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
 		super.progressHappened(evt);
 
-		if (numIntervallsKnown) {
+		if (!indeterminateProgress) {
 			bar.setValue(evt.getIntervalIndex() + 1);
 		}
 	}
