@@ -29,8 +29,20 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 		this.endState = endState;
 	}
 
-	private static int calculateNumIntervalls(final Integer startState, final Integer endState) {
-		return Math.abs(endState - startState) + 1;
+	private static Integer calculateNumIntervalls(final Integer startState, final Integer endState) {
+
+		if (
+				(startState == null)
+				|| (startState < 0)
+				|| (endState == null)
+				|| (endState < 0)
+				|| (startState.equals(endState)))
+		{
+			// we can not calculate a #intervals that makes sense
+			return null;
+		} else {
+			return Math.abs(endState - startState) + 1;
+		}
 	}
 
 	private void recalculateNumIntervalls() {
