@@ -9,7 +9,6 @@ __README__
 * Written in Java, with Apache Derby, JFreeChart and NetCDF 3 technology
 * Executable locally in a GUI (Graphical User Interface) and via command line
 
-
 ## Building
 
 Maven is used as the project management system.
@@ -70,6 +69,21 @@ The preferred way of running the software while developing is through an IDE,
 or through Maven:
 
 	> mvn exec:java
+
+
+## Create Distribution Package
+
+If you want to give the software to a non-dev for trying it out/using it,
+follow these instructions.
+
+	> mvn package assembly:single
+
+You should end up with a single file to distribute at:
+_target/gwaspi-<version>-jar-with-dependencies.jar_
+
+You can then use the file to start GWASpi like this:
+
+	> java -jar gwaspi-*-jar-with-dependencies.jar
 
 
 ## Release a SNAPSHOT (devs only)
