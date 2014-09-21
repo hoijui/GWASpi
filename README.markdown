@@ -81,6 +81,8 @@ To release a development version to the Sonatype snapshot repository:
 
 ## Release (devs only)
 
+These instructions explain how to release to the Maven central repository.
+
 ### Prepare "target/" for the release process
 
 	mvn release:clean
