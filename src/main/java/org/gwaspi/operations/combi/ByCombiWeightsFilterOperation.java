@@ -131,10 +131,12 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		}
 
 		final List<Double> combiWeightsSorted = new ArrayList<Double>(weightsAbsolute);
+		// sorts in ascending order -> biggest values are at the end
 		Collections.sort(combiWeightsSorted);
-		final double thresholdWeight = combiWeightsSorted.get(markersToKeep);
+		// use the n'th biggest value as threshold
+		final double thresholdWeight = combiWeightsSorted.get(Math.max(0, combiWeightsSorted.size() - markersToKeep - 1));
 
-		Iterator<Double> combiWeightsIt = rawWeights.iterator();
+		Iterator<Double> combiWeightsIt = weightsAbsolute.iterator();
 		filterPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
