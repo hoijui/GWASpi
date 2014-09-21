@@ -90,15 +90,26 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		return subProgressSourcesAndWeights;
 	}
 
+	/**
+	 * Returns a non <code>null</code> #intervalls.
+	 * @param progressSource
+	 * @return a non <code>null</code> #intervalls.
+	 */
+	private static int getNumericalIntervalls(Integer rawNumIntervals) {
+
+		Integer numSubIntervalls = rawNumIntervals;
+		if (numSubIntervalls == null) {
+			numSubIntervalls = 1;
+		}
+
+		return numSubIntervalls;
+	}
+
 	private static Integer calculateNumIntervalls(Map<ProgressSource, Double> subProgressSourcesAndWeights) {
 
 		int numIntervalls = 0;
 		for (ProgressSource progressSource : subProgressSourcesAndWeights.keySet()) {
-			Integer numSubIntervalls = progressSource.getNumIntervals();
-			if (numSubIntervalls == null) {
-				numSubIntervalls = 1;
-			}
-			numIntervalls += numSubIntervalls;
+			numIntervalls += getNumericalIntervalls(progressSource.getNumIntervals());
 		}
 
 		return numIntervalls;
@@ -111,7 +122,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		progressSource.addProgressListener(progressListener);
 		subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
 		weightSum += weight;
-		setNumIntervals(getNumIntervals() + progressSource.getNumIntervals());
+		setNumIntervals(getNumIntervals() + getNumericalIntervalls(progressSource.getNumIntervals()));
 //		fireProcessDetailsChanged(); // this is already invoked by setNumIntervals() above
 		fireSubProcessAdded(new SubProcessAddedEvent(this, index, progressSource, weight));
 	}
@@ -149,7 +160,9 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		subProgressSourcesAndLastCompletionFraction.remove(oldProgressSource);
 		subProgressSourcesAndLastCompletionFraction.put(newProgressSource, 0.0);
 
-		setNumIntervals(getNumIntervals() - oldProgressSource.getNumIntervals() + newProgressSource.getNumIntervals());
+		setNumIntervals(getNumIntervals()
+				- getNumericalIntervalls(oldProgressSource.getNumIntervals())
+				+ getNumericalIntervalls(newProgressSource.getNumIntervals()));
 //		fireProcessDetailsChanged(); // this is already invoked by setNumIntervals() above
 		fireSubProcessReplaced(new SubProcessReplacedEvent(this, replaceIndex, oldProgressSource, newProgressSource, oldWeight, newWeight));
 	}
