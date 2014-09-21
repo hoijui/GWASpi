@@ -30,11 +30,24 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 	private final List<SuperProgressListener> superProgressListeners;
 	private final LinkedHashMap<ProgressSource, Double> subProgressSourcesAndWeights;
 	private final Map<ProgressSource, Double> subProgressSourcesAndLastCompletionFraction;
+	private final Map<ProgressSource, Integer> subProgressSourcesAndLastNumIntervals;
 	private final ProgressListener progressListener;
 	private double lastCompletionFraction;
 	private double weightSum;
 
 	private class SubProgressListener<ST> extends AbstractProgressListener<ST> {
+
+		@Override
+		public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+
+			final ProgressSource progressSource = evt.getSource();
+			final int oldNumIntervals  = getNumericalIntervalls(subProgressSourcesAndLastNumIntervals.get(progressSource));
+			final int newNumIntervals  = getNumericalIntervalls(progressSource.getNumIntervals());
+			if (oldNumIntervals != newNumIntervals) {
+				setNumIntervals(getNumIntervals() - oldNumIntervals + newNumIntervals);
+				subProgressSourcesAndLastNumIntervals.put(progressSource, newNumIntervals);
+			}
+		}
 
 		@Override
 		public void progressHappened(ProgressEvent evt) {
@@ -56,6 +69,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		this.superProgressListeners = new ArrayList<SuperProgressListener>(1);
 		this.subProgressSourcesAndWeights = new LinkedHashMap<ProgressSource, Double>(subProgressSourcesAndWeights);
 		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>(this.subProgressSourcesAndWeights.size());
+		this.subProgressSourcesAndLastNumIntervals = new HashMap<ProgressSource, Integer>(this.subProgressSourcesAndWeights.size());
 		this.progressListener = new SubProgressListener();
 		this.lastCompletionFraction = 0.0;
 		this.weightSum = 0.0;
@@ -65,6 +79,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 			final double weight = subProgressSourceAndWeight.getValue();
 			progressSource.addProgressListener(progressListener);
 			subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
+			subProgressSourcesAndLastNumIntervals.put(progressSource, progressSource.getNumIntervals());
 			weightSum += weight;
 		}
 	}
