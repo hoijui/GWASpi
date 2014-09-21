@@ -58,7 +58,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 
 	private ByCombiWeightsFilterOperationParams originalParams;
 
-	private final JLabel combiOperationLabel; // TODO This is not yet setup correctly! see hw* stuff below for example!
+	private final JLabel combiOperationLabel;
 	private final JComboBox combiOperationValue;
 
 	private final JLabel weightsFilterWidthLabel;
