@@ -172,6 +172,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
 
 		validate();
+		repaint();
 	}
 
 	public ByCombiWeightsFilterOperationParams getParams() {

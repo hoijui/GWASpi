@@ -207,6 +207,7 @@ public class CombiTestParamsGUI extends JPanel {
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
 
 		validate();
+		repaint();
 	}
 
 	static void createLayout(GroupLayout layout, Map<JLabel, JComponent> labelsAndComponents) {
