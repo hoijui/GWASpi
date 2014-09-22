@@ -94,9 +94,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	{
 		super(
 				"Genotypes Loader & GWAS if OK",
-				"Loading Genotypes & Performing GWAS",
-				"Genotypes Loader & GWAS if OK: " + loadDescription.getFriendlyName(),
-				"Loading Genotypes & Performing GWAS");
+				"on " + loadDescription.getFriendlyName());
 
 		this.loadDescription = loadDescription;
 		this.dummySamples = dummySamples;

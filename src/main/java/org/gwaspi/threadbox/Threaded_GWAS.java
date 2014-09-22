@@ -64,7 +64,7 @@ public class Threaded_GWAS extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 
 	public Threaded_GWAS(GWASinOneGOParams gwasParams) {
-		super("GWAS", "GWAS", "GWAS on: " + gwasParams.getMarkerCensusOperationParams().getParent().toString(), "GWAS");
+		super("GWAS", "on " + gwasParams.getMarkerCensusOperationParams().getParent().toString());
 
 		this.gwasParams = gwasParams;
 		this.progressSource = new SuperProgressSource(fullGwasProcessInfo, subProgressSourcesAndWeights);

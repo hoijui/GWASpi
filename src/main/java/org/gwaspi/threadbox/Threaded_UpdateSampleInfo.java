@@ -46,15 +46,8 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private final File sampleInfoFile;
 	private final ProgressHandler progressHandler;
 
-	public Threaded_UpdateSampleInfo(
-			StudyKey studyKey,
-			File sampleInfoFile)
-	{
-		super(
-				"Update Sample Info",
-				"Sample Info Update",
-				"Update Sample Info on Study ID: " + studyKey,
-				"Sample Info Update");
+	public Threaded_UpdateSampleInfo(StudyKey studyKey, File sampleInfoFile) {
+		super("Sample Info Update", "on Study ID: " + studyKey);
 
 		this.studyKey = studyKey;
 		this.sampleInfoFile = sampleInfoFile;

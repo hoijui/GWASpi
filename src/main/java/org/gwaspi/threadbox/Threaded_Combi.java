@@ -84,11 +84,7 @@ public class Threaded_Combi extends CommonRunnable {
 			final CombiTestOperationParams paramsTest,
 			final ByCombiWeightsFilterOperationParams paramsFilter)
 	{
-		super(
-				"Combi Association Test",
-				"Combi Association Study",
-				"Combi Association Test on: " + paramsTest.getParent().toString(),
-				"Combi Association Test");
+		super("Combi Association Test", "on " + paramsTest.getParent().toString());
 
 		this.paramsTest = paramsTest;
 		this.paramsFilter = paramsFilter;

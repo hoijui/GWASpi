@@ -83,11 +83,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 
 	public Threaded_MatrixQA(final DataSetKey parentKey, final boolean createReports) {
-		super(
-				"Matrix QA & Reports",
-				"Matrix Quality Control",
-				"Matrix QA & Reports on: " + parentKey.toString(),
-				"Matrix Quality Control"); // NOTE actually: Quality Assurance
+		super("Quality Assurance & Reports", "on " + parentKey.toString());
 
 		this.parentKey = parentKey;
 		this.createReports = createReports;

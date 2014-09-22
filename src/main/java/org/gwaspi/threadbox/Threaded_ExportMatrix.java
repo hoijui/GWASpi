@@ -30,11 +30,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	private final ProgressForwarder progressForwarder;
 
 	public Threaded_ExportMatrix(final MatrixExporterParams params) {
-		super(
-				"Export Matrix",
-				"Exporting Matrix",
-				"Export Matrix ID: " + params.getParent().toString(),
-				"Exporting Matrix");
+		super("Export Data", "from " + params.getParent().toString());
 
 		this.params = params;
 		this.progressForwarder = new ProgressForwarder(MatrixExporter.PROCESS_INFO);

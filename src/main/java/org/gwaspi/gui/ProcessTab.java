@@ -259,7 +259,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 
 			spreadSheet[count][0] = count;
 			spreadSheet[count][1] = studyIdsStr.toString();
-			spreadSheet[count][2] = swingWorkerItem.getTask().getTaskName() != null ? swingWorkerItem.getTask().getTaskName() : " - ";
+			spreadSheet[count][2] = swingWorkerItem.getTask().getDetailedName() != null ? swingWorkerItem.getTask().getDetailedName() : " - ";
 			spreadSheet[count][3] = swingWorkerItem.getLaunchTime() != null ? swingWorkerItem.getLaunchTime() : " - ";
 			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? swingWorkerItem.getStartTime() : " - ";
 			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? swingWorkerItem.getEndTime() : " - ";

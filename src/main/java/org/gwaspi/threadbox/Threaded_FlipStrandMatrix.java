@@ -57,12 +57,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 
 	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) {
-		super(
-				"Flip Strand Matrix",
-				"Flipping Genotypes",
-				"Flip Strand Matrix ID: " + params.getParent().getMatrixParent().getMatrixId(),
-				"Extracting");
-
+		super("Flip Strand Matrix (Genotypes)", "on " + params.getParent().toString());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);

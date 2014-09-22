@@ -61,12 +61,9 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 
 	public Threaded_MergeMatrices(final MergeMatrixOperationParams params) {
-
 		super(
-				"Merge Matrices",
-				"Merging Data",
-				"Merge Matrices: " + params.getMatrixFriendlyName(),
-				"Merging Matrices");
+				"Merge Data",
+				"on " + params.getMatrixFriendlyName() + " and " + params.getSource2().toString());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullMergeMatricesProcessInfo, subProgressSourcesAndWeights);

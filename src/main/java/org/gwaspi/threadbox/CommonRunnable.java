@@ -25,25 +25,16 @@ public abstract class CommonRunnable implements Runnable {
 
 	private final Logger log;
 	private final String timeStamp;
-	/** This is visible in OS tools that list threads */
-	private final String threadName;
-	/** This is visible to the user in the GUI */
-	private final String taskName;
-	/** This is visible in the log */
-	private final String taskDescription;
-	/**
-	 * This is visible in the log too.
-	 * @deprecated Should probably be replaced by taskDescription
-	 */
-	private final String startDescription;
+	/** This is visible in OS tools that list threads and in the log. */
+	private final String name;
+	/** This is visible to the user in the GUI. */
+	private final String details;
 
-	public CommonRunnable(String threadName, String taskDescription, String taskName, String startDescription) {
+	public CommonRunnable(String name, String details) {
 		this.log = createLog();
 		this.timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		this.threadName = threadName;
-		this.taskName = taskName;
-		this.taskDescription = taskDescription;
-		this.startDescription = startDescription;
+		this.name = name;
+		this.details = details;
 	}
 
 	protected abstract Logger createLog();
@@ -64,7 +55,7 @@ public abstract class CommonRunnable implements Runnable {
 	@Override
 	public void run() {
 
-		org.gwaspi.global.Utils.sysoutStart(startDescription);
+		org.gwaspi.global.Utils.sysoutStart(getDetailedName());
 		org.gwaspi.global.Config.initPreferences(false, null, null);
 
 		SwingWorkerItem thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
@@ -76,12 +67,12 @@ public abstract class CommonRunnable implements Runnable {
 			if (thisSwi.getQueueState().equals(QueueState.ABORT)) {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
-				getLog().info("Process Name: " + thisSwi.getTask().getTaskName());
+				getLog().info("Process Name: " + thisSwi.getTask().getDetailedName());
 				getLog().info("Process Launch Time: " + thisSwi.getLaunchTime());
 				getLog().info("");
 				getLog().info("");
 			} else {
-				MultiOperations.printFinished("Performing " + taskDescription);
+				MultiOperations.printFinished("Performing " + getDetailedName());
 				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
 			}
 
@@ -90,8 +81,8 @@ public abstract class CommonRunnable implements Runnable {
 		} catch (OutOfMemoryError ex) {
 			getLog().error(Text.App.outOfMemoryError, ex);
 		} catch (Exception ex) {
-			MultiOperations.printError(taskDescription);
-			getLog().error("Failed performing " + taskDescription, ex);
+			MultiOperations.printError(getName());
+			getLog().error("Failed performing " + getName(), ex);
 			try {
 				SwingWorkerItemList.flagCurrentItemError(timeStamp);
 				MultiOperations.updateTree();
@@ -102,16 +93,12 @@ public abstract class CommonRunnable implements Runnable {
 		}
 	}
 
-	public String getThreadName() {
-		return threadName;
+	public String getName() {
+		return name;
 	}
 
-	public String getTaskName() {
-		return taskName;
-	}
-
-	public String getTaskDescription() {
-		return taskDescription;
+	public String getDetailedName() {
+		return name + " " + details;
 	}
 
 	public String getTimeStamp() {

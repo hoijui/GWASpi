@@ -67,11 +67,7 @@ public class SwingDeleterItem extends CommonRunnable {
 			OperationKey operationKey,
 			boolean deleteReports)
 	{
-		super(
-				"Deleter",
-				"Delete " + getToDeleteShortDescription(studyKey, matrixKey, operationKey, deleteReports),
-				"Deleter",
-				"Deleter");
+		super("Delete", getToDeleteShortDescription(studyKey, matrixKey, operationKey, deleteReports));
 
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.queueState = QueueState.QUEUED;

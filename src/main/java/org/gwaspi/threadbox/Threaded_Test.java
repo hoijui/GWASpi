@@ -75,9 +75,7 @@ public class Threaded_Test extends CommonRunnable {
 	{
 		super(
 				OutputTest.createTestName(testType) + " Test",
-				OutputTest.createTestName(testType) + " Test",
-				OutputTest.createTestName(testType) + " Test on Matrix ID: " + censusOpKey.getParentMatrixKey().getMatrixId(),
-				OutputTest.createTestName(testType) + " Test");
+				"on Matrix ID: " + censusOpKey.getParentMatrixKey().getMatrixId());
 
 		this.testType = testType;
 		this.censusOpKey = censusOpKey;

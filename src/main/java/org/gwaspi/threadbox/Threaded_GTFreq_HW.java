@@ -83,10 +83,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 	public Threaded_GTFreq_HW(GWASinOneGOParams gwasParams) {
 		super(
-				"GT Freq. & HW",
 				"Genotype Frequency count & Hardy-Weinberg test",
-				"Genotypes Freq. & HW on: " + gwasParams.getMarkerCensusOperationParams().getParent().toString(),
-				"Genotype Frequency count & Hardy-Weinberg test");
+				"on " + gwasParams.getMarkerCensusOperationParams().getParent().toString());
 
 		this.gwasParams = gwasParams;
 		this.progressSource = new SuperProgressSource(mcAndHwProcessInfo, subProgressSourcesAndWeights);
