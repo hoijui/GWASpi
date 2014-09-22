@@ -89,31 +89,13 @@ public class Threaded_GWAS extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW, thisSwi);
 
-//		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
-//		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
-//		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
-
 		OperationKey censusOpKey = threaded_GTFreq_HW.getMarkerCensusOperationKey();
 		OperationKey hwOpKey = threaded_GTFreq_HW.getHardyWeinbergOperationKey();
 		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
-	static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws Exception {
-
-//	private static final ProgressSource PLACEHOLDER_PS_GTFREQ_HW = new NullProgressHandler(
-//			new SubProcessInfo(null, "PLACEHOLDER_PS_GTFREQ_HW", null));
-//	public static final ProgressSource PLACEHOLDER_PS_TESTS = new NullProgressHandler(
-//			new SubProcessInfo(null, "PLACEHOLDER_PS_TESTS", null));
-//	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
-//		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
-//				= new LinkedHashMap<ProgressSource, Double>(2);
-//		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GTFREQ_HW, 0.4);
-//		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TESTS, 0.6);
-//		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
-//		final SuperProgressSource testsProgressSource = new SuperProgressSource(gwasTestsProcessInfo, subProgressSourcesAndWeights);
-//
-//		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_TESTS, testsProgressSource, null);
+	private static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws Exception {
 
 		// tests (need newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if ((censusOpKey != null) && (hwOpKey != null)) {

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractor;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorMetadataFactory;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
@@ -36,6 +37,9 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO Merge Threaded_ExtractMatrix, Threaded_FlipStrandMatrix and Threaded_TranslateMatrix, as they are all the same (with minor differences).
+ */
 public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	private static final ProcessInfo fullExtractMatrixInfo
@@ -80,9 +84,10 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 			final DataSetDestination dataSetDestination
 					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixDataExtractorMetadataFactory.SINGLETON);
 			MatrixDataExtractor matrixOperation = new MatrixDataExtractor(params, dataSetDestination);
-
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_EXTRACTION, matrixOperation.getProgressSource(), null);
+
 			progressSource.setNewStatus(ProcessStatus.RUNNING);
+//			OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixDataExtractor does not support getParams() yet, so instead we do ...
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 

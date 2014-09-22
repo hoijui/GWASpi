@@ -19,6 +19,7 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.progress.ProgressForwarder;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
@@ -49,8 +50,9 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		MatrixExporter mEx = new MatrixExporter(params);
+		final MatrixExporter mEx = new MatrixExporter(params);
 		progressForwarder.setInnerProgressSource(mEx.getProgressSource());
+//		OperationManager.performOperation(mEx); // XXX We can not do that, because MatrixExporter does not support getParams() yet, so instead we do ...
 		mEx.processMatrix();
 	}
 }

@@ -127,13 +127,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				= (AbstractDataSetDestination) MatrixFactory.generateMatrixDataSetDestination(
 						null, loadingMatrixMetadataFactory); // HACK FIXME
 		final DataSetDestination dataReceiver = new LoadingDataSetDestination(innerDataReceiver, loadDescription); // HACK FIXME
-//		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
-//		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
 		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(pureLoadProcessInfo);
 		innerDataReceiver.setProgressHandler(dataSetDestinationProgressHandler);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);
 		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
 				= new SampleInfoExtractorDataSetDestination(dataReceiver);
+
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
@@ -143,9 +142,6 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getGtDirPath(),
 				loadDescription.getAnnotationFilePath(),
 				sampleInfoExtractor);
-		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoExtractor.getSampleInfos().values());
-
-		final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
 
 		final DataSetKey parent;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
@@ -164,20 +160,27 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(thisSwi, parent.getMatrixParent(), progressSource);
 
-		final OperationKey samplesQAOpKey = qaOpKeys[0];
-		final OperationKey markersQAOpKey = qaOpKeys[1];
-		final MarkerCensusOperationParams markerCensusOperationParams
-				= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
-		markerCensusOperationParams.setName(markerCensusName);
-		gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
+		if (performGwas) {
+			final OperationKey samplesQAOpKey = qaOpKeys[0];
+			final OperationKey markersQAOpKey = qaOpKeys[1];
+			final MarkerCensusOperationParams markerCensusOperationParams
+					= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
+			final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
+			markerCensusOperationParams.setName(markerCensusName);
+			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 
-		if (performGwas
-				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-				&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-		{
-			final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
-			CommonRunnable.doRunNowInThread(threaded_GWAS, thisSwi);
+			final Set<SampleInfo.Affection> affectionStates
+					= SampleInfoCollectorSwitch.collectAffectionStates(
+							sampleInfoExtractor.getSampleInfos().values());
+			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+			{
+				final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
+				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
+				CommonRunnable.doRunNowInThread(threaded_GWAS, thisSwi);
+			} else {
+				getLog().warn("GWAS is not performed, because the data set did not contain both affected and unaffected samples");
+			}
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
