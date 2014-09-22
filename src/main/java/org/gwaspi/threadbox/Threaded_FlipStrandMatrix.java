@@ -56,7 +56,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	private final MatrixGenotypesFlipperParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) throws IOException {
+	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) {
 		super(
 				"Flip Strand Matrix",
 				"Flipping Genotypes",
