@@ -237,17 +237,13 @@ public class MultiOperations {
 
 	public static void doStrandFlipMatrix(MatrixGenotypesFlipperParams params) {
 
-		try {
-			CommonRunnable task = new Threaded_FlipStrandMatrix(params);
+		CommonRunnable task = new Threaded_FlipStrandMatrix(params);
 
-			TaskLockProperties lockProperties = new TaskLockProperties();
-			lockProperties.getStudyIds().add(params.getParent().getOrigin().getStudyId());
-			lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(params.getParent().getOrigin().getStudyId());
+		lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
 
-			queueTask(task, lockProperties);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		queueTask(task, lockProperties);
 	}
 
 	public static void updateSampleInfo(
