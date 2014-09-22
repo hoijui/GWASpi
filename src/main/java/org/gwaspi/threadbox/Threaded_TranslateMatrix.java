@@ -59,9 +59,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	{
 		super(
 				"Translate Matrix",
-				"Translating Matrix",
-				"Translate Matrix: " + params.getParent().getMatrixParent().toRawIdString(),
-				"Translating Matrix");
+				"on matrix " + params.getParent().getMatrixParent().toRawIdString());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);

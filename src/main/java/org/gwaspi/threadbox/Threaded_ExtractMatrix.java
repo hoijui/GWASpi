@@ -56,11 +56,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 
 	public Threaded_ExtractMatrix(MatrixDataExtractorParams params) {
-		super(
-				"Data Extract",
-				"Extracting Data",
-				"Data Extract: " + params.getMatrixFriendlyName(),
-				"Extracting");
+		super("Extract Data", "from " + params.getMatrixFriendlyName());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullExtractMatrixInfo, subProgressSourcesAndWeights);

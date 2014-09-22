@@ -66,11 +66,8 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	public Threaded_HardyWeinberg(final HardyWeinbergOperationParams params) {
 		super(
-				"Hardy-Weinberg",
-				"Hardy-Weinberg test",
-				"Hardy-Weinberg on: " + params.getParent().getOrigin().toString(),
-//				"Hardy-Weinberg on: " + params.getParent().toString(),
-				"Hardy-Weinberg");
+				"Hardy-Weinberg Test",
+				"on " + params.getParent().toString());
 
 		this.params = params;
 		this.hardyWeinbergOperationKey = null;
