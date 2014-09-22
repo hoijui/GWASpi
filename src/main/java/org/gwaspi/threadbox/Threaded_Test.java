@@ -134,9 +134,10 @@ public class Threaded_Test extends CommonRunnable {
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (testOpKey != null) {
 				final TestOutputParams testOutputParams = new TestOutputParams(testOpKey, testType, markersQAOpKey);
-				final MatrixOperation operation = new OutputTest(testOutputParams);
-				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_REPORTS, operation.getProgressSource(), null);
-				operation.processMatrix();
+				final MatrixOperation reportsGenerationOperation = new OutputTest(testOutputParams);
+				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_REPORTS, reportsGenerationOperation.getProgressSource(), null);
+//				OperationManager.performOperation(reportsGenerationOperation); // XXX We can not do that, because OutputTest does not support getParams() yet, so instead we do ...
+				reportsGenerationOperation.processMatrix();
 				progressSource.setNewStatus(ProcessStatus.FINALIZING);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 			}

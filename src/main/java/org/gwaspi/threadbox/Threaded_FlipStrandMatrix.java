@@ -24,6 +24,7 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperMetadataFactory;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
@@ -81,9 +82,10 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 			final DataSetDestination dataSetDestination
 					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixGenotypesFlipperMetadataFactory.SINGLETON);
 			MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(params, dataSetDestination);
-
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
+
 			progressSource.setNewStatus(ProcessStatus.RUNNING);
+//			OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixGenotypesFlipper does not support getParams() yet, so instead we do ...
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 

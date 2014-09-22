@@ -23,6 +23,7 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslatorMetadataFactory;
@@ -77,20 +78,20 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-
+			progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 			final DataSetDestination dataSetDestination
 					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
 			MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
-			progressSource.setNewStatus(ProcessStatus.RUNNING);
-
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
+
+			progressSource.setNewStatus(ProcessStatus.RUNNING);
+//			OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixTranslator does not support getParams() yet, so instead we do ...
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
+			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
-		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }
