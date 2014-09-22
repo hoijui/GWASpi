@@ -258,7 +258,7 @@ public class MatrixAnalysePanel extends JPanel {
 						necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
 						necessaryOPs.add(OPType.HARDY_WEINBERG);
 					}
-					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, false); // FIXME some of the operatiosn (the QA ones at least) shoudl be direct children!
+					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, false); // FIXME some of the operations (the QA ones at least) should be direct children!
 
 					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
