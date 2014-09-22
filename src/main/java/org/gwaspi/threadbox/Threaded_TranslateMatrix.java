@@ -55,8 +55,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	private final MatrixGenotypesTranslatorParams params;
 	private final SuperProgressSource progressSource;
 
-	public Threaded_TranslateMatrix(MatrixGenotypesTranslatorParams params)
-	{
+	public Threaded_TranslateMatrix(MatrixGenotypesTranslatorParams params) {
 		super(
 				"Translate Matrix",
 				"on matrix " + params.getParent().getMatrixParent().toRawIdString());

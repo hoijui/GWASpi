@@ -75,8 +75,9 @@ public class SwingDeleterItem extends CommonRunnable {
 		this.studyKey = studyKey;
 		this.matrixKey = matrixKey;
 		this.operationKey = operationKey;
-		this.progressHandler = new IndeterminateProgressHandler(new DefaultProcessInfo("Delete " + getToDeleteShortDescription(
-				studyKey, matrixKey, operationKey, deleteReports), null));
+		this.progressHandler = new IndeterminateProgressHandler(new DefaultProcessInfo(
+				"Delete " + getToDeleteShortDescription(
+						studyKey, matrixKey, operationKey, deleteReports), null));
 	}
 
 	private static String getToDeleteShortDescription(
