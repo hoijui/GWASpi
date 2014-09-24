@@ -154,15 +154,4 @@ public class SampleInfoCollectorSwitch {
 //
 //		return sampleInfos;
 	}
-
-	public static Set<SampleInfo.Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
-
-		Set<SampleInfo.Affection> affectionStates = EnumSet.noneOf(SampleInfo.Affection.class);
-
-		for (SampleInfo sampleInfo : sampleInfos) {
-			affectionStates.add(sampleInfo.getAffection());
-		}
-
-		return affectionStates;
-	}
 }
