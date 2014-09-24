@@ -41,7 +41,7 @@ import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 
-public class ByHardyWeinbergThresholdFilterOperation 
+public class ByHardyWeinbergThresholdFilterOperation
 		extends AbstractFilterOperation<ByHardyWeinbergThresholdFilterOperationParams>
 {
 

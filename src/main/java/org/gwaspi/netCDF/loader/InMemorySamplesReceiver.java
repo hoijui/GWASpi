@@ -42,7 +42,7 @@ import org.gwaspi.operations.MatrixMetadataFactory;
 /**
  * TODO
  */
-public class InMemorySamplesReceiver<PT extends MatrixCreatingOperationParams> 
+public class InMemorySamplesReceiver<PT extends MatrixCreatingOperationParams>
 		extends AbstractDataSetDestination
 {
 	private final PT params;

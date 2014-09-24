@@ -196,7 +196,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	 * @throws IOException
 	 */
 	static void logAsWhole(Logger log, String startTime, String dirPath, String description, int studyId) throws IOException {
-		
+
 		if (log.isDebugEnabled()) {
 			final StringBuilder operation = new StringBuilder("\nLoaded MAP metadata in path " + dirPath + ".\n");
 			operation.append("Start Time: ").append(startTime).append("\n");
