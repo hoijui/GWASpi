@@ -37,7 +37,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 	private static final int DEFAULT_CHUNK_SIZE = 200;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 	/** Whether to read all markers GTs in the range at once, or read each one separately */
-	public static boolean READ_GTS_IN_BULK = true;
+	public static final boolean READ_GTS_IN_BULK = true;
 
 	private NetCdfMarkersGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
 		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);

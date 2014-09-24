@@ -21,7 +21,7 @@ import java.io.Serializable;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.AbstractOperationDataEntry;
 
-public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> 
+public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey>
 		implements QAMarkersOperationEntry, Serializable
 {
 	private final boolean mismatchState;
