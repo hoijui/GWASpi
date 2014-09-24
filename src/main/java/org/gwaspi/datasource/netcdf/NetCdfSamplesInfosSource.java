@@ -93,7 +93,7 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 
 		List<SampleInfo> values = new ArrayList<SampleInfo>(to - from);
 
-		List<SampleKey> sampleKeys = getKeysSource().subList(from, to);
+		List<SampleKey> sampleKeys = getKeysSource().subList(from, to + 1);
 		Iterator<Integer> orderIdsIt = getOrderIds(from, to).iterator();
 		Iterator<String> fathersIt = getFathers(from, to).iterator();
 		Iterator<String> mothersIt = getMothers(from, to).iterator();
