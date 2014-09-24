@@ -41,13 +41,13 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	private final Logger log
 			= LoggerFactory.getLogger(LoadGTFromSequenomFiles.class);
 
-	private static interface Standard {
+	private interface Standard {
 
-		public static final int sampleId = 0;
-		public static final int alleles = 1;
-		public static final int markerId = 2;
-		public static final int well = 3;
-		public static final int qa_desc = 4;
+		static final int sampleId = 0;
+		static final int alleles = 1;
+		static final int markerId = 2;
+		static final int well = 3;
+		static final int qa_desc = 4;
 	}
 
 	public LoadGTFromSequenomFiles() {

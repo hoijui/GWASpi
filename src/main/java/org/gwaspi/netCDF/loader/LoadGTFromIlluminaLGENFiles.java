@@ -37,22 +37,17 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(LoadGTFromIlluminaLGENFiles.class);
+	private interface Standard {
 
-	private static interface Standard {
-
-		public static final int familyId = 0;
-		public static final int sampleId = 1;
-		public static final int markerId = 2;
-		public static final int allele1 = 3;
-		public static final int allele2 = 4;
-		public static final String missing = "-";
+		static final int familyId = 0;
+		static final int sampleId = 1;
+		static final int markerId = 2;
+		static final int allele1 = 3;
+		static final int allele2 = 4;
+		static final String missing = "-";
 	}
 
 	public LoadGTFromIlluminaLGENFiles() {

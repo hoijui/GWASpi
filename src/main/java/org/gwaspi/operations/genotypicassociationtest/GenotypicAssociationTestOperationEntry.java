@@ -22,7 +22,7 @@ import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperat
 
 public interface GenotypicAssociationTestOperationEntry extends AllelicAssociationTestOperationEntry {
 
-	public static final Extractor<GenotypicAssociationTestOperationEntry, Double> TO_OR2
+	static final Extractor<GenotypicAssociationTestOperationEntry, Double> TO_OR2
 			= new Extractor<GenotypicAssociationTestOperationEntry, Double>()
 	{
 		@Override

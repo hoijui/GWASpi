@@ -95,7 +95,7 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 //	private final DataSetSource dataSetSource;
 	private final MatrixDataExtractorParams params;
 
-	private static interface Picker<K> {
+	private interface Picker<K> {
 
 		/**
 		 * @return original indices of picked keys

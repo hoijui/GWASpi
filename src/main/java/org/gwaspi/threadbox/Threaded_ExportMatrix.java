@@ -19,7 +19,6 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
-import org.gwaspi.operations.OperationManager;
 import org.gwaspi.progress.ProgressForwarder;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;

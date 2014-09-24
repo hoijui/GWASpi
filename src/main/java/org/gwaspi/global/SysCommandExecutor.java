@@ -36,15 +36,15 @@ public class SysCommandExecutor {
 	}
 
 	public static void sysAnalyserCommandExecute() {
-		try {
+//		try {
 //			String commandLine = org.gwaspi.gui.AnalyserTab.textArea_commandLine.getText();
 //			AnalyserTab.textArea_cliResult.append("Command to be executed:\n"+ commandLine +"\n"+"\n");
 //
 //			StringBuffer result=sysCommandExecute(commandLine);
 //			AnalyserTab.textArea_cliResult.append(result.toString());
-		} catch (Exception ex) {
-			log.error("Failed to execute command", ex);
-		}
+//		} catch (Exception ex) {
+//			log.error("Failed to execute command", ex);
+//		}
 	}
 
 	public static String sysCommandExecute(String cmd) {

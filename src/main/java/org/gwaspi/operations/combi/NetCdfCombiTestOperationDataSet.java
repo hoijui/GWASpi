@@ -23,11 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -158,6 +155,7 @@ public class NetCdfCombiTestOperationDataSet extends AbstractNetCdfOperationData
 		return values;
 	}
 
+	@Override
 	public List<CombiTestOperationEntry> getEntries(int from, int to) throws IOException {
 
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);

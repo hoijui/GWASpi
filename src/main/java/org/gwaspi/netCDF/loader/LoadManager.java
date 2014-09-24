@@ -23,8 +23,6 @@ import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.operations.MatrixCreatingNetCDFDataSetDestination;
-import org.gwaspi.operations.MatrixMetadataFactory;
 
 public class LoadManager {
 

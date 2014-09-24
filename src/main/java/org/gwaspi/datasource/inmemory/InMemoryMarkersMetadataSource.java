@@ -66,11 +66,6 @@ public class InMemoryMarkersMetadataSource extends AbstractInMemoryListSource<Ma
 		KEY_TO_DATA.clear();
 	}
 
-	@Override
-	public MarkerMetadata get(int index) {
-		return super.get(index);
-	}
-
 	// XXX same code as in the NetCDF counterpart!
 	@Override
 	public MarkersMetadataSource getOrigSource() throws IOException {

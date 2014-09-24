@@ -40,15 +40,15 @@ import org.gwaspi.model.StudyKey;
 
 public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
-	static interface Standard {
+	interface Standard {
 		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
 
-		public static final int markerId = 0;
-		public static final int alleles = 1; // Caution, using normal Call, not Forced Call!
-		public static final String missing = "NoCall";
-		public static final int score = 2;
-		public static final int intensity_A = 3;
-		public static final int intensity_B = 4;
+		static final int markerId = 0;
+		static final int alleles = 1; // Caution, using normal Call, not Forced Call!
+		static final String missing = "NoCall";
+		static final int score = 2;
+		static final int intensity_A = 3;
+		static final int intensity_B = 4;
 	}
 
 	public LoadGTFromAffyFiles() {

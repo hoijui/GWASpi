@@ -40,11 +40,11 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 //	private final Logger log
 //			= LoggerFactory.getLogger(LoadGTFromBeagleFiles.class);
 
-	private static interface Standard {
+	private interface Standard {
 
-		public static final int markerId = 1;
-		public static final int genotypes = 2;
-		public static final String missing = "0";
+		static final int markerId = 1;
+		static final int genotypes = 2;
+		static final String missing = "0";
 	}
 
 	public LoadGTFromBeagleFiles() {
