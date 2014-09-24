@@ -26,7 +26,7 @@ import org.gwaspi.global.Extractor;
  */
 public interface OperationDataEntry<OK> {
 
-	public static class KeyExtractor<KT>
+	static class KeyExtractor<KT>
 			implements Extractor<OperationDataEntry<KT>, KT>
 	{
 		@Override
@@ -35,7 +35,7 @@ public interface OperationDataEntry<OK> {
 		}
 	};
 
-	public static class IndexExtractor
+	static class IndexExtractor
 			implements Extractor<OperationDataEntry, Integer>
 	{
 		@Override
@@ -43,7 +43,7 @@ public interface OperationDataEntry<OK> {
 			return from.getIndex();
 		}
 	};
-	public static final Extractor<OperationDataEntry, Integer> TO_INDEX
+	static final Extractor<OperationDataEntry, Integer> TO_INDEX
 			= new IndexExtractor();
 
 	/**

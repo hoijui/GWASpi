@@ -261,11 +261,6 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		return ncfile;
 	}
 
-	@Override
-	public void finishedLoadingMarkerMetadatas() throws IOException {
-		super.finishedLoadingMarkerMetadatas();
-	}
-
 	private void storeSamplesAndMarkersMetadata() throws IOException {
 
 		try {
@@ -541,11 +536,6 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	protected abstract GenotypeEncoding getGuessedGTCode();
-
-	@Override
-	public void done() throws IOException {
-		super.done();
-	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
 

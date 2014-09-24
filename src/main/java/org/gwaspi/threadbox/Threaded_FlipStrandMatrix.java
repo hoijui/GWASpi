@@ -17,14 +17,12 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperMetadataFactory;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;

@@ -91,7 +91,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = ReportsList.getReportNamePrefix(op);
-		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
+		Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 
 		String hwOutName = prefix + "hardy-weinberg.txt";
 		operationPH.setNewStatus(ProcessStatus.RUNNING);
@@ -104,7 +104,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 				getParams().getHardyWeinbergOpKey(),
 				"Hardy Weinberg Table",
 				op.getStudyKey()));
-		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Report");
+		Utils.sysoutCompleted("Hardy-Weinberg Report");
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;
@@ -224,7 +224,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 				entry.setValue(newValue);
 			}
 		}
-		sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
+		sortedMarkerAlleles = Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
 		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
 
 		// WRITE HW PVAL

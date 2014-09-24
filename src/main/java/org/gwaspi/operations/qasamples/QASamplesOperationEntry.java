@@ -23,7 +23,7 @@ import org.gwaspi.model.SampleKey;
 
 public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
-	public static class MissingRatioExtractor
+	static class MissingRatioExtractor
 			implements Extractor<QASamplesOperationEntry, Double>
 	{
 		@Override
@@ -31,10 +31,10 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getMissingRatio();
 		}
 	};
-	public static final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO
+	static final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO
 			= new MissingRatioExtractor();
 
-	public static class MissingCountExtractor
+	static class MissingCountExtractor
 			implements Extractor<QASamplesOperationEntry, Integer>
 	{
 		@Override
@@ -42,10 +42,10 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getMissingCount();
 		}
 	};
-	public static final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
+	static final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
 			= new MissingCountExtractor();
 
-	public static class HetzyRatioExtractor
+	static class HetzyRatioExtractor
 			implements Extractor<QASamplesOperationEntry, Double>
 	{
 		@Override
@@ -53,7 +53,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getHetzyRatio();
 		}
 	};
-	public static final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO
+	static final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO
 			= new HetzyRatioExtractor();
 
 	/**

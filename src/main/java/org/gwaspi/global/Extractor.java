@@ -24,7 +24,7 @@ package org.gwaspi.global;
  */
 public interface Extractor<IV, OV> {
 
-	public static class ToStringExtractor<IV> implements Extractor<IV, String> {
+	static class ToStringExtractor<IV> implements Extractor<IV, String> {
 
 		public ToStringExtractor() {
 		}
@@ -35,7 +35,7 @@ public interface Extractor<IV, OV> {
 		}
 	}
 
-	public static class ToStringMetaExtractor<IV, M> implements Extractor<IV, String> {
+	static class ToStringMetaExtractor<IV, M> implements Extractor<IV, String> {
 
 		private final Extractor<IV, M> preExtractor;
 
@@ -49,7 +49,7 @@ public interface Extractor<IV, OV> {
 		}
 	}
 
-	public static class EnumToIntExtractor<IV extends Enum> implements Extractor<IV, Integer> {
+	static class EnumToIntExtractor<IV extends Enum> implements Extractor<IV, Integer> {
 
 		public EnumToIntExtractor() {
 		}
@@ -60,7 +60,7 @@ public interface Extractor<IV, OV> {
 		}
 	}
 
-	public static class EnumToIntMetaExtractor<IV, M extends Enum> implements Extractor<IV, Integer> {
+	static class EnumToIntMetaExtractor<IV, M extends Enum> implements Extractor<IV, Integer> {
 
 		private final Extractor<IV, M> preExtractor;
 
@@ -74,7 +74,7 @@ public interface Extractor<IV, OV> {
 		}
 	}
 
-	public static class IntToEnumExtractor<OV extends Enum> implements Extractor<Integer, OV> {
+	static class IntToEnumExtractor<OV extends Enum> implements Extractor<Integer, OV> {
 
 		private final OV[] enumValues;
 

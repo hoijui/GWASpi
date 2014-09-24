@@ -25,7 +25,7 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	public static class MismatchStateExtractor
+	static class MismatchStateExtractor
 			implements Extractor<QAMarkersOperationEntry, Boolean>,
 			Serializable
 	{
@@ -34,10 +34,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMismatchState();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Boolean> TO_MISMATCH_STATE
+	static final Extractor<QAMarkersOperationEntry, Boolean> TO_MISMATCH_STATE
 			= new MismatchStateExtractor();
 
-	public static class MajorAlleleExtractor
+	static class MajorAlleleExtractor
 			implements Extractor<QAMarkersOperationEntry, Byte>,
 			Serializable
 	{
@@ -46,10 +46,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMajorAllele();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Byte> TO_MAJOR_ALLELE
+	static final Extractor<QAMarkersOperationEntry, Byte> TO_MAJOR_ALLELE
 			= new MajorAlleleExtractor();
 
-	public static class MajorAlleleFrequencyExtractor
+	static class MajorAlleleFrequencyExtractor
 			implements Extractor<QAMarkersOperationEntry, Double>,
 			Serializable
 	{
@@ -58,10 +58,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMajorAlleleFrequency();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Double> TO_MAJOR_ALLELE_FREQUENCY
+	static final Extractor<QAMarkersOperationEntry, Double> TO_MAJOR_ALLELE_FREQUENCY
 			= new MajorAlleleFrequencyExtractor();
 
-	public static class MinorAlleleExtractor
+	static class MinorAlleleExtractor
 			implements Extractor<QAMarkersOperationEntry, Byte>,
 			Serializable
 	{
@@ -70,10 +70,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMinorAllele();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Byte> TO_MINOR_ALLELE
+	static final Extractor<QAMarkersOperationEntry, Byte> TO_MINOR_ALLELE
 			= new MinorAlleleExtractor();
 
-	public static class MinorAlleleFrequencyExtractor
+	static class MinorAlleleFrequencyExtractor
 			implements Extractor<QAMarkersOperationEntry, Double>,
 			Serializable
 	{
@@ -82,10 +82,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMinorAlleleFrequency();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Double> TO_MINOR_ALLELE_FREQUENCY
+	static final Extractor<QAMarkersOperationEntry, Double> TO_MINOR_ALLELE_FREQUENCY
 			= new MinorAlleleFrequencyExtractor();
 
-	public static class AlleleAAExtractor
+	static class AlleleAAExtractor
 			implements Extractor<QAMarkersOperationEntry, Integer>,
 			Serializable
 	{
@@ -94,10 +94,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getAlleleAA();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_AA
+	static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_AA
 			= new AlleleAAExtractor();
 
-	public static class AlleleAaExtractor
+	static class AlleleAaExtractor
 			implements Extractor<QAMarkersOperationEntry, Integer>,
 			Serializable
 	{
@@ -106,10 +106,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getAlleleAa();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_Aa
+	static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_Aa
 			= new AlleleAaExtractor();
 
-	public static class AlleleaaExtractor
+	static class AlleleaaExtractor
 			implements Extractor<QAMarkersOperationEntry, Integer>,
 			Serializable
 	{
@@ -118,10 +118,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getAlleleaa();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_aa
+	static final Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_aa
 			= new AlleleaaExtractor();
 
-	public static class MissingCountExtractor
+	static class MissingCountExtractor
 			implements Extractor<QAMarkersOperationEntry, Integer>,
 			Serializable
 	{
@@ -130,10 +130,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMissingCount();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Integer> TO_MISSING_COUNT
+	static final Extractor<QAMarkersOperationEntry, Integer> TO_MISSING_COUNT
 			= new MissingCountExtractor();
 
-	public static class MissingRatioExtractor
+	static class MissingRatioExtractor
 			implements Extractor<QAMarkersOperationEntry, Double>,
 			Serializable
 	{
@@ -142,10 +142,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getMissingRatio();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, Double> TO_MISSING_RATIO
+	static final Extractor<QAMarkersOperationEntry, Double> TO_MISSING_RATIO
 			= new MissingRatioExtractor();
 
-	public static class AlleleCountsExtractor
+	static class AlleleCountsExtractor
 			implements Extractor<QAMarkersOperationEntry, int[]>,
 			Serializable
 	{
@@ -154,10 +154,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getAlleleCounts();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, int[]> TO_ALLELE_COUNTS
+	static final Extractor<QAMarkersOperationEntry, int[]> TO_ALLELE_COUNTS
 			= new AlleleCountsExtractor();
 
-	public static class GenotypeCountsExtractor
+	static class GenotypeCountsExtractor
 			implements Extractor<QAMarkersOperationEntry, int[]>,
 			Serializable
 	{
@@ -166,10 +166,10 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getGenotypeCounts();
 		}
 	};
-	public static final Extractor<QAMarkersOperationEntry, int[]> TO_GENOTYPE_COUNTS
+	static final Extractor<QAMarkersOperationEntry, int[]> TO_GENOTYPE_COUNTS
 			= new GenotypeCountsExtractor();
 
-	public static enum AlleleCounts {
+	static enum AlleleCounts {
 		_A,
 		_a,
 		_0,
@@ -177,7 +177,7 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 		_dash;
 	}
 
-	public static enum GenotypeCounts {
+	static enum GenotypeCounts {
 		_AA,
 		_A0,
 		_0A,

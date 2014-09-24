@@ -192,7 +192,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		final StudyKey studyKey = getParams().getTestOperationKey().getParentMatrixKey().getStudyKey();
 
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
-		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(studyKey)));
+		Utils.createFolder(new File(Study.constructReportsPath(studyKey)));
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
@@ -245,7 +245,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		writingAssociationReportPH.setNewStatus(ProcessStatus.COMPLEETED);
 		operationPH.setNewStatus(ProcessStatus.FINALIZING);
 
-		org.gwaspi.global.Utils.sysoutCompleted(testName + " Test Reports & Charts");
+		Utils.sysoutCompleted(testName + " Test Reports & Charts");
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;

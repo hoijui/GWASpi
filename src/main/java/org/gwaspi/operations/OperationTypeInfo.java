@@ -18,7 +18,6 @@
 package org.gwaspi.operations;
 
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetSource;
 
 /**
  * Contains info about one type of operation.
@@ -68,9 +67,6 @@ public interface OperationTypeInfo {
 	 * @see #getName()
 	 */
 	String getDescription();
-
-//	Class<? extends MatrixOperation> getOperationInterface();
-//	Class<? extends DataSetSource> getDataSetInterface();
 
 	/**
 	 * @deprecated

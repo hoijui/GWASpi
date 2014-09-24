@@ -154,16 +154,16 @@ public class cImport {
 
 		public static interface GWASpi {
 
-			public static final int sampleId = 1;
-			public static final int familyId = 0;
-			public static final int fatherId = 2;
-			public static final int motherId = 3;
-			public static final int sex = 4;
-			public static final int affection = 5;
-			public static final int category = 6;
-			public static final int disease = 7;
-			public static final int population = 8;
-			public static final int age = 9;
+			static final int sampleId = 1;
+			static final int familyId = 0;
+			static final int fatherId = 2;
+			static final int motherId = 3;
+			static final int sex = 4;
+			static final int affection = 5;
+			static final int category = 6;
+			static final int disease = 7;
+			static final int population = 8;
+			static final int age = 9;
 		}
 
 		/**
@@ -385,29 +385,29 @@ public class cImport {
 
 	public static interface SampleInfo {
 
-		public static final int familyId = 0;
-		public static final int sampleId = 1;
-		public static final int fatherId = 2;
-		public static final int motherId = 3;
-		public static final int sex = 4;
-		public static final int affection = 5;
-		public static final int category = 6;
-		public static final int disease = 7;
-		public static final int population = 8;
-		public static final int age = 9;
+		static final int familyId = 0;
+		static final int sampleId = 1;
+		static final int fatherId = 2;
+		static final int motherId = 3;
+		static final int sex = 4;
+		static final int affection = 5;
+		static final int category = 6;
+		static final int disease = 7;
+		static final int population = 8;
+		static final int age = 9;
 	}
 
 	public static interface Separators {
 
-		public static final String separators_Spaces_rgxp = "[ +]";
-		public static final String separators_CommaSpaceTab_rgxp = "[, \t]+";
-		public static final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
-		public static final String separators_CommaTab_rgxp = "[,\t]+";
-		public static final String separators_SpaceTab_rgxp = "[ \t]+";
-		public static final String separators_Tab_rgxp = "[\t]+";
-		public static final String ops = " "; // separator used in output file
-		public static final String separator_PLINK = " ";
-		public static final String separator_BEAGLE = " ";
-		public static final String separator_REPORTS = "\t";
+		static final String separators_Spaces_rgxp = "[ +]";
+		static final String separators_CommaSpaceTab_rgxp = "[, \t]+";
+		static final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
+		static final String separators_CommaTab_rgxp = "[,\t]+";
+		static final String separators_SpaceTab_rgxp = "[ \t]+";
+		static final String separators_Tab_rgxp = "[\t]+";
+		static final String ops = " "; // separator used in output file
+		static final String separator_PLINK = " ";
+		static final String separator_BEAGLE = " ";
+		static final String separator_REPORTS = "\t";
 	}
 }

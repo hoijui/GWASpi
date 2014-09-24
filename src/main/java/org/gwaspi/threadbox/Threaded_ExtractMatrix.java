@@ -23,7 +23,6 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractor;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorMetadataFactory;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;

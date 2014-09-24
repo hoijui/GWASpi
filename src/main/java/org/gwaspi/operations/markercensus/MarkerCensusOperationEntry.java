@@ -22,7 +22,6 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 
 public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {

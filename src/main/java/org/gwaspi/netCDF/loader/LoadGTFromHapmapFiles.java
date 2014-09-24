@@ -39,8 +39,6 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * HapMap genotypes loader.
@@ -50,20 +48,17 @@ import org.slf4j.LoggerFactory;
  */
 public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(LoadGTFromHapmapFiles.class);
+	public interface Standard {
 
-	public static interface Standard {
-
-		public static final int dataStartRow = 1;
-		public static final int sampleId = 11;
-		public static final int markerId = 0;
-		public static final int alleles = 1;
-		public static final int chr = 2;
-		public static final int pos = 3;
-		public static final int strand = 4;
-		public static final String missing = "NN";
-		public static final int score = 10;
+		static final int dataStartRow = 1;
+		static final int sampleId = 11;
+		static final int markerId = 0;
+		static final int alleles = 1;
+		static final int chr = 2;
+		static final int pos = 3;
+		static final int strand = 4;
+		static final String missing = "NN";
+		static final int score = 10;
 	}
 
 	public LoadGTFromHapmapFiles() {

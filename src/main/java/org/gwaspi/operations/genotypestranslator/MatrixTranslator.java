@@ -141,7 +141,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		return resultMatrixId;
 	}
 
-	private static interface GenotypeTranslator {
+	private interface GenotypeTranslator {
 
 		List<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException;
 		List<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException;

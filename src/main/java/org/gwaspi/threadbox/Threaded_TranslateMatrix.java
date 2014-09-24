@@ -23,7 +23,6 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
 import org.gwaspi.operations.genotypestranslator.MatrixTranslatorMetadataFactory;
