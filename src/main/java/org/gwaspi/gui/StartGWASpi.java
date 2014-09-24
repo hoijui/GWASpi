@@ -299,6 +299,7 @@ public class StartGWASpi extends JFrame {
 	}
 
 	public static void main(String[] args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+
 		StartGWASpi startGWASpi = new StartGWASpi();
 		startGWASpi.start(Arrays.asList(args));
 	}
