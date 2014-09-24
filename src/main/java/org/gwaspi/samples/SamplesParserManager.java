@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -65,6 +66,17 @@ public class SamplesParserManager {
 	}
 
 	private SamplesParserManager() {
+	}
+
+	public static Set<Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
+
+		Set<Affection> affectionStates = EnumSet.noneOf(Affection.class);
+
+		for (SampleInfo sampleInfo : sampleInfos) {
+			affectionStates.add(sampleInfo.getAffection());
+		}
+
+		return affectionStates;
 	}
 
 	public static Set<Affection> collectAffectionStates(final DataSetKey dataSetKey) {

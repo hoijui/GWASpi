@@ -45,6 +45,7 @@ import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
+import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 
 			final Set<SampleInfo.Affection> affectionStates
-					= SampleInfoCollectorSwitch.collectAffectionStates(
+					= SamplesParserManager.collectAffectionStates(
 							sampleInfoExtractor.getSampleInfos().values());
 			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
