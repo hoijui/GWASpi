@@ -140,7 +140,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		filterPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
-			if (curCombiWeight > thresholdWeight) {
+			if (curCombiWeight > thresholdWeight) { // XXX; do not filter out, just set P value to 1! -> requries to create a new list of P values... where do we get the old ones from?
 					filteredMarkerOrigIndicesAndKeys.put(
 							parentMarkersEntry.getKey(),
 							parentMarkersEntry.getValue());
