@@ -93,7 +93,6 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 		final JScrollPane scrl_ProcessLog = new JScrollPane();
 		scrl_progress.setMinimumSize(new Dimension(300, 250));
 		final JTextArea txtA_ProcessLog = new JTextArea();
-		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
 		pnl_center.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
 		pnl_center.add(scrl_ProcessLog, BorderLayout.CENTER);
 
