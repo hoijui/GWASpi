@@ -18,9 +18,9 @@
 package org.gwaspi.gui.utils;
 
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import ch.qos.logback.core.encoder.EchoEncoder;
 import ch.qos.logback.core.encoder.Encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,8 +57,13 @@ public class LogDocument extends PlainDocument {
 
 			if (encoder == null) {
 				try {
-					encoder = new EchoEncoder<ILoggingEvent>();
+					PatternLayoutEncoder tmpEncoder = new PatternLayoutEncoder();
+					tmpEncoder.setContext(getContext());
+					tmpEncoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
+					encoder = tmpEncoder;
+
 					encoder.init(buffer);
+					encoder.start();
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -103,7 +108,7 @@ public class LogDocument extends PlainDocument {
 		}
 	}
 
-	private LogBackAppender logBackAppender;
+	private final LogBackAppender logBackAppender;
 
 	public LogDocument() {
 
