@@ -18,56 +18,36 @@
 package org.gwaspi.progress;
 
 import java.awt.BorderLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
- * Tries to show pretty much all information that is available about a given process
- * (excluding info about possible children).
+ * Tries to show pretty much all information that is available
+ * about a given process (excluding info about possible children).
  * @param <ST> the status type
  */
-public class SimpleSwingProgressListener<ST> extends AbstractProgressListener<ST> implements SwingProgressListener<ST> {
-
-	private final JPanel main;
+public class SimpleSwingProgressListener<ST>
+		extends AbstractSwingProgressListener<ST>
+{
 	private final JProgressBar bar;
 	private boolean numIntervallsKnown;
 
 	public SimpleSwingProgressListener(ProgressSource progressSource) {
+		super(progressSource);
 
-		this.main = new JPanel();
-		this.main.setLayout(new BorderLayout());
-		this.numIntervallsKnown = (progressSource.getNumIntervals() != null);
-
-		final JPanel superDisplay = new JPanel();
-		superDisplay.setLayout(new BorderLayout());
-
-		final JPanel superInfo = new JPanel();
-		final JLabel superInfoName = new JLabel();
-		// XXX There has to be more info here, and it may has to be dynamically updated in the processDetailsChanged method
-		superInfoName.setText(progressSource.getInfo().getShortName());
-		superInfoName.setToolTipText(progressSource.getInfo().getDescription());
-		superDisplay.add(superInfo, BorderLayout.SOUTH);
-
-		final JPanel barContainer = new JPanel();
 		this.bar = new JProgressBar();
-		barContainer.setLayout(new BorderLayout());
-		barContainer.add(bar, BorderLayout.CENTER);
-		superDisplay.add(barContainer, BorderLayout.SOUTH);
+		numIntervalsChanged(progressSource);
 
-		this.main.add(superDisplay, BorderLayout.NORTH);
+		getContentContainer().add(bar, BorderLayout.CENTER);
 	}
 
 	@Override
-	public JComponent getMainComponent() {
-		return main;
+	public JProgressBar getProgressBar() {
+		return bar;
 	}
 
-	@Override
-	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+	private void numIntervalsChanged(ProgressSource progressSource) {
 
-		final Integer numIntervals = evt.getProgressSource().getNumIntervals();
+		final Integer numIntervals = progressSource.getNumIntervals();
 		numIntervallsKnown = (numIntervals != null);
 		if (numIntervallsKnown) {
 			bar.setMaximum(numIntervals);
@@ -75,16 +55,27 @@ public class SimpleSwingProgressListener<ST> extends AbstractProgressListener<ST
 	}
 
 	@Override
+	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+		super.processDetailsChanged(evt);
+
+		numIntervalsChanged(evt.getProgressSource());
+	}
+
+	@Override
 	public void statusChanged(ProcessStatusChangeEvent evt) {
+		super.statusChanged(evt);
 
 		bar.setIndeterminate(!numIntervallsKnown && evt.getNewStatus().isActive());
+		bar.setForeground(statusToColor(evt.getNewStatus())); // the color of the bar before the current value
+//		bar.setBackground(statusToColor(evt.getNewStatus())); // the color of the bar after the current value
 	}
 
 	@Override
 	public void progressHappened(ProgressEvent<ST> evt) {
+		super.progressHappened(evt);
 
 		if (numIntervallsKnown) {
-			bar.setValue(evt.getIntervalIndex());
+			bar.setValue(evt.getIntervalIndex() + 1);
 		}
 	}
 }

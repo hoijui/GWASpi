@@ -18,6 +18,7 @@
 package org.gwaspi.progress;
 
 import javax.swing.JComponent;
+import javax.swing.JProgressBar;
 
 public interface SwingProgressListener<ST> extends ProgressListener<ST> {
 
@@ -26,4 +27,11 @@ public interface SwingProgressListener<ST> extends ProgressListener<ST> {
 	 * @return main GUI component for the visualization
 	 */
 	JComponent getMainComponent();
+
+	/**
+	 * Returns only the progress bar, which might be also present in the main component.
+	 * @see #getMainComponent()
+	 * @return main GUI progress bar
+	 */
+	JProgressBar getProgressBar();
 }
