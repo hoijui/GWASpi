@@ -17,7 +17,6 @@
 
 package org.gwaspi.datasource;
 
-import org.gwaspi.datasource.ListSource;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
