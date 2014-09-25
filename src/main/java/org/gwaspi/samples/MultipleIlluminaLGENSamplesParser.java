@@ -20,6 +20,7 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
@@ -39,42 +40,58 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 
 		int numSamples = 0;
 		for (File currentLGENFile : lgenFilesToScan) {
-			FileReader inputFileReader = new FileReader(currentLGENFile);
-			BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+			File sampleFile = currentLGENFile;
 
-			boolean gotHeader = false;
-			while (!gotHeader) {
-				String header = inputBufferReader.readLine();
-				if (header == null) {
-					break;
+			FileReader inputFileReader = null;
+			BufferedReader inputBufferReader = null;
+			try {
+				inputFileReader = new FileReader(sampleFile);
+				inputBufferReader = new BufferedReader(inputFileReader);
+				boolean gotHeader = false;
+				while (!gotHeader) {
+					String header = inputBufferReader.readLine();
+					if (header == null) {
+						break;
+					}
+					if (header.startsWith("[Data]")) {
+						/*header = */inputBufferReader.readLine(); // get the next line, which is the real header
+						gotHeader = true;
+					}
 				}
-				if (header.startsWith("[Data]")) {
-					/*header = */inputBufferReader.readLine(); // get the next line, which is the real header
-					gotHeader = true;
+
+				String l;
+				while (inputBufferReader.ready()) {
+					l = inputBufferReader.readLine();
+					String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+					SampleInfo sampleInfo = new SampleInfo(
+							studyKey,
+							cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
+							cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
+							"0",
+							"0",
+							SampleInfo.Sex.UNKNOWN,
+							SampleInfo.Affection.UNKNOWN
+							);
+					samplesReceiver.addSampleInfo(sampleInfo);
+					numSamples++;
+				}
+				log.info("Parsed {} Samples in LGEN file {}...",
+						numSamples, currentLGENFile.getName());
+			} finally {
+				if (inputBufferReader != null) {
+					try {
+						inputBufferReader.close();
+					} catch (IOException ex) {
+						log.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+					}
+				} else if (inputFileReader != null) {
+					try {
+						inputFileReader.close();
+					} catch (IOException ex) {
+						log.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+					}
 				}
 			}
-
-			String l;
-			while (inputBufferReader.ready()) {
-				l = inputBufferReader.readLine();
-				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				SampleInfo sampleInfo = new SampleInfo(
-						studyKey,
-						cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
-						cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
-						"0",
-						"0",
-						SampleInfo.Sex.UNKNOWN,
-						SampleInfo.Affection.UNKNOWN
-						);
-				samplesReceiver.addSampleInfo(sampleInfo);
-				numSamples++;
-			}
-			log.info("Parsed {} Samples in LGEN file {}...",
-					numSamples, currentLGENFile.getName());
-
-			inputBufferReader.close();
-			inputFileReader.close();
 		}
 	}
 }

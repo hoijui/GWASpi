@@ -20,54 +20,75 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BeagleSamplesParser implements SamplesParser {
+
+	private static final Logger LOG = LoggerFactory.getLogger(BeagleSamplesParser.class);
 
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
-		FileReader inputFileReader;
 		File sampleFile = new File(sampleInfoPath);
-		inputFileReader = new FileReader(sampleFile);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String sampleIdHeader = "";
-		String affectionHeader = "";
-		boolean gotAffection = false;
-		while (!gotAffection) {
-			String l = inputBufferReader.readLine();
-			if (l == null) {
-				break;
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		try {
+			inputFileReader = new FileReader(sampleFile);
+			inputBufferReader = new BufferedReader(inputFileReader);
+
+			String sampleIdHeader = "";
+			String affectionHeader = "";
+			boolean gotAffection = false;
+			while (!gotAffection) {
+				String l = inputBufferReader.readLine();
+				if (l == null) {
+					break;
+				}
+				if (l.startsWith("I")) {
+					sampleIdHeader = l;
+				}
+				if (l.startsWith("A")) {
+					affectionHeader = l;
+					gotAffection = true;
+				}
 			}
-			if (l.startsWith("I")) {
-				sampleIdHeader = l;
+
+			String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] beagleAffections = affectionHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+
+			for (int i = 2; i < beagleAffections.length; i++) {
+				SampleInfo sampleInfo = new SampleInfo(
+						studyKey,
+						sampleIds[i],
+						"0",
+						"0",
+						"0",
+						SampleInfo.Sex.UNKNOWN,
+						SampleInfo.Affection.parse(beagleAffections[i])
+						);
+				samplesReceiver.addSampleInfo(sampleInfo);
 			}
-			if (l.startsWith("A")) {
-				affectionHeader = l;
-				gotAffection = true;
+		} finally {
+			if (inputBufferReader != null) {
+				try {
+					inputBufferReader.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
+			} else if (inputFileReader != null) {
+				try {
+					inputFileReader.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
 			}
 		}
-
-		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-		String[] beagleAffections = affectionHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-
-		for (int i = 2; i < beagleAffections.length; i++) {
-			SampleInfo sampleInfo = new SampleInfo(
-					studyKey,
-					sampleIds[i],
-					"0",
-					"0",
-					"0",
-					SampleInfo.Sex.UNKNOWN,
-					SampleInfo.Affection.parse(beagleAffections[i])
-					);
-			samplesReceiver.addSampleInfo(sampleInfo);
-		}
-
-		inputFileReader.close();
 	}
 }

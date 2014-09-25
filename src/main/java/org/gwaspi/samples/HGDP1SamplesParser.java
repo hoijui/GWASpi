@@ -20,12 +20,17 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HGDP1SamplesParser implements SamplesParser {
+
+	private static final Logger LOG = LoggerFactory.getLogger(HGDP1SamplesParser.class);
 
 	/**
 	 * NOTE No affection state available
@@ -34,20 +39,37 @@ public class HGDP1SamplesParser implements SamplesParser {
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		File sampleFile = new File(sampleInfoPath);
-		FileReader inputFileReader = new FileReader(sampleFile);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String sampleIdHeader = inputBufferReader.readLine();
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		try {
+			inputFileReader = new FileReader(sampleFile);
+			inputBufferReader = new BufferedReader(inputFileReader);
 
-		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-		for (int i = 1; i < sampleIds.length; i++) {
-			String sampleId = sampleIds[i];
-			SampleInfo sampleInfo = new SampleInfo(
-					studyKey,
-					sampleId);
-			samplesReceiver.addSampleInfo(sampleInfo);
+			String sampleIdHeader = inputBufferReader.readLine();
+
+			String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+			for (int i = 1; i < sampleIds.length; i++) {
+				String sampleId = sampleIds[i];
+				SampleInfo sampleInfo = new SampleInfo(
+						studyKey,
+						sampleId);
+				samplesReceiver.addSampleInfo(sampleInfo);
+			}
+		} finally {
+			if (inputBufferReader != null) {
+				try {
+					inputBufferReader.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
+			} else if (inputFileReader != null) {
+				try {
+					inputFileReader.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
+			}
 		}
-
-		inputFileReader.close();
 	}
 }

@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -97,11 +96,9 @@ public class PlinkBinaryFormatter implements Formatter {
 		//   assuming the same indices as with the parent matrix,
 		//   because the Markers-QA-Operation uses all markers
 		//   of the parent matrix.
-		Collection<Byte> minorAllelesCol = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
-		List<Byte> minorAlleles = (minorAllelesCol instanceof List) ? ((List) minorAllelesCol) : new ArrayList<Byte>(minorAllelesCol);
-		Collection<Double> minorAllelesFrequencies = qaMarkersOpDS.getKnownMinorAlleleFrequencies(-1, -1);
-		Collection<Byte> majorAllelesCol = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
-		List<Byte> majorAlleles = (majorAllelesCol instanceof List) ? ((List) majorAllelesCol) : new ArrayList<Byte>(majorAllelesCol);
+		final List<Byte> minorAlleles = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
+		final List<Double> minorAllelesFrequencies = qaMarkersOpDS.getKnownMinorAlleleFrequencies(-1, -1);
+		final List<Byte> majorAlleles = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		File bimFile = new File(exportDir.getPath(),

@@ -20,6 +20,7 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
@@ -36,29 +37,45 @@ public class PlinkLGENSamplesParser implements SamplesParser {
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		File sampleFile = new File(sampleInfoPath);
-		FileReader inputFileReader = new FileReader(sampleFile);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		int numSamples = 0;
-		while (inputBufferReader.ready()) {
-			String l = inputBufferReader.readLine();
-			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-			SampleInfo sampleInfo = new SampleInfo(
-					studyKey,
-					cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
-					cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
-					"0",
-					"0",
-					SampleInfo.Sex.UNKNOWN,
-					SampleInfo.Affection.UNKNOWN
-					);
-			samplesReceiver.addSampleInfo(sampleInfo);
-			numSamples++;
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		try {
+			inputFileReader = new FileReader(sampleFile);
+			inputBufferReader = new BufferedReader(inputFileReader);
+
+			int numSamples = 0;
+			while (inputBufferReader.ready()) {
+				String l = inputBufferReader.readLine();
+				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+				SampleInfo sampleInfo = new SampleInfo(
+						studyKey,
+						cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
+						cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
+						"0",
+						"0",
+						SampleInfo.Sex.UNKNOWN,
+						SampleInfo.Affection.UNKNOWN
+						);
+				samplesReceiver.addSampleInfo(sampleInfo);
+				numSamples++;
+			}
+			log.info("Parsed {} Samples in LGEN file {}...",
+					numSamples, sampleFile.getName());
+		} finally {
+			if (inputBufferReader != null) {
+				try {
+					inputBufferReader.close();
+				} catch (IOException ex) {
+					log.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
+			} else if (inputFileReader != null) {
+				try {
+					inputFileReader.close();
+				} catch (IOException ex) {
+					log.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+				}
+			}
 		}
-		log.info("Parsed {} Samples in LGEN file {}...",
-				numSamples, sampleFile.getName());
-
-		inputBufferReader.close();
-		inputFileReader.close();
 	}
 }

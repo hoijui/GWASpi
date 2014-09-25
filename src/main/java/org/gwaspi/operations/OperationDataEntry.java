@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations;
 
+import java.io.Serializable;
 import org.gwaspi.global.Extractor;
 
 /**
@@ -24,7 +25,7 @@ import org.gwaspi.global.Extractor;
  *
  * @param <OK> operation key type, this is the main/primary key type
  */
-public interface OperationDataEntry<OK> {
+public interface OperationDataEntry<OK> extends Serializable {
 
 	static class KeyExtractor<KT>
 			implements Extractor<OperationDataEntry<KT>, KT>

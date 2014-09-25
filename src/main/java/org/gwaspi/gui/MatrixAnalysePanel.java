@@ -287,9 +287,6 @@ public class MatrixAnalysePanel extends JPanel {
 					// DO TEST
 					if (performTest) {
 						boolean reProceed = true;
-						if (censusOPKey == null) {
-							reProceed = false;
-						}
 
 						List<OperationKey> qaMarkersOffspringKeys = null;
 						OperationKey hwOPKey = null;

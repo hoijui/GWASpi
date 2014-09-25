@@ -82,7 +82,7 @@ public class Report_AnalysisPanel extends JPanel {
 		if (currentOP != null) {
 			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + currentOP.getFriendlyName() + ", OperationID: " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		} else {
-			setBorder(BorderFactory.createTitledBorder(null, OutputTest.createTestName(currentOP.getType()), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + "<NONE>", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		}
 
 		//pnl_OperationDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation+": "+ tata, OperationID: ", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -91,8 +91,7 @@ public class Report_AnalysisPanel extends JPanel {
 		txtA_OpDesc.setRows(5);
 		txtA_OpDesc.setEditable(false);
 		txtA_OpDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_OpDesc.setText((currentOP == null) ? "<NONE>"
-					: currentOP.getDescription());
+		txtA_OpDesc.setText((currentOP == null) ? "<NONE>" : currentOP.getDescription());
 		scrl_OpDesc.setViewportView(txtA_OpDesc);
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrixKey, this, currentOP));

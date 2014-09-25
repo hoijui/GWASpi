@@ -33,10 +33,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.global.Extractor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReportWriter {
 
 	private static final String SEP = cExport.separator_REPORTS;
+
+	private static final Logger LOG = LoggerFactory.getLogger(ReportWriter.class);
 
 	private static class MapArrayValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
 
@@ -264,10 +268,18 @@ public class ReportWriter {
 			}
 		} finally {
 			if (in != null) {
-				in.close();
+				try {
+					in.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close source stream when copying file", ex);
+				}
 			}
 			if (out != null) {
-				out.close();
+				try {
+					out.close();
+				} catch (IOException ex) {
+					LOG.warn("Failed to close destination stream when copying file", ex);
+				}
 			}
 		}
 	}

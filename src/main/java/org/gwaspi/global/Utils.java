@@ -273,8 +273,15 @@ public class Utils {
 
 	public static String getShortDateTimeForFileName(Date date) {
 
-		String dateOut = shortDateFormatter.format(date);
-		dateOut = dateOut + longTimeFormatter.format(date);
+		final String dateStr;
+		synchronized (shortDateFormatter) {
+			dateStr = shortDateFormatter.format(date);
+		}
+		final String timeStr;
+		synchronized (longTimeFormatter) {
+			timeStr = longTimeFormatter.format(date);
+		}
+		final String dateOut = dateStr + timeStr;
 
 		return dateOut;
 	}
@@ -282,8 +289,15 @@ public class Utils {
 	public static String getShortDateTimeAsString() {
 
 		Date now = new Date();
-		String dateOut = mediumDateFormatter.format(now);
-		dateOut = dateOut + " - " + longTimeFormatter.format(now);
+		final String dateStr;
+		synchronized (mediumDateFormatter) {
+			dateStr = mediumDateFormatter.format(now);
+		}
+		final String timeStr;
+		synchronized (longTimeFormatter) {
+			timeStr = longTimeFormatter.format(now);
+		}
+		final String dateOut = dateStr + " " + timeStr;
 
 		return dateOut;
 	}
@@ -291,8 +305,15 @@ public class Utils {
 	public static String getMediumDateTimeAsString() {
 
 		Date now = new Date();
-		String dateOut = mediumDateFormatter.format(now);
-		dateOut = dateOut + " " + mediumTimeFormatter.format(now);
+		final String dateStr;
+		synchronized (mediumDateFormatter) {
+			dateStr = mediumDateFormatter.format(now);
+		}
+		final String timeStr;
+		synchronized (mediumTimeFormatter) {
+			timeStr = mediumTimeFormatter.format(now);
+		}
+		final String dateOut = dateStr + " " + timeStr;
 //		dateOut = dateOut.replace(":", "-");
 //		dateOut = dateOut.replace(" ", "-");
 //		dateOut = dateOut.replace(",", "");
@@ -303,15 +324,17 @@ public class Utils {
 	public static String getMediumDateAsString() {
 
 		Date now = new Date();
-		String dateOut = mediumDateFormatter.format(now);
-
-		return dateOut;
+		synchronized (mediumDateFormatter) {
+			return mediumDateFormatter.format(now);
+		}
 	}
 
 	public static String getTimeStamp() {
 
 		Calendar now = Calendar.getInstance();
-		return timeStampFormat.format(now.getTime());
+		synchronized (timeStampFormat) {
+			return timeStampFormat.format(now.getTime());
+		}
 	}
 
 	public static String toHumanReadableTime(final long milliseconds) {
