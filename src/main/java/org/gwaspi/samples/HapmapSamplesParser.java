@@ -20,13 +20,18 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HapmapSamplesParser implements SamplesParser {
+
+	private static final Logger LOG = LoggerFactory.getLogger(HapmapSamplesParser.class);
 
 	/**
 	 * NOTE No affection state available
@@ -34,37 +39,67 @@ public class HapmapSamplesParser implements SamplesParser {
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
-		FileReader fr = null;
-		BufferedReader inputAnnotationBr = null;
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
 		File hapmapGTFile = new File(sampleInfoPath);
 		if (hapmapGTFile.isDirectory()) {
-			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
-			for (File gtFilesToImport1 : gtFilesToImport) {
-				fr = new FileReader(gtFilesToImport1);
-				inputAnnotationBr = new BufferedReader(fr);
-				String header = inputAnnotationBr.readLine();
-				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
-				for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
-					SampleInfo sampleInfo = new SampleInfo(
-							studyKey, hapmapVals[j]);
-					samplesReceiver.addSampleInfo(sampleInfo);
+			File[] sampleFiles = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
+			for (File sampleFile : sampleFiles) {
+				try {
+					inputFileReader = new FileReader(sampleFile);
+					inputBufferReader = new BufferedReader(inputFileReader);
+					String header = inputBufferReader.readLine();
+					String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+					for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
+						SampleInfo sampleInfo = new SampleInfo(
+								studyKey, hapmapVals[j]);
+						samplesReceiver.addSampleInfo(sampleInfo);
+					}
+				} finally {
+					if (inputBufferReader != null) {
+						try {
+							inputBufferReader.close();
+						} catch (IOException ex) {
+							LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						}
+					} else if (inputFileReader != null) {
+						try {
+							inputFileReader.close();
+						} catch (IOException ex) {
+							LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						}
+					}
 				}
 			}
 		} else {
-			fr = new FileReader(sampleInfoPath);
-			inputAnnotationBr = new BufferedReader(fr);
+			File sampleFile = hapmapGTFile;
+			try {
+				inputFileReader = new FileReader(sampleFile);
+				inputBufferReader = new BufferedReader(inputFileReader);
 
-			String header = inputAnnotationBr.readLine();
+				String header = inputBufferReader.readLine();
 
-			String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
-			for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
-				SampleInfo sampleInfo = new SampleInfo(
-							studyKey, hapmapVals[i]);
-				samplesReceiver.addSampleInfo(sampleInfo);
+				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+				for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
+					SampleInfo sampleInfo = new SampleInfo(
+								studyKey, hapmapVals[i]);
+					samplesReceiver.addSampleInfo(sampleInfo);
+				}
+			} finally {
+				if (inputBufferReader != null) {
+					try {
+						inputBufferReader.close();
+					} catch (IOException ex) {
+						LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+					}
+				} else if (inputFileReader != null) {
+					try {
+						inputFileReader.close();
+					} catch (IOException ex) {
+						LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+					}
+				}
 			}
 		}
-
-		inputAnnotationBr.close();
-		fr.close();
 	}
 }

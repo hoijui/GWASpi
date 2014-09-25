@@ -32,7 +32,7 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	 * The filter-width of the moving average filter (p-norm-filter)
 	 * applied to the weights after SVM training.
 	 */
-	private Integer weightsFilterWidth;
+	private final int weightsFilterWidth;
 	/**
 	 * How many markers to be left with,
 	 * after the filtering with the COMBI method.
@@ -51,11 +51,11 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 		this.totalMarkers = totalMarkers;
 
 		this.weightsFilterWidth = ((weightsFilterWidth == null)
-				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= getTotalMarkers()))
+				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= totalMarkers))
 				? getWeightsFilterWidthDefault()
 				: weightsFilterWidth;
 		this.markersToKeep = ((markersToKeep == null)
-				|| (markersToKeep <= 0) || (markersToKeep >= getTotalMarkers()))
+				|| (markersToKeep <= 0) || (markersToKeep >= totalMarkers))
 				? getMarkersToKeepDefault()
 				: markersToKeep;
 	}

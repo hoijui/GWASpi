@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,7 +110,7 @@ public class MatrixDataExtractorParams extends AbstractMatrixCreatingOperationPa
 				if ((markerPickCase == SetMarkerPickCase.MARKERS_INCLUDE_BY_ID)
 						|| (markerPickCase == SetMarkerPickCase.MARKERS_EXCLUDE_BY_ID))
 				{
-					((Set<MarkerKey>) markerCriteria).add(MarkerKey.valueOf(l));
+					((Collection<MarkerKey>) markerCriteria).add(MarkerKey.valueOf(l));
 				} else {
 					// markerPickerVar is one of:
 					// - marker Chromosome  (cNetCDF.Variables.VAR_MARKERS_CHR)
@@ -117,7 +118,7 @@ public class MatrixDataExtractorParams extends AbstractMatrixCreatingOperationPa
 					// - marker RS-ID       (cNetCDF.Variables.VAR_MARKERS_RSID)
 					// which are all String types, and thus we can
 					// always use char[] here
-					((Set<char[]>) markerCriteria).add(l.toCharArray());
+					((Collection<char[]>) markerCriteria).add(l.toCharArray());
 				}
 			}
 			br.close();
@@ -152,7 +153,7 @@ public class MatrixDataExtractorParams extends AbstractMatrixCreatingOperationPa
 					// - sample sex         (cDBSamples.f_SEX)
 					// which use different types (String, Sex, Affection, int),
 					// and thus we have to support multiple types here
-					((Set<Object>) sampleCriteria).add(cDBSamples.parseFromField(samplePickerVar, l));
+					((Collection<Object>) sampleCriteria).add(cDBSamples.parseFromField(samplePickerVar, l));
 //				}
 			}
 			br.close();

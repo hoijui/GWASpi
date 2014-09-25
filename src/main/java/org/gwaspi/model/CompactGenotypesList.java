@@ -38,6 +38,8 @@ import org.gwaspi.operations.NetCdfUtils;
  */
 public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final GenotypesListFactory FACTORY = new CompactGenotypesListFactory();
 
 	private static class CompactGenotypesListFactory implements GenotypesListFactory {

@@ -16,6 +16,7 @@
  */
 package org.gwaspi.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,7 +25,7 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 /**
  * Contains statistical data about a marker within a set of samples.
  */
-public class CensusFull {
+public class CensusFull implements Serializable {
 
 	private static final class AllCensusExtractor extends AbstractObjectEnumeratedValueExtractor<CensusFull> {
 

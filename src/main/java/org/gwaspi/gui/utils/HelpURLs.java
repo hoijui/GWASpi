@@ -18,6 +18,7 @@
 package org.gwaspi.gui.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.gwaspi.global.Text;
 
@@ -45,20 +46,22 @@ public class HelpURLs {
 		}
 	}
 
-	public static List<HelpURL> INTRO_LINKS = new ArrayList<HelpURL>();
+	public static final List<HelpURL> INTRO_LINKS;
 	static {
-		INTRO_LINKS.add(new HelpURL("Introducing " + Text.App.appName,
+		List<HelpURL> introLinks = new ArrayList<HelpURL>();
+		introLinks.add(new HelpURL("Introducing " + Text.App.appName,
 				"?page_id=213"));
-		INTRO_LINKS.add(new HelpURL("Quickstart",
+		introLinks.add(new HelpURL("Quickstart",
 			"?page_id=175"));
-		INTRO_LINKS.add(new HelpURL("Tutorial",
+		introLinks.add(new HelpURL("Tutorial",
 			"?page_id=226"));
-		INTRO_LINKS.add(new HelpURL("Load Genotyes",
+		introLinks.add(new HelpURL("Load Genotyes",
 			"?page_id=245"));
-		INTRO_LINKS.add(new HelpURL("Import File Formats",
+		introLinks.add(new HelpURL("Import File Formats",
 			"?page_id=121"));
-		INTRO_LINKS.add(new HelpURL("GWAS in one go",
+		introLinks.add(new HelpURL("GWAS in one go",
 			"?page_id=289"));
+		INTRO_LINKS = Collections.unmodifiableList(introLinks);
 	}
 
 	private HelpURLs() {

@@ -53,8 +53,6 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
@@ -98,7 +96,6 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	private final OperationKey testOpKey;
 	private Map<String, MarkerKey> labeler;
-	private MatrixMetadata rdMatrixMetadata;
 	private final MarkerKey origMarkerKey;
 	private final ChromosomeKey origChr;
 	private final ChromosomeKey currentChr;
@@ -170,15 +167,6 @@ public final class ManhattanPlotZoom extends JPanel {
 	}
 
 	public void initChart(boolean usePhysicalPosition) {
-
-		try {
-			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(testOpKey.getParentMatrixKey());
-
-//			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyKey(), this.opId);
-//			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
 
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
 		try {
@@ -644,6 +632,35 @@ public final class ManhattanPlotZoom extends JPanel {
 			toolTip.append("</html>");
 			return toolTip.toString();
 		}
+
+		@Override
+		public boolean equals(Object other) {
+
+			if (other == null) {
+				return false;
+			}
+
+			if (!(other instanceof MyXYToolTipGenerator)) {
+				return false;
+			}
+			final MyXYToolTipGenerator otherC = (MyXYToolTipGenerator) other;
+
+			if (chr == null && otherC.chr == null) {
+				return true;
+			} else if (chr != null && chr.equals(otherC.chr)) {
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+
+			int hash = 7;
+			hash = 43 * hash + (this.chr != null ? this.chr.hashCode() : 0);
+			return hash;
+		}
 	}
 
 	private class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
@@ -763,7 +780,6 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				List<Report> reportsList = ReportsList.getReportsList(testOpKey);
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(testOpKey.getParentMatrixKey(), testOpKey, nRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {

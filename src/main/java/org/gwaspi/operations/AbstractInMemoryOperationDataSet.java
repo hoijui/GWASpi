@@ -65,13 +65,8 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	private Boolean useAllMarkersFromParent;
 	private Boolean useAllSamplesFromParent;
 	private Boolean useAllChromosomesFromParent;
-//	private Map<Integer, SampleKey> matrixIndexSampleKeys;
-//	private Map<Integer, MarkerKey> matrixIndexMarkerKeys;
-//	private Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys;
 	private MarkersKeysSource markersKeysSource;
-	private MarkersMetadataSource markersInfosSource;
 	private SamplesKeysSource samplesKeysSource;
-	private SamplesInfosSource samplesInfosSource;
 	private ChromosomesKeysSource chromosomesKeysSource;
 	private ChromosomesInfosSource chromosomesInfosSource;
 	private final List<ET> elements;
@@ -90,9 +85,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		this.useAllSamplesFromParent = null;
 		this.useAllChromosomesFromParent = null;
 		this.markersKeysSource = null;
-		this.markersInfosSource = null;
 		this.samplesKeysSource = null;
-		this.samplesInfosSource = null;
 		this.chromosomesKeysSource = null;
 		this.chromosomesInfosSource = null;
 		this.elements = new ArrayList<ET>();

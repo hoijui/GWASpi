@@ -29,9 +29,6 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	private final double majorAlleleFrequency;
 	private final byte minorAllele;
 	private final double minorAlleleFrequency;
-//	private final int alleleAA;
-//	private final int alleleAa;
-//	private final int alleleaa;
 	private final int missingCount;
 	private final double missingRatio;
 	private final int[] alleleCounts;
@@ -45,9 +42,6 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 			double majorAlleleFrequency,
 			byte minorAllele,
 			double minorAlleleFrequency,
-//			int alleleAA,
-//			int alleleAa,
-//			int alleleaa,
 			int missingCount,
 			double missingRatio,
 			int[] alleleCounts,
@@ -61,9 +55,6 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 		this.majorAlleleFrequency = majorAlleleFrequency;
 		this.minorAllele = minorAllele;
 		this.minorAlleleFrequency = minorAlleleFrequency;
-//		this.alleleAA = alleleAA;
-//		this.alleleAa = alleleAa;
-//		this.alleleaa = alleleaa;
 		this.missingCount = missingCount;
 		this.alleleCounts = alleleCounts;
 		this.genotypeCounts = genotypeCounts;
@@ -98,11 +89,6 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	public double getMinorAlleleFrequency() {
 		return minorAlleleFrequency;
 	}
-
-//	@Override
-//	public int[] getAllCensus() {
-//		return new int[] {alleleAA, alleleAa, alleleaa, missingCount};
-//	}
 
 	@Override
 	public int getAlleleAA() {

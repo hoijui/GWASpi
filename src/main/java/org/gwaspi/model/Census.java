@@ -16,12 +16,13 @@
  */
 package org.gwaspi.model;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 /**
  * Contains statistical data about a marker within a set of samples.
  */
-public class Census {
+public class Census implements Serializable {
 
 	private static final class CensusExtractor4 extends AbstractObjectEnumeratedValueExtractor<Census> {
 

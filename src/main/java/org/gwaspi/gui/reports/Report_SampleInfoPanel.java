@@ -265,11 +265,12 @@ public class Report_SampleInfoPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
+			FileWriter writer = null;
 			try {
 				final String newFileName = "sampleInfo.txt";
 				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName, dialogParent);
 				final File newFile = new File(newDir, newFileName);
-				FileWriter writer = new FileWriter(newFile);
+				writer = new FileWriter(newFile);
 
 				StringBuilder tableData = new StringBuilder();
 				// HEADER
@@ -309,6 +310,14 @@ public class Report_SampleInfoPanel extends JPanel {
 			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException ex) {
+						log.warn("Failed to close report-to-file writer", ex);
+					}
+				}
 			}
 		}
 	}

@@ -56,14 +56,13 @@ public class StartGWASpi extends JFrame {
 	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
 	public static final String COMMAND_LINE_SWITCH_IN_MEMORY = "memory";
 
-	// create a JFrame to hold everything
-	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
+	// FIXME TODO convert all this to non-static, and make configuration in general more modular (for example, use preferences for everything?)
 	public static boolean guiMode = true;
 	private static boolean logToFile = false;
 	public static boolean logOff = false;
 	public static boolean inMemoryStorage = false;
 	private static String logPath;
-	public static JTabbedPane allTabs = new JTabbedPane();
+	public static final JTabbedPane allTabs = new JTabbedPane();
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
 

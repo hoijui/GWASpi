@@ -178,7 +178,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		Integer actualNRows = (nRows == null) ? Integer.valueOf(100) : nRows;
+		Integer actualNRows = (nRows == null) ? 100 : nRows;
 		txt_NRows.setValue(actualNRows);
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
@@ -541,6 +541,8 @@ public abstract class Report_Analysis extends JPanel {
 		}
 
 		private void actionSaveReportViewAs(String chartPath, final Component dialogParent) {
+
+			FileWriter writer = null;
 			try {
 				final String newFileName = nRows.getText() + "rows_" + chartPath;
 				final File newDir = Dialogs.selectDirectoryDialog(
@@ -548,7 +550,7 @@ public abstract class Report_Analysis extends JPanel {
 						"Choose the new directory for " + newFileName,
 						dialogParent);
 				final File newFile = new File(newDir, newFileName);
-				final FileWriter writer = new FileWriter(newFile);
+				writer = new FileWriter(newFile);
 
 				StringBuilder tableData = new StringBuilder();
 				// HEADER
@@ -589,6 +591,14 @@ public abstract class Report_Analysis extends JPanel {
 			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException ex) {
+						log.warn("Failed to close report-to-file writer", ex);
+					}
+				}
 			}
 		}
 
