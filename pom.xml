@@ -113,6 +113,16 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>3.0.0</version>
+				<configuration>
+					<!--
+						This is a list of tests to ignore.
+						It consists of bare class-names.
+						The default classes are in the package edu.umd.cs.findbugs.detect,
+						and can be found here:
+						https://code.google.com/p/findbugs/source/browse/findbugs/src/java/edu/umd/cs/findbugs/detect
+					-->
+					<omitVisitors>FindDeadLocalStores,DefaultEncodingDetector</omitVisitors>
+				</configuration>
 			</plugin>
 
 			<plugin>
