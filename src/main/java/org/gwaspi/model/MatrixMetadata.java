@@ -687,6 +687,15 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 		this.creationDate = creationDate;
 	}
 
+	public static File generatePathToNetCdfFileGeneric(DataSetMetadata dataSet) throws IOException {
+
+		if (dataSet.getDataSetKey().isMatrix()) {
+			return generatePathToNetCdfFile((MatrixMetadata) dataSet);
+		} else {
+			return OperationMetadata.generatePathToNetCdfFile((OperationMetadata) dataSet);
+		}
+	}
+
 	public static File generatePathToNetCdfFile(MatrixMetadata matrix) throws IOException {
 
 		String genotypesFolder = Study.constructGTPath(matrix.getStudyKey());
