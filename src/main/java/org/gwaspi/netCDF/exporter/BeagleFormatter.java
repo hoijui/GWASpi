@@ -21,7 +21,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -189,20 +188,15 @@ class BeagleFormatter implements Formatter {
 
 			// get MARKER_QA Operation
 			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(MatrixKey.valueOf(rdMatrixMetadata));
-			OperationKey markersQAopKey = null;
-			for (OperationMetadata op : operations) {
-				if (op.getType().equals(OPType.MARKER_QA)) {
-					markersQAopKey = OperationKey.valueOf(op);
-				}
-			}
+			final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;
 			Map<MarkerKey, Byte> opQaMarkersAllelesMin = null;
-			if (markersQAopKey != null) {
-				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
+			if (markersQAOpKey != null) {
+				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAOpKey);
 				Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
-				Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
-				Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
+				List<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
+				List<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
 
 				opQaMarkersAllelesMaj = new LinkedHashMap<MarkerKey, Byte>();
 				opQaMarkersAllelesMin = new LinkedHashMap<MarkerKey, Byte>();
@@ -226,7 +220,7 @@ class BeagleFormatter implements Formatter {
 				markerBW.write(sep);
 				markerBW.write(Integer.toString(curMarkerMetadata.getPos())); // NOTE This conversion is required, because Writer#write(int) actually writes a char, not the int value.
 
-				if (markersQAopKey != null) {
+				if (markersQAOpKey != null) {
 					MarkerKey markerKey = markersKeysIt.next();
 					markerBW.write(sep);
 					markerBW.write((char) (byte) opQaMarkersAllelesMaj.get(markerKey));
