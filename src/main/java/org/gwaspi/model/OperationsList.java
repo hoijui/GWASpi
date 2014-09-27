@@ -130,13 +130,15 @@ public class OperationsList {
 		return selfAndOffspring;
 	}
 
-	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
+	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType, int numMarkers) {
 
 		OperationKey result = null;
 
-		for (int i = 0; i < operations.size(); i++) {
-			if (operations.get(i).getOperationType().equals(opType)) {
-				result = OperationKey.valueOf(operations.get(i));
+		for (OperationMetadata operation : operations) {
+			if (operation.getOperationType().equals(opType)
+					&& (operation.getNumMarkers() == numMarkers))
+			{
+				result = OperationKey.valueOf(operation);
 			}
 		}
 

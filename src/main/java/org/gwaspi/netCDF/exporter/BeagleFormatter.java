@@ -189,7 +189,7 @@ class BeagleFormatter implements Formatter {
 			// get MARKER_QA Operation
 			final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
 			final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetKey);
-			final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+			final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, rdDataSetMetadata.getNumMarkers());
 
 			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;
 			Map<MarkerKey, Byte> opQaMarkersAllelesMin = null;
