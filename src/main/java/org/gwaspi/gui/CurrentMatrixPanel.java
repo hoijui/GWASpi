@@ -256,7 +256,7 @@ public class CurrentMatrixPanel extends JPanel {
 				try {
 					// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
 					final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetMetadata.getDataSetKey());
-					final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+					final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, dataSetMetadata.getNumMarkers());
 					if (markersQAOpKey == null) {
 						Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						return;

@@ -99,8 +99,9 @@ public class Threaded_Test extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(censusOpKey.getParentMatrixKey());
-		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+		final OperationMetadata operationMetadata = OperationsList.getOperationMetadata(censusOpKey);
+		final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(censusOpKey.getParentMatrixKey());
+		final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, operationMetadata.getNumMarkers());
 
 //		if (!gwasParams.isDiscardMarkerByMisRat()) {
 //			gwasParams.setDiscardMarkerMisRatVal(1);
