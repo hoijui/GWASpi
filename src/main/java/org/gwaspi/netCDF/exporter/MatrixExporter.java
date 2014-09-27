@@ -23,10 +23,10 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractOperation;
@@ -51,17 +51,17 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 					null);
 
 	private final MatrixExporterParams params;
-	private final MatrixMetadata rdMatrixMetadata;
+	private final DataSetMetadata rdDataSetMetadata;
 	private final DataSetSource rdDataSetSource;
 	private final Map<ExportFormat, Formatter> formatters;
 
 	public MatrixExporter(MatrixExporterParams params) throws IOException {
 
 		this.params = params;
-		final MatrixKey rdMatrixKey = params.getParent().getMatrixParent();
-		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
+		final DataSetKey rdDataSetKey = params.getParent();
+		rdDataSetMetadata = MatricesList.getDataSetMetadata(rdDataSetKey);
 
-		rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
+		rdDataSetSource = MatrixFactory.generateDataSetSource(rdDataSetKey);
 
 		formatters = new EnumMap<ExportFormat, Formatter>(ExportFormat.class);
 		formatters.put(ExportFormat.PLINK, new PlinkFormatter());
@@ -93,8 +93,8 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 	@Override
 	public int processMatrix() throws IOException {
 
-		String exportPath = Study.constructExportsPath(rdMatrixMetadata.getStudyKey());
-		String taskDesc = "exporting Matrix to \"" + exportPath + "\"";
+		String exportPath = Study.constructExportsPath(rdDataSetMetadata.getStudyKey());
+		String taskDesc = "exporting Data to \"" + exportPath + "\"";
 		org.gwaspi.global.Utils.sysoutStart(taskDesc);
 
 		org.gwaspi.global.Utils.createFolder(new File(exportPath));
@@ -102,7 +102,7 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 
 		boolean result = formatter.export(
 				exportPath,
-				rdMatrixMetadata,
+				rdDataSetMetadata,
 				rdDataSetSource,
 				params.getPhenotype());
 		if (!result) {

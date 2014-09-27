@@ -18,7 +18,6 @@ package org.gwaspi.netCDF.exporter;
 
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.AbstractOperationParams;
 
 /**
@@ -30,11 +29,11 @@ public class MatrixExporterParams extends AbstractOperationParams {
 	private final String phenotype;
 
 	public MatrixExporterParams(
-			final MatrixKey readMatrixKey,
+			final DataSetKey readDataSetKey,
 			final ExportFormat exportFormat,
 			final String phenotype)
 	{
-		super(null, new DataSetKey(readMatrixKey), null);
+		super(null, readDataSetKey, null);
 
 		this.exportFormat = exportFormat;
 		this.phenotype = phenotype;
