@@ -279,6 +279,11 @@
 			<version>2.1</version>
 		</dependency>
 		<dependency>
+			<groupId>tw.edu.ntu.csie</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>3.13-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
 			<version>4.2-min</version>
