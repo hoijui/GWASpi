@@ -42,6 +42,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -65,7 +66,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		matrix = matrixKey;
 		final DataSetKey abstractMatrix = new DataSetKey(matrixKey);
-		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+		final MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 
 //		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(abstractMatrix);
 		final List<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(abstractMatrix);
@@ -147,7 +148,7 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_Operation1_1.setAction(new AnalyseDataAction(abstractMatrix));
 		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
-		btn_Operation1_4.setAction(new ExportMatrixAction(matrix));
+		btn_Operation1_4.setAction(new ExportMatrixAction(matrixMetadata));
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
 		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
 		btn_Back.setAction(new LoadDataPanel.BackAction(matrix.getStudyKey()));
@@ -224,46 +225,51 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class ExportMatrixAction extends AbstractAction {
 
-		private final MatrixKey matrixKey;
+		private final DataSetMetadata dataSetMetadata;
 
-		ExportMatrixAction(MatrixKey matrix) {
+		ExportMatrixAction(DataSetMetadata dataSetMetadata) {
 
-			this.matrixKey = matrix;
+			this.dataSetMetadata = dataSetMetadata;
 			putValue(NAME, Text.Trafo.exportMatrix);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			// Export Matrix Data
-			ExportFormat format = Dialogs.showExportFormatsSelectCombo();
+			final ExportFormat format = Dialogs.showExportFormatsSelectCombo();
 
-			if (format != null) {
-				String expPhenotype = cDBSamples.f_AFFECTION;
-				if (format.equals(cExport.ExportFormat.PLINK_Binary) || format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
-					try {
-						// SELECT PHENOTYPE COLUMN TO USE
+			if (format == null) {
+				// the user chose to "Cancel" the operation
+				return;
+			}
 
-						if (format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
-							expPhenotype = Dialogs.showPhenotypeColumnsSelectCombo();
-						}
+			String expPhenotype = cDBSamples.f_AFFECTION;
+			if (format.equals(cExport.ExportFormat.PLINK_Binary)
+					|| format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat))
+			{
+				// SELECT PHENOTYPE COLUMN TO USE
+				if (format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
+					expPhenotype = Dialogs.showPhenotypeColumnsSelectCombo();
+				}
 
-						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
-						OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
-						if (markersQAOpKey != null) {
-							final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(new DataSetKey(matrixKey), format, expPhenotype);
-							MultiOperations.doExportMatrix(matrixExporterParams);
-						} else {
-							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
-						}
-					} catch (IOException ex) {
-						log.error(null, ex);
+				try {
+					// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
+					final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetMetadata.getDataSetKey());
+					final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+					if (markersQAOpKey == null) {
+						Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
+						return;
 					}
-				} else {
-					final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(new DataSetKey(matrixKey), format, expPhenotype);
-					MultiOperations.doExportMatrix(matrixExporterParams);
+				} catch (IOException ex) {
+					log.error("Failed to check for Markers QA operation existence, which is required for exporting to the " + format.toString() + " format", ex);
 				}
 			}
+
+			// execute the exporting operation
+			final MatrixExporterParams matrixExporterParams
+					= new MatrixExporterParams(dataSetMetadata.getDataSetKey(), format, expPhenotype);
+			MultiOperations.doExportMatrix(matrixExporterParams);
 		}
 	}
 
