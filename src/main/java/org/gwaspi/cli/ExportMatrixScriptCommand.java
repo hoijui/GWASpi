@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.MultiOperations;
@@ -44,16 +46,25 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 		0.command=export_matrix
 		1.study-id=1
 		2.matrix-id=8
-		3.format=MACH
+		3.operation-id=65 # [optional]
+		4.format=MACH
 		[/script]
 		*/
 		//</editor-fold>
 
 		// checking study
-		StudyKey studyKey = prepareStudy(args.get("study-id"), false);
-		int matrixId = Integer.parseInt(args.get("matrix-id"));
-		MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
-		final DataSetKey dataSetKey = new DataSetKey(matrixKey);
+		final StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+		final int matrixId = Integer.parseInt(args.get("matrix-id"));
+		final Integer operationId = fetchInteger(args, "operation-id", null);
+		final MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
+		final DataSetKey dataSetKey;
+		if (operationId == null) {
+			// we will export the matrix
+			dataSetKey = new DataSetKey(matrixKey);
+		} else {
+			// we will export the operation
+			dataSetKey = new DataSetKey(new OperationKey(matrixKey, operationId));
+		}
 		boolean studyExists = checkStudy(studyKey);
 
 		String formatStr = args.get("format");
