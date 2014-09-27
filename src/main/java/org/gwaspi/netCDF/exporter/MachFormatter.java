@@ -26,10 +26,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class MachFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -61,7 +61,7 @@ public class MachFormatter implements Formatter {
 		String tmpChr = "";
 		int start = 0;
 		int end = 0;
-		String dataSetName = rdMatrixMetadata.getFriendlyName();
+		String dataSetName = rdDataSetMetadata.getFriendlyName();
 		List<String> chrMarkerRsIds = new LinkedList<String>();
 		for (MarkerMetadata value : dataSetSource.getMarkersMetadatasSource()) {
 			String chr = value.getChr();

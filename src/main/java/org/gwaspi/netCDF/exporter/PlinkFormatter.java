@@ -23,10 +23,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class PlinkFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -56,7 +56,7 @@ public class PlinkFormatter implements Formatter {
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".ped"));
+					rdDataSetMetadata.getFriendlyName() + ".ped"));
 			pedBW = new BufferedWriter(pedFW);
 
 			// Iterate through all samples
@@ -120,7 +120,7 @@ public class PlinkFormatter implements Formatter {
 		BufferedWriter mapBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".map"));
+					rdDataSetMetadata.getFriendlyName() + ".map"));
 			mapBW = new BufferedWriter(mapFW);
 
 			// MAP files

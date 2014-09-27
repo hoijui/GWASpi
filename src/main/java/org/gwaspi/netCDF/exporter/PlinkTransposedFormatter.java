@@ -23,10 +23,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class PlinkTransposedFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -55,7 +55,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tpedBW = null;
 		try {
 			FileWriter tpedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".tped"));
+					rdDataSetMetadata.getFriendlyName() + ".tped"));
 			tpedBW = new BufferedWriter(tpedFW);
 			// TPED files:
 			// chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
@@ -98,7 +98,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".tfam"));
+					rdDataSetMetadata.getFriendlyName() + ".tfam"));
 			tfamBW = new BufferedWriter(tfamFW);
 
 			// Iterate through all samples

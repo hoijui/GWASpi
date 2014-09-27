@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -36,7 +37,7 @@ public class GWASpiFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -52,7 +53,7 @@ public class GWASpiFormatter implements Formatter {
 		try {
 			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">
 			FileWriter sampleInfoFW = new FileWriter(new File(exportDir.getPath(),
-					"SampleInfo_" + rdMatrixMetadata.getFriendlyName() + ".txt"));
+					"SampleInfo_" + rdDataSetMetadata.getFriendlyName() + ".txt"));
 			sampleInfoBW = new BufferedWriter(sampleInfoFW);
 
 			sampleInfoBW.append("FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tCategory\tDesease\tPopulation\tAge");
@@ -120,9 +121,9 @@ public class GWASpiFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
 		try {
-			File origFile = MatrixMetadata.generatePathToNetCdfFile(rdMatrixMetadata);
+			File origFile = MatrixMetadata.generatePathToNetCdfFileGeneric(rdDataSetMetadata);
 			File newFile = new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".nc");
+					rdDataSetMetadata.getFriendlyName() + ".nc");
 			if (origFile.exists()) {
 				org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			}

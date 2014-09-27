@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -49,7 +49,7 @@ class BeagleFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -65,7 +65,7 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter beagleBW = null;
 		try {
 			FileWriter beagleFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".beagle"));
+					rdDataSetMetadata.getFriendlyName() + ".beagle"));
 			beagleBW = new BufferedWriter(beagleFW);
 
 			// BEAGLE files:
@@ -183,11 +183,12 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter markerBW = null;
 		try {
 			FileWriter markerFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".markers"));
+					rdDataSetMetadata.getFriendlyName() + ".markers"));
 			markerBW = new BufferedWriter(markerFW);
 
 			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(MatrixKey.valueOf(rdMatrixMetadata));
+			final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
+			final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetKey);
 			final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;
