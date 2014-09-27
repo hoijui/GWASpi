@@ -251,7 +251,7 @@ public class CurrentMatrixPanel extends JPanel {
 						List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 						OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpKey != null) {
-							final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(matrixKey, format, expPhenotype);
+							final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(new DataSetKey(matrixKey), format, expPhenotype);
 							MultiOperations.doExportMatrix(matrixExporterParams);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
@@ -260,7 +260,7 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(matrixKey, format, expPhenotype);
+					final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(new DataSetKey(matrixKey), format, expPhenotype);
 					MultiOperations.doExportMatrix(matrixExporterParams);
 				}
 			}

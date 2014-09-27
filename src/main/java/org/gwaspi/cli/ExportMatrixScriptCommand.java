@@ -53,6 +53,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 		StudyKey studyKey = prepareStudy(args.get("study-id"), false);
 		int matrixId = Integer.parseInt(args.get("matrix-id"));
 		MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
+		final DataSetKey dataSetKey = new DataSetKey(matrixKey);
 		boolean studyExists = checkStudy(studyKey);
 
 		String formatStr = args.get("format");
@@ -60,7 +61,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 		if (studyExists) {
 			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
-					matrixKey, format, cDBSamples.f_AFFECTION);
+					dataSetKey, format, cDBSamples.f_AFFECTION);
 			MultiOperations.doExportMatrix(matrixExporterParams);
 			return true;
 		}
