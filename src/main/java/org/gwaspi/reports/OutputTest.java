@@ -359,7 +359,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		for (Integer sortedOrigIndex : sortedOrigIndices) {
 			final int qaMarkersIndex = origIndexToQaMarkersIndexLookupTable[sortedOrigIndex];
 			if (qaMarkersIndex < 0) {
-				throw new IllegalArgumentException("The supplied QA Markers operation does not contain all the required markers");
+				throw new IllegalArgumentException("The supplied QA Markers (" + getParams().geQaMarkersOpKey().toString() + ") operation does not contain all the required markers");
 			}
 			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(qaMarkersIndex);
 			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(qaMarkersIndex);
