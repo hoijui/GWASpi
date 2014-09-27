@@ -18,15 +18,15 @@
 package org.gwaspi.netCDF.exporter;
 
 import java.io.IOException;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
 
 interface Formatter {
 
 	/**
 	 *
 	 * @param exportPath
-	 * @param rdMatrixMetadata
+	 * @param rdDataSetMetadata
 	 * @param dataSetSource
 	 * @param phenotype
 	 * @return true if formatting and exporting went through successfully, false otherwise
@@ -34,7 +34,7 @@ interface Formatter {
 	 */
 	boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException;

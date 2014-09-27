@@ -28,11 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -70,7 +70,7 @@ public class PlinkBinaryFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -83,10 +83,10 @@ public class PlinkBinaryFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
 
-		MatrixKey parentMatrix = MatrixKey.valueOf(rdMatrixMetadata);
+		final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
 
 		// ALLELES
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentMatrix);
+		final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetKey);
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAOpKey);
@@ -102,7 +102,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		File bimFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getFriendlyName() + ".bim");
+				rdDataSetMetadata.getFriendlyName() + ".bim");
 		BufferedWriter bimBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(bimFile);
@@ -170,7 +170,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		// Create an output stream to the file.
 		File bedFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getFriendlyName() + ".bed");
+				rdDataSetMetadata.getFriendlyName() + ".bed");
 		DataOutputStream bedBW = null;
 		try {
 			FileOutputStream bedFW = new FileOutputStream(bedFile);
@@ -239,7 +239,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="FAM FILE">
 		File famFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getFriendlyName() + ".fam");
+				rdDataSetMetadata.getFriendlyName() + ".fam");
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(famFile);

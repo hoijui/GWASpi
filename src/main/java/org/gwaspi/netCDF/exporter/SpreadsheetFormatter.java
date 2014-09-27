@@ -23,10 +23,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class SpreadsheetFormatter implements Formatter {
 	@Override
 	public boolean export(
 			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
+			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
@@ -55,7 +55,7 @@ public class SpreadsheetFormatter implements Formatter {
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getFriendlyName() + ".csv"));
+					rdDataSetMetadata.getFriendlyName() + ".csv"));
 			pedBW = new BufferedWriter(pedFW);
 
 			// HEADER CONTAINING MARKER IDs
