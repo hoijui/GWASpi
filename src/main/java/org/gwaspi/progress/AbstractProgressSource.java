@@ -42,7 +42,7 @@ public abstract class AbstractProgressSource<ST> implements ProgressSource<ST> {
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
-		this.currentStatus = null;
+		this.currentStatus = ProcessStatus.NONE;
 	}
 
 	protected int getNextEventIndex() {
