@@ -176,7 +176,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	/**
 	 * Runs the Combi association Test on the "extra" dataset.
 	 */
-	@org.junit.Ignore
+//	@org.junit.Ignore
 	@Test
 	public void testCombiAssociationTest() throws Exception {
 
