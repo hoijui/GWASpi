@@ -46,5 +46,45 @@ public interface Extractor<IV, OV> {
 		}
 	}
 
+	public static class EnumToIntExtractor<IV extends Enum> implements Extractor<IV, Integer> {
+
+		public EnumToIntExtractor() {
+		}
+
+		@Override
+		public Integer extract(IV object) {
+			return object.ordinal();
+		}
+	}
+
+	public static class EnumToIntMetaExtractor<IV, M extends Enum> implements Extractor<IV, Integer> {
+
+		private final Extractor<IV, M> preExtractor;
+
+		public EnumToIntMetaExtractor(Extractor<IV, M> preExtractor) {
+			this.preExtractor = preExtractor;
+		}
+
+		@Override
+		public Integer extract(IV object) {
+			return preExtractor.extract(object).ordinal();
+		}
+	}
+
+	public static class IntToEnumExtractor<OV extends Enum> implements Extractor<Integer, OV> {
+
+		private final OV[] enumValues;
+
+		public IntToEnumExtractor(OV[] enumValues) {
+
+			this.enumValues = enumValues;
+		}
+
+		@Override
+		public OV extract(Integer object) {
+			return enumValues[object];
+		}
+	}
+
 	OV extract(IV object);
 }

@@ -120,10 +120,10 @@ public class cNetCDF {
 	//<editor-fold defaultstate="expanded" desc="OPERATION & ANALYSIS VARS">
 	public static class Census {
 
-		public static final String VAR_OP_MARKERS_CENSUSALL_IDX = "OP_markers_censusall_idx";
-		public static final String VAR_OP_MARKERS_CENSUSCASE_IDX = "OP_markers_censuscase_idx";
-		public static final String VAR_OP_MARKERS_CENSUSCTRL_IDX = "OP_markers_censusctrl_idx";
-		public static final String VAR_OP_MARKERS_CENSUSHW_IDX = "OP_markers_censushw_idx";
+//		public static final String VAR_OP_MARKERS_CENSUSALL_IDX = "OP_markers_censusall_idx";
+//		public static final String VAR_OP_MARKERS_CENSUSCASE_IDX = "OP_markers_censuscase_idx";
+//		public static final String VAR_OP_MARKERS_CENSUSCTRL_IDX = "OP_markers_censusctrl_idx";
+//		public static final String VAR_OP_MARKERS_CENSUSHW_IDX = "OP_markers_censushw_idx";
 		public static final String VAR_OP_MARKERS_CENSUSALL = "OP_markers_censusall";
 		public static final String VAR_OP_MARKERS_CENSUSCASE = "OP_markers_censuscase";
 		public static final String VAR_OP_MARKERS_CENSUSCTRL = "OP_markers_censusctrl";
@@ -156,7 +156,7 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALL = "OP_markers_hwhetzyobs_all";
 		public static final String VAR_OP_MARKERS_HWHETZYOBS_CASE = "OP_markers_hwhetzyobs_case";
 		public static final String VAR_OP_MARKERS_HWHETZYOBS_CTRL = "OP_markers_hwhetzyobs_ctrl";
-		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALT = "OP_markers_hwhetzyexp_alt";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALT = "OP_markers_hwhetzyobs_alt";
 		public static final String VAR_OP_MARKERS_HWHETZYEXP_ALL = "OP_markers_hwhetzyexp_all";
 		public static final String VAR_OP_MARKERS_HWHETZYEXP_CASE = "OP_markers_hwhetzyexp_case";
 		public static final String VAR_OP_MARKERS_HWHETZYEXP_CTRL = "OP_markers_hwhetzyexp_ctrl";

@@ -35,6 +35,11 @@ public class SimpleDataSetSource implements DataSetSource {
 	private SamplesKeysSource samplesKeysSource;
 
 	@Override
+	public DataSetSource getOriginDataSetSource() throws IOException {
+		return this;
+	}
+
+	@Override
 	public int getNumMarkers() {
 		return (markersKeysSource == null) ? 0 : markersKeysSource.size();
 	}

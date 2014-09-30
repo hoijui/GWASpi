@@ -158,8 +158,13 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public Collection<HardyWeinbergOperationEntry> getEntriesControl() throws IOException {
+	public List<HardyWeinbergOperationEntry> getEntriesControl() throws IOException {
 		return getEntries(Category.CONTROL, -1, -1);
+	}
+
+	@Override
+	public List<HardyWeinbergOperationEntry> getEntriesAlternate() throws IOException {
+		return getEntries(Category.ALTERNATE, -1, -1);
 	}
 
 	private static final class EntryBuffer<ET> {
@@ -259,30 +264,30 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public Collection<Double> getPs(Category category, int from, int to) throws IOException {
+	public List<Double> getPs(Category category, int from, int to) throws IOException {
 
 		String varP = netCdfPVars.get(category);
-		Collection<Double> values = new ArrayList<Double>(0);
+		List<Double> values = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), varP, from, to, values, null);
 
 		return values;
 	}
 
 	@Override
-	public Collection<Double> getHwHetzyObses(Category category, int from, int to) throws IOException {
+	public List<Double> getHwHetzyObses(Category category, int from, int to) throws IOException {
 
 		String varObsHtz = netCdfHetzyObsVars.get(category);
-		Collection<Double> values = new ArrayList<Double>(0);
+		List<Double> values = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), varObsHtz, from, to, values, null);
 
 		return values;
 	}
 
 	@Override
-	public Collection<Double> getHwHetzyExps(Category category, int from, int to) throws IOException {
+	public List<Double> getHwHetzyExps(Category category, int from, int to) throws IOException {
 
 		String varExpHtz = netCdfHetzyExpVars.get(category);
-		Collection<Double> values = new ArrayList<Double>(0);
+		List<Double> values = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), varExpHtz, from, to, values, null);
 
 		return values;
@@ -293,14 +298,14 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		return getEntries(HardyWeinbergOperationEntry.Category.ALL, from, to);
 	}
 
-	public Collection<HardyWeinbergOperationEntry> getEntries(Category category, int from, int to) throws IOException {
+	public List<HardyWeinbergOperationEntry> getEntries(Category category, int from, int to) throws IOException {
 
 		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<Double> ps = getPs(category, from, to);
 		Collection<Double> hwObsHetzys = getHwHetzyObses(category, from, to);
 		Collection<Double> hwExpHetzys = getHwHetzyExps(category, from, to);
 
-		Collection<HardyWeinbergOperationEntry> entries
+		List<HardyWeinbergOperationEntry> entries
 				= new ArrayList<HardyWeinbergOperationEntry>(ps.size());
 		Iterator<Double> psIt = ps.iterator();
 		Iterator<Double> hwObsHetzysIt = hwObsHetzys.iterator();

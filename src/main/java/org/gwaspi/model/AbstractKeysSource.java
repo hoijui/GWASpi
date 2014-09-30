@@ -26,8 +26,6 @@ import java.util.Map;
  */
 public interface AbstractKeysSource<VT> extends List<VT> {
 
-	List<VT> getRange(int from, int to) throws IOException;
-
 	/**
 	 * Returns the indices of the elements in the original matrix
 	 * @return original indices

@@ -27,8 +27,6 @@ import org.gwaspi.model.SampleInfo.Sex;
  */
 public interface SamplesInfosSource extends List<SampleInfo> {
 
-	List<SampleInfo> getRange(int from, int to) throws IOException;
-
 	List<Integer> getSampleOrigIndices() throws IOException;
 	List<SampleKey> getSampleKeys() throws IOException;
 	List<Integer> getOrderIds() throws IOException;

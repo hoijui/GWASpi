@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
@@ -79,22 +80,22 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 	@Override
 	protected void performTest(
 			OperationDataSet dataSet,
-			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
-			Map<Integer, Census> caseMarkersOrigIndexCensus,
-			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
-			Map<Integer, Census> ctrlMarkersOrigIndexCensus)
+			Map<Integer, MarkerKey> markerOrigIndicesKeys,
+			List<Census> caseMarkersCensus,
+			List<Census> ctrlMarkersCensus)
 			throws IOException
 	{
 //		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
 
 		// Iterate through markerset
 		int markerNb = 0;
-		Iterator<Census> caseMarkerCensusIt = caseMarkersOrigIndexCensus.values().iterator();
-		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : caseMarkersOrigIndexKey.entrySet()) {
-			Integer origIndex = caseMarkerOrigIndexKey.getKey();
-			MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
-			Census caseCensus = caseMarkerCensusIt.next();
-			Census ctrlCensus = ctrlMarkersOrigIndexCensus.get(origIndex);
+		Iterator<Census> caseMarkerCensusIt = caseMarkersCensus.iterator();
+		Iterator<Census> ctrlMarkersCensusIt = ctrlMarkersCensus.iterator();
+		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : markerOrigIndicesKeys.entrySet()) {
+			final Integer origIndex = caseMarkerOrigIndexKey.getKey();
+			final MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
+			final Census caseCensus = caseMarkerCensusIt.next();
+			final Census ctrlCensus = ctrlMarkersCensusIt.next();
 
 			// INIT VALUES
 			final int caseAA = caseCensus.getAA();

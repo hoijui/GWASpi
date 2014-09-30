@@ -83,7 +83,9 @@ public class Util {
 		do {
 			reminder = remaining % 1024;
 			remaining = remaining / 1024;
-			humanReadable = reminder + " " + MEMORY_SIZE_PREFIXES[prefixIndex++] + "B" + humanReadable;
+			humanReadable
+					= reminder + MEMORY_SIZE_PREFIXES[prefixIndex++] + "B"
+					+ (humanReadable.isEmpty() ? "" : " ") + humanReadable;
 		} while (remaining > 0);
 
 		return humanReadable.toString();

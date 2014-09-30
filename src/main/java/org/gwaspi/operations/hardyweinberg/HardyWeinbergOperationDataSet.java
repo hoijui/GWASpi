@@ -19,6 +19,7 @@ package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 
@@ -54,9 +55,10 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 
 	void setMarkerCensusOperationKey(OperationKey markerCensusOPKey);
 
-	Collection<HardyWeinbergOperationEntry> getEntriesControl() throws IOException;
+	List<HardyWeinbergOperationEntry> getEntriesControl() throws IOException;
+	List<HardyWeinbergOperationEntry> getEntriesAlternate() throws IOException;
 
-	Collection<Double> getPs(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
-	Collection<Double> getHwHetzyObses(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
-	Collection<Double> getHwHetzyExps(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
+	List<Double> getPs(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
+	List<Double> getHwHetzyObses(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
+	List<Double> getHwHetzyExps(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
 }

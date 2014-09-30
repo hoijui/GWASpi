@@ -38,14 +38,14 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.markers.NetCdfChromosomesInfosSource;
-import org.gwaspi.netCDF.markers.NetCdfChromosomesKeysSource;
-import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
-import org.gwaspi.netCDF.markers.NetCdfMarkersKeysSource;
-import org.gwaspi.netCDF.markers.NetCdfMarkersMetadataSource;
-import org.gwaspi.netCDF.markers.NetCdfSamplesGenotypesSource;
-import org.gwaspi.netCDF.markers.NetCdfSamplesInfosSource;
-import org.gwaspi.netCDF.markers.NetCdfSamplesKeysSource;
+import org.gwaspi.datasource.netcdf.NetCdfChromosomesInfosSource;
+import org.gwaspi.datasource.netcdf.NetCdfChromosomesKeysSource;
+import org.gwaspi.datasource.netcdf.NetCdfMarkersGenotypesSource;
+import org.gwaspi.datasource.netcdf.NetCdfMarkersKeysSource;
+import org.gwaspi.datasource.netcdf.NetCdfMarkersMetadataSource;
+import org.gwaspi.datasource.netcdf.NetCdfSamplesGenotypesSource;
+import org.gwaspi.datasource.netcdf.NetCdfSamplesInfosSource;
+import org.gwaspi.datasource.netcdf.NetCdfSamplesKeysSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -504,27 +504,27 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSourceRaw().getIndices());
+	protected SamplesInfosSource getSamplesInfosSourceRaw() throws IOException {
+		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSource().getIndices());
 	}
 
 	@Override
-	public MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
+	protected MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
 		return NetCdfMarkersKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
-	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSourceRaw().getIndices());
+	protected MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException {
+		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSource().getIndices());
 	}
 
 	@Override
-	public ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
+	protected ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
 		return NetCdfChromosomesKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
-	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
-		return NetCdfChromosomesInfosSource.createForOperation(getNetCdfReadFile(), getChromosomesKeysSourceRaw().getIndices());
+	protected ChromosomesInfosSource getChromosomesInfosSourceRaw() throws IOException {
+		return NetCdfChromosomesInfosSource.createForOperation(getNetCdfReadFile(), getChromosomesKeysSource().getIndices());
 	}
 }

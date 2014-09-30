@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.datasource.filter;
 
 import java.util.List;
+import org.gwaspi.model.MarkersGenotypesSource;
 
-/**
- * Allows to read the genotypes matrix, sample by sample.
- * Each list of genotypes is #markers long.
- * The map has an ordered iterator.
- * Not all Map operations are supported by all implementations,
- * and some might be unbearably slow.
- */
-//public interface SamplesGenotypesSource extends Map<SampleKey, GenotypesList> {
-public interface SamplesGenotypesSource extends List<GenotypesList> {
+public class InternalIndicesFilteredMarkersGenotypesSource extends InternalIndicesFilteredGenotypesListSource implements MarkersGenotypesSource {
+
+	public InternalIndicesFilteredMarkersGenotypesSource(final MarkersGenotypesSource wrapped, final List<Integer> includeInternalOrigIndices) {
+		super(wrapped, includeInternalOrigIndices);
+	}
 }

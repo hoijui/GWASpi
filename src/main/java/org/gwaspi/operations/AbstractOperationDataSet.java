@@ -21,17 +21,20 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
+import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -132,7 +135,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	protected abstract OperationMetadata createOperationMetadata() throws IOException;
 
-	protected OperationMetadata getOperationMetadata() throws IOException {
+	protected final OperationMetadata getOperationMetadata() throws IOException {
 
 		if (operationMetadata == null) {
 			if (operationKey == null) {
@@ -161,15 +164,15 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	}
 
 	@Override
-	public DataSetSource getRootDataSetSource() throws IOException {
+	public DataSetSource getOriginDataSetSource() throws IOException {
 		return MatrixFactory.generateMatrixDataSetSource(getOrigin());
 	}
 
 	@Override
-	public MatrixMetadata getMatrixMetadata() throws IOException {
+	public final MatrixMetadata getMatrixMetadata() throws IOException {
 
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
-		// ... or maybe just leave like this, cause this method should not be used by OperationDataSet "users"
+		throw new UnsupportedOperationException("Not supported.");
+		// maybe just leave like this, cause this method should not be used by OperationDataSet "users"
 	}
 
 	protected int getEntriesWriteBufferSize() {
@@ -209,7 +212,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract int getNumMarkersRaw() throws IOException;
 
 	@Override
-	public int getNumMarkers() throws IOException {
+	public final int getNumMarkers() throws IOException {
 
 		if (numMarkers == null) {
 			if (getUseAllSamplesFromParent()) {
@@ -244,7 +247,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract int getNumSamplesRaw() throws IOException;
 
 	@Override
-	public int getNumSamples() throws IOException {
+	public final int getNumSamples() throws IOException {
 
 		if (numSamples == null) {
 			if (getUseAllSamplesFromParent()) {
@@ -279,7 +282,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract int getNumChromosomesRaw() throws IOException;
 
 	@Override
-	public int getNumChromosomes() throws IOException {
+	public final int getNumChromosomes() throws IOException {
 
 		if (numChromosomes == null) {
 			if (getUseAllChromosomesFromParent()) {
@@ -310,7 +313,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract SamplesKeysSource getSamplesKeysSourceRaw() throws IOException;
 
 	@Override
-	public SamplesKeysSource getSamplesKeysSource() throws IOException {
+	public final SamplesKeysSource getSamplesKeysSource() throws IOException {
 
 		if (getUseAllSamplesFromParent()) {
 			return getParentDataSetSource().getSamplesKeysSource();
@@ -319,33 +322,70 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		}
 	}
 
+	protected abstract SamplesInfosSource getSamplesInfosSourceRaw() throws IOException;
+
+	@Override
+	public final SamplesInfosSource getSamplesInfosSource() throws IOException {
+
+		if (getUseAllSamplesFromParent()) {
+			return getParentDataSetSource().getSamplesInfosSource();
+		} else {
+			return getSamplesInfosSourceRaw();
+		}
+	}
+
 	protected abstract MarkersKeysSource getMarkersKeysSourceRaw() throws IOException;
 
 	@Override
-	public MarkersKeysSource getMarkersKeysSource() throws IOException {
+	public final MarkersKeysSource getMarkersKeysSource() throws IOException {
 
-		if (getUseAllSamplesFromParent()) {
+		if (getUseAllMarkersFromParent()) {
 			return getParentDataSetSource().getMarkersKeysSource();
 		} else {
 			return getMarkersKeysSourceRaw();
 		}
 	}
 
+	protected abstract MarkersMetadataSource getMarkersMetadatasSourceRaw() throws IOException;
+
+	@Override
+	public final MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
+
+		if (getUseAllMarkersFromParent()) {
+			return getParentDataSetSource().getMarkersMetadatasSource();
+		} else {
+			return getMarkersMetadatasSourceRaw();
+		}
+	}
+
 	protected abstract ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException;
 
 	@Override
-	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
+	public final ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
 
-		if (getUseAllSamplesFromParent()) {
+		if (getUseAllChromosomesFromParent()) {
 			return getParentDataSetSource().getChromosomesKeysSource();
 		} else {
 			return getChromosomesKeysSourceRaw();
 		}
 	}
+
+	protected abstract ChromosomesInfosSource getChromosomesInfosSourceRaw() throws IOException;
+
+	@Override
+	public final ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
+
+		if (getUseAllChromosomesFromParent()) {
+			return getParentDataSetSource().getChromosomesInfosSource();
+		} else {
+			return getChromosomesInfosSourceRaw();
+		}
+	}
+
 	protected abstract MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException;
 
 	@Override
-	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
+	public final MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
 
 		if (getUseAllSamplesFromParent() && getUseAllMarkersFromParent()) {
 			return getParentDataSetSource().getMarkersGenotypesSource();
@@ -357,7 +397,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException;
 
 	@Override
-	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
+	public final SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
 
 		if (getUseAllSamplesFromParent() && getUseAllMarkersFromParent()) {
 			return getParentDataSetSource().getSamplesGenotypesSource();

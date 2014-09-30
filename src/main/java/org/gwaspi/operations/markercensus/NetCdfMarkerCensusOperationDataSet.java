@@ -62,13 +62,13 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
 
-	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
-	static {
-		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
-		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
-		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
-		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
-	}
+//	private static final Map<Category, String> categoryNetCdfVarIdx = new EnumMap<Category, String>(Category.class);
+//	static {
+//		categoryNetCdfVarIdx.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX);
+//		categoryNetCdfVarIdx.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX);
+//		categoryNetCdfVarIdx.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX);
+//		categoryNetCdfVarIdx.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX);
+//	}
 
 	private static final Map<Category, String> categoryNetCdfVarNameWithoutAll = new EnumMap<Category, String>(Category.class);
 	static {
@@ -180,10 +180,10 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		allelesSpace.add(gtStrideDim);
 
 		// Define OP Variables
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX, DataType.INT, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX, DataType.INT, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX, DataType.INT, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX, DataType.INT, markersSpace);
+//		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
@@ -224,6 +224,11 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				isMarkersOperationSet());
 	}
 
+	@Override
+	public List<byte[]> getKnownAlleles() throws IOException {
+		return getKnownAlleles(-1, -1);
+	}
+
 //	@Override
 ////	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
 ////		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
@@ -233,25 +238,25 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 //	}
 
 	@Override
-	public Collection<byte[]> getKnownAlleles(int from, int to) throws IOException {
+	public List<byte[]> getKnownAlleles(int from, int to) throws IOException {
 
-		Collection<byte[]> knownAlleles = new ArrayList<byte[]>(0);
+		List<byte[]> knownAlleles = new ArrayList<byte[]>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Variables.VAR_ALLELES, from, to, knownAlleles, null);
 
 		return knownAlleles;
 	}
 
-	public List<Integer> getCensusMarkerIndices(Category category, int from, int to) throws IOException {
-
-		List<Integer> categoryCensusOrigIndices = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarIdx.get(category), from, to, categoryCensusOrigIndices, null);
-
-		return categoryCensusOrigIndices;
-	}
-
-	public List<Integer> getCensusMarkerIndices(Category category) throws IOException {
-		return getCensusMarkerIndices(category, -1, -1);
-	}
+//	public List<Integer> getCensusMarkerIndices(Category category, int from, int to) throws IOException {
+//
+//		List<Integer> categoryCensusOrigIndices = new ArrayList<Integer>(0);
+//		NetCdfUtils.readVariable(getNetCdfReadFile(), categoryNetCdfVarIdx.get(category), from, to, categoryCensusOrigIndices, null);
+//
+//		return categoryCensusOrigIndices;
+//	}
+//
+//	public List<Integer> getCensusMarkerIndices(Category category) throws IOException {
+//		return getCensusMarkerIndices(category, -1, -1);
+//	}
 
 	public List<Census> getCensusMarkerData(Category category, int from, int to) throws IOException {
 
@@ -271,18 +276,25 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	public Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException {
+	public List<Census> getCensus(Category category) throws IOException {
+		return getCensus(category, -1, -1);
+	}
 
-		List<Integer> categoryCensusOrigIndices = getCensusMarkerIndices(category, from, to);
+	@Override
+//	public Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException {
+	public List<Census> getCensus(Category category, int from, int to) throws IOException {
+
+//		List<Integer> categoryCensusOrigIndices = getCensusMarkerIndices(category, from, to);
 		List<Census> censusesData = getCensusMarkerData(category, from, to);
+		return censusesData;
 
-		Map<Integer, Census> censuses = new LinkedHashMap<Integer, Census>(censusesData.size());
-		Iterator<Integer> categoryCensusOrigIndicesIt = categoryCensusOrigIndices.iterator();
-		for (Census censusData : censusesData) {
-			censuses.put(categoryCensusOrigIndicesIt.next(), censusData);
-		}
-
-		return censuses;
+//		Map<Integer, Census> censuses = new LinkedHashMap<Integer, Census>(censusesData.size());
+//		Iterator<Integer> categoryCensusOrigIndicesIt = categoryCensusOrigIndices.iterator();
+//		for (Census censusData : censusesData) {
+//			censuses.put(categoryCensusOrigIndicesIt.next(), censusData);
+//		}
+//
+//		return censuses;
 	}
 
 	@Override
@@ -292,14 +304,18 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		Collection<byte[]> knownAlleles = getKnownAlleles(from, to);
 //		Collection<Census> censusesAll = getCensus(Category.ALL, from, to);
 //		Collection<Census> censusesCase = getCensus(Category.CASE, from, to);
-		Map<Integer, Census> censusesControl = getCensus(Category.CONTROL, from, to);
-		Map<Integer, Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
+//		Map<Integer, Census> censusesControl = getCensus(Category.CONTROL, from, to);
+//		Map<Integer, Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
+		Collection<Census> censusesControl = getCensus(Category.CONTROL, from, to);
+		Collection<Census> censusesAlternate = getCensus(Category.ALTERNATE, from, to);
 
 		Collection<MarkerCensusOperationEntry> entries
 				= new ArrayList<MarkerCensusOperationEntry>(knownAlleles.size());
 		Iterator<byte[]> knownAllelesIt = knownAlleles.iterator();
-		Iterator<Census> censusesControlIt = censusesControl.values().iterator();
-		Iterator<Census> censusesAlternateIt = censusesAlternate.values().iterator();
+//		Iterator<Census> censusesControlIt = censusesControl.values().iterator();
+//		Iterator<Census> censusesAlternateIt = censusesAlternate.values().iterator();
+		Iterator<Census> censusesControlIt = censusesControl.iterator();
+		Iterator<Census> censusesAlternateIt = censusesAlternate.iterator();
 		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 			Integer origIndex = origIndicesAndKey.getKey();
 			entries.add(new DefaultMarkerCensusOperationEntry(

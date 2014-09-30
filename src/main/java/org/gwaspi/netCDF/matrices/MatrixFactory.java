@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.datasource.netcdf.NetCDFDataSetSource;
 
 public class MatrixFactory {
 

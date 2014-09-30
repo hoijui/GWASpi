@@ -25,8 +25,6 @@ import java.util.List;
  */
 public interface MarkersMetadataSource extends List<MarkerMetadata> {
 
-	List<MarkerMetadata> getRange(int from, int to) throws IOException;
-
 	List<String> getMarkerIds() throws IOException;
 	List<String> getRsIds() throws IOException;
 	List<String> getChromosomes() throws IOException;

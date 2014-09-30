@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -53,6 +54,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	private static final Logger log
 			= LoggerFactory.getLogger(AbstractNetCDFDataSetDestination.class);
+
+	private static final boolean saveSamplesMetadata = true;
 
 	private MatrixKey resultMatrixKey;
 //	private int curAlleleSampleIndex;
@@ -192,6 +195,9 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		chromosomesInfoSpace.add(dim4);
 
 		// SAMPLE SPACES
+		List<Dimension> sampleSpace = new ArrayList<Dimension>(2);
+		sampleSpace.add(samplesDim);
+
 		List<Dimension> sampleNameSpace = new ArrayList<Dimension>(2);
 		sampleNameSpace.add(samplesDim);
 		sampleNameSpace.add(sampleStrideDim);
@@ -216,7 +222,21 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 		// Define Sample Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleNameSpace);
-//		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples()); // NOTE not required, as it can be read from th edimensions directly, which is also more reliable
+//		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples()); // NOTE not required, as it can be read from the dimensions directly, which is also more reliable
+		if (saveSamplesMetadata) {
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, DataType.INT, sampleSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_FATHER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_MOTHER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLES_SEX, DataType.INT, sampleSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, DataType.INT, sampleSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_DISEASE, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_POPULATION, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_AGE, DataType.INT, sampleSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_FILTER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_APPROVED, DataType.INT, sampleSpace);
+			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_STATUS, DataType.INT, sampleSpace);
+		}
 
 		// Define Genotype Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
@@ -265,8 +285,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			log.trace("Done creating netCDF handle: " + ncfile.toString());
 
 			Collection<SampleInfo> sampleInfos = getDataSet().getSampleInfos();
-			List<SampleKey> sampleKeys = extractKeys(sampleInfos);
-			saveSamplesMetadata(sampleKeys, ncfile);
+			saveSamplesMetadata(sampleInfos, ncfile);
 
 			boolean hasDictionary = matrixMetadata.getHasDictionary();
 			saveMarkersMetadata(getDataSet().getMarkerMetadatas().values(), hasDictionary, getStrandFlag(), ncfile);
@@ -283,12 +302,57 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		saveChromosomeMetadata(getDataSet().getChromosomeInfos(), ncfile);
 	}
 
-	private static void saveSamplesMetadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+	private static void saveSamplesMetadata(Collection<SampleInfo> sampleInfos, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+
+		List<SampleKey> sampleKeys = extractKeys(sampleInfos);
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-		int[] sampleOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig, samplesD2);
+		int[] sampleOrig2D = new int[] {0, 0};
+		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig2D, samplesD2);
+
+		if (saveSamplesMetadata) {
+			int[] sampleOrig1D = new int[] {0};
+			ArrayInt.D1 samplesD1;
+			final int commonStringMaxLength = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_ORDER_ID);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, sampleOrig1D, samplesD1);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_FATHER_ID, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_FATHER, sampleOrig2D, samplesD2);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_MOTHER_ID, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_MOTHER, sampleOrig2D, samplesD2);
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor(SampleInfo.TO_SEX));
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_SEX, sampleOrig1D, samplesD1);
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor(SampleInfo.TO_AFFECTION));
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, sampleOrig1D, samplesD1);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_CATEGORY, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, sampleOrig2D, samplesD2);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_DISEASE, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_DISEASE, sampleOrig2D, samplesD2);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_POPULATION, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_POPULATION, sampleOrig2D, samplesD2);
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_AGE);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_AGE, sampleOrig1D, samplesD1);
+
+			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_FILTER, commonStringMaxLength);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_FILTER, sampleOrig2D, samplesD2);
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_APPROVED);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_APPROVED, sampleOrig1D, samplesD1);
+
+			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_STATUS);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_STATUS, sampleOrig1D, samplesD1);
+		}
+
 		log.info("Done writing SampleSet to matrix");
 	}
 

@@ -15,17 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.markers;
+package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.markers.NoStorageSuccessiveIndicesList;
 import ucar.nc2.NetcdfFile;
 
 public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInfo> implements SamplesInfosSource {
@@ -64,8 +68,8 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 		Iterator<Integer> orderIdsIt = getOrderIds(from, to).iterator();
 		Iterator<String> fathersIt = getFathers(from, to).iterator();
 		Iterator<String> mothersIt = getMothers(from, to).iterator();
-		Iterator<SampleInfo.Sex> sexesIt = getSexes(from, to).iterator();
-		Iterator<SampleInfo.Affection> affectionsIt = getAffections(from, to).iterator();
+		Iterator<Sex> sexesIt = getSexes(from, to).iterator();
+		Iterator<Affection> affectionsIt = getAffections(from, to).iterator();
 		Iterator<String> categoriesIt = getCategoriess(from, to).iterator();
 		Iterator<String> diseasesIt = getDiseases(from, to).iterator();
 		Iterator<String> populationsIt = getPopulations(from, to).iterator();
@@ -192,13 +196,13 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 	}
 
 	@Override
-	public List<SampleInfo.Sex> getSexes(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, from, to);
+	public List<Sex> getSexes(int from, int to) throws IOException {
+		return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, new Extractor.IntToEnumExtractor(Sex.values()), from, to);
 	}
 
 	@Override
-	public List<SampleInfo.Affection> getAffections(int from, int to) throws IOException {
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, from, to);
+	public List<Affection> getAffections(int from, int to) throws IOException {
+		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
 	}
 
 	@Override

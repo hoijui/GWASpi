@@ -34,6 +34,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.combi.NetCdfCombiTestOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
@@ -160,10 +161,8 @@ public class OperationFactory {
 					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(origin, parent, operationKey);
 					break;
 				case COMBI_ASSOC_TEST:
-					// FIXME
-					throw new UnsupportedOperationException("create and implement the class mentioned in hte comment below");
-//					operationDataSet = new NetCdfComb(operationKey);
-//					break;
+					operationDataSet = new NetCdfCombiTestOperationDataSet(origin, parent, operationKey);
+					break;
 				case TRENDTEST:
 					operationDataSet = new NetCdfTrendTestOperationDataSet(origin, parent, operationKey);
 					break;
