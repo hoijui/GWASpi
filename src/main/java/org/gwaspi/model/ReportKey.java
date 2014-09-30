@@ -17,6 +17,7 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.Transient;
 
@@ -97,17 +98,52 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		return true;
 	}
 
-	@Override
-	public String toString() {
+	public String toRawIdString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", matrix-id: ").append(getParentMatrixId());
+		strRep.append(", operation-id: ").append(getParentOperationId());
+		strRep.append(", id: ").append(getId());
+
+		return strRep.toString();
+	}
+
+	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
 
 		strRep.append(getClass().getSimpleName());
 		strRep.append("[");
-		strRep.append("study-id: ").append(getStudyId());
-		strRep.append(", matrix-id: ").append(getParentMatrixId());
-		strRep.append(", operation-id: ").append(getParentOperationId());
-		strRep.append(", id: ").append(getId());
+		strRep.append(toRawIdString());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
+	public String fetchName() {
+
+		String reportName;
+
+		try {
+			Report report = ReportsList.getReport(this);
+			reportName = report.getFriendlyName();
+		} catch (IOException ex) {
+			reportName = "<report-name-unknown>";
+		}
+
+		return reportName;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(fetchName());
+		strRep.append(" [");
+		strRep.append(toRawIdString());
 		strRep.append("]");
 
 		return strRep.toString();
