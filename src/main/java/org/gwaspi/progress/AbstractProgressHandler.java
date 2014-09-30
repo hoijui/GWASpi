@@ -28,6 +28,7 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 	private long startTime;
 	private long endTime;
 	private int nextEventIndex;
+	private ProcessStatus currentStatus;
 
 	protected AbstractProgressHandler(ProcessInfo processInfo, Integer numIntervals) {
 
@@ -41,6 +42,7 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
+		this.currentStatus = null;
 	}
 
 	protected int getNextEventIndex() {
@@ -59,7 +61,7 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 
 	@Override
 	public void setNumIntervals(Integer numIntervals) {
-		
+
 		this.numIntervals = numIntervals;
 		fireProcessDetailsChanged();
 	}
@@ -87,9 +89,15 @@ public abstract class AbstractProgressHandler<ST> implements ProgressHandler<ST>
 		}
 	}
 
+	@Override
+	public ProcessStatus getStatus() {
+		return currentStatus;
+	}
+
 	protected void fireStatusChanged(ProcessStatus newStatus) {
 
 		ProcessStatusChangeEvent evt = new ProcessStatusChangeEvent(this, newStatus);
+		currentStatus = newStatus;
 		for (ProgressListener progressListener : progressListeners) {
 			progressListener.statusChanged(evt);
 		}

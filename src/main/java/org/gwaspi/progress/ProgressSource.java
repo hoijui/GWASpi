@@ -33,6 +33,13 @@ public interface ProgressSource<ST> {
 	ProcessInfo getInfo();
 
 	/**
+	 * Returns the current status of the source process.
+	 * @return the status last propagated as the new status through
+	 *   {@link ProgressListener#statusChanged(ProcessStatusChangeEvent)}.
+	 */
+	ProcessStatus getStatus();
+
+	/**
 	 * Returns the number of total progress intervals this source produces,
 	 * if it is known.
 	 * @return number of progress intervals produced,
