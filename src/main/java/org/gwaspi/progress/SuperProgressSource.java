@@ -20,11 +20,12 @@ package org.gwaspi.progress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SuperProgressSource extends AbstractProgressHandler<Double> {
 
-	private final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	private final LinkedHashMap<ProgressSource, Double> subProgressSourcesAndWeights;
 	private final Map<ProgressSource, Double> subProgressSourcesAndLastCompletionFraction;
 	private final ProgressListener progressListener;
 	private double lastCompletionFraction;
@@ -39,7 +40,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 			if (currentSubCompletionFraction != null) {
 				ProgressSource progressSource = (ProgressSource) evt.getSource();
 				final double weight = subProgressSourcesAndWeights.get(progressSource);
-				double lastSubCompletionFraction = subProgressSourcesAndLastCompletionFraction.get(progressSource);
+				final Double lastSubCompletionFraction = subProgressSourcesAndLastCompletionFraction.get(progressSource);
 				fireAdditionalProgressHappened((currentSubCompletionFraction - lastSubCompletionFraction) * weight / weightSum);
 				subProgressSourcesAndLastCompletionFraction.put(progressSource, currentSubCompletionFraction);
 			}
@@ -49,8 +50,8 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 	public SuperProgressSource(ProcessInfo processInfo, Map<ProgressSource, Double> subProgressSourcesAndWeights) {
 		super(processInfo, calculateNumIntervalls(subProgressSourcesAndWeights));
 
-		this.subProgressSourcesAndWeights = subProgressSourcesAndWeights;
-		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>();
+		this.subProgressSourcesAndWeights = new LinkedHashMap<ProgressSource, Double>(subProgressSourcesAndWeights);
+		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>(this.subProgressSourcesAndWeights.size());
 		this.progressListener = new SubProgressListener();
 		this.lastCompletionFraction = 0.0;
 		this.weightSum = 0.0;
@@ -105,7 +106,34 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		progressSource.addProgressListener(progressListener);
 		subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
 		weightSum += weight;
-		fireProcessDetailsChanged();
+		setNumIntervals(getNumIntervals() + progressSource.getNumIntervals());
+//		fireProcessDetailsChanged(); // this is already invoked by setNumIntervals() above
+	}
+
+	public void replaceSubProgressSource(ProgressSource oldProgressSource, ProgressSource newProgressSource, Double weight) {
+
+		final LinkedHashMap<ProgressSource, Double> newPSs = new LinkedHashMap<ProgressSource, Double>(subProgressSourcesAndWeights.size());
+		for (Map.Entry<ProgressSource, Double> currentProgressSourceAndWeight : subProgressSourcesAndWeights.entrySet()) {
+			if (currentProgressSourceAndWeight.getKey().equals(oldProgressSource)) {
+				final Double oldWeight = currentProgressSourceAndWeight.getValue();
+				final Double newWeight = (weight == null) ? oldWeight : weight;
+				newPSs.put(newProgressSource, newWeight);
+				oldProgressSource.removeProgressListener(progressListener);
+				newProgressSource.addProgressListener(progressListener);
+				weightSum -= oldWeight;
+				weightSum += newWeight;
+			} else {
+				newPSs.put(currentProgressSourceAndWeight.getKey(), currentProgressSourceAndWeight.getValue());
+			}
+		}
+		subProgressSourcesAndWeights.clear();
+		subProgressSourcesAndWeights.putAll(newPSs);
+
+		subProgressSourcesAndLastCompletionFraction.remove(oldProgressSource);
+		subProgressSourcesAndLastCompletionFraction.put(newProgressSource, 0.0);
+
+		setNumIntervals(getNumIntervals() - oldProgressSource.getNumIntervals() + newProgressSource.getNumIntervals());
+//		fireProcessDetailsChanged(); // this is already invoked by setNumIntervals() above
 	}
 
 	public Map<ProgressSource, Double> getSubProgressSourcesAndWeights() {
