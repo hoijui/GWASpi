@@ -1,0 +1,13 @@
+data-dir=${DATA_DIR}
+[script]
+0.command=genotype_frequency_hardy_weinberg
+1.study-id=${STUDY_ID}
+2.matrix-id=${MATRIX_ID}
+3.gtfreq-name=alpha
+4.use-external-phenotype-file=false
+5.external-phenotype-file=/media/pheno_alpha
+6.discard-by-marker-missing-ratio=false
+7.discard-marker-missing-ratio-threshold=0.05
+8.discard-samples-by-missing-ratio=false
+9.discard-samples-missing-ratio-threshold=0.05
+[/script]
