@@ -20,30 +20,10 @@ package org.gwaspi.progress;
 import java.util.Collections;
 import java.util.List;
 
-public final class NullProgressHandler<ST> implements ProgressHandler<ST> {
-
-	private final ProcessInfo processInfo;
-	private Integer numIntervals;
+public final class NullProgressHandler<ST> extends AbstractProgressHandler<ST> {
 
 	public NullProgressHandler(ProcessInfo processInfo) {
-
-		this.processInfo = processInfo;
-		this.numIntervals = 1;
-	}
-
-	@Override
-	public ProcessInfo getInfo() {
-		return processInfo;
-	}
-
-	@Override
-	public Integer getNumIntervals() {
-		return numIntervals;
-	}
-
-	@Override
-	public void setNumIntervals(Integer numIntervals) {
-		this.numIntervals = numIntervals;
+		super(processInfo, 1);
 	}
 
 	@Override
