@@ -20,7 +20,10 @@ package org.gwaspi.progress;
 import javax.swing.ProgressMonitor;
 
 /**
- * TODO
+ * A simple (cheap!) way to visualize progress in a GUI environment.
+ * It forwards events to {@link javax.swing.ProgressMonitor}.
+ * Only supports integer based progress sources.
+ * See {@link GeneralSwingProgressListener} for a more general and elegant solution.
  * @param <ST> the status type
  */
 public class SwingMonitorProgressListener<ST> extends AbstractProgressListener<ST> {
