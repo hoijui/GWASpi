@@ -40,10 +40,12 @@ public class InMemorySamplesGenotypesSource extends AbstractInMemoryListSource<G
 		SamplesGenotypesSource data = KEY_TO_DATA.get(key);
 		if (data == null) {
 			if (items == null) {
-				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data");
+				throw new IllegalStateException("Tried to fetch data that is not available, or tried to create a data-set without giving data. key: " + key.toRawIdString());
 			}
 			data = new InMemorySamplesGenotypesSource(key, items, originalIndices);
 			KEY_TO_DATA.put(key, data);
+		} else if (items != null) {
+			throw new IllegalStateException("Tried to store data under a key that is already present. key: " + key.toRawIdString());
 		}
 
 		return data;
