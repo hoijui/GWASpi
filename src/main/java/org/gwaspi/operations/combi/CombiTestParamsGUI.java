@@ -262,24 +262,45 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
 		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
-		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
-				combiTestParams.getMarkersToKeep(), // initial value
-				1, // min
-				combiTestParams.getTotalMarkers() - 1, // max
-				1); // step
+		final int totalMarkers = combiTestParams.getTotalMarkers();
+
+		final SpinnerModel markersToKeepValueModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			markersToKeepValueModel = new SpinnerNumberModel(
+					20, // initial value
+					1, // min
+					100000, // max
+					1); // step
+		} else {
+			markersToKeepValueModel = new SpinnerNumberModel(
+					combiTestParams.getMarkersToKeep(), // initial value
+					1, // min
+					totalMarkers - 1, // max
+					1); // step
+		}
 		this.markersToKeepValue.setModel(markersToKeepValueModel);
 		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
-		SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
-				(double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0, // initial value
-				0.1, // min
-				100.0, // max
-				0.5); // step
+		final SpinnerModel markersToKeepPercentageModel;
+		if (totalMarkers < 1) { // HACK This will only kick in when the parameters are invalid (total markers == -1)
+			this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, 20));
+			markersToKeepPercentageModel = new SpinnerNumberModel(
+					0.5, // initial value
+					0.1, // min
+					100.0, // max
+					0.5); // step
+		} else {
+			markersToKeepPercentageModel = new SpinnerNumberModel(
+					(double) combiTestParams.getMarkersToKeep() / totalMarkers * 100.0, // initial value
+					0.1, // min
+					100.0, // max
+					0.5); // step
+		}
 		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
 		this.markersToKeepComponentRelation
 				= new AbsolutePercentageComponentRelation(
 				new ValueContainer<Number>(markersToKeepValue),
 				new ValueContainer<Number>(markersToKeepPercentage),
-				combiTestParams.getTotalMarkers());
+				totalMarkers);
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
