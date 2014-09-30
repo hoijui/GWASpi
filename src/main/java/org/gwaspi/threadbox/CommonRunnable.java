@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 
 public abstract class CommonRunnable implements Runnable {
@@ -47,8 +48,15 @@ public abstract class CommonRunnable implements Runnable {
 
 	protected abstract Logger createLog();
 
+	public abstract ProgressSource getProgressSource();
+
 	protected Logger getLog() {
 		return log;
+	}
+
+	public static void doRunNowInThread(CommonRunnable task, SwingWorkerItem thisSwi) throws Exception {
+
+		task.runInternal(thisSwi);
 	}
 
 	protected abstract void runInternal(SwingWorkerItem thisSwi) throws Exception;

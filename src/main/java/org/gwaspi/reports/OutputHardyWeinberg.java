@@ -46,31 +46,66 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 
-public class OutputHardyWeinberg {
+/**
+ * Write reports for MArkers Hardy&Weinberg data.
+ */
+public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOutputParams> {
 
-	private OutputHardyWeinberg() {
+	private static final ProcessInfo hardyWeinbergOutputProcessInfo = new DefaultProcessInfo("Write Hardy&Weinberg output to files", ""); // TODO
+
+	private ProgressHandler operationPH;
+
+	public OutputHardyWeinberg(final HardyWeinbergOutputParams params) {
+		super(params);
 	}
 
-	public static void writeReportsForMarkersHWData(OperationKey operationKey, OperationKey qaMarkersOpKey) throws IOException {
+	@Override
+	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
+		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
+		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getHardyWeinbergOpKey());
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = ReportsList.getReportNamePrefix(op);
-		String hwOutName = prefix + "hardy-weinberg.txt";
-
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 
-		processSortedHardyWeinbergReport(operationKey, hwOutName, qaMarkersOpKey);
+		String hwOutName = prefix + "hardy-weinberg.txt";
+		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		processSortedHardyWeinbergReport(getParams().getHardyWeinbergOpKey(), hwOutName, getParams().getMarkersQAOpKey());
+		operationPH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Hardy Weinberg Table",
 				hwOutName,
 				OPType.HARDY_WEINBERG,
-				operationKey,
+				getParams().getHardyWeinbergOpKey(),
 				"Hardy Weinberg Table",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Report");
+		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+
+		return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return hardyWeinbergOutputProcessInfo;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			operationPH = new IndeterminateProgressHandler(hardyWeinbergOutputProcessInfo);
+		}
+
+		return operationPH;
 	}
 
 	protected static void processSortedHardyWeinbergReport(OperationKey operationKey, String reportName, OperationKey qaMarkersOpKey) throws IOException {

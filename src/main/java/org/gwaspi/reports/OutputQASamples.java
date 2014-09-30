@@ -23,7 +23,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
@@ -34,62 +36,110 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SuperProgressSource;
 
-public class OutputQASamples {
+/**
+ * Write reports for QA Samples data.
+ */
+public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputParams> {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(OutputQASamples.class);
+	private static final ProcessInfo qaSamplesOutputProcessInfo = new DefaultProcessInfo("Write QA Samples output to files", ""); // TODO
 
-	private static String reportPath;
-	private static String sampleMissOutName;
+	private ProgressHandler operationPH;
+	private ProgressHandler creatingMissingnessTablePH;
+	private ProgressHandler creatingHetzyPlotPH;
 
-	private OutputQASamples() {
+	public OutputQASamples(QASamplesOutputParams params) {
+		super(params);
 	}
 
-	public static boolean writeReportsForQASamplesData(OperationKey sampleQAOpKey, boolean newReport) throws IOException {
+	@Override
+	public int processMatrix() throws IOException {
 
-		OperationMetadata op = OperationsList.getOperationMetadata(sampleQAOpKey);
+		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
-		reportPath = Study.constructReportsPath(op.getStudyKey());
+		final String reportPath = Study.constructReportsPath(op.getStudyKey());
+		final String prefix = ReportsList.getReportNamePrefix(op);
 
-		String prefix = ReportsList.getReportNamePrefix(op);
-		sampleMissOutName = prefix + "samplmissing.txt";
-
-		createSortedSampleMissingnessReport(sampleQAOpKey, sampleMissOutName, op.getStudyKey());
-
-		if (newReport) {
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
+		final String sampleMissOutName = prefix + "samplmissing.txt";
+		final File sampleMissOutFile = new File(reportPath, sampleMissOutName);
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
+		createSortedSampleMissingnessReport(getParams().getSampleQAOpKey(), sampleMissOutFile);
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
+		if (getParams().isNewReport()) {
 			ReportsList.insertRPMetadata(new Report(
 					"Sample Missingness Table",
 					sampleMissOutName,
 					OPType.SAMPLE_QA,
-					sampleQAOpKey,
+					getParams().getSampleQAOpKey(),
 					"Sample Missingness Table",
 					op.getStudyKey()));
 			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 		}
+		creatingMissingnessTablePH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		sampleMissOutName = prefix + "hetzyg-missing";
+		creatingHetzyPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
+		final String hetzyMissOutName = prefix + "hetzyg-missing";
+		creatingHetzyPlotPH.setNewStatus(ProcessStatus.RUNNING);
+		// XXX Why is hetzy plot not created here?
 //		if (createSampleHetzygPlot(opId, samplMissOutName, 500, 500)) {
-//			if (newReport) {
+//			if (params.isNewReport()) {
+		creatingHetzyPlotPH.setNewStatus(ProcessStatus.FINALIZING);
 		ReportsList.insertRPMetadata(new Report(
 				"Sample Heterozygosity vs Missingness Plot",
-				sampleMissOutName,
+				hetzyMissOutName,
 				OPType.SAMPLE_HTZYPLOT,
-				sampleQAOpKey,
+				getParams().getSampleQAOpKey(),
 				"Sample Heterozygosity vs Missingness Plot",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Heterozygosity QA Report");
 //			}
 //		}
+		creatingHetzyPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return true;
+		return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return qaSamplesOutputProcessInfo;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		if (operationPH == null) {
+			final ProcessInfo creatingMissingnessTablePI = new DefaultProcessInfo(
+					"writing the QA Samples missingness table to a text file", null);
+			creatingMissingnessTablePH
+					= new IndeterminateProgressHandler(creatingMissingnessTablePI);
+
+			final ProcessInfo creatingHetzyPlotPI = new DefaultProcessInfo(
+					"creating & writing the QA Samples Hetzy plot", null);
+			creatingHetzyPlotPH
+					= new IndeterminateProgressHandler(creatingHetzyPlotPI);
+
+			Map<ProgressSource, Double> subProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>();
+
+			subProgressSourcesAndWeights.put(creatingMissingnessTablePH, 0.2); // TODO adjust these weights!
+			subProgressSourcesAndWeights.put(creatingHetzyPlotPH, 0.8);
+
+			operationPH = new SuperProgressSource(qaSamplesOutputProcessInfo, subProgressSourcesAndWeights);
+		}
+
+		return operationPH;
 	}
 
 	private static class MissingRatioComparator implements Comparator<QASamplesOperationEntry> {
@@ -100,7 +150,7 @@ public class OutputQASamples {
 		}
 	}
 
-	public static void createSortedSampleMissingnessReport(OperationKey samplesQAopKey, String reportName, StudyKey studyKey) throws IOException {
+	private static void createSortedSampleMissingnessReport(OperationKey samplesQAopKey, final File sampleMissOutFile) throws IOException {
 
 		String sep = cExport.separator_REPORTS;
 
@@ -109,7 +159,7 @@ public class OutputQASamples {
 		Collections.sort(qaSamplesOperationEntries, new MissingRatioComparator());
 
 		// WRITE HEADER OF FILE
-		FileWriter tempFW = new FileWriter(reportPath + sampleMissOutName);
+		FileWriter tempFW = new FileWriter(sampleMissOutFile);
 		BufferedWriter tempBW = new BufferedWriter(tempFW);
 
 		String header = "FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tAge\tCategory\tDisease\tPopulation\tMissing Ratio\n";

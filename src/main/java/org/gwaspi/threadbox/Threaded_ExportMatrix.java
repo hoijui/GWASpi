@@ -17,34 +17,27 @@
 
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.gui.ProcessTab;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.exporter.MatrixExporter;
+import org.gwaspi.netCDF.exporter.MatrixExporterParams;
+import org.gwaspi.progress.ProgressForwarder;
+import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_ExportMatrix extends CommonRunnable {
 
-	private final boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
-	private final MatrixKey matrixKey;
-	private final ExportFormat format;
-	private final String phenotype;
+	private final MatrixExporterParams params;
+	private final ProgressForwarder progressForwarder;
 
-	public Threaded_ExportMatrix(
-			MatrixKey matrixKey,
-			ExportFormat format,
-			String phenotype)
-	{
+	public Threaded_ExportMatrix(final MatrixExporterParams params) {
 		super(
 				"Export Matrix",
 				"Exporting Matrix",
-				"Export Matrix ID: " + matrixKey.getMatrixId(),
+				"Export Matrix ID: " + params.getParent().toString(),
 				"Exporting Matrix");
 
-		this.matrixKey = matrixKey;
-		this.format = format;
-		this.phenotype = phenotype;
+		this.params = params;
+		this.progressForwarder = new ProgressForwarder(MatrixExporter.PROCESS_INFO);
 	}
 
 	@Override
@@ -53,14 +46,15 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	}
 
 	@Override
+	public ProgressSource getProgressSource() {
+		return progressForwarder;
+	}
+
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (format != null) {
-			if (startWithGUI) {
-				ProcessTab.getSingleton().showTab();
-			}
-			MatrixExporter mEx = new MatrixExporter(matrixKey);
-			mEx.exportToFormat(format, phenotype);
-		}
+		MatrixExporter mEx = new MatrixExporter(params);
+		progressForwarder.setInnerProgressSource(mEx.getProgressSource());
+		mEx.processMatrix();
 	}
 }

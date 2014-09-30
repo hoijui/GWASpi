@@ -31,7 +31,12 @@ import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
 
 public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByValidAffectionFilterOperationParams> {
 
@@ -54,8 +59,25 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 				ByValidAffectionFilterOperation.class, OPERATION_TYPE_INFO));
 	}
 
+	private ProgressHandler filterPH;
+
 	public ByValidAffectionFilterOperation(ByValidAffectionFilterOperationParams params) {
 		super(params);
+
+		this.filterPH = null;
+	}
+
+	@Override
+	protected ProgressSource getFilteringProgressSource() throws IOException {
+
+		if (filterPH == null) {
+			final int numItems = getNumItems();
+			filterPH = new IntegerProgressHandler(
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
+					0, numItems - 1);
+		}
+
+		return filterPH;
 	}
 
 	@Override
@@ -69,6 +91,7 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 			Map<Integer, SampleKey> filteredSampleOrigIndicesAndKeys)
 			throws IOException
 	{
+		filterPH.setNewStatus(ProcessStatus.INITIALIZING);
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 
 		// we use all markers from the parent
@@ -79,12 +102,17 @@ public class ByValidAffectionFilterOperation extends AbstractFilterOperation<ByV
 		List<Affection> sampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 		Iterator<Map.Entry<Integer, SampleKey>> samplesIt
 				= samplesKeysSource.getIndicesMap().entrySet().iterator();
+		filterPH.setNewStatus(ProcessStatus.RUNNING);
+		int localSampleIndex = 0;
 		for (Affection sampleAffection : sampleAffections) {
 			Map.Entry<Integer, SampleKey> sample = samplesIt.next();
 			if (Affection.isValid(sampleAffection)) {
 				filteredSampleOrigIndicesAndKeys.put(sample.getKey(), sample.getValue());
 			}
+			filterPH.setProgress(localSampleIndex);
+			localSampleIndex++;
 		}
+		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	@Override

@@ -20,18 +20,17 @@ package org.gwaspi.threadbox;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.GWASinOneGOParams;
@@ -52,8 +51,6 @@ public class MultiOperations {
 				lockProperties.getMatricesIds().toArray(new Integer[] {}),
 				lockProperties.getOperationsIds().toArray(new Integer[] {}));
 		SwingWorkerItemList.add(swi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doMatrixQAs(final DataSetKey parentKey) {
@@ -113,18 +110,6 @@ public class MultiOperations {
 
 		final DataSetKey parent = gwasParams.getMarkerCensusOperationParams().getParent();
 		TaskLockProperties lockProperties = createTaskLockProperties(parent);
-
-		queueTask(task, lockProperties);
-	}
-
-	/** LOAD & GWAS */
-	public static void doHardyWeinberg(final OperationKey censusOpKey)
-	{
-		CommonRunnable task = new Threaded_HardyWeinberg(censusOpKey);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(censusOpKey.getStudyId());
-		lockProperties.getMatricesIds().add(censusOpKey.getParentMatrixId());
 
 		queueTask(task, lockProperties);
 	}
@@ -255,16 +240,11 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doExportMatrix(
-			final MatrixKey matrixKey,
-			final ExportFormat format,
-			final String phenotype)
+	public static void doExportMatrix(final MatrixExporterParams matrixExporterParams)
 	{
-		CommonRunnable task = new Threaded_ExportMatrix(
-				matrixKey,
-				format,
-				phenotype);
+		CommonRunnable task = new Threaded_ExportMatrix(matrixExporterParams);
 
+		final MatrixKey matrixKey = matrixExporterParams.getParent().getOrigin();
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(matrixKey.getStudyId());
 		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
@@ -361,8 +341,6 @@ public class MultiOperations {
 	private static void queueDeleteTask(SwingDeleterItem sdi) {
 
 		SwingDeleterItemList.add(sdi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void deleteStudy(final StudyKey studyKey, final boolean deleteReports) {
@@ -427,18 +405,10 @@ public class MultiOperations {
 
 	public static void updateProcessOverviewStartNext() throws IOException {
 		SwingWorkerItemList.startNext();
-		if (StartGWASpi.guiMode) {
-			ProcessTab.getSingleton().updateProcessOverview();
-			ProcessTab.getSingleton().toggleBusyLogo();
-		}
 	}
 
 	public static void updateProcessOverviewDeleteNext() throws IOException {
 		SwingDeleterItemList.deleteAllListed();
-		if (StartGWASpi.guiMode) {
-			ProcessTab.getSingleton().updateProcessOverview();
-			ProcessTab.getSingleton().toggleBusyLogo();
-		}
 	}
 	//</editor-fold>
 }

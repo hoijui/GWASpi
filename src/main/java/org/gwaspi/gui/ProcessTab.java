@@ -17,9 +17,8 @@
 
 package org.gwaspi.gui;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -28,150 +27,87 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
-import org.gwaspi.threadbox.QueueState;
+import org.gwaspi.progress.ProcessDetailsChangeEvent;
+import org.gwaspi.progress.ProcessStatusChangeEvent;
+import org.gwaspi.progress.ProgressEvent;
+import org.gwaspi.progress.ProgressListener;
+import org.gwaspi.progress.SuperSwingProgressListener;
+import org.gwaspi.progress.SwingProgressListener;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.TaskEvent;
+import org.gwaspi.threadbox.TasksListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessTab extends JPanel {
+public class ProcessTab extends JPanel implements TasksListener, ProgressListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
-	// Variables declaration - do not modify
-	private final JPanel pnl_Logo;
-	private final JLabel lbl_Logo;
-	private final JPanel pnl_Orverview;
-	private final JPanel pnl_ProcessLog;
 	private final JScrollPane scrl_Overview;
-	private final JScrollPane scrl_ProcessLog;
-	private final JTextArea txtA_ProcessLog;
-	private final JButton btn_Save;
+	private final JPanel pnl_progress;
+	private final List<SwingProgressListener> taskProgressDisplays;
 	private static ProcessTab singleton = null;
-	// End of variables declaration
 
 	private ProcessTab() {
 
-		pnl_Orverview = new JPanel();
-		scrl_Overview = new JScrollPane();
+		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
-		pnl_Logo = new JPanel();
-		lbl_Logo = new JLabel();
-		pnl_ProcessLog = new JPanel();
-		scrl_ProcessLog = new JScrollPane();
-		txtA_ProcessLog = new JTextArea();
-		btn_Save = new JButton();
+		final JPanel pnl_top = new JPanel();
+		this.scrl_Overview = new JScrollPane();
+//		final JPanel pnl_Logo = new JPanel();
+//		final JLabel lbl_Logo = new JLabel();
+		this.pnl_progress = new JPanel();
+		pnl_top.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_top.add(scrl_Overview, BorderLayout.NORTH);
+		pnl_top.add(pnl_progress, BorderLayout.CENTER);
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
+		final JPanel pnl_center = new JPanel();
+		final JScrollPane scrl_ProcessLog = new JScrollPane();
+		final JTextArea txtA_ProcessLog = new JTextArea();
+		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
+		pnl_center.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_center.add(scrl_ProcessLog, BorderLayout.NORTH);
 
-		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
-		pnl_Logo.setMaximumSize(new Dimension(100, 100));
-		pnl_Logo.setPreferredSize(new Dimension(100, 100));
+		final JPanel pnl_bottom = new JPanel();
+		final JPanel pnl_bottomButtonsEast = new JPanel();
+		final JButton btn_Save = new JButton();
+		pnl_bottomButtonsEast.add(btn_Save);
+		pnl_bottom.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_bottom.add(pnl_bottomButtonsEast, BorderLayout.EAST);
 
-		//<editor-fold defaultstate="expanded" desc="PROCESS OVERVIEW LAYOUT">
-		GroupLayout pnl_LogoLayout = new GroupLayout(pnl_Logo);
-		pnl_Logo.setLayout(pnl_LogoLayout);
-		pnl_LogoLayout.setHorizontalGroup(
-				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_Logo, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
-		pnl_LogoLayout.setVerticalGroup(
-				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_Logo, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
+		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		this.add(pnl_top, BorderLayout.NORTH);
+		this.add(pnl_center, BorderLayout.CENTER);
+		this.add(pnl_bottom, BorderLayout.SOUTH);
 
+		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
-		GroupLayout pnl_OrverviewLayout = new GroupLayout(pnl_Orverview);
-		pnl_Orverview.setLayout(pnl_OrverviewLayout);
-		pnl_OrverviewLayout.setHorizontalGroup(
-				pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_OrverviewLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(scrl_Overview, GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
-				.addGap(18, 18, 18)
-				.addComponent(pnl_Logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap()));
-		pnl_OrverviewLayout.setVerticalGroup(
-				pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_OrverviewLayout.createSequentialGroup()
-				.addGroup(pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Overview, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
-				.addComponent(pnl_Logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
-		pnl_OrverviewLayout.linkSize(SwingConstants.VERTICAL, new Component[]{pnl_Logo, scrl_Overview});
-		//</editor-fold>
-
-		pnl_ProcessLog.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Processes.processLog)); // NOI18N
-
+//		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
+//		pnl_Logo.setMaximumSize(new Dimension(100, 100));
+//		pnl_Logo.setPreferredSize(new Dimension(100, 100));
 		txtA_ProcessLog.setColumns(20);
 		txtA_ProcessLog.setRows(5);
 		txtA_ProcessLog.setEditable(false);
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
+
 		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
-
-		//<editor-fold defaultstate="expanded" desc="PROCESS LOG LAYOUT">
-		GroupLayout pnl_ProcessLogLayout = new GroupLayout(pnl_ProcessLog);
-		pnl_ProcessLog.setLayout(pnl_ProcessLogLayout);
-		pnl_ProcessLogLayout.setHorizontalGroup(
-				pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_ProcessLogLayout.createSequentialGroup()
-				.addGroup(pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addGroup(pnl_ProcessLogLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
-				.addComponent(scrl_ProcessLog, GroupLayout.DEFAULT_SIZE, 671, Short.MAX_VALUE))
-				.addContainerGap()));
-		pnl_ProcessLogLayout.setVerticalGroup(
-				pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_ProcessLogLayout.createSequentialGroup()
-				.addComponent(scrl_ProcessLog, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_Save)
-				.addContainerGap()));
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_ProcessLog, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Orverview, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap()));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_Orverview, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_ProcessLog, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addContainerGap()));
-		//</editor-fold>
 
 		if (!StartGWASpi.logOff) {
 			txtA_ProcessLog.setDocument(new LogDocument());
@@ -182,31 +118,40 @@ public class ProcessTab extends JPanel {
 
 		if (singleton == null) {
 			singleton = new ProcessTab();
+			SwingWorkerItemList.addTaskListener(singleton);
 		}
 
 		return singleton;
 	}
 
-	public void updateProcessOverview() {
+	@Override
+	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
+		updateProcessOverview();
+	}
 
-		if (StartGWASpi.guiMode) {
-			final JTable tmpTable = new JTable() {
-				@Override
-				public boolean isCellEditable(int row, int col) {
-					return false; // Renders column 0 uneditable.
-				}
-			};
-			tmpTable.addMouseMotionListener(new MouseMotionAdapter() {
+	@Override
+	public void statusChanged(ProcessStatusChangeEvent evt) {
+		updateProcessOverview();
+	}
+
+	@Override
+	public void progressHappened(ProgressEvent evt) {}
+
+	private static class ProcessesTable extends JTable {
+
+		public ProcessesTable() {
+
+			addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent me) {
 					//displayColumnCursor(me, tmpTable);
 				}
 			});
-			tmpTable.addMouseListener(new MouseAdapter() {
+			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					int rowIndex = tmpTable.getSelectedRow();
-					int colIndex = tmpTable.getSelectedColumn();
+					int rowIndex = getSelectedRow();
+					int colIndex = getSelectedColumn();
 					if (colIndex == 7) { // Abort
 						if (rowIndex < SwingWorkerItemList.size()) {
 							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
@@ -216,10 +161,10 @@ public class ProcessTab extends JPanel {
 					}
 				}
 			});
-			tmpTable.setDefaultRenderer(Object.class, new RowRendererProcessOverviewWithAbortIcon());
-			tmpTable.setSelectionMode(0);
+			setDefaultRenderer(Object.class, new RowRendererProcessOverviewWithAbortIcon());
+			setSelectionMode(0);
 
-			tmpTable.setModel(new DefaultTableModel(
+			setModel(new DefaultTableModel(
 					buildProcessTableModel(),
 					new String[] {
 						Text.Processes.id,
@@ -231,16 +176,42 @@ public class ProcessTab extends JPanel {
 						Text.Processes.queueState,
 						Text.All.abort
 					}));
-			tmpTable.scrollRectToVisible(tmpTable.getBounds());
-			int X = scrl_Overview.getHorizontalScrollBar().getValue();
-			int Y = scrl_Overview.getVerticalScrollBar().getValue();
-			scrl_Overview.setViewportView(tmpTable);
-			scrl_Overview.getHorizontalScrollBar().setValue(X);
-			scrl_Overview.getVerticalScrollBar().setValue(Y);
+			scrollRectToVisible(getBounds());
+		}
+
+		@Override
+		public boolean isCellEditable(int row, int col) {
+			return false; // Renders column 0 uneditable.
 		}
 	}
 
-	private Object[][] buildProcessTableModel() {
+	@Override
+	public void taskRegistered(TaskEvent evt) {
+
+		evt.getTask().getProgressSource().addProgressListener(this);
+
+		SwingProgressListener taskProgressDisplay = SuperSwingProgressListener.newDisplay(evt.getTask().getProgressSource());
+		pnl_progress.add(taskProgressDisplay.getMainComponent());
+		taskProgressDisplays.add(taskProgressDisplay);
+
+		updateProcessOverview();
+	}
+
+	private void updateProcessOverview() {
+
+		if (StartGWASpi.guiMode) {
+			final JTable tmpTable = new ProcessesTable();
+			final int x = scrl_Overview.getHorizontalScrollBar().getValue();
+			final int y = scrl_Overview.getVerticalScrollBar().getValue();
+			scrl_Overview.setViewportView(tmpTable);
+			scrl_Overview.getHorizontalScrollBar().setValue(x);
+			scrl_Overview.getVerticalScrollBar().setValue(y);
+
+			ProcessTab.getSingleton().toggleBusyLogo();
+		}
+	}
+
+	private static Object[][] buildProcessTableModel() {
 
 		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
 		List<SwingDeleterItem> swingDeleterItems = SwingDeleterItemList.getItems();
@@ -290,41 +261,41 @@ public class ProcessTab extends JPanel {
 
 	private void startBusyLogo() {
 
-		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
-		Icon logo = new ImageIcon(logoPath);
-
-		lbl_Logo.setIcon(logo);
-		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
+//		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
+//		Icon logo = new ImageIcon(logoPath);
+//
+//		lbl_Logo.setIcon(logo);
+//		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
-	public void toggleBusyLogo() {
+	private void toggleBusyLogo() {
 
-		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
-		int count = 0;
-		boolean idle = true;
-		while (count < swingWorkerItems.size()) {
-			QueueState queueState = swingWorkerItems.get(count).getQueueState();
-			if (!queueState.equals(QueueState.DONE)
-					&& !queueState.equals(QueueState.ABORT)
-					&& !queueState.equals(QueueState.ERROR)) {
-				idle = false;
-//			} else {
-//				idle = true;
-			}
-			count++;
-		}
-
-		final String logoResourcePath;
-		if (idle) {
-			logoResourcePath = "/img/logo/logo_stopped.png";
-		} else {
-			logoResourcePath = "/img/logo/logo_busy.gif";
-		}
-		URL logoPath = ProcessTab.class.getResource(logoResourcePath);
-		Icon logo = new ImageIcon(logoPath);
-
-		lbl_Logo.setIcon(logo);
-		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
+//		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
+//		int count = 0;
+//		boolean idle = true;
+//		while (count < swingWorkerItems.size()) {
+//			QueueState queueState = swingWorkerItems.get(count).getQueueState();
+//			if (!queueState.equals(QueueState.DONE)
+//					&& !queueState.equals(QueueState.ABORT)
+//					&& !queueState.equals(QueueState.ERROR)) {
+//				idle = false;
+////			} else {
+////				idle = true;
+//			}
+//			count++;
+//		}
+//
+//		final String logoResourcePath;
+//		if (idle) {
+//			logoResourcePath = "/img/logo/logo_stopped.png";
+//		} else {
+//			logoResourcePath = "/img/logo/logo_busy.gif";
+//		}
+//		URL logoPath = ProcessTab.class.getResource(logoResourcePath);
+//		Icon logo = new ImageIcon(logoPath);
+//
+//		lbl_Logo.setIcon(logo);
+//		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
 	public void showTab() {

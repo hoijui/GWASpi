@@ -39,7 +39,6 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
-import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
@@ -47,7 +46,7 @@ import org.gwaspi.progress.ProgressSource;
 
 public class QASamplesOperation extends AbstractOperationCreatingOperation<QASamplesOperationDataSet, QASamplesOperationParams> {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			"Samples Quality Assurance",
 			""); // TODO
 
@@ -71,15 +70,18 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 				});
 	}
 
-	private ProgressHandler operationPH;
-
 	public QASamplesOperation(QASamplesOperationParams params) {
 		super(params);
 	}
 
 	@Override
+	public ProgressSource getProgressSource() throws IOException {
+		return getProgressHandler();
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override
@@ -93,28 +95,13 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 	}
 
 	@Override
-	public ProgressSource getProgressSource() throws IOException {
-
-		if (operationPH == null) {
-			final DataSetSource parentDataSetSource = getParentDataSetSource();
-			final int numSamples = parentDataSetSource.getNumSamples();
-
-			operationPH =  new IntegerProgressHandler(
-					processInfo,
-					0, // start state, first sample
-					numSamples - 1); // end state, last sample
-		}
-
-		return operationPH;
-	}
-
-	@Override
 	public int processMatrix() throws IOException {
 
 		int resultOpId;
 
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 		org.gwaspi.global.Utils.sysoutStart("Sample QA");
-		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource dataSetSource = getParentDataSetSource();
 
@@ -130,7 +117,7 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 
 		// Iterate through samples
 		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
-		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		int localSampleIndex = 0;
 		for (Map.Entry<Integer, SampleKey> sampleKeyEntry : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
 			final int sampleOrigIndex = sampleKeyEntry.getKey();
@@ -169,16 +156,16 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 					missingCount,
 					heterozygRatio
 			));
-			operationPH.setProgress(localSampleIndex);
+			progressHandler.setProgress(localSampleIndex);
 			localSampleIndex++;
 		}
-		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
 		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
-		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
 	}

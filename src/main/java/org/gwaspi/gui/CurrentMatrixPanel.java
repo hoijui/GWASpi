@@ -48,6 +48,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
@@ -250,7 +251,8 @@ public class CurrentMatrixPanel extends JPanel {
 						List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
 						OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpKey != null) {
-							MultiOperations.doExportMatrix(matrixKey, format, expPhenotype);
+							final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(matrixKey, format, expPhenotype);
+							MultiOperations.doExportMatrix(matrixExporterParams);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
@@ -258,7 +260,8 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					MultiOperations.doExportMatrix(matrixKey, format, expPhenotype);
+					final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(matrixKey, format, expPhenotype);
+					MultiOperations.doExportMatrix(matrixExporterParams);
 				}
 			}
 		}

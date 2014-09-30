@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
@@ -38,6 +37,7 @@ import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +67,12 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
 
-	private ProgressHandler operationPH;
+	private ProgressHandler filterPH;
 
 	public ByCombiWeightsFilterOperation(ByCombiWeightsFilterOperationParams params) {
 		super(params);
+
+		this.filterPH = null;
 	}
 
 	@Override
@@ -79,19 +81,16 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 	}
 
 	@Override
-	public ProgressSource getProgressSource() throws IOException {
+	protected ProgressSource getFilteringProgressSource() throws IOException {
 
-		if (operationPH == null) {
-			final DataSetSource parentDataSetSource = getParentDataSetSource();
-			final int numMarkers = parentDataSetSource.getNumMarkers();
-
-			operationPH =  new IntegerProgressHandler(
-					byCombiWeightsFilterPI,
-					0, // start state, first marker
-					numMarkers - 1); // end state, last marker
+		if (filterPH == null) {
+			final int numItems = getNumItems();
+			filterPH = new IntegerProgressHandler(
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
+					0, numItems - 1);
 		}
 
-		return operationPH;
+		return filterPH;
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			Map<Integer, SampleKey> filteredSampleOrigIndicesAndKeys)
 			throws IOException
 	{
-		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
+		filterPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final int markersToKeep = getParams().getMarkersToKeep();
 
 		CombiTestOperationDataSet combiTestOperationDataSet
@@ -127,7 +126,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		final double thresholdWeight = combiWeightsSorted.get(markersToKeep);
 
 		Iterator<Double> combiWeightsIt = rawWeights.iterator();
-		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		filterPH.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
 			if (curCombiWeight > thresholdWeight) {
@@ -139,11 +138,11 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			// a percentual performance penalty for this leightweight operation.
 //			operationPH.setProgress(mi);
 		}
-		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+		filterPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		// we use all samples from the parent
 		filteredSampleOrigIndicesAndKeys.putAll(combiTestOperationDataSet.getSamplesKeysSource().getIndicesMap()); // XXX could be done more efficiently, without loading all the keys first, but by just signaling to the method caller, that we use all samples somehow
-		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	/**

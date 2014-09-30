@@ -26,7 +26,7 @@ import org.gwaspi.progress.ProgressSource;
 
 public abstract class AbstractMatrixCreatingOperation<PT extends OperationParams> extends AbstractOperation<PT> {
 
-//	private final PT params; // TODO So far, only Operation creating oeprations take params, matrix creating ones do not, but maybe should?
+//	private final PT params; // TODO So far, only Operation creating operations take params, matrix creating ones do not, but maybe should?
 	private ProgressHandler operationPH;
 
 	public AbstractMatrixCreatingOperation(DataSetDestination dataSetDestination) {

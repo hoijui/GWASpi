@@ -41,6 +41,9 @@ import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 
 public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
 
@@ -73,6 +76,11 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 	}
 
 	@Override
+	public ProgressSource getProgressSource() throws IOException {
+		return getProgressHandler();
+	}
+
+	@Override
 	public ProcessInfo getProcessInfo() {
 		return processInfo;
 	}
@@ -91,6 +99,9 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 	public int processMatrix() throws IOException {
 
 		int resultOpId;
+
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 
@@ -116,6 +127,8 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 		Iterator<GenotypesList> markersGenotypesSourceIt = markersGenotypesSource.iterator();
 		Iterator<String> markersChromosomesIt = parentDataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
 		Map<Integer, MarkerKey> markersIndicesMap = parentDataSetSource.getMarkersKeysSource().getIndicesMap();
+		int localMarkerIndex = 0;
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : markersIndicesMap.entrySet()) {
 			final int markerOrigIndex = markerOrigIndexKey.getKey();
 			final MarkerKey markerKey = markerOrigIndexKey.getValue();
@@ -151,13 +164,17 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 					markerAlleleAndGTStatistics.getCompactAlleleStatistics(),
 					markerAlleleAndGTStatistics.getCompactGenotypeStatistics()
 			));
+			progressHandler.setProgress(localMarkerIndex);
+			localMarkerIndex++;
 		}
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 		//</editor-fold>
 
 		dataSet.finnishWriting();
 		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 
 		org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
 	}

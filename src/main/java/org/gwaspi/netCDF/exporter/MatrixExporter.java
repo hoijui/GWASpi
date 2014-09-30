@@ -22,25 +22,34 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.AbstractOperation;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
 
-public class MatrixExporter {
+public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 
-	private final MatrixKey rdMatrixKey;
+	public static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
+			Text.Trafo.exportMatrix,
+			Text.Trafo.exportMatrix); // TODO add more detailed info
+
+	private final MatrixExporterParams params;
 	private final MatrixMetadata rdMatrixMetadata;
 	private final DataSetSource rdDataSetSource;
 	private final Map<ExportFormat, Formatter> formatters;
 
-	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException {
+	public MatrixExporter(MatrixExporterParams params) throws IOException {
 
-		// INIT EXTRACTOR OBJECTS
-
-		this.rdMatrixKey = rdMatrixKey;
+		this.params = params;
+		final MatrixKey rdMatrixKey = params.getParent().getMatrixParent();
 		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 		rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
@@ -56,22 +65,38 @@ public class MatrixExporter {
 		formatters.put(ExportFormat.MACH, new MachFormatter());
 	}
 
-	public boolean exportToFormat(ExportFormat exportFormat, String phenotype) throws IOException {
+	@Override
+	public ProcessInfo getProcessInfo() {
+		return PROCESS_INFO;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+
+		return new NullProgressHandler(new DefaultProcessInfo("<TODO implement ME!>", null)); // FIXME actually implement a read progress handler/tracker for this class!
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
+
 		String exportPath = Study.constructExportsPath(rdMatrixMetadata.getStudyKey());
 		String taskDesc = "exporting Matrix to \"" + exportPath + "\"";
 		org.gwaspi.global.Utils.sysoutStart(taskDesc);
 
 		org.gwaspi.global.Utils.createFolder(new File(exportPath));
-		Formatter formatter = formatters.get(exportFormat);
+		Formatter formatter = formatters.get(params.getExportFormat());
 
 		boolean result = formatter.export(
 				exportPath,
 				rdMatrixMetadata,
 				rdDataSetSource,
-				phenotype);
+				params.getPhenotype());
+		if (!result) {
+			throw new IOException("Failed to export, reason unknown. Maybe there is additional info in the log before this entry."); // XXX Bad way of ding it, use exceptions before already?
+		}
 
 		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
 
-		return result;
+		return Integer.MIN_VALUE;
 	}
 }

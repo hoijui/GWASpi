@@ -18,6 +18,7 @@
 package org.gwaspi.operations.filter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.global.Text;
@@ -27,6 +28,12 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationParams;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +42,40 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 	private static final Logger LOG
 			= LoggerFactory.getLogger(AbstractFilterOperation.class);
 
+	private ProgressHandler storePH;
+	private SuperProgressSource progressSource;
+
 	protected AbstractFilterOperation(PT params) {
 		super(params);
+	}
+
+	private SuperProgressSource getSuperProgressHandler() throws IOException {
+
+		if (progressSource == null) {
+//			final int numItems = getNumItems();
+			final ProgressSource filterPS = getFilteringProgressSource();
+//			storePH = new IntegerProgressHandler(
+//					new SubProcessInfo(PROCESS_INFO, getParams().getName() + " storing", null),
+//					0, numItems - 1);
+			storePH = new IndeterminateProgressHandler(
+					new SubProcessInfo(getProcessInfo(), getParams().getName() + " storing", null));
+
+			final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+			final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+					= new LinkedHashMap<ProgressSource, Double>(2);
+			tmpSubProgressSourcesAndWeights.put(filterPS, 0.5);
+			tmpSubProgressSourcesAndWeights.put(storePH, 0.5);
+			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+
+			progressSource = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
+		}
+
+		return progressSource;
+	}
+
+	@Override
+	public ProgressSource getProgressSource() throws IOException {
+		return getSuperProgressHandler();
 	}
 
 	@Override
@@ -57,8 +96,13 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 			Map<Integer, SampleKey> filteredSampleOrigIndicesAndKeys)
 			throws IOException;
 
+	protected abstract ProgressSource getFilteringProgressSource() throws IOException;
+
 	@Override
 	public int processMatrix() throws IOException {
+
+		final SuperProgressSource progressHandler = getSuperProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 		Map<Integer, MarkerKey> filteredMarkerOrigIndicesAndKeys
@@ -68,6 +112,7 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		Map<Integer, SampleKey> filteredSampleOrigIndicesAndKeys
 				= new LinkedHashMap<Integer, SampleKey>(parentDataSetSource.getNumSamples());
 
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		filter(
 				filteredMarkerOrigIndicesAndKeys,
 //				filteredChromosomeOrigIndicesAndKeys,
@@ -82,8 +127,10 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 			return Integer.MIN_VALUE;
 		}
 
+		storePH.setNewStatus(ProcessStatus.INITIALIZING);
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
 
+		storePH.setNewStatus(ProcessStatus.RUNNING);
 		dataSet.setType(getParams().getType());
 		dataSet.setFilterDescription(getFilterDescription());
 
@@ -95,8 +142,12 @@ public abstract class AbstractFilterOperation<PT extends OperationParams> extend
 		dataSet.setMarkers(filteredMarkerOrigIndicesAndKeys);
 //		dataSet.setChromosomes(filteredChromosomeOrigIndicesAndKeys);
 		dataSet.setSamples(filteredSampleOrigIndicesAndKeys);
+		storePH.setNewStatus(ProcessStatus.FINALIZING);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
+		storePH.setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return ((AbstractOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 	}

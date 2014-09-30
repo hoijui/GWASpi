@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.threadbox;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.EventObject;
 
-interface Formatter {
+/**
+ * Contains details about a task that is being registered or deleted.
+ */
+public class TaskEvent extends EventObject {
 
-	/**
-	 *
-	 * @param exportPath
-	 * @param rdMatrixMetadata
-	 * @param dataSetSource
-	 * @param phenotype
-	 * @return true if formatting and exporting went through successfully, false otherwise
-	 * @throws IOException
-	 */
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+	public TaskEvent(CommonRunnable source) {
+		super(source);
+	}
+
+	public CommonRunnable getTask() {
+		return (CommonRunnable) getSource();
+	}
 }

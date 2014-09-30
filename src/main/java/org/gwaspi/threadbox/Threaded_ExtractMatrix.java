@@ -18,6 +18,9 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
@@ -25,10 +28,30 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.MatrixDataExtractor;
 import org.gwaspi.operations.MatrixDataExtractorNetCDFDataSetDestination;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_ExtractMatrix extends CommonRunnable {
+
+	private static final ProcessInfo fullExtractMatrixInfo
+			= new DefaultProcessInfo("Full Data Extraction",
+					"Data Extraction and evaluation of the results (QA)"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_MATRIX_EXTRACTION = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_MATRIX_EXTRACTION", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MATRIX_EXTRACTION, 0.4);
+		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.6);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
 
 	private final DataSetSource dataSetSource;
 	private final String newMatrixName;
@@ -41,6 +64,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private final Set<Object> sampleCriteria;
 	private final File markerCriteriaFile;
 	private final File sampleCriteriaFile;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_ExtractMatrix(
 			DataSetSource dataSetSource,
@@ -72,12 +96,20 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 		this.sampleCriteria = sampleCriteria;
 		this.markerCriteriaFile = markerCriteriaFile;
 		this.sampleCriteriaFile = sampleCriteriaFile;
+		this.progressSource = new SuperProgressSource(fullExtractMatrixInfo, subProgressSourcesAndWeights);
 	}
 
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
+	}
+
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_ExtractMatrix.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
@@ -106,10 +138,11 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					sampleCriteriaFile);
 			dataSetDestination.setMatrixDataExtractor(matrixOperation); // HACK!
 
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_EXTRACTION, matrixOperation.getProgressSource(), null);
 			matrixOperation.processMatrix();
 			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			Threaded_TranslateMatrix.matrixCompleeted(thisSwi, resultMatrixKey);
+			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
 		}
 	}
 }

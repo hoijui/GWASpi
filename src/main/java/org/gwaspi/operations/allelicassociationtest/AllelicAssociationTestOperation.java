@@ -32,13 +32,19 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.AssociationTestOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 
 public class AllelicAssociationTestOperation extends AbstractAssociationTestsOperation<AllelicAssociationTestsOperationDataSet> {
 
-	private static final ProcessInfo processInfo = new DefaultProcessInfo(
+	public static final ProgressSource PLACEHOLDER_PS_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_TEST", null));
+
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Operation.allelicAssocTest,
 			Text.Operation.allelicAssocTest); // TODO We need a more elaborate description of this operation!
 
@@ -68,7 +74,7 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return processInfo;
+		return PROCESS_INFO;
 	}
 
 	@Override

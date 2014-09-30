@@ -17,38 +17,61 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Set;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
-import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfo.Affection;
-import org.gwaspi.model.SampleInfoList;
-import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.operations.GWASinOneGOParams;
-import org.gwaspi.operations.OperationManager;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
-import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.reports.OutputTest;
-import org.gwaspi.samples.SamplesParserManager;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_GWAS extends CommonRunnable {
 
+	private static final ProcessInfo fullGwasProcessInfo
+			= new DefaultProcessInfo("Full GWAS",
+					"Complete Genome Wide Association Study"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_GTFREQ_HW = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_GTFREQ_HW", null));
+	public static final ProgressSource PLACEHOLDER_PS_ALLELIC_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_ALLELIC_TEST", null));
+	public static final ProgressSource PLACEHOLDER_PS_GENOTYPIC_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_GENOTYPIC_TEST", null));
+	public static final ProgressSource PLACEHOLDER_PS_TREND_TEST = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_TREND_TEST", null));
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(4);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GTFREQ_HW, 0.4);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_ALLELIC_TEST, 0.2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GENOTYPIC_TEST, 0.2);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TREND_TEST, 0.2);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
+
 	private final GWASinOneGOParams gwasParams;
+	private final SuperProgressSource progressSource;
 
 	public Threaded_GWAS(GWASinOneGOParams gwasParams) {
 		super("GWAS", "GWAS", "GWAS on: " + gwasParams.getMarkerCensusOperationParams().getParent().toString(), "GWAS");
 
 		this.gwasParams = gwasParams;
+		this.progressSource = new SuperProgressSource(fullGwasProcessInfo, subProgressSourcesAndWeights);
+	}
+
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressSource;
 	}
 
 	@Override
@@ -59,143 +82,89 @@ public class Threaded_GWAS extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
+		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GTFREQ_HW, threaded_GTFreq_HW.getProgressSource(), null);
+		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW, thisSwi);
 
-		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
-		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
+//		OperationKey censusOpKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
+//		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
+//		OperationKey hwOpKey = checkPerformHW(thisSwi, censusOpKey, markersQAOpKey);
 
-		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey);
+		OperationKey censusOpKey = threaded_GTFreq_HW.getMarkerCensusOperationKey();
+		OperationKey hwOpKey = threaded_GTFreq_HW.getHardyWeinbergOperationKey();
+		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey, progressSource);
 	}
 
-	static OperationKey checkPerformMarkerCensus(Logger log, SwingWorkerItem thisSwi, GWASinOneGOParams gwasParams) throws Exception {
+	static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws Exception {
 
-		final MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
+//	private static final ProgressSource PLACEHOLDER_PS_GTFREQ_HW = new NullProgressHandler(
+//			new SubProcessInfo(null, "PLACEHOLDER_PS_GTFREQ_HW", null));
+//	public static final ProgressSource PLACEHOLDER_PS_TESTS = new NullProgressHandler(
+//			new SubProcessInfo(null, "PLACEHOLDER_PS_TESTS", null));
+//	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+//		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+//				= new LinkedHashMap<ProgressSource, Double>(2);
+//		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GTFREQ_HW, 0.4);
+//		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TESTS, 0.6);
+//		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+//		final SuperProgressSource testsProgressSource = new SuperProgressSource(gwasTestsProcessInfo, subProgressSourcesAndWeights);
+//
+//		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_TESTS, testsProgressSource, null);
 
-		final OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.SAMPLE_QA).get(0));
-		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.MARKER_QA).get(0));
-
-		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
-		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
-
-		//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
-		// GENOTYPE FREQ. BY PHENOFILE OR DB AFFECTION
-		OperationKey censusOpKey = null;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
-			if (phenotypeFile != null) {
-				// BY EXTERNAL PHENOTYPE FILE
-				// use Sample Info file affection state
-				Set<Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
-
-				if (affectionStates.contains(Affection.UNAFFECTED)
-						&& affectionStates.contains(Affection.AFFECTED))
-				{
-					log.info("Updating Sample Info in DB");
-					InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
-					SamplesParserManager.scanSampleInfo(
-							markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
-							ImportFormat.GWASpi,
-							phenotypeFile.getPath(),
-							inMemorySamplesReceiver);
-					Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
-					SampleInfoList.insertSampleInfos(sampleInfos);
-
-					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
-					markerCensusOperationParams.setName(censusName);
-				} else {
-					log.warn(Text.Operation.warnAffectionMissing);
-					return censusOpKey;
-				}
-			} else {
-				// BY DB AFFECTION
-				// use Sample Info from the DB to extract affection state
-				Set<Affection> affectionStates = SamplesParserManager.getDBAffectionStates(markerCensusOperationParams.getParent());
-				if (affectionStates.contains(Affection.UNAFFECTED)
-						&& affectionStates.contains(Affection.AFFECTED))
-				{
-					String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
-					markerCensusOperationParams.setName(censusName);
-				} else {
-					log.warn(Text.Operation.warnAffectionMissing);
-					return censusOpKey;
-				}
+		// tests (need newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+		if ((censusOpKey != null) && (hwOpKey != null)) {
+			// allelic test
+			if (gwasParams.isPerformAllelicTests()
+					&& thisSwi.getQueueState().equals(QueueState.PROCESSING))
+			{
+				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.ALLELICTEST, superProgressSource, PLACEHOLDER_PS_ALLELIC_TEST);
 			}
 
-			censusOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperationParams);
-		}
+			// genotypic test
+			if (gwasParams.isPerformGenotypicTests()
+					&& thisSwi.getQueueState().equals(QueueState.PROCESSING))
+			{
+				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.GENOTYPICTEST, superProgressSource, PLACEHOLDER_PS_GENOTYPIC_TEST);
+			}
 
-		return censusOpKey;
+			// trend-test
+			if (gwasParams.isPerformTrendTests()
+					&& thisSwi.getQueueState().equals(QueueState.PROCESSING))
+			{
+				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.TRENDTEST, superProgressSource, PLACEHOLDER_PS_TREND_TEST);
+			}
+		}
 	}
 
-	static OperationKey checkPerformHW(SwingWorkerItem thisSwi, OperationKey censusOpKey, final OperationKey markersQAOpKey) throws Exception {
-
-		// HW ON GENOTYPE FREQ.
-		OperationKey hwOpKey = null;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& (censusOpKey != null))
-		{
-			final HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
-			hwOpKey = OperationManager.performHardyWeinberg(params);
-		}
-
-		return hwOpKey;
-	}
-
-	static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey) throws Exception {
+	private static void performTest(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final OPType testType, final SuperProgressSource superProgressSource, ProgressSource placeholderPS) throws IOException {
 
 		final OperationKey markersQAOpKey = gwasParams.getMarkerCensusOperationParams().getMarkerQAOpKey();
 
-		// ASSOCIATION TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-		if (gwasParams.isPerformAssociationTests()
-				&& thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& censusOpKey != null
-				&& hwOpKey != null)
-		{
-			final boolean allelic = gwasParams.isPerformAllelicTests();
-			final OPType testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
+		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
 
-			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
-
-			if (gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
-			}
-
-			OperationKey assocOpKey = OperationManager.performCleanTests(
-					censusOpKey,
-					hwOpKey,
-					gwasParams.getDiscardMarkerHWTreshold(),
-					testType);
-
-			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (assocOpKey != null) {
-				new OutputTest(assocOpKey, testType, markersQAOpKey).writeReportsForTestData();
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpKey);
-			}
+		if (gwasParams.isDiscardMarkerHWCalc()) {
+			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
-		// TREND TESTS (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-		if (gwasParams.isPerformTrendTests()
-				&& thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& censusOpKey != null
-				&& hwOpKey != null)
-		{
-			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
-
-			if (gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
-			}
-
-			OperationKey trendOpKey = OperationManager.performCleanTests(
-					censusOpKey,
-					hwOpKey,
-					gwasParams.getDiscardMarkerHWTreshold(),
-					OPType.TRENDTEST);
-
-			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (trendOpKey != null) {
-				new OutputTest(trendOpKey, OPType.TRENDTEST, markersQAOpKey).writeReportsForTestData();
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpKey);
-			}
+		final Threaded_Test threaded_Test = new Threaded_Test(censusOpKey, hwOpKey, gwasParams, testType);
+		superProgressSource.replaceSubProgressSource(placeholderPS, threaded_Test.getProgressSource(), null);
+		try {
+			CommonRunnable.doRunNowInThread(threaded_Test, thisSwi);
+		} catch (Exception ex) {
+			throw new IOException(ex);
 		}
+//		OperationKey testOpKey = OperationManager.performCleanTests(
+//				censusOpKey,
+//				hwOpKey,
+//				gwasParams.getDiscardMarkerHWTreshold(),
+//				testType);
+//
+//		// Make Reports (needs newMatrixId, QAopId, AssocOpId)
+//		if (testOpKey != null) {
+//			final TestOutputParams testOutputParams = new TestOutputParams(testOpKey, testType, markersQAOpKey);
+//			final OutputTest outputTest = new OutputTest(testOutputParams);
+//			OperationManager.performOperation(outputTest);
+//			GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
+//		}
 	}
 }

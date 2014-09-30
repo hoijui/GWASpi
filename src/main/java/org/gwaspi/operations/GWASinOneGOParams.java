@@ -69,10 +69,6 @@ public class GWASinOneGOParams {
 		return performGenotypicTests;
 	}
 
-	public boolean isPerformAssociationTests() {
-		return (isPerformAllelicTests() || isPerformGenotypicTests());
-	}
-
 	public void setPerformGenotypicTests(boolean performGenotypicTests) {
 		this.performGenotypicTests = performGenotypicTests;
 	}

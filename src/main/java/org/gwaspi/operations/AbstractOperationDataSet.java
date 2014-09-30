@@ -151,12 +151,12 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	@Override
 	public DataSetSource getParentDataSetSource() throws IOException {
 
-		final DataSetKey parent = getParent();
+		final DataSetKey ourParent = getParent();
 		final DataSetSource dataSetSource;
-		if (parent.isMatrix()) {
-			dataSetSource = MatrixFactory.generateMatrixDataSetSource(parent.getMatrixParent());
+		if (ourParent.isMatrix()) {
+			dataSetSource = MatrixFactory.generateMatrixDataSetSource(ourParent.getMatrixParent());
 		} else {
-			dataSetSource = OperationManager.generateOperationDataSet(parent.getOperationParent());
+			dataSetSource = OperationManager.generateOperationDataSet(ourParent.getOperationParent());
 		}
 
 		return dataSetSource;

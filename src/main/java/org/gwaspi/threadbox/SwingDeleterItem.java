@@ -20,8 +20,14 @@ package org.gwaspi.threadbox;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.progress.DefaultProcessInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SwingDeleterItem {
+public class SwingDeleterItem extends CommonRunnable {
 
 	private String launchTime;
 	private String startTime;
@@ -32,6 +38,7 @@ public class SwingDeleterItem {
 	private final StudyKey studyKey;
 	private final MatrixKey matrixKey;
 	private final OperationKey operationKey;
+	private final ProgressHandler progressHandler;
 
 	SwingDeleterItem(
 			StudyKey studyKey,
@@ -54,18 +61,49 @@ public class SwingDeleterItem {
 		this(null, null, operationKey, deleteReports);
 	}
 
-	SwingDeleterItem(
+	private SwingDeleterItem(
 			StudyKey studyKey,
 			MatrixKey matrixKey,
 			OperationKey operationKey,
 			boolean deleteReports)
 	{
+		super(
+				"Deleter",
+				"Delete " + getToDeleteShortDescription(studyKey, matrixKey, operationKey, deleteReports),
+				"Deleter",
+				"Deleter");
+
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.queueState = QueueState.QUEUED;
 		this.deleteReports = deleteReports;
 		this.studyKey = studyKey;
 		this.matrixKey = matrixKey;
 		this.operationKey = operationKey;
+		this.progressHandler = new IndeterminateProgressHandler(new DefaultProcessInfo("Delete " + getToDeleteShortDescription(
+				studyKey, matrixKey, operationKey, deleteReports), null));
+	}
+
+	private static String getToDeleteShortDescription(
+			StudyKey studyKey,
+			MatrixKey matrixKey,
+			OperationKey operationKey,
+			boolean deleteReports)
+	{
+		StringBuilder description = new StringBuilder();
+
+		if (studyKey != null) {
+			description.append("Study ").append(studyKey.toRawIdString());
+		} else if (matrixKey != null) {
+			description.append("Matrix ").append(matrixKey.toRawIdString());
+		} else if (operationKey != null) {
+			description.append("Operation ").append(operationKey.toRawIdString());
+		}
+
+		if (deleteReports) {
+			description.append(" with reports");
+		}
+
+		return description.toString();
 	}
 
 	public QueueState getQueueState() {
@@ -107,15 +145,8 @@ public class SwingDeleterItem {
 	public String getDescription() {
 
 		if (description == null) {
-			StringBuilder sb = new StringBuilder();
-			if (getStudyKey() != null) {
-				sb.append("Delete Study: ").append(getStudyKey().toRawIdString());
-			} else if (getMatrixKey() != null) {
-				sb.append("Delete Matrix: ").append(getMatrixKey().toRawIdString());
-			} else if (getOperationKey() != null) {
-				sb.append("Delete Operation: ").append(getOperationKey().toRawIdString());
-			}
-			description = sb.toString();
+			description = "Delete " + getToDeleteShortDescription(
+					getStudyKey(), getMatrixKey(), getOperationKey(), isDeleteReports());
 		}
 
 		return description;
@@ -123,7 +154,9 @@ public class SwingDeleterItem {
 	}
 
 	public void setQueueState(QueueState queueState) {
+
 		this.queueState = queueState;
+		progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
 	}
 
 	public void setEndTime(String endTime) {
@@ -132,5 +165,20 @@ public class SwingDeleterItem {
 
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
+	}
+
+	@Override
+	protected Logger createLog() {
+		return LoggerFactory.getLogger(SwingDeleterItem.class);
+	}
+
+	@Override
+	public ProgressSource getProgressSource() {
+		return progressHandler;
+	}
+
+	@Override
+	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+		throw new UnsupportedOperationException("This is implemented in SwingDeleterItemList. Maybe change to here?"); // TODO
 	}
 }

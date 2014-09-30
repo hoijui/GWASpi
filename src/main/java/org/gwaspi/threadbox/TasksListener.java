@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2014 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.threadbox;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.EventListener;
 
-interface Formatter {
+/**
+ * Is interested in tasks being registered and deleted.
+ */
+public interface TasksListener extends EventListener {
 
 	/**
-	 *
-	 * @param exportPath
-	 * @param rdMatrixMetadata
-	 * @param dataSetSource
-	 * @param phenotype
-	 * @return true if formatting and exporting went through successfully, false otherwise
-	 * @throws IOException
+	 * Signals that a new task was registered.
+	 * @param evt contains details about the task at stake
 	 */
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+	void taskRegistered(TaskEvent evt);
+
+//	/**
+//	 * Signals that a task was deleted.
+//	 * @param evt contains details about the task at stake
+//	 */
+//	void taskDeleted(TaskEvent evt);
 }
