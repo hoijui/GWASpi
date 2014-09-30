@@ -62,9 +62,15 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		[script]
 		0.command=combi_association
 		1.study-id=1 # or "1.study-name=studyX"
-		2.matrix-id=8 # or "2.matrix-name=matrixX"
-		3.genotype-encoding=allelic # ..., "genotypic" or "XXX"
-		4.phenotype-info-file=/tmp/myPhenotypeInfo.txt # [optional]
+		2.matrix-id=8 # or "2.matrix-name=matrixX"; which matrix to operate on (read from).
+		3.census-operation-id=10 # or "3.census-operation-name=censusOperationX"
+		4.hw-operation-id=12 # or "4.hw-operation-name=hwOperationX"
+		5.hw-threshold=0.005 # TODO
+		6.genotype-encoding=genotypic # or "allelic", "nominal"
+		7.markers-to-keep=10000 # how many markers to be left with, after the filtering with the Combi method.
+		8.use-threshold-calibration=0 # whether to use resampling based threshold calibration. this feature takes a lot of computation time!
+		9.phenotype-info-file=/tmp/myPhenotypeInfo.txt # [optional]
+		10.result-operation-name=myCombiTextOperationX # [optional]
 		[/script]
 		*/
 		//</editor-fold>
@@ -77,23 +83,34 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
 
+			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
+
 			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-operation-id", "hw-operation-name");
 			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
+			int markersToKeep = Integer.parseInt(args.get("markers-to-keep"));
+
+			boolean useThresholdCalibration = (Integer.parseInt(args.get("use-threshold-calibration")) != 0);
+
 			String phenotypeInfoStr = args.get("phenotype-info-file");
 			File phenotypeInfo = (phenotypeInfoStr == null) ? null : new File(phenotypeInfoStr);
 
-//			String resultMatrixName = "Combi-Test for matrix " + matrixKey.toString();
+			// This might return null, as it is optional,
+			// which will lead to using the default name
+			String resultOperationName = args.get("result-operation-name");
 
 			CombiTestParams params = new CombiTestParams(
 					matrixKey,
+//					censusOperationKey,
 					hwOperationKey,
 					hwThreshold,
-					genotypeEncoder);
+					genotypeEncoder,
+					markersToKeep,
+					useThresholdCalibration,
 //					phenotypeInfo,
-//					resultMatrixName);
+					resultOperationName);
 
 			// test block
 //			if (gwasParams.isProceed()) {
