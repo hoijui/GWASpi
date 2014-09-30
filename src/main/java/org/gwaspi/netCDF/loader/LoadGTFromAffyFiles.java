@@ -201,7 +201,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		// WRITING GENOTYPE DATA INTO netCDF FILE
 		int sampleIndex = samples.indexOf(sampleKey);
 		if (sampleIndex != -1) { // CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-			samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
+			samplesReceiver.addSampleGTAlleles(sampleIndex, new ArrayList<byte[]>(sortedAlleles.values()));
 		}
 	}
 

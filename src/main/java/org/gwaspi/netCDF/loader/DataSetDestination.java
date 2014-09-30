@@ -18,7 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
@@ -65,14 +65,14 @@ public interface DataSetDestination {
 	 *   (as in, the index of a list created in the order they were added)
 	 * @see #addSampleInfo
 	 */
-	void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException;
+	void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException;
 	/**
 	 * Adds all the GTs/SNPs for a single marker (one GT per sample).
 	 * @param markerIndex  index in relation to the markers meta-data
 	 *   (as in, the index of a list created in the order they were added)
 	 * @see #addMarkerMetadata
 	 */
-	void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException;
+	void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException;
 	void finishedLoadingAlleles() throws IOException;
 
 	void done() throws IOException;

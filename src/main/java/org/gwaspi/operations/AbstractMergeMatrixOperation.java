@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -131,7 +132,7 @@ public abstract class AbstractMergeMatrixOperation extends AbstractMatrixCreatin
 		}
 	}
 
-	protected void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+	protected void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException {
 
 		if (perMarkerAlleles != null) {
 			// assemble per marker alleles

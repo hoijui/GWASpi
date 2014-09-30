@@ -140,7 +140,7 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+	public void addSampleGTAlleles(int sampleIndex, List<byte[]> sampleAlleles) throws IOException {
 
 		if (!alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -152,7 +152,7 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+	public void addMarkerGTAlleles(int markerIndex, List<byte[]> markerAlleles) throws IOException {
 
 		if (alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");

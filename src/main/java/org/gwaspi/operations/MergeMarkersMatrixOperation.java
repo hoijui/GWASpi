@@ -18,6 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 				wrComboSortedMarkerGTs.put(markerKey, genotype);
 			}
 
-			addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
+			addSampleGTAlleles(readDataSet1SampleIndex, new ArrayList<byte[]>(wrComboSortedMarkerGTs.values()));
 		}
 		getDataSetDestination().finishedLoadingAlleles();
 	}
