@@ -43,21 +43,29 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
 import org.gwaspi.gui.utils.ValueContainer;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.StudyList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO
  */
 public class CombiTestParamsGUI extends JPanel {
+
+	private static final Logger LOG = LoggerFactory.getLogger(CombiTestParamsGUI.class);
 
 	public static final String TITLE = "Edit Combi-Test parameters";
 
@@ -407,5 +415,43 @@ public class CombiTestParamsGUI extends JPanel {
 		}
 
 		return returnCombiTestParams;
+	}
+
+	public static void main(String[] args) {
+
+		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
+
+		OperationKey parentOperationKey = null;
+		try {
+			// Look for ANY QA-Markers operation in the DB
+			List<StudyKey> studies = StudyList.getStudies();
+			studiesLoop : for (StudyKey studyKey : studies) {
+				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+				for (MatrixKey matrixKey : matrices) {
+					List<OperationMetadata> qaOperationsMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
+					if (!qaOperationsMetadatas.isEmpty()) {
+						parentOperationKey = OperationKey.valueOf(qaOperationsMetadatas.get(0));
+						break studiesLoop;
+					}
+				}
+			}
+		} catch (IOException ex) {
+			LOG.error("Failed to look for QA Marker operations", ex);
+		}
+
+		if (parentOperationKey == null) {
+			LOG.warn("No suitable QA Marker operation found that could be used as parent");
+			parentOperationKey = new OperationKey(new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID), OperationKey.NULL_ID);
+		}
+
+//		CombiTestOperationParams inputParams = new CombiTestOperationParams(parentOperationKey);
+		CombiTestOperationParams inputParams = new CombiTestOperationParams(
+				parentOperationKey,
+				NominalGenotypeEncoder.SINGLETON,
+				35, // weightsFIlterWidth
+				20, // markersToKeep
+				Boolean.TRUE, // useThresholdCalibration
+				"my name is... my name is... my name is ..");
+		CombiTestOperationParams outputParams = chooseCombiTestParams(null, inputParams);
 	}
 }
