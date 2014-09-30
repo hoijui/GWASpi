@@ -37,6 +37,11 @@ import org.gwaspi.model.Genotype;
  */
 public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
+	public static final NominalGenotypeEncoder SINGLETON = new NominalGenotypeEncoder();
+
+	private NominalGenotypeEncoder() {
+	}
+
 	@Override
 	public Map<Genotype, List<Double>> generateEncodingTable(
 			List<Genotype> possibleGenotypes,

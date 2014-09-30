@@ -36,6 +36,8 @@ import org.gwaspi.model.Genotype;
  */
 public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
+	public static final AllelicGenotypeEncoder SINGLETON = new AllelicGenotypeEncoder();
+
 //	private static final List<List<Double>> ENCODED_VALUES;
 //	static {
 //		ENCODED_VALUES = new ArrayList<List<Double>>(4);
@@ -80,6 +82,9 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // "TA"
 		ENCODED_VALUES_UPPER.put(8, Collections.unmodifiableList(new ArrayList<Double>(
 				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "TT"
+	}
+
+	private AllelicGenotypeEncoder() {
 	}
 
 	@Override

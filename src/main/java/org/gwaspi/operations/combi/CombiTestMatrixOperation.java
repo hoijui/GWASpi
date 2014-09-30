@@ -1027,9 +1027,9 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 
 	public static void main(String[] args) {
 //
-//		GenotypeEncoder genotypeEncoder = new AllelicGenotypeEncoder(); // TODO
-//		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
-		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
+//		GenotypeEncoder genotypeEncoder = AllelicGenotypeEncoder.SINGLETON; // TODO
+//		GenotypeEncoder genotypeEncoder = GenotypicGenotypeEncoder.SINGLETON; // TODO
+		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
 
 //		runSVM(genotypeEncoder);
 

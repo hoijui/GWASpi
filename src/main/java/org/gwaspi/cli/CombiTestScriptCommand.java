@@ -42,9 +42,9 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 	public static final Map<String, GenotypeEncoder> GENOTYPE_ENCODERS
 			= new HashMap<String, GenotypeEncoder>();
 	static {
-		GENOTYPE_ENCODERS.put("allelic", new AllelicGenotypeEncoder());
-		GENOTYPE_ENCODERS.put("genotypic", new GenotypicGenotypeEncoder());
-		GENOTYPE_ENCODERS.put("nominal", new NominalGenotypeEncoder());
+		GENOTYPE_ENCODERS.put("allelic", AllelicGenotypeEncoder.SINGLETON);
+		GENOTYPE_ENCODERS.put("genotypic", GenotypicGenotypeEncoder.SINGLETON);
+		GENOTYPE_ENCODERS.put("nominal", NominalGenotypeEncoder.SINGLETON);
 	}
 
 	CombiTestScriptCommand() {
