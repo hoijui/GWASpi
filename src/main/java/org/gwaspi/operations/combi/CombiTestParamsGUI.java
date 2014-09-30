@@ -44,6 +44,7 @@ import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
+import org.gwaspi.gui.utils.AbsolutePercentageComponent;
 import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
@@ -95,12 +96,13 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JCheckBox genotypeEncoderDefault;
 
 	private final JLabel weightsFilterWidthLabel;
-	private final JPanel weightsFilterWidthP;
-	private final JSpinner weightsFilterWidthValue;
-	private final JSpinner weightsFilterWidthPercentage;
-	private final JLabel weightsFilterWidthPercentageLabel;
-	private final JCheckBox weightsFilterWidthDefault;
-	private AbsolutePercentageComponentRelation weightsFilterWidthComponentRelation;
+	private final AbsolutePercentageComponent weightsFilterWidthValue;
+//	private final JPanel weightsFilterWidthP;
+//	private final JSpinner weightsFilterWidthValue;
+//	private final JSpinner weightsFilterWidthPercentage;
+//	private final JLabel weightsFilterWidthPercentageLabel;
+//	private final JCheckBox weightsFilterWidthDefault;
+//	private AbsolutePercentageComponentRelation weightsFilterWidthComponentRelation;
 
 	private final JLabel markersToKeepLabel;
 	private final JPanel markersToKeepP;
@@ -149,6 +151,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderDefault = new JCheckBox();
 
 		this.weightsFilterWidthLabel = new JLabel();
+		this.weightsFilterWidthValue = new AbsolutePercentageComponent
 		this.weightsFilterWidthP = new JPanel();
 		this.weightsFilterWidthValue = new JSpinner();
 		this.weightsFilterWidthPercentage = new JSpinner();
