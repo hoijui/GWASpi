@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Extractor;
+import org.gwaspi.global.EnumeratedValueExtractor;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -187,7 +187,7 @@ public class Utils {
 	public static <V> boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, V> wrMap,
-			Extractor<V, Iterator<Integer>> valuesExtractor,
+			EnumeratedValueExtractor<V, Iterator<Integer>> valuesExtractor,
 			String variable)
 	{
 		return saveIntMapD2ToWrMatrix(wrNcFile, wrMap, valuesExtractor, variable, 0);
@@ -318,7 +318,7 @@ public class Utils {
 	public static <V> boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, V> wrMap,
-			Extractor<V, Iterator<Integer>> valuesExtractor,
+			EnumeratedValueExtractor<V, Iterator<Integer>> valuesExtractor,
 			String variable,
 			int offset)
 	{
@@ -511,7 +511,7 @@ public class Utils {
 		return intArray;
 	}
 
-	public static <V> ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<?, V> map, Extractor<V, Iterator<Integer>> valuesExtractor) {
+	public static <V> ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<?, V> map, EnumeratedValueExtractor<V, Iterator<Integer>> valuesExtractor) {
 		ArrayInt.D2 intArray = new ArrayInt.D2(map.size(), valuesExtractor.getNumberOfValues());
 		Index ima = intArray.getIndex();
 
