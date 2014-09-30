@@ -47,6 +47,23 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 		return super.getDataSet();
 	}
 
+//	@Override
+//	public void startLoadingAlleles(boolean perSample) throws IOException {
+//		super.startLoadingAlleles(perSample);
+//
+//		getDataSet().initAlleleStorage();
+//	}
+//
+//	@Override
+//	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+//		getDataSet().setSampleAlleles(sampleIndex, sampleAlleles);
+//	}
+//
+//	@Override
+//	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+//		getDataSet().setMarkerAlleles(markerIndex, markerAlleles);
+//	}
+
 	private List<GenotypesList> markerGenotypes;
 	private List<GenotypesList> sampleGenotypes;
 	private GenotypesListFactory genotypesListFactory;
