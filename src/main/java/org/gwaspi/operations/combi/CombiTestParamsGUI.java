@@ -298,9 +298,10 @@ public class CombiTestParamsGUI extends JPanel {
 		if (selectedValue == JOptionPane.OK_OPTION) {
 			returnCombiTestParams = combiTestParamsGUI.getCombiTestParams();
 		} else {
-			// return the original parameters,
-			// if the user clicked on the [Cancel] button
-			returnCombiTestParams = combiTestParams;
+//			// return the original parameters,
+//			// if the user clicked on the [Cancel] button
+//			returnCombiTestParams = combiTestParams;
+			returnCombiTestParams = null;
 		}
 
 		return returnCombiTestParams;

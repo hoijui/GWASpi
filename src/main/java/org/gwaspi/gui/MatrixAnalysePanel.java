@@ -431,7 +431,9 @@ public class MatrixAnalysePanel extends JPanel {
 										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
-								gwasParams.setProceed(true);
+								if (combiTestParams != null) {
+									gwasParams.setProceed(true);
+								}
 //								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							} else {
 								gwasParams = new MoreAssocInfo().showMoreInfo();
@@ -445,9 +447,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (combi) {
-									if (combiTestParams != null) {
-										MultiOperations.doCombiTest(combiTestParams);
-									}
+									MultiOperations.doCombiTest(combiTestParams);
 								} else {
 									MultiOperations.doAssociationTest(
 											parentMatrixKey,
