@@ -16,17 +16,25 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -38,11 +46,21 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
+import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
+import org.gwaspi.gui.utils.SpinnerDefaultAction;
+import org.gwaspi.gui.utils.TextDefaultAction;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -57,156 +75,201 @@ public class CombiTestParamsGUI extends JPanel {
 
 	private CombiTestParams originalCombiTestParams;
 
-	private final JLabel parentMatrixL;
-	private final JTextField parentMatrixTF;
+	private final JLabel parentMatrixLabel;
+	private final JTextField parentMatrixValue;
 
-	private final JLabel hwOperationL;
-	private final JComboBox hwOperationCB;
+	private final JLabel hwOperationLabel;
+	private final JComboBox hwOperationValue;
 
-	private final JLabel hwThresholdL;
+	private final JLabel hwThresholdLabel;
 	private final JPanel hwThresholdP;
-	private final JFormattedTextField hwThresholdTF;
-	private final JTextField hwThresholdTF2;
-	private final JButton hwThresholdB;
+	private final JFormattedTextField hwThresholdValue;
+	private final JSpinner hwThresholdPercentage;
+	private final JCheckBox hwThresholdDefault;
 
-	private final JLabel genotypeEncoderL;
+	private final JLabel genotypeEncoderLabel;
 	private final JPanel genotypeEncoderP;
-	private final JComboBox genotypeEncoderCB;
-	private final JButton genotypeEncoderB;
+	private final JComboBox genotypeEncoderValue;
+	private final JCheckBox genotypeEncoderDefault;
 
-	private final JLabel markersToKeepL;
+	private final JLabel markersToKeepLabel;
 	private final JPanel markersToKeepP;
-	private final JSpinner markersToKeepS;
-	private final JTextField markersToKeepTF;
-	private final JButton markersToKeepB;
+	private final JSpinner markersToKeepValue;
+	private final JSpinner markersToKeepPercentage;
+	private final JCheckBox markersToKeepDefault;
+	private AbsolutePercentageComponentRelation hwThresholdComponentRelation;
 
-	private final JLabel useThresholdCalibrationL;
+	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
-	private final JCheckBox useThresholdCalibrationCB;
-	private final JTextField useThresholdCalibrationTF;
+	private final JCheckBox useThresholdCalibrationValue;
+	private final JLabel useThresholdCalibrationDefault;
 
-	private final JLabel resultMatrixL;
+	private final JLabel resultMatrixLabel;
 	private final JPanel resultMatrixP;
-	private final JTextField resultMatrixTF;
-	private final JCheckBox resultMatrixCB;
+	private final JTextField resultMatrixValue;
+	private final JCheckBox resultMatrixDefault;
 
 	public CombiTestParamsGUI() {
 
 		this.originalCombiTestParams = null;
 
 		// init the GUI components
-		this.parentMatrixL = new JLabel();
-		this.parentMatrixTF = new JTextField();
+		this.parentMatrixLabel = new JLabel();
+		this.parentMatrixValue = new JTextField();
 
-		this.hwOperationL = new JLabel();
-		this.hwOperationCB = new JComboBox();
+		this.hwOperationLabel = new JLabel();
+		this.hwOperationValue = new JComboBox();
 
-		this.hwThresholdL = new JLabel();
+		this.hwThresholdLabel = new JLabel();
 		this.hwThresholdP = new JPanel();
-		this.hwThresholdTF = new JFormattedTextField(NumberFormat.getNumberInstance());
-		this.hwThresholdTF2 = new JTextField();
-		this.hwThresholdB = new JButton();
+		this.hwThresholdValue = new JFormattedTextField(NumberFormat.getNumberInstance());
+		this.hwThresholdPercentage = new JSpinner();
+		this.hwThresholdDefault = new JCheckBox();
 
-		this.genotypeEncoderL = new JLabel();
+		this.genotypeEncoderLabel = new JLabel();
 		this.genotypeEncoderP = new JPanel();
-		this.genotypeEncoderCB = new JComboBox();
-		this.genotypeEncoderB = new JButton();
+		this.genotypeEncoderValue = new JComboBox();
+		this.genotypeEncoderDefault = new JCheckBox();
 
-		this.markersToKeepL = new JLabel();
+		this.markersToKeepLabel = new JLabel();
 		this.markersToKeepP = new JPanel();
-		this.markersToKeepS = new JSpinner();
-		this.markersToKeepTF = new JTextField();
-		this.markersToKeepB = new JButton();
+		this.markersToKeepValue = new JSpinner();
+		this.markersToKeepPercentage = new JSpinner();
+		this.markersToKeepDefault = new JCheckBox();
+		this.hwThresholdComponentRelation = null;
 
-		this.useThresholdCalibrationL = new JLabel();
+		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
-		this.useThresholdCalibrationCB = new JCheckBox();
-		this.useThresholdCalibrationTF = new JTextField();
+		this.useThresholdCalibrationValue = new JCheckBox();
+		this.useThresholdCalibrationDefault = new JLabel();
 
-		this.resultMatrixL = new JLabel();
+		this.resultMatrixLabel = new JLabel();
 		this.resultMatrixP = new JPanel();
-		this.resultMatrixTF = new JTextField();
-		this.resultMatrixCB = new JCheckBox();
+		this.resultMatrixValue = new JTextField();
+		this.resultMatrixDefault = new JCheckBox();
 
 		// pre-configure the GUI components
-		this.hwThresholdP.add(this.hwThresholdTF);
-		this.hwThresholdP.add(this.hwThresholdTF2);
-		this.hwThresholdP.add(this.hwThresholdB);
+		this.hwThresholdP.add(this.hwThresholdValue);
+		this.hwThresholdP.add(this.hwThresholdPercentage);
+		this.hwThresholdP.add(this.hwThresholdDefault);
 
-		this.genotypeEncoderP.add(this.genotypeEncoderCB);
-		this.genotypeEncoderP.add(this.genotypeEncoderB);
+		this.genotypeEncoderP.add(this.genotypeEncoderValue);
+		this.genotypeEncoderP.add(this.genotypeEncoderDefault);
 
-		this.markersToKeepP.add(this.markersToKeepS);
-		this.markersToKeepP.add(this.markersToKeepTF);
-		this.markersToKeepP.add(this.markersToKeepB);
+		this.markersToKeepP.add(this.markersToKeepValue);
+		this.markersToKeepP.add(this.markersToKeepPercentage);
+		this.markersToKeepP.add(this.markersToKeepDefault);
 
-		this.useThresholdCalibrationP.add(this.useThresholdCalibrationCB);
-		this.useThresholdCalibrationP.add(this.useThresholdCalibrationTF);
+		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
+		this.useThresholdCalibrationP.add(this.useThresholdCalibrationDefault);
 
-		this.resultMatrixP.add(this.resultMatrixTF);
-		this.resultMatrixP.add(this.resultMatrixCB);
+		this.resultMatrixP.add(this.resultMatrixValue);
+		this.resultMatrixP.add(this.resultMatrixDefault);
 
 
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
-		labelsAndComponents.put(parentMatrixL, parentMatrixTF);
-		labelsAndComponents.put(hwOperationL, hwOperationCB);
-		labelsAndComponents.put(hwThresholdL, hwThresholdP);
-		labelsAndComponents.put(genotypeEncoderL, genotypeEncoderP);
-		labelsAndComponents.put(markersToKeepL, markersToKeepP);
-		labelsAndComponents.put(useThresholdCalibrationL, useThresholdCalibrationP);
-		labelsAndComponents.put(resultMatrixL, resultMatrixP);
+		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
+		labelsAndComponents.put(hwOperationLabel, hwOperationValue);
+		labelsAndComponents.put(hwThresholdLabel, hwThresholdP);
+		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
+		labelsAndComponents.put(markersToKeepLabel, markersToKeepP);
+		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
+		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
 		createLayout(this, labelsAndComponents);
 
+		FlowLayout contentPanelLayout = new FlowLayout();
+		contentPanelLayout.setAlignment(FlowLayout.LEADING);
 
-		this.parentMatrixL.setText("parent matrix");
-		this.hwOperationL.setLabelFor(this.parentMatrixTF);
-		this.parentMatrixTF.setEditable(false);
+		this.parentMatrixLabel.setText("parent matrix");
+		this.hwOperationLabel.setLabelFor(this.parentMatrixValue);
+		this.parentMatrixValue.setEditable(false);
 
-		this.hwOperationL.setText("Hardy-Weinberg operation");
-		this.hwOperationL.setLabelFor(this.hwOperationCB);
+		this.hwOperationLabel.setText("Hardy-Weinberg operation");
+		this.hwOperationLabel.setLabelFor(this.hwOperationValue);
 
-		this.hwThresholdL.setText("Hardy-Weinberg threshold");
-		this.hwThresholdL.setLabelFor(this.hwThresholdTF);
-		this.hwThresholdTF.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
+		this.hwThresholdLabel.setText("Hardy-Weinberg threshold");
+		this.hwThresholdLabel.setLabelFor(this.hwThresholdValue);
+		this.hwThresholdP.setLayout(contentPanelLayout);
+		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
+		this.hwThresholdValue.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
 //		this.hwThresholdTF.setColumns(10);
-//		this.hwThresholdTF.addPropertyChangeListener("value", this);
+//		this.hwThresholdValue.addPropertyChangeListener("value", this); // TODO use this!
+		this.hwThresholdPercentage.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value / #markers");
 
-		this.genotypeEncoderL.setText("geno-type to SVN feature encoding");
-		this.genotypeEncoderL.setLabelFor(this.genotypeEncoderCB);
-		this.genotypeEncoderCB.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+		this.genotypeEncoderLabel.setText("geno-type to SVN feature encoding");
+		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
+		this.genotypeEncoderP.setLayout(contentPanelLayout);
+		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 
-		this.markersToKeepL.setText("number of markers to keep");
-		this.markersToKeepL.setLabelFor(this.markersToKeepS);
+		this.markersToKeepLabel.setText("number of markers to keep");
+		this.markersToKeepLabel.setLabelFor(this.markersToKeepValue);
+		this.markersToKeepP.setLayout(contentPanelLayout);
 
-		this.useThresholdCalibrationL.setText("use resampling based threshold calibration");
-		this.useThresholdCalibrationL.setLabelFor(this.useThresholdCalibrationCB);
+		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
+		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
+		this.useThresholdCalibrationP.setLayout(contentPanelLayout);
+		this.useThresholdCalibrationDefault.setText("");
+		this.useThresholdCalibrationDefault.setForeground(Color.RED);
+		this.useThresholdCalibrationValue.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent evt) {
+				if (useThresholdCalibrationValue.isSelected()) {
+					useThresholdCalibrationDefault.setText("very slow!");
+				} else {
+					useThresholdCalibrationDefault.setText("");
+				}
+			}
+		});
 
-		this.resultMatrixL.setText("Result matrix name");
-		this.resultMatrixL.setLabelFor(this.resultMatrixTF);
+		this.resultMatrixLabel.setText("Result matrix name");
+		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
+		this.resultMatrixP.setLayout(contentPanelLayout);
 	}
 
 	public void setCombiTestParams(CombiTestParams combiTestParams) {
 
-		this.parentMatrixTF.setText(combiTestParams.getMatrixKey().toString());
+		this.parentMatrixValue.setText(combiTestParams.getMatrixKey().toString());
 
-		this.hwOperationCB.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
-		this.hwOperationCB.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
+		this.hwOperationValue.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
+		this.hwOperationValue.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
 
-		this.hwThresholdTF.setValue(combiTestParams.getHardyWeinbergThreshold());
+		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
+		this.hwThresholdDefault.setAction(new TextDefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
+		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
+				combiTestParams.getHardyWeinbergThreshold() * combiTestParams.getTotalMarkers() / 100.0, // initial value
+				0.1, // min
+				100.0, // max
+				0.5); // step
+		this.hwThresholdPercentage.setModel(hwThresholdPercentageModel);
 
-		this.genotypeEncoderCB.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
-		this.genotypeEncoderCB.setSelectedItem(combiTestParams.getEncoder());
+		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
+		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, combiTestParams.getEncoderDefault()));
 
-		SpinnerModel model = new SpinnerNumberModel(
+		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
 				combiTestParams.getMarkersToKeep(), // initial value
 				1, // min
 				combiTestParams.getTotalMarkers() - 1, // max
 				1); // step
-		this.markersToKeepS.setModel(model);
+		this.markersToKeepValue.setModel(markersToKeepValueModel);
+		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
+		System.err.println("combiTestParams.getMarkersToKeep(): " + combiTestParams.getMarkersToKeep());
+		System.err.println("combiTestParams.getTotalMarkers(): " + combiTestParams.getTotalMarkers());
+		System.err.println("combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0: " + ((double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0));
+		System.err.println("combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers(): " + ((double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers()));
+		SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
+				(double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0, // initial value
+				0.1, // min
+				100.0, // max
+				0.5); // step
+		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
+		this.hwThresholdComponentRelation
+				= new AbsolutePercentageComponentRelation(markersToKeepValue, markersToKeepPercentage, combiTestParams.getTotalMarkers());
 
-		this.useThresholdCalibrationCB.setSelected(combiTestParams.isUseThresholdCalibration());
+		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
-		this.resultMatrixTF.setText(combiTestParams.getResultMatrixName());
+		this.resultMatrixValue.setText(combiTestParams.getResultMatrixName());
+		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getResultMatrixNameDefault()));
 	}
 
 	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
@@ -221,10 +284,10 @@ public class CombiTestParamsGUI extends JPanel {
 		GroupLayout.ParallelGroup horizontalLabelsG = layout.createParallelGroup();
 		GroupLayout.ParallelGroup horizontalComponentsG = layout.createParallelGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
-			horizontalLabelsG.addComponent(labelAndComponent.getKey());
+			horizontalLabelsG.addComponent(labelAndComponent.getKey(), GroupLayout.Alignment.TRAILING);
 			// The following is better done manually, earlier
 //			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
-			horizontalComponentsG.addComponent(labelAndComponent.getValue());
+			horizontalComponentsG.addComponent(labelAndComponent.getValue(), GroupLayout.Alignment.LEADING);
 		}
         horizontalG.addGroup(horizontalLabelsG);
 		horizontalG.addGroup(horizontalComponentsG);
@@ -272,12 +335,12 @@ public class CombiTestParamsGUI extends JPanel {
 
 		CombiTestParams combiTestParams = new CombiTestParams(
 				originalCombiTestParams.getMatrixKey(), // cause it is not editable
-				(OperationKey) hwOperationCB.getSelectedItem(),
-				(Double) hwThresholdTF.getValue(),
-				(GenotypeEncoder) genotypeEncoderCB.getSelectedItem(),
-				(Integer) markersToKeepS.getValue(),
-				useThresholdCalibrationCB.isSelected(),
-				resultMatrixTF.getText()
+				(OperationKey) hwOperationValue.getSelectedItem(),
+				(Double) hwThresholdValue.getValue(),
+				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
+				(Integer) markersToKeepValue.getValue(),
+				useThresholdCalibrationValue.isSelected(),
+				resultMatrixValue.getText()
 				);
 
 		return combiTestParams;
