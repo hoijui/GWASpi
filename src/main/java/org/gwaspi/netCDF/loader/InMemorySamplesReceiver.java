@@ -23,9 +23,14 @@ import java.util.Collection;
 /**
  * TODO
  */
-public class InMemorySamplesReceiver extends AbstractDataSetDestination implements DataSetDestination {
+public class InMemorySamplesReceiver extends AbstractDataSetDestination {
 
 	public InMemorySamplesReceiver() {
+	}
+
+	@Override
+	public DataSet getDataSet() {
+		return super.getDataSet();
 	}
 
 	@Override
