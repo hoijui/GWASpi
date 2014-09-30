@@ -29,11 +29,13 @@ public interface ProgressListener<ST> extends EventListener {
 	 * Signals that the details of the process changed.
 	 * This might happen, in case the total length of the process
 	 * was previously unknown, but is now known.
+	 * @param evt describes the change in the process details
 	 */
 	void processDetailsChanged(ProcessDetailsChangeEvent evt);
 
 	/**
 	 * Signals that the process status changed.
+	 * @param evt describes the status change
 	 */
 	void statusChanged(ProcessStatusChangeEvent evt);
 

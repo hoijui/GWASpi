@@ -22,7 +22,6 @@ public abstract class AbstractProgressListener<ST> implements ProgressListener<S
 	protected AbstractProgressListener() {
 	}
 
-
 	@Override
 	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
 	}
