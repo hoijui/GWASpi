@@ -44,7 +44,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.reports.OutputTest;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
