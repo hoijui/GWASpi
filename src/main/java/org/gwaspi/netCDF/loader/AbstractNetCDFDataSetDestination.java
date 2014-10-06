@@ -38,7 +38,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.NetCdfUtils;
 import org.slf4j.Logger;
@@ -88,13 +87,6 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		super.init();
 
 		resultMatrixKey = null;
-	}
-
-	@Override
-	public void finishedLoadingSampleInfos() throws IOException {
-		super.finishedLoadingSampleInfos();
-
-		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
 	protected abstract MatrixMetadata createMatrixMetadata() throws IOException;

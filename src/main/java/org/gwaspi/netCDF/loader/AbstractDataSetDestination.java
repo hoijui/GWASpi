@@ -122,6 +122,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void finishedLoadingSampleInfos() throws IOException {
 
 		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.FINALIZING);
+		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 		logParsedSampleInfos();
 		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
 	}

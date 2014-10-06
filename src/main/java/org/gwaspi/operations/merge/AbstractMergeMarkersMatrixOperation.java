@@ -147,7 +147,6 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		// NOTE We do not need to safe the sample-info again,
 		//   cause it is already stored in the study
 		//   from the two matrices we are merging
-		// FIXME the above only applies to NetCDF!
 		dataSetDestination.startLoadingSampleInfos(true);
 		for (SampleKey sampleKey : sampleKeys) {
 			dataSetDestination.addSampleKey(sampleKey);
