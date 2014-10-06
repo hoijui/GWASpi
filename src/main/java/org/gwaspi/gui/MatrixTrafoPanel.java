@@ -406,6 +406,10 @@ public class MatrixTrafoPanel extends JPanel {
 //
 //					if (validationMatrixOperation.isValid()) {
 						final File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose a flip-markers file", txtA_NewMatrixDescription);
+						if (flipMarkersFile == null) {
+							// the user chose "Cancel"
+							return;
+						}
 						final MatrixGenotypesFlipperParams params = new MatrixGenotypesFlipperParams(
 							new DataSetKey(parentMatrixKey),
 							description,
