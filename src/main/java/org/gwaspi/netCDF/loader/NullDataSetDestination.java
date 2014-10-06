@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
@@ -67,10 +66,6 @@ public class NullDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
-	}
-
-	@Override
-	public void addMarkerKey(MarkerKey markerKey) throws IOException {
 	}
 
 	@Override

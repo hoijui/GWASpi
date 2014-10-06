@@ -89,11 +89,6 @@ public class ForwardingDataSetDestination implements DataSetDestination {
 	}
 
 	@Override
-	public void addMarkerKey(MarkerKey markerKey) throws IOException {
-		internalDataSetDestination.addMarkerKey(markerKey);
-	}
-
-	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		internalDataSetDestination.finishedLoadingMarkerMetadatas();
 	}

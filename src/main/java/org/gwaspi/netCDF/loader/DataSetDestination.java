@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
@@ -53,7 +52,6 @@ public interface DataSetDestination {
 
 	void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException;
 	void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException;
-	void addMarkerKey(MarkerKey markerKey) throws IOException;
 	void finishedLoadingMarkerMetadatas() throws IOException;
 
 	void startLoadingChromosomeMetadatas() throws IOException;

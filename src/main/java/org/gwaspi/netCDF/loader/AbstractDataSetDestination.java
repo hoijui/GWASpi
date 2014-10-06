@@ -135,17 +135,6 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	}
 
 	@Override
-	public void addMarkerKey(MarkerKey markerKey) throws IOException {
-
-		// we simply ignore this, and rely on #addMarkerMetadata() receiving
-		// the correct order aswell. We just extract the keys there
-//		XXX;
-//		throw new UnsupportedOperationException("Not yet implemented (was not in use when first introduced)");
-//		MarkerMetadata markerMetadata = Matrix.getSample(markerKey);
-//		dataSet.getMarkerMetadatas().put(markerKey, markerMetadata);
-	}
-
-	@Override
 	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
 
 		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
