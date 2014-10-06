@@ -182,8 +182,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				Dialogs.showInfoDialogue(Text.Study.infoSampleInfo);
-				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, dialogParent);
+				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, Text.Study.infoSampleInfo, dialogParent);
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
 					ProcessTab.getSingleton().showTab();
 

@@ -454,12 +454,13 @@ public class Dialogs {
 		return resultFile;
 	}
 
-	public static File selectFilesAndDirectoriesDialog(int okOption, final Component dialogParent) {
+	public static File selectFilesAndDirectoriesDialog(int okOption, final String title, final Component dialogParent) {
 
 		File resultFile = null;
 		// Create a file chooser
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.setDialogTitle(title);
 
 		// Handle open button action.
 		if (okOption == JOptionPane.OK_OPTION) {
