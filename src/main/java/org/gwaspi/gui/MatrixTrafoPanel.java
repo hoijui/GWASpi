@@ -429,14 +429,14 @@ public class MatrixTrafoPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private String checkNewMatrixData() {
 
-		String study_name = txt_NewMatrixName.getText().trim();
-		if (!study_name.isEmpty()) {
+		String newMatrixName = txt_NewMatrixName.getText().trim();
+		if (!newMatrixName.isEmpty()) {
 			lbl_NewMatrixName.setForeground(Color.black);
 		} else {
 			lbl_NewMatrixName.setForeground(Color.red);
 		}
 
-		return study_name;
+		return newMatrixName;
 	}
 	//</editor-fold>
 }
