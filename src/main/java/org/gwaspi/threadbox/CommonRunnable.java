@@ -53,7 +53,7 @@ public abstract class CommonRunnable implements Runnable {
 	protected abstract void runInternal(SwingWorkerItem thisSwi) throws Exception;
 
 	@Override
-	public void run() {
+	public final void run() {
 
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
