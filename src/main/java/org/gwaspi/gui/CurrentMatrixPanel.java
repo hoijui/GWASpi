@@ -112,16 +112,14 @@ public class CurrentMatrixPanel extends JPanel {
 		JButton btn_Operation1_3 = new JButton();
 		JButton btn_Operation1_4 = new JButton();
 		JButton btn_Operation1_5 = new JButton();
-		JButton btn_Operation1_6 = new JButton();
 		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
 		btn_Operation1_1.setMargin(bigButtonInsets);
 		btn_Operation1_2.setMargin(bigButtonInsets);
 		btn_Operation1_3.setMargin(bigButtonInsets);
 		btn_Operation1_4.setMargin(bigButtonInsets);
 		btn_Operation1_5.setMargin(bigButtonInsets);
-		btn_Operation1_6.setMargin(bigButtonInsets);
 		JPanel pnl_matrixOperations = GWASpiExplorerPanel.createButtonsPanel(
-				new JComponent[] {btn_Operation1_1, btn_Operation1_2, btn_Operation1_3, btn_Operation1_4, btn_Operation1_5, btn_Operation1_6},
+				new JComponent[] {btn_Operation1_1, btn_Operation1_2, btn_Operation1_3, btn_Operation1_4, btn_Operation1_5},
 				new JComponent[] {});
 		pnl_matrixOperations.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.newOperation)); // NOI18N
 
@@ -150,7 +148,6 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
 		btn_Operation1_4.setAction(new ExportMatrixAction(matrixMetadata));
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
-		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
 		btn_Back.setAction(new LoadDataPanel.BackAction(matrix.getStudyKey()));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 	}
@@ -291,25 +288,6 @@ public class CurrentMatrixPanel extends JPanel {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
-		}
-	}
-
-	private static class TranslateMatricesAction extends AbstractAction {
-
-		private final MatrixKey matrix;
-
-		TranslateMatricesAction(MatrixKey matrix) {
-
-			this.matrix = matrix;
-			putValue(NAME, Text.Trafo.translateMatrix);
-
-			putValue(SHORT_DESCRIPTION, "Not yet implemented!");
-			setEnabled(false);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			throw new UnsupportedOperationException("Not yet implemented!"); // TODO implement!
 		}
 	}
 
