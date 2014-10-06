@@ -193,7 +193,6 @@ public class CurrentStudyPanel extends JPanel {
 				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
 				log.error(Text.All.warnLoadError, ex);
 				log.error(Text.All.warnWrongFormat);
-				//Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 	}
