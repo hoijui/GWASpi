@@ -183,12 +183,17 @@ public class CurrentStudyPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, Text.Study.infoSampleInfo, dialogParent);
-				if (sampleInfoFile != null && sampleInfoFile.exists()) {
-					ProcessTab.getSingleton().showTab();
-
-					MultiOperations.updateSampleInfo(study.getId(),
-							sampleInfoFile);
+				if (sampleInfoFile == null) {
+					// the user chose "Cancel"
+					return;
 				}
+				if (!sampleInfoFile.exists()) {
+					throw new RuntimeException("Chosen sample-info file does not exist: "
+							+ sampleInfoFile.getAbsolutePath());
+				}
+
+				ProcessTab.getSingleton().showTab();
+				MultiOperations.updateSampleInfo(study.getId(), sampleInfoFile);
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
 				log.error(Text.All.warnLoadError, ex);
