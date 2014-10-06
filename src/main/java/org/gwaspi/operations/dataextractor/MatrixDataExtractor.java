@@ -524,6 +524,7 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 
 		SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
 		int sampleWrIndex = 0;
+		dataSetDestination.startLoadingAlleles(true);
 		for (int rdSampleIndex : pickedSamplesOrigIndices) {
 			GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
 			List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(pickedMarkersOrigIndices.size());
@@ -534,6 +535,7 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 			dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
 			sampleWrIndex++;
 		}
+		dataSetDestination.finishedLoadingAlleles();
 
 		dataSetDestination.done();
 
