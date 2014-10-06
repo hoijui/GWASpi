@@ -55,12 +55,12 @@ public abstract class CommonRunnable implements Runnable {
 	@Override
 	public void run() {
 
-		org.gwaspi.global.Utils.sysoutStart(getDetailedName());
-		org.gwaspi.global.Config.initPreferences(false, null, null);
-
-		SwingWorkerItem thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
-
 		try {
+			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
+			org.gwaspi.global.Config.initPreferences(false, null, null);
+
+			SwingWorkerItem thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
+
 			runInternal(thisSwi);
 
 			// FINISH OFF
