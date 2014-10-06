@@ -88,7 +88,7 @@ public abstract class CommonRunnable implements Runnable {
 				MultiOperations.updateTree();
 				MultiOperations.updateProcessOverviewStartNext();
 			} catch (Exception ex1) {
-				getLog().warn(null, ex1);
+				getLog().warn("Failed flagging items with state 'error'", ex1);
 			}
 		}
 	}
