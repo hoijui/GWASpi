@@ -301,9 +301,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
 
 		GenotypeTranslator genotypeTranslator;
-		if (gtEncoding.equals(GenotypeEncoding.AB0)
-				|| gtEncoding.equals(GenotypeEncoding.O12))
-		{
+		if (gtEncoding.equals(GenotypeEncoding.AB0) || gtEncoding.equals(GenotypeEncoding.O12)) {
 			genotypeTranslator = new AB12ToACGTGenotypeTranslator(dataSetSource);
 		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 			genotypeTranslator = new One234ToACGTGenotypeTranslator(dataSetSource);
