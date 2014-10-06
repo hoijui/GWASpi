@@ -21,10 +21,14 @@ package org.gwaspi.threadbox;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import org.gwaspi.progress.AbstractProgressSource;
 import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SwingWorkerItem extends AbstractProgressSource {
+public class SwingWorkerItem {
+
+	private final Logger log = LoggerFactory.getLogger(SwingWorkerItem.class);
 
 	private final CommonRunnable task;
 	private final String launchTime;
@@ -56,8 +60,6 @@ public class SwingWorkerItem extends AbstractProgressSource {
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
 	{
-		super(task.getProgressSource().getInfo(), task.getProgressSource().getNumIntervals());
-
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.task = task;
 		this.queueState = QueueState.QUEUED;
@@ -122,7 +124,17 @@ public class SwingWorkerItem extends AbstractProgressSource {
 	public void setQueueState(QueueState queueState) {
 
 		this.queueState = queueState;
-		fireStatusChanged(SwingWorkerItem.toProcessStatus(queueState));
+
+		if (task.getProgressSource() instanceof ProgressHandler) {
+			final ProgressHandler progressHandler = (ProgressHandler) task.getProgressSource(); // HACK
+			progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
+		} else {
+			log.warn("Non-serious program code problem detected: {}\nMore Info: '{}' '{}' '{}'",
+					"We can not report failure of the process to the progress API.",
+					task.getName(),
+					task.getDetailedName(),
+					task.getProgressSource().getClass().getCanonicalName());
+		}
 	}
 
 	public void setEndTime(String endTime) {

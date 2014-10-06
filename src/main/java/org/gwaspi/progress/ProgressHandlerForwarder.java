@@ -25,7 +25,7 @@ public class ProgressHandlerForwarder<ST> extends ProgressForwarder<ST>
 	public ProgressHandlerForwarder(ProcessInfo processInfo) {
 		super(processInfo);
 
-		this.innerProgressHandler = null;
+		this.innerProgressHandler = new NullProgressHandler<ST>(processInfo);
 	}
 
 	public void setInnerProgressHandler(ProgressHandler<ST> innerProgressHandler) {

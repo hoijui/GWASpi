@@ -24,7 +24,7 @@ public class ProgressForwarder<ST> extends AbstractProgressSource<ST> implements
 	public ProgressForwarder(ProcessInfo processInfo) {
 		super(processInfo, -1);
 
-		this.progressSource = null;
+		this.progressSource = new NullProgressHandler<ST>(processInfo);
 	}
 
 	public void setInnerProgressSource(ProgressSource<ST> progressSource) {

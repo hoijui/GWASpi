@@ -83,7 +83,7 @@ public class SwingWorkerItemList {
 			swi.setQueueState(QueueState.PROCESSING);
 		}
 
-		final TaskEvent taskEvent = new TaskEvent(swi.getTask(), swi);
+		final TaskEvent taskEvent = new TaskEvent(swi.getTask(), swi.getTask().getProgressSource());
 		fireTaskRegistered(taskEvent);
 	}
 
