@@ -463,7 +463,6 @@ public class Dialogs {
 
 		// Handle open button action.
 		if (okOption == JOptionPane.OK_OPTION) {
-
 			// getting the last opened dir
 			try {
 				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
@@ -485,6 +484,7 @@ public class Dialogs {
 				}
 			}
 		}
+
 		return resultFile;
 	}
 	// </editor-fold>
