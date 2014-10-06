@@ -78,11 +78,12 @@ public abstract class CommonRunnable implements Runnable {
 
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
 			MultiOperations.updateProcessOverviewStartNext();
-		} catch (OutOfMemoryError ex) {
-			getLog().error(Text.App.outOfMemoryError, ex);
-		} catch (Exception ex) {
+		} catch (Throwable thr) {
 			MultiOperations.printError(getName());
-			getLog().error("Failed performing " + getName(), ex);
+			if (thr instanceof OutOfMemoryError) {
+				getLog().error(Text.App.outOfMemoryError);
+			}
+			getLog().error("Failed performing " + getName(), thr);
 			try {
 				SwingWorkerItemList.flagCurrentItemError(timeStamp);
 				MultiOperations.updateTree();
