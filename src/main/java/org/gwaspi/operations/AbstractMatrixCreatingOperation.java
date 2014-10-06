@@ -30,6 +30,7 @@ public abstract class AbstractMatrixCreatingOperation<PT extends OperationParams
 	private ProgressHandler operationPH;
 
 	public AbstractMatrixCreatingOperation(DataSetDestination dataSetDestination) {
+		super(dataSetDestination);
 
 		this.operationPH = null;
 	}
