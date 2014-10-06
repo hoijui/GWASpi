@@ -187,7 +187,8 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 			this.include = include;
 		}
 
-		abstract Map<Integer, MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException;
+		abstract List<Integer> getInputOrigIndices(DataSetSource dataSetSource) throws IOException;
+		abstract List<MarkerMetadata> getInputEntries(DataSetSource dataSetSource) throws IOException;
 		abstract List<V> getInputValues(DataSetSource dataSetSource) throws IOException;
 
 		@Override
@@ -197,21 +198,24 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 			List<Integer> pickedOrigIndices = new LinkedList<Integer>();
 
 //			int originalIndex = 0;
-			Iterator<Map.Entry<Integer, MarkerKey>> keysIt = getInputKeys(dataSetSource).entrySet().iterator();
+			final Iterator<Integer> origIndicesIt = getInputOrigIndices(dataSetSource).iterator();
+			final Iterator<MarkerMetadata> entriesIt = getInputEntries(dataSetSource).iterator();
 			if (include) {
 				for (V value : getInputValues(dataSetSource)) {
-					final Map.Entry<Integer, MarkerKey> keyEntry = keysIt.next();
+					final Integer markerOrigIndex = origIndicesIt.next();
+					final MarkerMetadata markerMetadata = entriesIt.next();
 					if (criteria.contains(typeConverter.extract(value))) {
-						pickedOrigIndices.add(keyEntry.getKey());
-						dataSetDestination.addMarkerKey(keyEntry.getValue());
+						pickedOrigIndices.add(markerOrigIndex);
+						dataSetDestination.addMarkerMetadata(markerMetadata);
 					}
 				}
 			} else {
 				for (V value : getInputValues(dataSetSource)) {
-					final Map.Entry<Integer, MarkerKey> keyEntry = keysIt.next();
+					final Integer markerOrigIndex = origIndicesIt.next();
+					final MarkerMetadata markerMetadata = entriesIt.next();
 					if (!criteria.contains(typeConverter.extract(value))) {
-						pickedOrigIndices.add(keyEntry.getKey());
-						dataSetDestination.addMarkerKey(keyEntry.getValue());
+						pickedOrigIndices.add(markerOrigIndex);
+						dataSetDestination.addMarkerMetadata(markerMetadata);
 					}
 				}
 			}
@@ -227,8 +231,13 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		}
 
 		@Override
-		public Map<Integer, MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
-			return dataSetSource.getMarkersKeysSource().getIndicesMap();
+		public List<Integer> getInputOrigIndices(DataSetSource dataSetSource) throws IOException {
+			return dataSetSource.getMarkersKeysSource().getIndices();
+		}
+
+		@Override
+		public List<MarkerMetadata> getInputEntries(DataSetSource dataSetSource) throws IOException {
+			return dataSetSource.getMarkersMetadatasSource();
 		}
 
 		@Override
@@ -331,20 +340,20 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 				pickedMarkersOrigIndices = variableMarkerValuePicker.pick(dataSetDestination, dataSetSource);
 			} break;
 			case MARKERS_INCLUDE_BY_ID:
-				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource.getMarkersKeysSource().getIndicesMap(), (Set<MarkerKey>) markerCriteria, true);
+				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource, (Set<MarkerKey>) markerCriteria, true);
 				break;
 			case MARKERS_EXCLUDE_BY_ID:
-				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource.getMarkersKeysSource().getIndicesMap(), (Set<MarkerKey>) markerCriteria, false);
+				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource, (Set<MarkerKey>) markerCriteria, false);
 				break;
 			case ALL_MARKERS:
 			default:
 				// Get all markers
 				pickedMarkersOrigIndices = new ArrayList<Integer>(dataSetSource.getNumMarkers());
-				for (Map.Entry<Integer, MarkerKey> origIndexAndKey
-						: dataSetSource.getMarkersKeysSource().getIndicesMap().entrySet())
-				{
-					dataSetDestination.addMarkerKey(origIndexAndKey.getValue());
-					pickedMarkersOrigIndices.add(origIndexAndKey.getKey());
+				final Iterator<Integer> origIndicesIt = dataSetSource.getMarkersKeysSource().getIndices().iterator();
+				for (MarkerMetadata markerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+					final Integer origIndex = origIndicesIt.next();
+					dataSetDestination.addMarkerMetadata(markerMetadata);
+					pickedMarkersOrigIndices.add(origIndex);
 				}
 		}
 		dataSetDestination.finishedLoadingMarkerMetadatas();
@@ -544,23 +553,27 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		return resultMatrixId;
 	}
 
-	private static <V> List<Integer> pickValidMarkerSetItemsByKey(DataSetDestination dataSetDestination, Map<Integer, MarkerKey> markerKeys, Set<MarkerKey> criteria, boolean includes) throws IOException {
+	private static <V> List<Integer> pickValidMarkerSetItemsByKey(DataSetDestination dataSetDestination, DataSetSource dataSetSource, Set<MarkerKey> criteria, boolean includes) throws IOException {
 
 		final List<Integer> pickedOrigIndices = new LinkedList<Integer>();
 
+		final Map<Integer, MarkerKey> markerKeys = dataSetSource.getMarkersKeysSource().getIndicesMap();
+		final Iterator<MarkerMetadata> markerInfosIt = dataSetSource.getMarkersMetadatasSource().iterator();
 //		int markerIndex = 0;
 		if (includes) {
 			for (Map.Entry<Integer, MarkerKey> keyEntry : markerKeys.entrySet()) {
+				final MarkerMetadata markerMetadata = markerInfosIt.next();
 				if (criteria.contains(keyEntry.getValue())) {
 					pickedOrigIndices.add(keyEntry.getKey());
-					dataSetDestination.addMarkerKey(keyEntry.getValue());
+					dataSetDestination.addMarkerMetadata(markerMetadata);
 				}
 			}
 		} else {
 			for (Map.Entry<Integer, MarkerKey> keyEntry : markerKeys.entrySet()) {
+				final MarkerMetadata markerMetadata = markerInfosIt.next();
 				if (!criteria.contains(keyEntry.getValue())) {
 					pickedOrigIndices.add(keyEntry.getKey());
-					dataSetDestination.addMarkerKey(keyEntry.getValue());
+					dataSetDestination.addMarkerMetadata(markerMetadata);
 				}
 			}
 		}
