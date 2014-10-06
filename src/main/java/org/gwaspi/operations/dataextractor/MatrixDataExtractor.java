@@ -37,6 +37,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
@@ -531,18 +532,34 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		// GENOTYPES WRITER
 		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into the dataSetDestination.
 
-		SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
-		int sampleWrIndex = 0;
-		dataSetDestination.startLoadingAlleles(true);
-		for (int rdSampleIndex : pickedSamplesOrigIndices) {
-			GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
-			List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(pickedMarkersOrigIndices.size());
-			for (int rdMarkerIndex : pickedMarkersOrigIndices) {
-				wrSampleGenotypes.add(sampleGenotypes.get(rdMarkerIndex));
-			}
+		final boolean transcribeGTsPerSamples = true; // HACK This choice should be made smarter.. depending on the underlying data-storage structure of the source, if possible
+		dataSetDestination.startLoadingAlleles(transcribeGTsPerSamples);
+		if (transcribeGTsPerSamples) {
+			final SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
+			int sampleWrIndex = 0;
+			for (int rdSampleIndex : pickedSamplesOrigIndices) {
+				final GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
+				List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(pickedMarkersOrigIndices.size());
+				for (int rdMarkerIndex : pickedMarkersOrigIndices) {
+					wrSampleGenotypes.add(sampleGenotypes.get(rdMarkerIndex));
+				}
 
-			dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
-			sampleWrIndex++;
+				dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
+				sampleWrIndex++;
+			}
+		} else {
+			final MarkersGenotypesSource markersGenotypesSource = dataSetSource.getMarkersGenotypesSource();
+			int markerWrIndex = 0;
+			for (int rdMarkerIndex : pickedMarkersOrigIndices) {
+				final GenotypesList markerGenotypes = markersGenotypesSource.get(rdMarkerIndex);
+				List<byte[]> wrMarkerGenotypes = new ArrayList<byte[]>(pickedSamplesOrigIndices.size());
+				for (int rdSampleIndex : pickedSamplesOrigIndices) {
+					wrMarkerGenotypes.add(markerGenotypes.get(rdSampleIndex));
+				}
+
+				dataSetDestination.addMarkerGTAlleles(markerWrIndex, wrMarkerGenotypes);
+				markerWrIndex++;
+			}
 		}
 		dataSetDestination.finishedLoadingAlleles();
 
