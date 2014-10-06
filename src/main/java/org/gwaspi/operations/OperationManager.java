@@ -92,7 +92,10 @@ public class OperationManager {
 			throw new IllegalStateException("Operation factory type registered more then once: " + type.getCanonicalName());
 		}
 		operationTypeToFactory.put(type, operationFactory);
-		oldToNewType.put(operationFactory.getTypeInfo().getType(), type);
+		final OPType oldType = operationFactory.getTypeInfo().getType();
+		if (oldType != null) { // HACK we need to do this becasue matrix creating operations don't have an old type!
+			oldToNewType.put(oldType, type);
+		}
 		operationTypeInfoToOperationType.put(operationFactory.getTypeInfo(), type);
 	}
 
