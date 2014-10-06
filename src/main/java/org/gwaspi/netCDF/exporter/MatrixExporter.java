@@ -87,7 +87,7 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 	@Override
 	public ProgressSource getProgressSource() throws IOException {
 
-		return new NullProgressHandler(new DefaultProcessInfo("<TODO implement ME!>", null)); // FIXME actually implement a read progress handler/tracker for this class!
+		return new NullProgressHandler(new DefaultProcessInfo("<TODO implement ME!>", null)); // FIXME actually implement a read progress handler/tracker for this class! This probably has to be delegated to the formatter classes!
 	}
 
 	@Override
