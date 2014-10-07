@@ -35,8 +35,7 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 				(startState == null)
 				|| (startState < 0)
 				|| (endState == null)
-				|| (endState < 0)
-				|| (startState.equals(endState)))
+				|| (endState < 0))
 		{
 			// we can not calculate a #intervals that makes sense
 			return null;
@@ -78,12 +77,12 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 	protected void fireProgressHappened(Integer currentState) {
 
 		final Double completionFraction;
-		if (endState.equals(startState)) {
+		if (getNumIntervals() == null) {
+			completionFraction = 0.5;
+		} else if (endState.equals(startState)) {
 			// We have to handle this case (only one interval) separately,
 			// to prevent div-by-0 -> NaN.
 			completionFraction = currentState.equals(endState) ? 1.0 : 0.0;
-		} else if (getNumIntervals() == null) {
-			completionFraction = 0.5;
 		} else {
 			completionFraction = (double) (Math.abs(currentState - startState) + 1) / getNumIntervals();
 		}
