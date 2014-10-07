@@ -143,8 +143,8 @@ public class CombiTestMatrixOperation
 			calculateOriginalSpaceWeightsPH
 					= new IntegerProgressHandler(
 							calculateOriginalSpaceWeightsPI,
-							0, // start state, first marker
-							dEncoded - 1); // end state, last marker
+							0, // start state
+							dEncoded - 1); // end state. this value is too high and will be adjusted later on!
 
 //			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsPI), 2000);
 //			calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
@@ -740,6 +740,9 @@ public class CombiTestMatrixOperation
 		// but it does not hurt to make things clear.
 		Arrays.fill(weights, 0.0);
 
+		if (calculateOriginalSpaceWeightsPH instanceof IntegerProgressHandler) { // HACK
+			((IntegerProgressHandler) calculateOriginalSpaceWeightsPH).setEndState(xs.size() - 1);
+		}
 		calculateOriginalSpaceWeightsPH.setNewStatus(ProcessStatus.RUNNING);
 		for (int ci = 0; ci < xs.size(); ci++) {
 			final Float[][] featuresChunk = xs.get(ci);
