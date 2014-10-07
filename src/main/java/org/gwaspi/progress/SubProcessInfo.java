@@ -30,10 +30,6 @@ public class SubProcessInfo extends DefaultProcessInfo {
 		this.superProcessInfo = superProcessInfo;
 	}
 
-	public SubProcessInfo(final ProcessInfo superProcessInfo) {
-		this(superProcessInfo, "generic process", null);
-	}
-
 	public ProcessInfo getSuperProcessInfo() {
 		return superProcessInfo;
 	}
