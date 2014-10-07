@@ -33,4 +33,9 @@ public class SubProcessInfo extends DefaultProcessInfo {
 	public ProcessInfo getSuperProcessInfo() {
 		return superProcessInfo;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " (child of '" + getSuperProcessInfo().toString() + ")";
+	}
 }

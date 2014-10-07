@@ -44,4 +44,11 @@ public class DefaultProcessInfo implements ProcessInfo {
 	public String getDescription() {
 		return description;
 	}
+
+	@Override
+	public String toString() {
+		return "process '" + getShortName() + "'"
+				+ (((getDescription() != null) && !getDescription().isEmpty())
+						? " - '" + getDescription() + "'" : "");
+	}
 }
