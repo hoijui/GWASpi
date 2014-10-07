@@ -21,6 +21,7 @@ import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
+import org.gwaspi.progress.UnknownIntervalsProgressHandler;
 
 public class DataSetDestinationProgressHandler extends SuperProgressSource {
 
@@ -34,12 +35,12 @@ public class DataSetDestinationProgressHandler extends SuperProgressSource {
 //		super(processInfo, createSubProgressSourcesAndWeights(processInfo));
 		super(processInfo);
 
-		sampleInfosPH = new IntegerProgressHandler(
-				new SubProcessInfo(processInfo, "SampleInfos", "Storing sample infos"), -1, -1);
-		markerInfosPH = new IntegerProgressHandler(
-				new SubProcessInfo(processInfo, "MarkerInfos", "Storing marker infos"), -1, -1);
-		chromosomeInfosPH = new IntegerProgressHandler(
-				new SubProcessInfo(processInfo, "ChromosomeInfos", "Storing chromosome infos"), -1, -1);
+		sampleInfosPH = new UnknownIntervalsProgressHandler(
+				new SubProcessInfo(processInfo, "SampleInfos", "Storing sample infos"));
+		markerInfosPH = new UnknownIntervalsProgressHandler(
+				new SubProcessInfo(processInfo, "MarkerInfos", "Storing marker infos"));
+		chromosomeInfosPH = new UnknownIntervalsProgressHandler(
+				new SubProcessInfo(processInfo, "ChromosomeInfos", "Storing chromosome infos"));
 		genotypesPH = new IntegerProgressHandler(
 				new SubProcessInfo(processInfo, "Genotypes", "Storing genotypes"), -1, -1);
 
