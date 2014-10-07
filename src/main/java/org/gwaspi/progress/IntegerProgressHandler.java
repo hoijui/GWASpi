@@ -73,9 +73,6 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 	public void setProgress(Integer currentState) {
 
 		fireProgressHappened(currentState);
-		if (currentState.equals(endState)) {
-			fireStatusChanged(ProcessStatus.COMPLEETED);
-		}
 	}
 
 	protected void fireProgressHappened(Integer currentState) {
