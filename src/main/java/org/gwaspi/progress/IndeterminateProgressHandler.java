@@ -35,10 +35,13 @@ public class IndeterminateProgressHandler extends AbstractProgressHandler<Object
 
 	@Override
 	protected void fireStatusChanged(final ProcessStatusChangeEvent evt) {
-		super.fireStatusChanged(evt);
 
-		if (evt.getNewStatus() == ProcessStatus.FINALIZING) {
-			fireProgressHappened(1.0, 0);
+		if (evt.getNewStatus().equals(ProcessStatus.FINALIZING)
+				|| evt.getNewStatus().equals(ProcessStatus.COMPLEETED))
+		{
+			fireProgressHappened(1.0, null);
 		}
+
+		super.fireStatusChanged(evt);
 	}
 }

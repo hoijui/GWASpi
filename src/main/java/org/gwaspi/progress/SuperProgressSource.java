@@ -187,6 +187,18 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 	}
 
 	@Override
+	protected void fireStatusChanged(final ProcessStatusChangeEvent evt) {
+
+		if (evt.getNewStatus().equals(ProcessStatus.FINALIZING)
+				|| evt.getNewStatus().equals(ProcessStatus.COMPLEETED))
+		{
+			fireProgressHappened(1.0, 1.0);
+		}
+
+		super.fireStatusChanged(evt);
+	}
+
+	@Override
 	public void setProgress(Double currentState) {
 		throw new UnsupportedOperationException("progress should never be set directly on the super process, but only on its child pocesses");
 	}
