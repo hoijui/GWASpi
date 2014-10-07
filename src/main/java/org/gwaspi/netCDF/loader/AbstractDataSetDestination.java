@@ -45,15 +45,11 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	private final DataSet dataSet;
 	private DataSetDestinationProgressHandler progressHandler;
-	private int addedSampleInfos;
-	private int addedMarkerInfos;
 
 	protected AbstractDataSetDestination() {
 
 		this.dataSet = new DataSet();
 		this.progressHandler = null;
-		this.addedSampleInfos = 0;
-		this.addedMarkerInfos = 0;
 	}
 
 	/**
@@ -106,8 +102,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 		Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
 		sampleInfos.add(sampleInfo);
-		progressHandler.getSampleInfosProgressHandler().setProgress(addedSampleInfos);
-		addedSampleInfos++;
+		progressHandler.getSampleInfosProgressHandler().setProgress(sampleInfos.size() - 1);
 
 		if ((sampleInfos.size() % 100) == 0) {
 			logParsedSampleInfos();
@@ -138,8 +133,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
 
 		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
-		progressHandler.getMarkerInfosProgressHandler().setProgress(addedMarkerInfos);
-		addedMarkerInfos++;
+		progressHandler.getMarkerInfosProgressHandler().setProgress(dataSet.getMarkerMetadatas().size() - 1);
 	}
 
 	@Override
