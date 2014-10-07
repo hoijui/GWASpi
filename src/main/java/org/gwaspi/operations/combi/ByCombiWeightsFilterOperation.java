@@ -33,7 +33,7 @@ import org.gwaspi.operations.filter.AbstractFilterOperation;
 import org.gwaspi.operations.filter.SimpleFilterOperationMetadataFactory;
 import org.gwaspi.operations.filter.SimpleOperationFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
-import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.IndeterminateProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
@@ -93,10 +93,15 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 	protected ProgressSource getFilteringProgressSource() throws IOException {
 
 		if (filterPH == null) {
-			final int numItems = getNumItems();
-			filterPH = new IntegerProgressHandler(
-					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
-					0, numItems - 1);
+			final ProcessInfo filterPI = new SubProcessInfo(
+					getProcessInfo(),
+					getParams().getName() + " filtering",
+					null);
+//			final int numItems = getNumItems();
+//			filterPH = new IntegerProgressHandler(filterPI, 0, numItems - 1);
+			// NOTE We use this instead of the above, because filtering is so fast,
+			//   that possible per part UI updates would slow it down by huge factors.
+			filterPH = new IndeterminateProgressHandler(filterPI);
 		}
 
 		return filterPH;
@@ -149,8 +154,10 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			//   a percentual performance penalty for this leight-weight operation.
 //			filterPH.setProgress(mi);
 		}
-		// NOTE Here we report 100% compleetion (see also the note above)
-		filterPH.setProgress(parentMarkersOrigIndicesAndKeys.size() - 1);
+		// NOTE Here we would report 100% compleetion (see also the note above),
+		//   but this would create insufficient completion-fraction values
+		//   in the parent SuperProgressSource.
+//		filterPH.setProgress(0);
 		filterPH.setNewStatus(ProcessStatus.FINALIZING);
 
 		// we use all samples from the parent
