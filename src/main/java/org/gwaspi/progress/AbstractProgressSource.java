@@ -112,6 +112,9 @@ public abstract class AbstractProgressSource<ST> implements ProgressSource<ST> {
 
 	protected void fireStatusChanged(ProcessStatus newStatus) {
 
+		if (currentStatus == newStatus) {
+			return;
+		}
 		fireStatusChanged(new ProcessStatusChangeEvent(this, newStatus));
 	}
 
