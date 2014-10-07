@@ -88,7 +88,7 @@ public class IntegerProgressHandler extends AbstractProgressHandler<Integer> {
 		} else if (getNumIntervals() == null) {
 			completionFraction = 0.5;
 		} else {
-			completionFraction = (double) Math.abs((double) (currentState - startState) / getNumIntervals());
+			completionFraction = (double) (Math.abs(currentState - startState) + 1) / getNumIntervals();
 		}
 		fireProgressHappened(completionFraction, currentState);
 	}
