@@ -242,7 +242,7 @@ public class StudyManagementPanel extends JPanel {
 				.addContainerGap())
 				.addGroup(GroupLayout.Alignment.TRAILING, pnl_StudyDescLayout.createSequentialGroup()
 				.addContainerGap(605, Short.MAX_VALUE)
-				.addComponent(btn_AddStudy, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_AddStudy)
 				.addGap(14, 14, 14)));
 		pnl_StudyDescLayout.setVerticalGroup(
 				pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
