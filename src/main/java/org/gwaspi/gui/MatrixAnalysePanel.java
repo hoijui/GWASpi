@@ -86,7 +86,6 @@ public class MatrixAnalysePanel extends JPanel {
 
 	public MatrixAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
-//		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 		DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
 		final DataSetKey parent;
