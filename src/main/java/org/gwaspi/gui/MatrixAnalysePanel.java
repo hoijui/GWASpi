@@ -143,28 +143,28 @@ public class MatrixAnalysePanel extends JPanel {
 		JPanel pnl_MatrixTableButtons = GWASpiExplorerPanel.createButtonsPanel(btn_DeleteOperation);
 		pnl_operationsTable.add(pnl_MatrixTableButtons, BorderLayout.SOUTH);
 
-		JButton btn_1_1 = new JButton();
-		JButton btn_1_2 = new JButton();
-		JButton btn_1_3 = new JButton();
-		JButton btn_1_4 = new JButton();
-		JButton btn_1_5 = new JButton();
-		JButton btn_1_6 = new JButton();
+		JButton btn_gwasInOneGoAction = new JButton();
+		JButton btn_genFreqAndHW = new JButton();
+		JButton btn_allelicTest = new JButton();
+		JButton btn_genotypicTest = new JButton();
+		JButton btn_trendTest = new JButton();
+		JButton btn_combiTest = new JButton();
 		final Insets bigButtonInsets = new Insets(20, 30, 20, 30);
-		btn_1_1.setMargin(bigButtonInsets);
-		btn_1_2.setMargin(bigButtonInsets);
-		btn_1_3.setMargin(bigButtonInsets);
-		btn_1_4.setMargin(bigButtonInsets);
-		btn_1_5.setMargin(bigButtonInsets);
-		btn_1_6.setMargin(bigButtonInsets);
+		btn_gwasInOneGoAction.setMargin(bigButtonInsets);
+		btn_genFreqAndHW.setMargin(bigButtonInsets);
+		btn_allelicTest.setMargin(bigButtonInsets);
+		btn_genotypicTest.setMargin(bigButtonInsets);
+		btn_trendTest.setMargin(bigButtonInsets);
+		btn_combiTest.setMargin(bigButtonInsets);
 		JPanel pnl_NewOperation = new JPanel();
 		pnl_NewOperation.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.newOperation));
 		pnl_NewOperation.setLayout(new GridLayout(0, 3, 18, 18));
-		pnl_NewOperation.add(btn_1_1);
-		pnl_NewOperation.add(btn_1_3);
-		pnl_NewOperation.add(btn_1_5);
-		pnl_NewOperation.add(btn_1_2);
-		pnl_NewOperation.add(btn_1_4);
-		pnl_NewOperation.add(btn_1_6);
+		pnl_NewOperation.add(btn_gwasInOneGoAction);
+		pnl_NewOperation.add(btn_allelicTest);
+		pnl_NewOperation.add(btn_trendTest);
+		pnl_NewOperation.add(btn_genFreqAndHW);
+		pnl_NewOperation.add(btn_genotypicTest);
+		pnl_NewOperation.add(btn_combiTest);
 
 		JButton btn_Help = new JButton();
 		JButton btn_Back = new JButton();
@@ -184,14 +184,14 @@ public class MatrixAnalysePanel extends JPanel {
 		this.add(pnl_Bottom, BorderLayout.SOUTH);
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_operationsTable));
-		btn_1_1.setAction(gwasInOneGoAction);
+		btn_gwasInOneGoAction.setAction(gwasInOneGoAction);
 		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams, this);
 		genFreqAndHWAction.setEnabled(currentOP == null);
-		btn_1_2.setAction(genFreqAndHWAction);
-		btn_1_3.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
-		btn_1_4.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
-		btn_1_5.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST));
-		btn_1_6.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
+		btn_genFreqAndHW.setAction(genFreqAndHWAction);
+		btn_allelicTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
+		btn_genotypicTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
+		btn_trendTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST));
+		btn_combiTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
 		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
 	}
