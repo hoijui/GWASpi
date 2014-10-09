@@ -82,11 +82,14 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
+
+	private final DataSetKey observedElementKey;
 	private final OperationMetadata currentOP;
 
 	public MatrixAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
-		DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
+		this.observedElementKey = observedElementKey;
+		final DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
 		final DataSetKey parent;
 		if (observedElementKey.isOperation()) {
@@ -204,16 +207,16 @@ public class MatrixAnalysePanel extends JPanel {
 			CENSUS_TYPES = Collections.unmodifiableList(tmpCensusTypes);
 		}
 
-		private final DataSetKey parentKey;
+		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
 		private final OPType testType;
 		private final String testName;
 		private final Component dialogParent;
 
-		AssociationTestsAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
+		AssociationTestsAction(final DataSetKey observedElementKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
 
-			this.parentKey = parentKey;
+			this.observedElementKey = observedElementKey;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
 			this.testType = testType;
@@ -224,7 +227,7 @@ public class MatrixAnalysePanel extends JPanel {
 			putValue(NAME, testNameHtml);
 		}
 
-		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey parentKey) throws IOException {
+		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey observedElementKey) throws IOException {
 
 			OperationKey censusOpKey = null;
 
@@ -232,7 +235,7 @@ public class MatrixAnalysePanel extends JPanel {
 				censusOpKey = OperationKey.valueOf(currentOP);
 			} else {
 				// REQUEST WHICH CENSUS TO USE
-				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentKey, CENSUS_TYPES, Text.Operation.GTFreqAndHW);
+				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(observedElementKey, CENSUS_TYPES, Text.Operation.GTFreqAndHW);
 				if (markerCensusOP != null) {
 					censusOpKey = OperationKey.valueOf(markerCensusOP);
 				}
@@ -245,7 +248,7 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentKey);
+				OperationKey censusOPKey = evaluateCensusOPId(currentOP, observedElementKey);
 				if (censusOPKey == null) {
 					// the user chose to abort the operation
 					return;
@@ -253,7 +256,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 				final Window windowAncestor = SwingUtilities.getWindowAncestor(dialogParent);
 				windowAncestor.setCursor(CursorUtils.WAIT_CURSOR);
-				Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(parentKey);
+				Set<Affection> affectionStates = SamplesParserManager.collectAffectionStates(observedElementKey);
 				windowAncestor.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(Affection.UNAFFECTED)
@@ -267,7 +270,7 @@ public class MatrixAnalysePanel extends JPanel {
 						necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
 						necessaryOPs.add(OPType.HARDY_WEINBERG);
 					}
-					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, false); // FIXME some of the operations (the QA ones at least) should be direct children!
+					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, observedElementKey, false); // FIXME some of the operations (the QA ones at least) should be direct children!
 
 					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
@@ -301,7 +304,7 @@ public class MatrixAnalysePanel extends JPanel {
 						OperationKey hwOPKey = null;
 						if (testType == OPType.COMBI_ASSOC_TEST) {
 							List<OperationMetadata> qaMarkersOffspring
-									= OperationsList.getOffspringOperationsMetadata(parentKey, OPType.MARKER_QA);
+									= OperationsList.getOffspringOperationsMetadata(observedElementKey, OPType.MARKER_QA);
 							qaMarkersOffspringKeys = new ArrayList<OperationKey>(qaMarkersOffspring.size());
 							for (OperationMetadata qaMarkersOp : qaMarkersOffspring) {
 								qaMarkersOffspringKeys.add(OperationKey.valueOf(qaMarkersOp));
@@ -369,13 +372,13 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class GenFreqAndHWAction extends AbstractAction {
 
-		private final DataSetKey parentKey;
+		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
 		private final Component dialogParent;
 
-		GenFreqAndHWAction(final DataSetKey parentKey, GWASinOneGOParams gwasParams, final Component dialogParent) {
+		GenFreqAndHWAction(final DataSetKey observedElementKey, GWASinOneGOParams gwasParams, final Component dialogParent) {
 
-			this.parentKey = parentKey;
+			this.observedElementKey = observedElementKey;
 			this.gwasParams = gwasParams;
 			this.dialogParent = dialogParent;
 			putValue(NAME, Text.Operation.htmlGTFreqAndHW);
@@ -388,23 +391,23 @@ public class MatrixAnalysePanel extends JPanel {
 				List<OPType> necessaryOPs = new ArrayList<OPType>();
 				necessaryOPs.add(OPType.SAMPLE_QA);
 				necessaryOPs.add(OPType.MARKER_QA);
-				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentKey, true);
+				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, observedElementKey, true);
 
-				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(parentKey, OPType.MARKER_QA);
+				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(observedElementKey, OPType.MARKER_QA);
 				if (qaMarkersOps.isEmpty()) {
 					Dialogs.showWarningDialogue("You must perform a Markers Quality Assurance before running a Marker Census operation!");
 					return;
 				}
 				final OperationKey qaMarkersOpKey = OperationKey.valueOf(qaMarkersOps.get(0));
 
-				List<OperationMetadata> qaSamplesOps = OperationsList.getChildrenOperationsMetadata(parentKey, OPType.SAMPLE_QA);
+				List<OperationMetadata> qaSamplesOps = OperationsList.getChildrenOperationsMetadata(observedElementKey, OPType.SAMPLE_QA);
 				if (qaMarkersOps.isEmpty()) {
 					Dialogs.showWarningDialogue("You must perform a Samples Quality Assurance before running a Marker Census operation!");
 					return;
 				}
 				final OperationKey qaSamplesOpKey = OperationKey.valueOf(qaSamplesOps.get(0));
 
-				gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(parentKey, qaSamplesOpKey, qaMarkersOpKey));
+				gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(observedElementKey, qaSamplesOpKey, qaMarkersOpKey));
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				if (choice == JOptionPane.NO_OPTION) {
@@ -445,13 +448,13 @@ public class MatrixAnalysePanel extends JPanel {
 				if (gwasParams.isProceed() && missingOPs.size() > 0) {
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(parentKey);
+					MultiOperations.doMatrixQAs(observedElementKey);
 				}
 				// </editor-fold>
 
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
-				gwasParams.getMarkerCensusOperationParams().setParent(parentKey);
+				gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
 				MultiOperations.doGTFreqDoHW(gwasParams);
 			}
 			// </editor-fold>
