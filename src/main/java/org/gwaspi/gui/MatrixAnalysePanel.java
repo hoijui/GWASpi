@@ -227,19 +227,19 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey parentKey) throws IOException {
 
-			int censusOPId = OperationKey.NULL_ID;
+			OperationKey censusOpKey = null;
 
 			if (currentOP != null) {
-				censusOPId = currentOP.getId();
+				censusOpKey = OperationKey.valueOf(currentOP);
 			} else {
 				// REQUEST WHICH CENSUS TO USE
 				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentKey, CENSUS_TYPES, Text.Operation.GTFreqAndHW);
 				if (markerCensusOP != null) {
-					censusOPId = markerCensusOP.getId();
+					censusOpKey = OperationKey.valueOf(markerCensusOP);
 				}
 			}
 
-			return new OperationKey(parentKey.getOrigin(), censusOPId);
+			return censusOpKey;
 		}
 
 		@Override
@@ -247,6 +247,10 @@ public class MatrixAnalysePanel extends JPanel {
 
 			try {
 				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentKey);
+				if (censusOPKey == null) {
+					// the user chose to abort the operation
+					return;
+				}
 
 				final Window windowAncestor = SwingUtilities.getWindowAncestor(dialogParent);
 				windowAncestor.setCursor(CursorUtils.WAIT_CURSOR);
