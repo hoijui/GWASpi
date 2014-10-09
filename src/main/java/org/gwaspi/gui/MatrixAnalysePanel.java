@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +197,14 @@ public class MatrixAnalysePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static class AssociationTestsAction extends AbstractAction {
 
+		private static final List<OPType> CENSUS_TYPES;
+		static {
+			final List<OPType> tmpCensusTypes = new ArrayList<OPType>();
+			tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+			tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+			CENSUS_TYPES = Collections.unmodifiableList(tmpCensusTypes);
+		}
+
 		private final DataSetKey parentKey;
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
@@ -224,10 +233,7 @@ public class MatrixAnalysePanel extends JPanel {
 				censusOPId = currentOP.getId();
 			} else {
 				// REQUEST WHICH CENSUS TO USE
-				List<OPType> censusTypes = new ArrayList<OPType>();
-				censusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION);
-				censusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
-				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentKey, censusTypes, Text.Operation.GTFreqAndHW);
+				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentKey, CENSUS_TYPES, Text.Operation.GTFreqAndHW);
 				if (markerCensusOP != null) {
 					censusOPId = markerCensusOP.getId();
 				}
