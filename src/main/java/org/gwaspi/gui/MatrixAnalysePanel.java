@@ -417,13 +417,13 @@ public class MatrixAnalysePanel extends JPanel {
 					if (phenotypeFile != null) {
 						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 						if (gwasParams.isProceed()) {
-							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
 					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 					if (gwasParams.isProceed()) {
-						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 					}
 				}
 
@@ -601,13 +601,13 @@ public class MatrixAnalysePanel extends JPanel {
 					if (phenotypeFile != null) {
 						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
 						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
 					gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
 					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 					}
 				}
 

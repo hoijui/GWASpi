@@ -629,7 +629,7 @@ public class LoadDataPanel extends JPanel {
 							// ASK MORE QUESTIONS
 							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo((ImportFormat) cmb_Format.getSelectedItem());
 							if (gwasParams.isProceed()) {
-								gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+								Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 							}
 						} else if (performGwasInOneGo == JOptionPane.NO_OPTION) {
 							gwasParams.setProceed(true);

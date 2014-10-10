@@ -38,6 +38,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -46,6 +47,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,6 +329,13 @@ public class Dialogs {
 				null,
 				options,
 				options[2]);
+	}
+
+	public static void askUserForGTFreqAndHWFriendlyName(GWASinOneGOParams gwasParams) {
+
+		final String friendlyName = showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+		gwasParams.setProceed(friendlyName != null);
+		gwasParams.setFriendlyName(friendlyName);
 	}
 
 	public static String showInputBox(String message) {
