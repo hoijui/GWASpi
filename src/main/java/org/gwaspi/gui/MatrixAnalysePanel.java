@@ -269,6 +269,13 @@ public class MatrixAnalysePanel extends JPanel {
 			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>";
 			putValue(NAME, testNameHtml);
 			setEnabled(validMarkerCensusOpAvailable);
+			if (!validMarkerCensusOpAvailable) {
+				// explain why the action is disabled in the tool-tip
+				putValue(SHORT_DESCRIPTION,
+						"<html>You first have to conduct a<br>"
+						+ "Genotype Frequency & Marker Census operation<br>"
+						+ "before you can run this test</html>");
+			}
 		}
 
 		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey observedElementKey) throws IOException {
