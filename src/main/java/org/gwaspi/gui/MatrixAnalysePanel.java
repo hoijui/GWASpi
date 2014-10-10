@@ -266,7 +266,7 @@ public class MatrixAnalysePanel extends JPanel {
 			this.testName = OutputTest.createTestName(testType) + " Test";
 			this.dialogParent = dialogParent;
 
-			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>";
+			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>"; // XXX This does not make sense. why would we need HTML here? text alignment should not be done through Swing, and not HTML
 			putValue(NAME, testNameHtml);
 			setEnabled(validMarkerCensusOpAvailable);
 			if (!validMarkerCensusOpAvailable) {
