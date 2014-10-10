@@ -108,7 +108,7 @@ public class JPAStudyService implements StudyService {
 			em = open();
 			study = em.find(Study.class, studyKey);
 		} catch (Exception ex) {
-			throw new IOException("Failed fetching a study by: " + studyKey, ex);
+			throw new IOException("Failed fetching a study by: " + studyKey.toRawIdString(), ex);
 		} finally {
 			close(em);
 		}
@@ -198,14 +198,14 @@ public class JPAStudyService implements StudyService {
 			begin(em);
 			study = em.find(Study.class, studyKey);
 			if (study == null) {
-				throw new IllegalArgumentException("No study found with this key: " + studyKey);
+				throw new IllegalArgumentException("No study found with this key: "
+						+ studyKey.toRawIdString());
 			}
 			em.remove(study);
 			commit(em);
 		} catch (Exception ex) {
 			rollback(em);
-			throw new IOException("Failed deleting study by: " + studyKey,
-					ex);
+			throw new IOException("Failed deleting study by: " + studyKey.toRawIdString(), ex);
 		} finally {
 			close(em);
 		}
