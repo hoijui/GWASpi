@@ -416,13 +416,13 @@ public class MatrixAnalysePanel extends JPanel {
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
 						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
-						if (choice != JOptionPane.CANCEL_OPTION) {
+						if (gwasParams.isProceed()) {
 							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
 					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
-					if (choice != JOptionPane.CANCEL_OPTION) {
+					if (gwasParams.isProceed()) {
 						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
 				}
