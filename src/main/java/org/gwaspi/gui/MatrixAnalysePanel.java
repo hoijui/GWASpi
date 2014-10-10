@@ -203,6 +203,29 @@ public class MatrixAnalysePanel extends JPanel {
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
 	}
 
+	private List<OperationMetadata> getValidMarkerCensusOps() throws IOException {
+		return getValidMarkerCensusOps(currentOP, observedElementKey);
+	}
+
+	private static List<OperationMetadata> getValidMarkerCensusOps(OperationMetadata currentOp, DataSetKey observedElementKey) throws IOException {
+
+		final List<OperationMetadata> validMarkerCensusOps;
+
+		if ((currentOp != null) && CENSUS_TYPES.contains(currentOp.getOperationType())) {
+			validMarkerCensusOps = new ArrayList<OperationMetadata>(1);
+			validMarkerCensusOps.add(currentOp);
+		} else {
+			// filter out all those without the correct number of markers
+			// NOTE This is not compleetly safe, but we then just rely on the user
+			//   making the right choise in case of operatiosn ending up in this list that should not.
+			final DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
+			final int requiredNumMarkers = observedElementMetadata.getNumMarkers();
+			validMarkerCensusOps = OperationsList.getFilteredOffspring(observedElementKey, CENSUS_TYPES, requiredNumMarkers);
+		}
+
+		return validMarkerCensusOps;
+	}
+
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static class AssociationTestsAction extends AbstractAction {
 
@@ -228,14 +251,19 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey observedElementKey) throws IOException {
 
-			OperationKey censusOpKey = null;
+			final OperationKey censusOpKey;
 
-			if (currentOP != null) {
-				censusOpKey = OperationKey.valueOf(currentOP);
+			final List<OperationMetadata> validMarkerCensusOps = getValidMarkerCensusOps(currentOP, observedElementKey);
+			if (validMarkerCensusOps.isEmpty()) {
+				censusOpKey = null;
+			} else if (validMarkerCensusOps.size() == 1) {
+				censusOpKey = OperationKey.valueOf(validMarkerCensusOps.get(0));
 			} else {
 				// REQUEST WHICH CENSUS TO USE
-				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(observedElementKey, CENSUS_TYPES, Text.Operation.GTFreqAndHW);
-				if (markerCensusOP != null) {
+				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(validMarkerCensusOps, Text.Operation.GTFreqAndHW);
+				if (markerCensusOP == null) {
+					censusOpKey = null;
+				} else {
 					censusOpKey = OperationKey.valueOf(markerCensusOP);
 				}
 			}

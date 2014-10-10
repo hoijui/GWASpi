@@ -145,6 +145,27 @@ public class OperationsList {
 		return result;
 	}
 
+	public static List<OperationMetadata> getFilteredOffspring(
+			final DataSetKey parentKey,
+			final List<OPType> validTypes,
+			final int numMarkers)
+			throws IOException
+	{
+		final List<OperationMetadata> filteredOperations = new ArrayList<OperationMetadata>();
+
+		for (final OPType validType : validTypes) {
+			List<OperationMetadata> validTypeOperations = OperationsList.getOffspringOperationsMetadata(parentKey, validType);
+
+			for (OperationMetadata validTypeOperation : validTypeOperations) {
+				if (validTypeOperation.getNumMarkers() == numMarkers) {
+					filteredOperations.add(validTypeOperation);
+				}
+			}
+		}
+
+		return filteredOperations;
+	}
+
 	/**
 	 * @see OperationService#getAncestorOperationTypes(OperationKey)
 	 */

@@ -39,7 +39,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -98,45 +97,32 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationCombo(DataSetKey parentKey, List<OPType> filterOpTypes, String title) throws IOException {
-
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(parentKey);
-
-		return showOperationCombo(operations, filterOpTypes, title);
-	}
-
-	public static OperationMetadata showOperationCombo(List<OperationMetadata> operations, List<OPType> filterOpTypes, String title) throws IOException {
+	public static OperationMetadata showOperationCombo(List<OperationMetadata> operations, String title) throws IOException {
 
 		OperationMetadata selectedOP = null;
 
 		if (!operations.isEmpty()) {
 			List<String> operationNames = new ArrayList<String>();
-			List<OperationMetadata> filteredOperations = new ArrayList<OperationMetadata>();
 			for (OperationMetadata op : operations) {
-				if (filterOpTypes.contains(op.getOperationType())) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("OP: ");
-					sb.append(op.getId());
-					sb.append(" - ");
-					sb.append(op.getFriendlyName());
-					operationNames.add(sb.toString());
-					filteredOperations.add(op);
-				}
+				StringBuilder sb = new StringBuilder();
+				sb.append("OP: ");
+				sb.append(op.getId());
+				sb.append(" - ");
+				sb.append(op.getFriendlyName());
+				operationNames.add(sb.toString());
 			}
 
-			if (!filteredOperations.isEmpty()) {
-				String selectedRow = (String) JOptionPane.showInputDialog(
-						null,
-						"Choose " + title + " to use...",
-						"Available Operations",
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						operationNames.toArray(new Object[operationNames.size()]),
-						0);
+			final String selectedRow = (String) JOptionPane.showInputDialog(
+					null,
+					"Choose " + title + " to use...",
+					"Available Operations",
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					operationNames.toArray(new Object[operationNames.size()]),
+					0);
 
-				if (selectedRow != null) {
-					selectedOP = filteredOperations.get(operationNames.indexOf(selectedRow));
-				}
+			if (selectedRow != null) {
+				selectedOP = operations.get(operationNames.indexOf(selectedRow));
 			}
 		}
 
