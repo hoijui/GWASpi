@@ -195,12 +195,27 @@ public class MatrixAnalysePanel extends JPanel {
 		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams, this);
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_genFreqAndHW.setAction(genFreqAndHWAction);
-		btn_allelicTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
-		btn_genotypicTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
-		btn_trendTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST));
-		btn_combiTest.setAction(new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
+		final boolean validMarkerCensusOpAvailable = isValidMarkerCensusOpAvailable();
+		final Action allelicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.ALLELICTEST);
+		final Action genotypicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.GENOTYPICTEST);
+		final Action trendTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.TRENDTEST);
+		final Action combiTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.COMBI_ASSOC_TEST);
+		btn_allelicTest.setAction(allelicTest);
+		btn_genotypicTest.setAction(genotypicTest);
+		btn_trendTest.setAction(trendTest);
+		btn_combiTest.setAction(combiTest);
 		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
+	}
+
+	private boolean isValidMarkerCensusOpAvailable() {
+
+		try {
+			return !getValidMarkerCensusOps().isEmpty();
+		} catch (IOException ex) {
+			log.warn("Failed to evaluate whether there is a valid Marker-Census operation available", ex);
+			return false;
+		}
 	}
 
 	private List<OperationMetadata> getValidMarkerCensusOps() throws IOException {
@@ -236,8 +251,14 @@ public class MatrixAnalysePanel extends JPanel {
 		private final String testName;
 		private final Component dialogParent;
 
-		AssociationTestsAction(final DataSetKey observedElementKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
-
+		AssociationTestsAction(
+				final DataSetKey observedElementKey,
+				GWASinOneGOParams gwasParams,
+				OperationMetadata currentOP,
+				Component dialogParent,
+				final boolean validMarkerCensusOpAvailable,
+				OPType testType)
+		{
 			this.observedElementKey = observedElementKey;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
@@ -247,6 +268,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>";
 			putValue(NAME, testNameHtml);
+			setEnabled(validMarkerCensusOpAvailable);
 		}
 
 		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey observedElementKey) throws IOException {
