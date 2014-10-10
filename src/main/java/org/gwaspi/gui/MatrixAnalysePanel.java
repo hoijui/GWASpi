@@ -82,6 +82,13 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
+	private static final List<OPType> CENSUS_TYPES;
+	static {
+		final List<OPType> tmpCensusTypes = new ArrayList<OPType>();
+		tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+		tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+		CENSUS_TYPES = Collections.unmodifiableList(tmpCensusTypes);
+	}
 
 	private final DataSetKey observedElementKey;
 	private final OperationMetadata currentOP;
@@ -198,14 +205,6 @@ public class MatrixAnalysePanel extends JPanel {
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static class AssociationTestsAction extends AbstractAction {
-
-		private static final List<OPType> CENSUS_TYPES;
-		static {
-			final List<OPType> tmpCensusTypes = new ArrayList<OPType>();
-			tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_AFFECTION);
-			tmpCensusTypes.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
-			CENSUS_TYPES = Collections.unmodifiableList(tmpCensusTypes);
-		}
 
 		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
