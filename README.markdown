@@ -9,6 +9,7 @@ __README__
 * Written in Java, with Apache Derby, JFreeChart and NetCDF 3 technology
 * Executable locally in a GUI (Graphical User Interface) and via command line
 
+
 ## Building
 
 Maven is used as the project management system.
@@ -39,7 +40,6 @@ In case you already have it installed, skip this paragraph.
 	On Ubuntu for example, you would do this:
 
 		> sudo apt-get install maven2
-
 
 ### Building the software
 
