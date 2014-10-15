@@ -451,6 +451,12 @@
 
 		<profile>
 			<id>createUniqueBuild</id>
+			<!--
+				For unknown reasons, the test will fail with
+				this profile activated, therefore ...
+				NOTE Only use this with unit tests deactivated:
+					`-DskipTests`
+			-->
 			<build>
 				<finalName>${project.artifactId}-${project.version}-g${buildNumber}</finalName>
 			</build>
