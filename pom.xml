@@ -445,6 +445,13 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>createUniqueBuild</id>
+			<build>
+				<finalName>${project.artifactId}-${project.version}-g${buildNumber}</finalName>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
