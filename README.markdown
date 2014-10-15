@@ -79,7 +79,7 @@ follow these instructions.
 	> mvn package assembly:single
 
 You should end up with a single file to distribute at:
-_target/gwaspi-<version>-jar-with-dependencies.jar_
+`target/gwaspi-{version}-jar-with-dependencies.jar`
 
 You can then use the file to start GWASpi like this:
 
