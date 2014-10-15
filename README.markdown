@@ -10,6 +10,23 @@ __README__
 * Executable locally in a GUI (Graphical User Interface) and via command line
 
 
+## Getting Started
+
+1. Obtain GWASpi
+	* Get the __latest stable version__ from the [GWASpi homepage _Download_ section](http://www.gwaspi.org/?page_id=182), or
+	* Get the __latest testing version__ from the [source hosting platform _Download_ section](https://bitbucket.org/hoijui/gwaspi/downloads), or
+	* Get the __latest development version__ by [building it yourself](#building) from source
+2. Obtain data
+	* From the [_Tutorial_ section](http://www.gwaspi.org/?page_id=226) on the GWASpi homepage
+	* From any other online source providing GWAS input data
+3. Follow a tutorial
+	* For general GWASpi usage, see the [_Introduction_](http://www.gwaspi.org/?page_id=213)
+		and the [_Tutorial_](http://www.gwaspi.org/?page_id=226) sections on the GWASpi homepage
+	* For COMBI instructions, see the (notoriously detailed) [COMBI tutorial](TUTORIAL.COMBI.html)
+		(or its [Markdown version](src/main/resources/doc/TUTORIAL.COMBI.md))
+	* or just try clicking around!
+
+
 ## Building
 
 Maven is used as the project management system.
