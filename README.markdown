@@ -22,8 +22,9 @@ __README__
 3. Follow a tutorial
 	* For general GWASpi usage, see the [_Introduction_](http://www.gwaspi.org/?page_id=213)
 		and the [_Tutorial_](http://www.gwaspi.org/?page_id=226) sections on the GWASpi homepage
-	* For COMBI instructions, see the (notoriously detailed) [COMBI tutorial](TUTORIAL.COMBI.html)
-		(or its [Markdown version](src/main/resources/doc/TUTORIAL.COMBI.md))
+	* For COMBI instructions, see the (notoriously detailed) [COMBI tutorial (local)](TUTORIAL.COMBI.html)
+		[(online)](https://bitbucket.org/hoijui/gwaspi/src/develop/src/main/resources/doc/TUTORIAL.COMBI.markdown)
+		(or its [Markdown version (local)](src/main/resources/doc/TUTORIAL.COMBI.md))
 	* or just try clicking around!
 
 
