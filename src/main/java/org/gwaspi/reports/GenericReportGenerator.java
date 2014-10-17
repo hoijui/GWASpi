@@ -94,14 +94,36 @@ public class GenericReportGenerator {
 	private GenericReportGenerator() {
 	}
 
-	//<editor-fold defaultstate="expanded" desc="ASSOCIATION CHARTS">
-	/**
-	 * @return a map with values in the Object[]
-	 *   = {Chromosome, position, P-Value}
-	 */
-	private static Map<MarkerKey, Object[]> assembleManhattenPlotData(OperationKey testOpKey) throws IOException {
+	private static class MarkerManhattenData {
 
-		Map<MarkerKey, Object[]> markerKeyChrPosPVal;
+		private final String chromosome;
+		private final int position;
+		private final Double pValue;
+
+		public MarkerManhattenData(final String chromosome, final int position, final Double pValue) {
+
+			this.chromosome = chromosome;
+			this.position = position;
+			this.pValue = pValue;
+		}
+
+		public String getChromosome() {
+			return chromosome;
+		}
+
+		public int getPosition() {
+			return position;
+		}
+
+		public Double getPValue() {
+			return pValue;
+		}
+	}
+
+	//<editor-fold defaultstate="expanded" desc="ASSOCIATION CHARTS">
+	private static Map<MarkerKey, MarkerManhattenData> assembleManhattenPlotData(OperationKey testOpKey) throws IOException {
+
+		Map<MarkerKey, MarkerManhattenData> markerKeyChrPosPVal;
 
 		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS
 				= (CommonTestOperationDataSet<? extends TrendTestOperationEntry>)
@@ -109,18 +131,17 @@ public class GenericReportGenerator {
 		final MarkersMetadataSource markersMetadatasSource = testOpDS.getMarkersMetadatasSource();
 		final List<Double> ps = testOpDS.getPs(-1, -1);
 		Iterator<Double> psIt = ps.iterator();
-		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
+		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, MarkerManhattenData>(markersMetadatasSource.size());
 		for (MarkerMetadata markerMetadata : markersMetadatasSource) {
 			MarkerKey markerKey = MarkerKey.valueOf(markerMetadata);
 			Double pValue = psIt.next();
 			if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
 				pValue = null;
 			}
-			Object[] data = new Object[] {
-				markerMetadata.getChr(),
-				markerMetadata.getPos(),
-				pValue
-			};
+			MarkerManhattenData data = new MarkerManhattenData(
+					markerMetadata.getChr(),
+					markerMetadata.getPos(),
+					pValue);
 			markerKeyChrPosPVal.put(markerKey, data);
 		}
 
@@ -148,7 +169,7 @@ public class GenericReportGenerator {
 				PLOT_MANHATTAN_MAIN_CONFIG,
 				PLOT_MANHATTAN_MAIN_DEFAULT);
 
-		Map<MarkerKey, Object[]> markerKeyChrPosPVal = assembleManhattenPlotData(testOpKey);
+		Map<MarkerKey, MarkerManhattenData> markerKeyChrPosPVal = assembleManhattenPlotData(testOpKey);
 
 		XYSeriesCollection currChrSC = new XYSeriesCollection();
 
@@ -162,19 +183,16 @@ public class GenericReportGenerator {
 		// Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
 		Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>(); // FIXME This is unused, was a global static var before (also private though), was the data added here actually used somewhere? (i think not)
-		for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
+		for (Map.Entry<MarkerKey, MarkerManhattenData> entry : markerKeyChrPosPVal.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
-			Object[] data = entry.getValue(); // CHR, POS, PVAL
+			MarkerManhattenData data = entry.getValue();
 
-			String chr = (String) data[0];
-			int position = (Integer) data[1];
-
-			if (data[2] != null) {
-				double pVal = (Double) data[2]; // Is allready free of NaN and infinity
+			if (data.getPValue() != null) {
+				final double pVal = data.getPValue(); // Is allready free of NaN and infinity
 				if (pVal < 1) {
-					if (chr.equals(currChr)) {
-						currChrS.add(position, pVal);
-						labeler.put(currChr + "_" + position, markerKey);
+					if (data.getChromosome().equals(currChr)) {
+						currChrS.add(data.getPosition(), pVal);
+						labeler.put(currChr + "_" + data.getPosition(), markerKey);
 					} else {
 						if (!currChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
 							// add the last (now compleeted) chromosomes data-set,
@@ -182,12 +200,12 @@ public class GenericReportGenerator {
 							currChrSC.addSeries(currChrS);
 							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, threshold, background, backgroundAlternative, main);
 						}
-						currChr = (String) data[0];
+						currChr = data.getChromosome();
 						currChrSC = new XYSeriesCollection();
 						currChrS = new XYSeries(currChr);
-						labeler.put(currChr + "_" + position, markerKey);
+						labeler.put(currChr + "_" + data.getPosition(), markerKey);
 
-						currChrS.add(position, pVal);
+						currChrS.add(data.getPosition(), pVal);
 					}
 				}
 			}
