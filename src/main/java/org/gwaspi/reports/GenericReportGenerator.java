@@ -35,6 +35,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -42,6 +43,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
@@ -128,19 +130,34 @@ public class GenericReportGenerator {
 		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS
 				= (CommonTestOperationDataSet<? extends TrendTestOperationEntry>)
 				OperationManager.generateOperationDataSet(testOpKey);
-		final MarkersMetadataSource markersMetadatasSource = testOpDS.getMarkersMetadatasSource();
-		final List<Double> ps = testOpDS.getPs(-1, -1);
-		Iterator<Double> psIt = ps.iterator();
-		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, MarkerManhattenData>(markersMetadatasSource.size());
-		for (MarkerMetadata markerMetadata : markersMetadatasSource) {
-			MarkerKey markerKey = MarkerKey.valueOf(markerMetadata);
-			Double pValue = psIt.next();
-			if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
-				pValue = null;
+		final Iterator<MarkerKey> testOpMarkerKeys = testOpDS.getMarkersKeysSource().iterator();
+		final Iterator<Double> testOpPValues = testOpDS.getPs(-1, -1).iterator();
+
+		final DataSetSource matrixDS
+				= MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
+		final MarkersMetadataSource matrixMarkersMS = matrixDS.getMarkersMetadatasSource();
+		final Iterator<String> matrixMarkersChromosomes = matrixMarkersMS.getChromosomes().iterator();
+		final Iterator<Integer> matrixMarkersPositions = matrixMarkersMS.getPositions().iterator();
+		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, MarkerManhattenData>(matrixMarkersMS.size());
+		MarkerKey nextTestMarkerKey = testOpMarkerKeys.hasNext() ? testOpMarkerKeys.next() : null;
+		for (final MarkerKey markerKey : matrixDS.getMarkersKeysSource()) {
+			final String chromosome = matrixMarkersChromosomes.next();
+			final int position = matrixMarkersPositions.next();
+			Double pValue;
+			if (markerKey.equals(nextTestMarkerKey)) {
+				pValue = testOpPValues.next();
+				if (pValue.isNaN() || pValue.isInfinite()) { // Ignore invalid P-Values
+					pValue = null;
+				}
+				nextTestMarkerKey = testOpMarkerKeys.hasNext() ? testOpMarkerKeys.next() : null;
+			} else {
+				// The current markerKey has no entry in the test operation,
+				// thus we have no P-Value for it, so we mark it as totally insignificant.
+				pValue = 1.0;
 			}
 			MarkerManhattenData data = new MarkerManhattenData(
-					markerMetadata.getChr(),
-					markerMetadata.getPos(),
+					chromosome,
+					position,
 					pValue);
 			markerKeyChrPosPVal.put(markerKey, data);
 		}
