@@ -60,7 +60,7 @@ public class GenotypesLoadDescription {
 			ImportFormat format,
 			String friendlyName,
 			String description,
-			String chromosome,
+			String chromosome, // NOTE this is only used for the Beagle format
 			StrandType strand,
 			GenotypeEncoding gtCode)
 	{
