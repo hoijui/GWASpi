@@ -64,6 +64,15 @@ public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<
 
 	@Override
 	public int sizeInternal() {
-		return items.size();
+
+		if (getOriginalIndicesRaw() == null) {
+			return items.size();
+		} else {
+			try {
+				return getOrigSource().size();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 }
