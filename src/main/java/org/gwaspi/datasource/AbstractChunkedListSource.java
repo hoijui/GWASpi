@@ -47,7 +47,8 @@ public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> imp
 		if (chunkNumber != loadedChunkNumber) {
 			try {
 				if (index >= sizeInternal()) {
-					throw new IndexOutOfBoundsException();
+					throw new IndexOutOfBoundsException("Tried to access index " + index
+							+ " in list fo size " + sizeInternal());
 				}
 				final int itemsBefore = chunkNumber * chunkSize;
 				final int itemsInAndAfter = sizeInternal() - itemsBefore;
