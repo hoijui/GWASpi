@@ -186,9 +186,9 @@ public class JPAMatrixService implements MatrixService {
 				em.merge(matrixMetadata);
 			}
 			commit(em);
-//		} catch (Exception ex) {
-//			LOG.error("Failed adding a matrix-metadata", ex);
-//			rollback(em);
+		} catch (Exception ex) {
+			LOG.error("Failed adding a matrix-metadata", ex);
+			rollback(em);
 		} finally {
 			close(em);
 		}
