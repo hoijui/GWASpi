@@ -86,6 +86,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private final GenotypesLoadDescription loadDescription;
 	private final GWASinOneGOParams gwasParams;
 	private final SuperProgressSource progressSource;
+	private MatrixKey resultMatrixKey;
 
 	public Threaded_Loader_GWASifOK(
 			GenotypesLoadDescription loadDescription,
@@ -106,6 +107,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		} else {
 			this.progressSource = new SuperProgressSource(loadOnlyProcessInfo, subProgressSourcesAndWeightsLoadOnly);
 		}
+		this.resultMatrixKey = null;
 	}
 
 	@Override
@@ -152,9 +154,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					dataReceiver,
 					loadingMatrixMetadataFactory);
 			dataReceiver.done();
-			MatrixKey matrixKey = dataReceiver.getResultMatrixKey();
+			resultMatrixKey = dataReceiver.getResultMatrixKey();
 			MultiOperations.printCompleted("Loading Genotypes");
-			parent = new DataSetKey(matrixKey);
+			parent = new DataSetKey(resultMatrixKey);
 		} else {
 			return;
 		}
@@ -184,5 +186,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			}
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
+	}
+
+	public MatrixKey getResultMatrixKey() {
+		return resultMatrixKey;
 	}
 }
