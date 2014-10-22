@@ -453,7 +453,8 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		}
 	}
 
-	private void setConstraints(GridBagConstraints c,
+	private static void setConstraints(
+			GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)
