@@ -86,7 +86,12 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 
 	@Override
 	protected String getNameDefault() {
-		return "Marker-Census for matrix " + getParent().getOrigin().toString(); // TODO use nicer matrix name!
+
+		String nameDefault = "Marker-Census";
+		if (getParent() != null) {
+			nameDefault += " for matrix " + getParent().getOrigin().toString(); // TODO use nicer matrix name!
+		}
+		return nameDefault;
 	}
 
 	public OperationKey getSampleQAOpKey() {
