@@ -19,6 +19,7 @@ package org.gwaspi.gui.utils;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -50,7 +51,7 @@ import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MoreGWASinOneGoInfo extends JFrame {
+public class MoreGWASinOneGoInfo extends JDialog {
 
 	private final Logger log = LoggerFactory.getLogger(MoreGWASinOneGoInfo.class);
 
@@ -81,26 +82,26 @@ public class MoreGWASinOneGoInfo extends JFrame {
 	private JComboBox cmb_Strand;
 	private JLabel lbl_GTCode;
 	private JComboBox cmb_GTCode;
-	private JDialog dialog;
-	private final JFrame myFrame = new JFrame("GridBagLayout Test");
-	private final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private ImportFormat format;
+	private final GWASinOneGOParams gwasParams;
+	private final ImportFormat format;
 	// End of variables declaration
 
-	public GWASinOneGOParams showMoreInfo(ImportFormat format) {
-		// Create a modal dialog
-		gwasParams.setProceed(false);
-		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
+	/** Create a modal dialog */
+	public MoreGWASinOneGoInfo(final Frame dialogParent, final GWASinOneGOParams gwasParams, final ImportFormat format) {
+		super(dialogParent, Text.Operation.gwasInOneGo, true);
+
+		this.gwasParams = gwasParams;
+		this.gwasParams.setProceed(false);
 		this.format = format;
 
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension screenSize = tk.getScreenSize();
 		int screenHeight = screenSize.height;
 		int screenWidth = screenSize.width;
-		dialog.setLocation(screenWidth / 4, screenHeight / 4);
+		setLocation(screenWidth / 4, screenHeight / 4);
 
-		dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		Container myPane = dialog.getContentPane();
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		final Container myPane = getContentPane();
 		myPane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		setConstraints(c, 0, 0, GridBagConstraints.CENTER);
@@ -109,10 +110,13 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		myPane.add(getQuestionsPanel(), c);
 		setConstraints(c, 0, 2, GridBagConstraints.CENTER);
 		myPane.add(getFooterPanel(), c);
+	}
+
+	public static void showMoreInfo(final Frame dialogParent, final GWASinOneGOParams gwasParams, final ImportFormat format) {
+
+		final MoreGWASinOneGoInfo dialog = new MoreGWASinOneGoInfo(dialogParent, gwasParams, format);
 		dialog.pack();
 		dialog.setVisible(true);
-
-		return gwasParams;
 	}
 
 	private JPanel getHeaderPanel() {
@@ -433,7 +437,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 				} catch (NumberFormatException ex) {
 					log.warn(null, ex);
 				}
-				dialog.dispose();
+				dispose();
 			} else {
 				gwasParams.setProceed(false);
 			}
@@ -449,7 +453,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			dialog.setVisible(false);
+			setVisible(false);
 		}
 	}
 

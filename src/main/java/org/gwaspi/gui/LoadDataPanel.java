@@ -35,6 +35,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,6 +58,7 @@ import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +93,6 @@ public class LoadDataPanel extends JPanel {
 	private boolean dummySamples = true;
 	private final StudyKey studyKey;
 	private boolean[] fieldObligatoryState;
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private final Action formatAction;
 	private final Action browseSampleInfoAction;
 	// End of variables declaration
@@ -625,9 +626,13 @@ public class LoadDataPanel extends JPanel {
 
 						int performGwasInOneGo = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
 
+						final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 						if (performGwasInOneGo == JOptionPane.YES_OPTION) {
 							// ASK MORE QUESTIONS
-							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo((ImportFormat) cmb_Format.getSelectedItem());
+							gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(null, null, null));
+							final ImportFormat format = (ImportFormat) cmb_Format.getSelectedItem();
+							final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(LoadDataPanel.this);
+							MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, format);
 							if (gwasParams.isProceed()) {
 								Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 							}

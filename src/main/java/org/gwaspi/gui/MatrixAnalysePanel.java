@@ -35,6 +35,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -108,6 +109,7 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+		gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(observedElementKey, null, null));
 		Action gwasInOneGoAction = new GwasInOneGoAction(observedElementKey, gwasParams, this);
 		gwasInOneGoAction.setEnabled(currentOP == null);
 
@@ -655,13 +657,15 @@ public class MatrixAnalysePanel extends JPanel {
 					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
-						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
+						final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
+						MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
 						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(technology);
+					final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
+					MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
 					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
 					}
