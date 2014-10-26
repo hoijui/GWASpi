@@ -41,21 +41,6 @@ public class SwingWorkerItem {
 
 	SwingWorkerItem(
 			CommonRunnable task,
-			Integer[] parentStudyIds)
-	{
-		this(task, parentStudyIds, new Integer[] {});
-	}
-
-	SwingWorkerItem(
-			CommonRunnable task,
-			Integer[] parentStudyIds,
-			Integer[] parentMatricesIds)
-	{
-		this(task, parentStudyIds, parentMatricesIds, new Integer[] {});
-	}
-
-	SwingWorkerItem(
-			CommonRunnable task,
 			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
