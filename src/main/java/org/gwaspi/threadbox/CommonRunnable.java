@@ -55,11 +55,12 @@ public abstract class CommonRunnable implements Runnable {
 	@Override
 	public final void run() {
 
+		SwingWorkerItem thisSwi = null;
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
 			org.gwaspi.global.Config.initPreferences(false, null, null);
 
-			SwingWorkerItem thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
+			thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
 
 			runInternal(thisSwi);
 
@@ -73,7 +74,7 @@ public abstract class CommonRunnable implements Runnable {
 				getLog().info("");
 			} else {
 				MultiOperations.printFinished("Performing " + getDetailedName());
-				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
+				SwingWorkerItemList.flagItemDone(thisSwi);
 			}
 
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
@@ -85,7 +86,7 @@ public abstract class CommonRunnable implements Runnable {
 			}
 			getLog().error("Failed performing " + getName(), thr);
 			try {
-				SwingWorkerItemList.flagCurrentItemError(timeStamp);
+				SwingWorkerItemList.flagItemError(thisSwi);
 				MultiOperations.updateTree();
 				MultiOperations.updateProcessOverviewStartNext();
 			} catch (Exception ex1) {

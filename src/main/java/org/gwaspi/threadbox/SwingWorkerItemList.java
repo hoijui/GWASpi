@@ -121,19 +121,7 @@ public class SwingWorkerItemList {
 		return result;
 	}
 
-	private static SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
-
-		SwingWorkerItem swi = null;
-
-		SwingWorkerItem swiTmp = getItemByTimeStamp(timeStamp);
-		if ((swiTmp != null) && swiTmp.isCurrent()) {
-			swi = swiTmp;
-		}
-
-		return swi;
-	}
-
-	private static SwingWorkerItem getCurrentItemByIndex(int rowIdx) {
+	public static SwingWorkerItem getItemByIndex(int rowIdx) {
 
 		SwingWorkerItem swi = null;
 
@@ -145,13 +133,12 @@ public class SwingWorkerItemList {
 		return swi;
 	}
 
-	private static void flagCurrentItem(String timeStamp, QueueState newState) {
+	private static void flagItem(final SwingWorkerItem currentSwi, QueueState newState) {
 
 		if (!QueueState.isFinalizingState(newState)) {
 			throw new RuntimeException("Can not flag as " + newState.name());
 		}
 
-		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
 		if (currentSwi != null) {
 			currentSwi.setQueueState(newState);
 			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -160,25 +147,17 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static void flagCurrentItemDone(String timeStamp) {
-		flagCurrentItem(timeStamp, QueueState.DONE);
+	public static void flagItemDone(final SwingWorkerItem item) {
+		flagItem(item, QueueState.DONE);
 	}
 
-	public static void flagCurrentItemAborted(String timeStamp) {
-		flagCurrentItem(timeStamp, QueueState.ABORT);
+	public static void flagItemAborted(final SwingWorkerItem item) {
+		flagItem(item, QueueState.ABORT);
+		unlockParentItems(item);
 	}
 
-	public static void flagCurrentItemAborted(int rowIdx) {
-		SwingWorkerItem currentSwi = getCurrentItemByIndex(rowIdx);
-		if (currentSwi != null) {
-			currentSwi.setQueueState(QueueState.ABORT);
-
-			unlockParentItems(currentSwi);
-		}
-	}
-
-	public static void flagCurrentItemError(String timeStamp) {
-		flagCurrentItem(timeStamp, QueueState.ERROR);
+	public static void flagItemError(final SwingWorkerItem item) {
+		flagItem(item, QueueState.ERROR);
 	}
 
 	public static boolean permitsDeletionOf(StudyKey studyKey) {

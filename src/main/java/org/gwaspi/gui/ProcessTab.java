@@ -165,7 +165,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 					int colIndex = getSelectedColumn();
 					if (colIndex == 7) { // Abort
 						if (rowIndex < SwingWorkerItemList.size()) {
-							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
+							SwingWorkerItemList.flagItemAborted(SwingWorkerItemList.getItemByIndex(rowIndex));
 						} else {
 							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.size());
 						}
