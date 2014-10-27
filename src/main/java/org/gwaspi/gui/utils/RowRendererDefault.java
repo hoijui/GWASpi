@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.gwaspi.constants.cGlobal;
-import org.gwaspi.threadbox.QueueState;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -73,13 +73,13 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
-			QueueState queueState;
+			ProcessStatus status;
 			List<SwingWorkerItem> swingWorkers  = SwingWorkerItemList.getItems();
 			if (swingWorkers.size() > row) {
-				queueState = swingWorkers.get(row).getQueueState();
+				status = swingWorkers.get(row).getStatus();
 			} else {
 				List<SwingDeleterItem> swingDeleters = SwingDeleterItemList.getItems();
-				queueState = swingDeleters.get(row - swingWorkers.size()).getQueueState();
+				status = swingDeleters.get(row - swingWorkers.size()).getStatus();
 			}
 
 			if (column == 0 || column == 1) {
@@ -93,11 +93,13 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 				TableColumn col = table.getColumnModel().getColumn(column);
 				col.setPreferredWidth(25);
 			} else if (column == 7) {
-				if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
-					ico = new ImageIcon(ICON_PATH_ABORT);
+				final URL imageIconUrl;
+				if (status.isEnd()) {
+					imageIconUrl = ICON_PATH_NO_ABORT;
 				} else {
-					ico = new ImageIcon(ICON_PATH_NO_ABORT);
+					imageIconUrl = ICON_PATH_ABORT;
 				}
+				ico = new ImageIcon(imageIconUrl);
 				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 				TableColumn col = table.getColumnModel().getColumn(column);
 				col.setPreferredWidth(25);

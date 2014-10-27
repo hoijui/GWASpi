@@ -262,7 +262,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 			spreadSheet[count][3] = swingWorkerItem.getLaunchTime() != null ? swingWorkerItem.getLaunchTime() : " - ";
 			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? swingWorkerItem.getStartTime() : " - ";
 			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? swingWorkerItem.getEndTime() : " - ";
-			spreadSheet[count][6] = swingWorkerItem.getQueueState() != null ? swingWorkerItem.getQueueState() : " - ";
+			spreadSheet[count][6] = swingWorkerItem.getStatus() != null ? swingWorkerItem.getStatus().toString() : " - ";
 			spreadSheet[count][7] = " ";
 
 			count++;
@@ -276,7 +276,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 			spreadSheet[count][3] = swingDeleterItem.getLaunchTime() != null ? swingDeleterItem.getLaunchTime() : " - ";
 			spreadSheet[count][4] = swingDeleterItem.getStartTime() != null ? swingDeleterItem.getStartTime() : " - ";
 			spreadSheet[count][5] = swingDeleterItem.getEndTime() != null ? swingDeleterItem.getEndTime() : " - ";
-			spreadSheet[count][6] = swingDeleterItem.getQueueState() != null ? swingDeleterItem.getQueueState() : " - ";
+			spreadSheet[count][6] = swingDeleterItem.getStatus()!= null ? swingDeleterItem.getStatus().toString() : " - ";
 			spreadSheet[count][7] = " ";
 
 			count++;
