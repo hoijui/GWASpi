@@ -48,7 +48,7 @@ public class Text {
 		public static final String Tab2 = "Study Log";
 		public static final String processOutput = "Process Output";
 		public static final String warnProcessInterrupted = "Process has been interrupted!";
-		public static final String author = "Author: Fernando Muñiz Fernandez, Angel Carreño Torres, Carlos Morcillo-Suarez and Arcadi Navarro\nINB-Node8, UPF BioEvo Dept.";
+		public static final String author = "Author: Fernando Muñiz Fernandez (UPF), Robin Vobruba (TUB), Angel Carreño Torres (UPF), Carlos Morcillo-Suarez (UPF), Arcadi Navarro (UPF), Marius Kloft (HUB)\nINB-Node8 UPF BioEvo Dept., Machine Learning Dept. TU Berlin";
 		public static final String whitePaper = "White paper: Genome-wide Association Studies Pipeline (GWASpi): a desktop application for genome-wide SNP analysis and management (unpublished)";
 		public static final String propertiesPaths = "Properties & Paths";
 		public static final String propertyName = "Property Name";
