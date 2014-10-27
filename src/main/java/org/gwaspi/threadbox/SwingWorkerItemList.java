@@ -140,8 +140,8 @@ public class SwingWorkerItemList {
 		}
 
 		if (currentSwi != null) {
-			currentSwi.setQueueState(newState);
 			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			currentSwi.setQueueState(newState);
 
 			unlockParentItems(currentSwi);
 		}
