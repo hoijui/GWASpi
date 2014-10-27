@@ -70,6 +70,10 @@ public class SwingWorkerItem {
 		return queueState;
 	}
 
+	public ProcessStatus getStatus() {
+		return toProcessStatus(getQueueState());
+	}
+
 	public boolean isCurrent() {
 		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
 	}

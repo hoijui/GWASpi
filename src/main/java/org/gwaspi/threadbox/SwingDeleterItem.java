@@ -22,6 +22,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
@@ -105,6 +106,10 @@ public class SwingDeleterItem extends CommonRunnable {
 
 	public QueueState getQueueState() {
 		return queueState;
+	}
+
+	public ProcessStatus getStatus() {
+		return SwingWorkerItem.toProcessStatus(getQueueState());
 	}
 
 	public boolean isCurrent() {
