@@ -78,8 +78,8 @@ public class SwingWorkerItemList {
 		// START PROCESSING NEWLY ADDED SwingWorker
 		if (kickStart) {
 			Thread thread = new Thread(swi.getTask(), swi.getTask().getName());
-			thread.start();
 			swi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			thread.start();
 			swi.setQueueState(QueueState.PROCESSING);
 		}
 
