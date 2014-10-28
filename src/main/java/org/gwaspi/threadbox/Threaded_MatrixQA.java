@@ -81,6 +81,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	private OperationKey samplesQAOperationKey;
 	private OperationKey markersQAOperationKey;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_MatrixQA(final DataSetKey parentKey, final boolean createReports) {
 		super("Quality Assurance & Reports", "on " + parentKey.toString());
@@ -90,6 +91,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		this.samplesQAOperationKey = null;
 		this.markersQAOperationKey = null;
 		this.progressSource = new SuperProgressSource(fullQAProcessInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(parentKey);
 	}
 
 	public Threaded_MatrixQA(final DataSetKey parentKey) {
@@ -99,6 +101,11 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 public class SwingDeleterItem extends CommonRunnable {
 
+	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
+
 	private String launchTime;
 	private String startTime;
 	private String endTime;
@@ -177,6 +179,11 @@ public class SwingDeleterItem extends CommonRunnable {
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressHandler;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return EMPTY_TASK_LOCK_PROPERTIES;
 	}
 
 	@Override

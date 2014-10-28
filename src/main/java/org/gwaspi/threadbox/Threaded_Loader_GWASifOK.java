@@ -86,6 +86,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private final GenotypesLoadDescription loadDescription;
 	private final GWASinOneGOParams gwasParams;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 	private MatrixKey resultMatrixKey;
 
 	public Threaded_Loader_GWASifOK(
@@ -107,12 +108,19 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		} else {
 			this.progressSource = new SuperProgressSource(loadOnlyProcessInfo, subProgressSourcesAndWeightsLoadOnly);
 		}
+		this.taskLockProperties = new TaskLockProperties();
+		this.taskLockProperties.getStudyIds().add(loadDescription.getStudyKey().getId());
 		this.resultMatrixKey = null;
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

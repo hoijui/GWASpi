@@ -54,17 +54,24 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	private final MatrixGenotypesFlipperParams params;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) {
 		super("Flip Strand Matrix (Genotypes)", "on " + params.getParent().toString());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

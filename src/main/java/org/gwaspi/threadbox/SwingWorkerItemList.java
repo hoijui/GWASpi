@@ -63,9 +63,10 @@ public class SwingWorkerItemList {
 		swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
-		parentStudyIds.addAll(swi.getParentStudyIds());
-		parentMatricesIds.addAll(swi.getParentMatricesIds());
-		parentOperationsIds.addAll(swi.getParentOperationsIds());
+		final TaskLockProperties taskLockProperties = swi.getTask().getTaskLockProperties();
+		parentStudyIds.addAll(taskLockProperties.getStudyIds());
+		parentMatricesIds.addAll(taskLockProperties.getMatricesIds());
+		parentOperationsIds.addAll(taskLockProperties.getOperationsIds());
 
 		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
@@ -176,15 +177,10 @@ public class SwingWorkerItemList {
 
 		// NOTE We can not use removeAll, because we only want to remove each ID once.
 		// It might still be locked a second time by an other thread.
-		for (Integer studyId : swi.getParentStudyIds()) {
-			parentStudyIds.remove(studyId);
-		}
-		for (Integer matrixId : swi.getParentMatricesIds()) {
-			parentMatricesIds.remove(matrixId);
-		}
-		for (Integer operationId : swi.getParentOperationsIds()) {
-			parentOperationsIds.remove(operationId);
-		}
+		final TaskLockProperties taskLockProperties = swi.getTask().getTaskLockProperties();
+		parentStudyIds.removeAll(taskLockProperties.getStudyIds());
+		parentMatricesIds.removeAll(taskLockProperties.getMatricesIds());
+		parentOperationsIds.removeAll(taskLockProperties.getOperationsIds());
 	}
 
 	public static int size() {

@@ -64,6 +64,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	/** The result, or <code>null</code> */
 	private OperationKey hardyWeinbergOperationKey;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_HardyWeinberg(final HardyWeinbergOperationParams params) {
 		super(
@@ -73,11 +74,17 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 		this.params = params;
 		this.hardyWeinbergOperationKey = null;
 		this.progressSource = new SuperProgressSource(fullHWProcessInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	public static HardyWeinbergOperationParams createParams(OperationKey censusOpKey) throws IOException {

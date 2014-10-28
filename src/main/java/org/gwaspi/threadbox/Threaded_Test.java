@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -66,6 +67,7 @@ public class Threaded_Test extends CommonRunnable {
 	private final GWASinOneGOParams gwasParams;
 	private final OPType testType;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_Test(
 			OperationKey censusOpKey,
@@ -82,11 +84,23 @@ public class Threaded_Test extends CommonRunnable {
 		this.hwOpKey = hwOpKey;
 		this.gwasParams = gwasParams;
 		this.progressSource = new SuperProgressSource(fullTestProcessInfo, subProgressSourcesAndWeights);
+
+		final MatrixKey matrixKey = censusOpKey.getParentMatrixKey();
+		this.taskLockProperties = new TaskLockProperties();
+		this.taskLockProperties.getStudyIds().add(matrixKey.getStudyId());
+		this.taskLockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		this.taskLockProperties.getOperationsIds().add(censusOpKey.getId());
+		this.taskLockProperties.getOperationsIds().add(hwOpKey.getId());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

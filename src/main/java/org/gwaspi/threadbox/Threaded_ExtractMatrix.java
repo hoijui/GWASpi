@@ -57,17 +57,24 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	private final MatrixDataExtractorParams params;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_ExtractMatrix(MatrixDataExtractorParams params) {
 		super("Extract Data", "from " + params.getMatrixFriendlyName());
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullExtractMatrixInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

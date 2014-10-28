@@ -54,6 +54,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 	private final MatrixGenotypesTranslatorParams params;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_TranslateMatrix(MatrixGenotypesTranslatorParams params) {
 		super(
@@ -62,11 +63,17 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 		this.params = params;
 		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

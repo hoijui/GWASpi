@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -62,17 +63,25 @@ public class Threaded_GWAS extends CommonRunnable {
 
 	private final GWASinOneGOParams gwasParams;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_GWAS(GWASinOneGOParams gwasParams) {
 		super("GWAS", "on " + gwasParams.getMarkerCensusOperationParams().getParent().toString());
 
 		this.gwasParams = gwasParams;
 		this.progressSource = new SuperProgressSource(fullGwasProcessInfo, subProgressSourcesAndWeights);
+		final DataSetKey parentKey = gwasParams.getMarkerCensusOperationParams().getParent();
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(parentKey);
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

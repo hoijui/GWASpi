@@ -19,6 +19,7 @@ package org.gwaspi.threadbox;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -43,13 +44,9 @@ public class MultiOperations {
 	private MultiOperations() {
 	}
 
-	private static void queueTask(CommonRunnable task, TaskLockProperties lockProperties) {
+	private static void queueTask(CommonRunnable task) {
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				lockProperties.getStudyIds().toArray(new Integer[] {}),
-				lockProperties.getMatricesIds().toArray(new Integer[] {}),
-				lockProperties.getOperationsIds().toArray(new Integer[] {}));
+		SwingWorkerItem swi = new SwingWorkerItem(task);
 		SwingWorkerItemList.add(swi);
 	}
 
@@ -57,14 +54,7 @@ public class MultiOperations {
 
 		CommonRunnable task = new Threaded_MatrixQA(parentKey);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentKey.getOrigin().getStudyKey().getId());
-		lockProperties.getMatricesIds().add(parentKey.getOrigin().getMatrixId());
-		if (parentKey.isOperation()) {
-			lockProperties.getOperationsIds().add(parentKey.getOperationParent().getId());
-		}
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	/** LOAD & GWAS if requested and OK */
@@ -80,25 +70,46 @@ public class MultiOperations {
 				performGwas,
 				gwasParams);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(loadDescription.getStudyKey().getId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
-	private static TaskLockProperties createTaskLockProperties(
-			final DataSetKey parent)
-	{
-		final MatrixKey matrixKey = parent.getOrigin();
+	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		lockProperties.getStudyIds().add(dataSet.getOrigin().getStudyId());
+		lockProperties.getMatricesIds().add(dataSet.getOrigin().getMatrixId());
+
+		if (dataSet.isOperation()) {
+			lockProperties.getOperationsIds().add(dataSet.getOperationParent().getId());
+		}
+	}
+
+	public static TaskLockProperties createTaskLockProperties(
+			final DataSetKey parent,
+			final Set<MatrixKey> participatingMatrices)
+	{
+		final TaskLockProperties lockProperties = new TaskLockProperties();
+
+//		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
+//			throw new IllegalStateException(); // FIXME need to fetch the study-id
+//		}
+//		if (params.getMatrixKey().isSpecifiedByName()) {
+//			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
+//		}
+
+		for (MatrixKey participatingMatrix : participatingMatrices) {
+			lockProperties.getStudyIds().add(participatingMatrix.getStudyId());
+			lockProperties.getMatricesIds().add(participatingMatrix.getMatrixId());
+		}
+
 		if (parent.isOperation()) {
 			lockProperties.getOperationsIds().add(parent.getOperationParent().getId());
 		}
 
 		return lockProperties;
+	}
+
+	public static TaskLockProperties createTaskLockProperties(final DataSetKey parent) {
+		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
@@ -108,10 +119,7 @@ public class MultiOperations {
 	{
 		CommonRunnable task = new Threaded_GWAS(gwasParams);
 
-		final DataSetKey parent = gwasParams.getMarkerCensusOperationParams().getParent();
-		TaskLockProperties lockProperties = createTaskLockProperties(parent);
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	/** LOAD & GWAS */
@@ -119,10 +127,7 @@ public class MultiOperations {
 
 		CommonRunnable task = new Threaded_GTFreq_HW(gwasParams);
 
-		final DataSetKey parent = gwasParams.getMarkerCensusOperationParams().getParent();
-		TaskLockProperties lockProperties = createTaskLockProperties(parent);
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	/** LOAD & GWAS */
@@ -138,15 +143,7 @@ public class MultiOperations {
 				gwasParams,
 				testType);
 
-		final MatrixKey matrixKey = censusOPKey.getParentMatrixKey();
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
-		lockProperties.getOperationsIds().add(censusOPKey.getId());
-		lockProperties.getOperationsIds().add(hwOPKey.getId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	public static void doCombiTest(
@@ -155,21 +152,7 @@ public class MultiOperations {
 	{
 		CommonRunnable task = new Threaded_Combi(paramsTest, paramsFilter);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-//		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
-//			throw new IllegalStateException(); // FIXME need to fetch the study-id
-//		}
-//		if (params.getMatrixKey().isSpecifiedByName()) {
-//			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
-//		}
-		Set<MatrixKey> participatingMatrices = paramsTest.getParticipatingMatrices();
-//		participatingMatrices.addAll(paramsFilter.getParticipatingMatrices());
-		for (MatrixKey participatingMatrix : participatingMatrices) {
-			lockProperties.getStudyIds().add(participatingMatrix.getStudyId());
-			lockProperties.getMatricesIds().add(participatingMatrix.getMatrixId());
-		}
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 	//</editor-fold>
 
@@ -185,79 +168,46 @@ public class MultiOperations {
 //		queueTask(task, lockProperties);
 	}
 
-	public static void doExtractData(final MatrixDataExtractorParams params)
-	{
-//		try {
-			CommonRunnable task = new Threaded_ExtractMatrix(params);
+	public static void doExtractData(final MatrixDataExtractorParams params) {
 
-			TaskLockProperties lockProperties = new TaskLockProperties();
-			lockProperties.getStudyIds().add(params.getParent().getOrigin().getStudyId());
-			lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
+		CommonRunnable task = new Threaded_ExtractMatrix(params);
 
-			queueTask(task, lockProperties);
-//		} catch (IOException ex) {
-//			throw new RuntimeException(ex);
-//		}
+		queueTask(task);
 	}
 
 	public static void doTranslateAB12ToACGT(final MatrixGenotypesTranslatorParams params) {
 
 		CommonRunnable task = new Threaded_TranslateMatrix(params);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(params.getParent().getOrigin().getStudyId());
-		lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
-	public static void doExportMatrix(final MatrixExporterParams matrixExporterParams)
-	{
+	public static void doExportMatrix(final MatrixExporterParams matrixExporterParams) {
+
 		CommonRunnable task = new Threaded_ExportMatrix(matrixExporterParams);
 
-		final MatrixKey matrixKey = matrixExporterParams.getParent().getOrigin();
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	public static void doMergeMatrix(final MergeMatrixOperationParams params) {
 
 		CommonRunnable task = new Threaded_MergeMatrices(params);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(params.getParent().getMatrixParent().getStudyKey().getId());
-		lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
-		lockProperties.getMatricesIds().add(params.getSource2().getMatrixParent().getMatrixId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
 	public static void doStrandFlipMatrix(MatrixGenotypesFlipperParams params) {
 
 		CommonRunnable task = new Threaded_FlipStrandMatrix(params);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(params.getParent().getOrigin().getStudyId());
-		lockProperties.getMatricesIds().add(params.getParent().getMatrixParent().getMatrixId());
-
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 
-	public static void updateSampleInfo(
-			final int studyId,
-			final File sampleInfoFile)
-	{
-		CommonRunnable task = new Threaded_UpdateSampleInfo(
-				new StudyKey(studyId),
-				sampleInfoFile);
+	public static void updateSampleInfo(final int studyId, final File sampleInfoFile) {
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		CommonRunnable task = new Threaded_UpdateSampleInfo(new StudyKey(studyId), sampleInfoFile);
 
-		queueTask(task, lockProperties);
+		queueTask(task);
 	}
 	//</editor-fold>
 
@@ -269,25 +219,19 @@ public class MultiOperations {
 
 	public static void deleteStudy(final StudyKey studyKey, final boolean deleteReports) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(
-				studyKey,
-				deleteReports);
+		SwingDeleterItem sdi = new SwingDeleterItem(studyKey, deleteReports);
 		queueDeleteTask(sdi);
 	}
 
 	public static void deleteMatrix(final MatrixKey matrixKey, final boolean deleteReports) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(
-				matrixKey,
-				deleteReports);
+		SwingDeleterItem sdi = new SwingDeleterItem(matrixKey, deleteReports);
 		queueDeleteTask(sdi);
 	}
 
 	public static void deleteOperation(final OperationKey operationKey, final boolean deleteReports) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(
-				operationKey,
-				deleteReports);
+		SwingDeleterItem sdi = new SwingDeleterItem(operationKey, deleteReports);
 		queueDeleteTask(sdi);
 	}
 	//</editor-fold>

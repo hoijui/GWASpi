@@ -27,6 +27,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -78,6 +79,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 	private final GWASinOneGOParams gwasParams;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 	private OperationKey markerCensusOperationKey;
 	private OperationKey hardyWeinbergOperationKey;
 
@@ -88,6 +90,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 		this.gwasParams = gwasParams;
 		this.progressSource = new SuperProgressSource(mcAndHwProcessInfo, subProgressSourcesAndWeights);
+		final DataSetKey parentKey = gwasParams.getMarkerCensusOperationParams().getParent();
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(parentKey);
 		this.markerCensusOperationKey = null;
 		this.hardyWeinbergOperationKey = null;
 	}
@@ -95,6 +99,11 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

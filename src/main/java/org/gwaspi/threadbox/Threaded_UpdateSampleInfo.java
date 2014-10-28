@@ -45,6 +45,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private final StudyKey studyKey;
 	private final File sampleInfoFile;
 	private final ProgressHandler progressHandler;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_UpdateSampleInfo(StudyKey studyKey, File sampleInfoFile) {
 		super("Sample Info Update", "on Study ID: " + studyKey);
@@ -52,11 +53,18 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		this.studyKey = studyKey;
 		this.sampleInfoFile = sampleInfoFile;
 		this.progressHandler = new IndeterminateProgressHandler(processInfo);
+		this.taskLockProperties = new TaskLockProperties();
+		this.taskLockProperties.getStudyIds().add(studyKey.getId());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressHandler;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

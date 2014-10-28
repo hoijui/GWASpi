@@ -17,9 +17,6 @@
 
 package org.gwaspi.threadbox;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.slf4j.Logger;
@@ -34,22 +31,12 @@ public class SwingWorkerItem {
 	private String startTime;
 	private String endTime;
 	private QueueState queueState;
-	private final Collection<Integer> parentStudyIds;
-	private final Collection<Integer> parentMatricesIds;
-	private final Collection<Integer> parentOperationsIds;
 
-	SwingWorkerItem(
-			CommonRunnable task,
-			Integer[] parentStudyIds,
-			Integer[] parentMatricesIds,
-			Integer[] parentOperationsIds)
-	{
+	SwingWorkerItem(final CommonRunnable task) {
+
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.task = task;
 		this.queueState = QueueState.QUEUED;
-		this.parentStudyIds = Collections.unmodifiableCollection(Arrays.asList(parentStudyIds));
-		this.parentMatricesIds = Collections.unmodifiableCollection(Arrays.asList(parentMatricesIds));
-		this.parentOperationsIds = Collections.unmodifiableCollection(Arrays.asList(parentOperationsIds));
 	}
 
 	public static ProcessStatus toProcessStatus(QueueState queueState) {
@@ -91,18 +78,6 @@ public class SwingWorkerItem {
 
 	public CommonRunnable getTask() {
 		return task;
-	}
-
-	public Collection<Integer> getParentMatricesIds() {
-		return parentMatricesIds;
-	}
-
-	public Collection<Integer> getParentOperationsIds() {
-		return parentOperationsIds;
-	}
-
-	public Collection<Integer> getParentStudyIds() {
-		return parentStudyIds;
 	}
 
 	public String getTimeStamp() {

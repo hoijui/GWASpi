@@ -246,7 +246,7 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 		int count = 0;
 		for (SwingWorkerItem swingWorkerItem : swingWorkerItems) {
 			StringBuilder studyIdsStr = new StringBuilder();
-			for (Integer studyId : swingWorkerItem.getParentStudyIds()) {
+			for (Integer studyId : swingWorkerItem.getTask().getTaskLockProperties().getStudyIds()) {
 				studyIdsStr.append(", ");
 				studyIdsStr.append(studyId.toString());
 			}

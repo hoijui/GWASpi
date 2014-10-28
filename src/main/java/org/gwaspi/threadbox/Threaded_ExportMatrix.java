@@ -29,12 +29,14 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 
 	private final MatrixExporterParams params;
 	private final ProgressHandlerForwarder progressForwarder;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_ExportMatrix(final MatrixExporterParams params) {
 		super("Export Data", "from " + params.getParent().toString());
 
 		this.params = params;
 		this.progressForwarder = new ProgressHandlerForwarder(MatrixExporter.PROCESS_INFO);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
 	@Override
@@ -45,6 +47,11 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressForwarder;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

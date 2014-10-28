@@ -79,6 +79,7 @@ public class Threaded_Combi extends CommonRunnable {
 	private final CombiTestOperationParams paramsTest;
 	private final ByCombiWeightsFilterOperationParams paramsFilter;
 	private final SuperProgressSource progressSource;
+	private final TaskLockProperties taskLockProperties;
 
 	public Threaded_Combi(
 			final CombiTestOperationParams paramsTest,
@@ -89,11 +90,17 @@ public class Threaded_Combi extends CommonRunnable {
 		this.paramsTest = paramsTest;
 		this.paramsFilter = paramsFilter;
 		this.progressSource = new SuperProgressSource(fullCombiProcessInfo, subProgressSourcesAndWeights);
+		this.taskLockProperties = MultiOperations.createTaskLockProperties(paramsTest.getParent());
 	}
 
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return taskLockProperties;
 	}
 
 	@Override

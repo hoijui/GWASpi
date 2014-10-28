@@ -41,6 +41,8 @@ public abstract class CommonRunnable implements Runnable {
 
 	public abstract ProgressSource getProgressSource();
 
+	public abstract TaskLockProperties getTaskLockProperties();
+
 	protected Logger getLog() {
 		return log;
 	}
