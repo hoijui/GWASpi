@@ -17,7 +17,6 @@
 
 package org.gwaspi.threadbox;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

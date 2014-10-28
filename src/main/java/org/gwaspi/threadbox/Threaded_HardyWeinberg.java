@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_HardyWeinberg extends CommonRunnable {
+
 	private static final ProcessInfo fullHWProcessInfo
 			= new DefaultProcessInfo("Full Hardy & Weinberg Test",
 					"Complete Hardy & Weinberg Test and generation of reports"); // TODO
