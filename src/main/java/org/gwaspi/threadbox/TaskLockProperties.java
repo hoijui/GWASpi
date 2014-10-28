@@ -29,9 +29,9 @@ import java.util.Collection;
  */
 public class TaskLockProperties {
 
-	private Collection<Integer> studyIds;
-	private Collection<Integer> matricesIds;
-	private Collection<Integer> operationsIds;
+	private final Collection<Integer> studyIds;
+	private final Collection<Integer> matricesIds;
+	private final Collection<Integer> operationsIds;
 
 	public TaskLockProperties() {
 
