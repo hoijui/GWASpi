@@ -159,6 +159,12 @@ public class SwingDeleterItem extends CommonRunnable {
 
 	public void setQueueState(QueueState queueState) {
 
+		if (!QueueState.isFinalizingState(this.queueState)
+				&& QueueState.isFinalizingState(queueState))
+		{
+			// we changed from an active state into an end state
+			setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		}
 		this.queueState = queueState;
 		progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
 	}

@@ -166,7 +166,6 @@ public class SwingDeleterItemList {
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				currentSdi.setQueueState(endQueueState);
-				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				break;
 			}
 		}
