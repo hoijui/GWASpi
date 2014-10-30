@@ -94,9 +94,9 @@ public class Text {
 		public static final String cancel = "Cancel";
 		public static final String abort = "Abort";
 		public static final String next = "Next";
-		public static final String file1 = "File 1";
-		public static final String file2 = "File 2";
-		public static final String file3 = "File 3";
+		public static final String file1 = "File 1"; // FIXME unuse this, as it is too unspecific
+		public static final String file2 = "File 2"; // FIXME unuse this, as it is too unspecific
+		public static final String file3 = "File 3"; // FIXME unuse this, as it is too unspecific
 		public static final String folder = "Folder";
 		public static final String createDate = "Create Date";
 		public static final String warnLoadError = "An error has ocurred while loading the data!";
