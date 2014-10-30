@@ -57,6 +57,20 @@ public class SwingWorkerItemList {
 		}
 	}
 
+	private static boolean startNow(final SwingWorkerItem swingWorkerItem) {
+
+		boolean started = false;
+
+		if (swingWorkerItem.getQueueState().equals(QueueState.QUEUED)) {
+			final Thread thread = new Thread(swingWorkerItem.getTask(), swingWorkerItem.getTask().getName());
+			thread.start();
+			swingWorkerItem.setQueueState(QueueState.PROCESSING);
+			started = true;
+		}
+
+		return started;
+	}
+
 	public static void add(SwingWorkerItem swi) {
 
 		SwingDeleterItemList.purgeDoneDeletes();
@@ -78,9 +92,7 @@ public class SwingWorkerItemList {
 
 		// START PROCESSING NEWLY ADDED SwingWorker
 		if (kickStart) {
-			Thread thread = new Thread(swi.getTask(), swi.getTask().getName());
-			thread.start();
-			swi.setQueueState(QueueState.PROCESSING);
+			startNow(swi);
 		}
 
 		final TaskEvent taskEvent = new TaskEvent(swi.getTask(), swi.getTask().getProgressSource());
@@ -90,11 +102,8 @@ public class SwingWorkerItemList {
 	public static void startNext() {
 		boolean started = false;
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
-				Thread thread = new Thread(currentSwi.getTask(), currentSwi.getTask().getName());
-				thread.start();
-				currentSwi.setQueueState(QueueState.PROCESSING);
-				started = true;
+			started = startNow(currentSwi);
+			if (started) {
 				break;
 			}
 		}
