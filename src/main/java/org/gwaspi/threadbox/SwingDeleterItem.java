@@ -161,7 +161,6 @@ public class SwingDeleterItem extends CommonRunnable {
 		}
 
 		return description;
-
 	}
 
 	public void setQueueState(QueueState queueState) {
