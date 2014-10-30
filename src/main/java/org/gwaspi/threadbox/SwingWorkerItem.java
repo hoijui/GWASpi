@@ -35,6 +35,8 @@ public class SwingWorkerItem {
 	SwingWorkerItem(final CommonRunnable task) {
 
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
+		this.startTime = null;
+		this.endTime = null;
 		this.task = task;
 		this.queueState = QueueState.QUEUED;
 	}
@@ -86,6 +88,11 @@ public class SwingWorkerItem {
 
 	public void setQueueState(QueueState queueState) {
 
+		if ((startTime == null) && queueState.equals(QueueState.PROCESSING)) {
+			setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		} else if ((endTime == null) && QueueState.isFinalizingState(queueState)) {
+			setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		}
 		this.queueState = queueState;
 
 		if (task.getProgressSource() instanceof ProgressHandler) {
@@ -100,11 +107,11 @@ public class SwingWorkerItem {
 		}
 	}
 
-	public void setEndTime(String endTime) {
+	private void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 
-	public void setStartTime(String startTime) {
+	private void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 }
