@@ -88,29 +88,6 @@ public class SwingDeleterItemList {
 		return swingDeleterItems;
 	}
 
-	/** @deprecated unused! */
-	private static void flagCurrentItemAborted() {
-		flagCurrentItemEnd(QueueState.ABORT);
-	}
-
-	/** @deprecated unused! */
-	private static void flagCurrentItemError() {
-		flagCurrentItemEnd(QueueState.ERROR);
-	}
-
-	private static void flagCurrentItemDeleted() {
-		flagCurrentItemEnd(QueueState.DELETED);
-	}
-
-	private static void flagCurrentItemEnd(QueueState endQueueState) {
-		for (SwingDeleterItem currentSdi : swingDeleterItems) {
-			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
-				currentSdi.setQueueState(endQueueState);
-				break;
-			}
-		}
-	}
-
 	public static int size() {
 		return swingDeleterItems.size();
 	}
