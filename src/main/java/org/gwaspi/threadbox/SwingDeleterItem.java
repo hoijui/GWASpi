@@ -39,7 +39,7 @@ public class SwingDeleterItem extends CommonRunnable {
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
-	private String launchTime;
+	private String launchTime; // TODO change this to type Date. same with the two other times
 	private String startTime;
 	private String endTime;
 	private QueueState queueState;
