@@ -688,7 +688,7 @@ public class MatrixAnalysePanel extends JPanel {
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests()))
 				{
 					// At least one test has been picked
-					log.info(Text.All.processing);
+					log.info("Running tests(s) ...");
 					final Window windowAncestor = SwingUtilities.getWindowAncestor(dialogParent);
 					windowAncestor.setCursor(CursorUtils.WAIT_CURSOR);
 					// use Sample Info affection state from the DB

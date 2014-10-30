@@ -121,7 +121,6 @@ class TestScriptCommand extends AbstractScriptCommand {
 
 			// test block
 			if (gwasParams.isProceed()) {
-				System.out.println(Text.All.processing);
 				MultiOperations.doTest(
 						gtFreqKey,
 						hwKey,

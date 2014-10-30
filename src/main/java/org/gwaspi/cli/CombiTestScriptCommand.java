@@ -20,7 +20,6 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
@@ -106,7 +105,6 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					"Filter on " + resultOperationName);
 
 			// test block
-			System.out.println(Text.All.processing);
 			MultiOperations.doCombiTest(paramsTest, paramsFilter);
 
 			return true;

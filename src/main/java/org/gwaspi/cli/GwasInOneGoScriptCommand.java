@@ -20,7 +20,6 @@ package org.gwaspi.cli;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
@@ -116,7 +115,6 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 
 			// GWAS block
 			if (gwasParams.isProceed()) {
-				System.out.println(Text.All.processing);
 				MultiOperations.doGWASwithAlterPhenotype(gwasParams);
 				return true;
 			}

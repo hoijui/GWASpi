@@ -209,7 +209,6 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 
 		// WRITE GENOTYPES
 		dataSetDestination.startLoadingAlleles(false);
-		log.info(Text.All.processing);
 		int markerIndex = 0;
 		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
 		markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
