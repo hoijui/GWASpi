@@ -177,7 +177,7 @@ public class SwingDeleterItem extends CommonRunnable {
 		progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
 	}
 
-	public void setEndTime(String endTime) {
+	private void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 
