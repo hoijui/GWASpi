@@ -136,7 +136,7 @@ public class SwingDeleterItemList {
 			try {
 				MultiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {
-				log.warn(null, ex);
+				log.warn("Failed to update GUI tree after deleting items", ex);
 			}
 			GWASpiExplorerPanel.getSingleton().setAllNodesCollapsable();
 		} else {
