@@ -17,9 +17,15 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
+import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.StudyList;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.IndeterminateProgressHandler;
 import org.gwaspi.progress.ProcessStatus;
@@ -30,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class SwingDeleterItem extends CommonRunnable {
 
+	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
 	private String launchTime;
@@ -194,6 +201,69 @@ public class SwingDeleterItem extends CommonRunnable {
 
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
-		throw new UnsupportedOperationException("This is implemented in SwingDeleterItemList. Maybe change to here?"); // TODO
+
+		// we are actually going to delete the item
+		if (getQueueState().equals(QueueState.QUEUED)) {
+			if (getStudyKey() != null) {
+				try {
+					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+					setQueueState(QueueState.PROCESSING);
+
+					StudyList.deleteStudy(getStudyKey(), isDeleteReports());
+					MultiOperations.printCompleted("deleting Study ID: " + getStudyKey());
+
+					GWASpiExplorerNodes.deleteStudyNode(getStudyKey());
+					setQueueState(QueueState.DONE);
+				} catch (IOException ex) {
+					log.error("Failed to delete study with ID: " + getStudyKey().toRawIdString(), ex);
+					setQueueState(QueueState.ERROR);
+				}
+			} else if (getMatrixKey() != null) {
+				try {
+					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+					setQueueState(QueueState.PROCESSING);
+
+					MatricesList.deleteMatrix(getMatrixKey(), isDeleteReports());
+					MultiOperations.printCompleted("deleting Matrix ID:" + getMatrixKey());
+
+					GWASpiExplorerNodes.deleteMatrixNode(getMatrixKey());
+					setQueueState(QueueState.DONE);
+				} catch (IOException ex) {
+					log.error("Failed to delete matrix with ID: " + getMatrixKey().toRawIdString(), ex);
+					setQueueState(QueueState.ERROR);
+				}
+			} else if (getOperationKey() != null) {
+				try {
+					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+					setQueueState(QueueState.PROCESSING);
+
+					OperationsList.deleteOperation(
+							getOperationKey(),
+							isDeleteReports());
+					MultiOperations.printCompleted("deleting Operation ID: " + getOperationKey());
+
+					GWASpiExplorerNodes.deleteOperationNode(getOperationKey());
+					setQueueState(QueueState.DONE);
+				} catch (IOException ex) {
+					log.error("Failed to delete operation with ID: " + getOperationKey().toRawIdString(), ex);
+					setQueueState(QueueState.ERROR);
+				}
+			} else {
+				// DELETE REPORTS BY MATRIX-ID -- NOT IN USE!
+				try {
+					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+					setQueueState(QueueState.PROCESSING);
+
+					ReportsList.deleteReportByMatrixKey(getMatrixKey());
+					MultiOperations.printCompleted("deleting Reports from Matrix ID: " + getMatrixKey());
+
+					setQueueState(QueueState.DONE);
+				} catch (IOException ex) {
+					log.error("Failed to delete reports for matrix with ID: " + getMatrixKey().toRawIdString(), ex);
+					setQueueState(QueueState.ERROR);
+				}
+				throw new RuntimeException("We should never end up in this code branch!"); // why? it is currently not supported.. (in other parts of the code too), but why?
+			}
+		}
 	}
 }
