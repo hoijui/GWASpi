@@ -167,10 +167,9 @@ public class SwingDeleterItem extends CommonRunnable {
 
 	public void setQueueState(QueueState queueState) {
 
-		if (!QueueState.isFinalizingState(this.queueState)
-				&& QueueState.isFinalizingState(queueState))
-		{
-			// we changed from an active state into an end state
+		if ((startTime == null) && queueState.equals(QueueState.PROCESSING)) {
+			setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		} else if ((endTime == null) && QueueState.isFinalizingState(queueState)) {
 			setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		}
 		this.queueState = queueState;
@@ -181,7 +180,7 @@ public class SwingDeleterItem extends CommonRunnable {
 		this.endTime = endTime;
 	}
 
-	public void setStartTime(String startTime) {
+	private void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 
@@ -207,7 +206,6 @@ public class SwingDeleterItem extends CommonRunnable {
 		if (getQueueState().equals(QueueState.QUEUED)) {
 			if (getStudyKey() != null) {
 				try {
-					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					setQueueState(QueueState.PROCESSING);
 
 					StudyList.deleteStudy(getStudyKey(), isDeleteReports());
@@ -221,7 +219,6 @@ public class SwingDeleterItem extends CommonRunnable {
 				}
 			} else if (getMatrixKey() != null) {
 				try {
-					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					setQueueState(QueueState.PROCESSING);
 
 					MatricesList.deleteMatrix(getMatrixKey(), isDeleteReports());
@@ -235,7 +232,6 @@ public class SwingDeleterItem extends CommonRunnable {
 				}
 			} else if (getOperationKey() != null) {
 				try {
-					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					setQueueState(QueueState.PROCESSING);
 
 					OperationsList.deleteOperation(
@@ -252,7 +248,6 @@ public class SwingDeleterItem extends CommonRunnable {
 			} else {
 				// DELETE REPORTS BY MATRIX-ID -- NOT IN USE!
 				try {
-					setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					setQueueState(QueueState.PROCESSING);
 
 					ReportsList.deleteReportByMatrixKey(getMatrixKey());
