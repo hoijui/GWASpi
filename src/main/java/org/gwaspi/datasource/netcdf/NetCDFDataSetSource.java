@@ -46,7 +46,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- * TODO add description
+ * TODO add class description
  * TODO rename to MatrixNetCdfDataSetSource
  */
 public class NetCDFDataSetSource implements DataSetSource {

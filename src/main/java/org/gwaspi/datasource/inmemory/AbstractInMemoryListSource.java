@@ -25,7 +25,7 @@ import org.gwaspi.global.ExtractorList;
 import org.gwaspi.model.MatrixKey;
 
 /**
- * TODO
+ * TODO add class description
  * @param <VT> list value type
  */
 public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<VT> {

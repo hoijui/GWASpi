@@ -18,7 +18,7 @@
 package org.gwaspi.model;
 
 /**
- * TODO
+ * TODO add class description
  */
 public interface MarkersKeysSource extends AbstractKeysSource<MarkerKey> {
 }

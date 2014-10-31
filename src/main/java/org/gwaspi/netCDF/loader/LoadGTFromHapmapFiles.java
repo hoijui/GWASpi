@@ -161,7 +161,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 		for (int i = Standard.sampleId; i < headerFields.length; i++) {
-			sampleOrderMap.put(SampleKey.valueOf(studyKey, headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId?
+			sampleOrderMap.put(SampleKey.valueOf(studyKey, headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId? seems so! one field before the sampleID, see: https://www.broadinstitute.org/science/programs/medical-and-population-genetics/haploview/input-file-formats-0
 		}
 		Object sampleColumnNb = sampleOrderMap.get(sampleKey);
 

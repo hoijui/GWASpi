@@ -21,7 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 /**
- * TODO
+ * TODO add class description
  */
 public class MinMaxDoubleVerifier extends InputVerifier {
 

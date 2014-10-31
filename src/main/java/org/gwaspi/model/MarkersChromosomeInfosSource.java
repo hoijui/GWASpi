@@ -20,7 +20,7 @@ package org.gwaspi.model;
 import java.util.List;
 
 /**
- * TODO
+ * TODO add class description
  */
 public interface MarkersChromosomeInfosSource extends List<ChromosomeInfo> {
 }

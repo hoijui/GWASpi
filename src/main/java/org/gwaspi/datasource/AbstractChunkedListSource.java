@@ -22,7 +22,7 @@ import java.util.AbstractList;
 import java.util.List;
 
 /**
- * TODO
+ * TODO add class description
  * @param <VT> list value type
  */
 public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> implements ListSource<VT> {

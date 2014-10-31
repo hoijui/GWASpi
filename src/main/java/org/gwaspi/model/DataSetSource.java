@@ -20,7 +20,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 
 /**
- * TODO
+ * TODO add class description
  */
 public interface DataSetSource {
 

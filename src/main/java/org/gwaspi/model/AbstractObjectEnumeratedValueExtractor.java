@@ -20,7 +20,7 @@ import java.util.Iterator;
 import org.gwaspi.global.EnumeratedValueExtractor;
 
 /**
- * TODO
+ * TODO add class description
  */
 public abstract class AbstractObjectEnumeratedValueExtractor<V> implements EnumeratedValueExtractor<V, Iterator<Integer>> {
 

@@ -20,7 +20,7 @@ package org.gwaspi.model;
 import org.gwaspi.datasource.ListSource;
 
 /**
- * TODO
+ * TODO add class description
  */
 public interface ChromosomesInfosSource extends ListSource<ChromosomeInfo> {
 }

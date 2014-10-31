@@ -21,6 +21,12 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * TODO add class description
+ * @deprecated this class is currently unused, and also not implemented; delete it?
+ * @param <KT>
+ * @param <VT>
+ */
 public class DoubleListBackedMap<KT, VT> extends AbstractMap<KT, VT> {
 
 	private final List<KT> keys;
@@ -43,7 +49,6 @@ public class DoubleListBackedMap<KT, VT> extends AbstractMap<KT, VT> {
 
 	@Override
 	public Set<Entry<KT, VT>> entrySet() {
-		// To change body of generated methods, choose Tools | Templates.
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		throw new UnsupportedOperationException("Not supported yet."); // TODO implement this!
 	}
 }

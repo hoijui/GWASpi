@@ -23,7 +23,7 @@ import java.util.Map;
 import org.gwaspi.datasource.ListSource;
 
 /**
- * TODO
+ * TODO add class description
  * @param <VT> value type
  */
 public interface AbstractKeysSource<VT> extends ListSource<VT> {

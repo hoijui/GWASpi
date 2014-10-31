@@ -164,7 +164,7 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public StudyKey insertStudy(Study study) { // TODO return StudyKey instead
+	public StudyKey insertStudy(Study study) {
 
 		EntityManager em = null;
 		try {

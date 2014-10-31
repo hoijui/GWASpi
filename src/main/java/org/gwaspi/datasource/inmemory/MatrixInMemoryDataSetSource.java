@@ -40,8 +40,7 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 
 /**
- * TODO add description
- * TODO rename to MatrixNetCdfDataSetSource
+ * TODO add class description
  */
 public class MatrixInMemoryDataSetSource implements DataSetSource {
 

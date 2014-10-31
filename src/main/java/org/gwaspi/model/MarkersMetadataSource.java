@@ -22,7 +22,7 @@ import java.util.List;
 import org.gwaspi.datasource.ListSource;
 
 /**
- * TODO
+ * TODO add class description
  */
 public interface MarkersMetadataSource extends ListSource<MarkerMetadata> {
 

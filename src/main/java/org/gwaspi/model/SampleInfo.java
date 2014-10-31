@@ -478,7 +478,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 		boolean equal = false;
 
-		if (other instanceof SampleInfo) { // TODO replace with sampleKey.equals other.sampleKey
+		if (other instanceof SampleInfo) { // TODO replace with sampleKey.equals other.sampleKey for code reuse ++
 			SampleInfo otherSampleInfo = (SampleInfo) other;
 			equal = getFamilyId().equals(otherSampleInfo.getFamilyId());
 			equal = equal && (getStudyId() == otherSampleInfo.getStudyId());

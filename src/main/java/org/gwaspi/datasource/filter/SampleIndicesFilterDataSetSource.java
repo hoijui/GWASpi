@@ -31,7 +31,7 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 
 /**
- * TODO
+ * TODO add class description
  */
 public class SampleIndicesFilterDataSetSource implements DataSetSource {
 

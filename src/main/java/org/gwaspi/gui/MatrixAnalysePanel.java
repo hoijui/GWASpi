@@ -386,12 +386,12 @@ public class MatrixAnalysePanel extends JPanel {
 						if (reProceed) {
 							if (testType == OPType.COMBI_ASSOC_TEST) {
 								combiTestParams = new CombiTestOperationParams(qaMarkersOffspringKeys.get(0));
-								combiTestParams = CombiTestParamsGUI.chooseParams(dialogParent, combiTestParams, qaMarkersOffspringKeys); // HACK FIXME for COMBI
+								combiTestParams = CombiTestParamsGUI.chooseParams(dialogParent, combiTestParams, qaMarkersOffspringKeys);
 								if (combiTestParams != null) {
 									OperationMetadata testParentOperation = OperationsList.getOperationMetadata(combiTestParams.getParent().getOperationParent());
 									final int totalMarkers = testParentOperation.getNumMarkers();
 									combiFilterParams = new ByCombiWeightsFilterOperationParams(totalMarkers);
-									combiFilterParams = ByCombiWeightsFilterOperationParamsEditor.chooseParams(dialogParent, combiFilterParams, null); // HACK FIXME for COMBI
+									combiFilterParams = ByCombiWeightsFilterOperationParamsEditor.chooseParams(dialogParent, combiFilterParams, null);
 									if (combiFilterParams != null) {
 										gwasParams.setProceed(true);
 									}
