@@ -59,7 +59,9 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -658,11 +660,12 @@ public class LoadDataPanel extends JPanel {
 									gwasParams.getStrandType(),
 									gwasParams.getGtCode()
 									);
-							MultiOperations.loadMatrixDoGWASifOK(
+							final CommonRunnable loadGwasTask = new Threaded_Loader_GWASifOK(
 									loadDescription,
 									dummySamples,
 									performGwasInOneGo == JOptionPane.YES_OPTION,
 									gwasParams);
+							MultiOperations.queueTask(loadGwasTask);
 
 							ProcessTab.getSingleton().showTab();
 						}

@@ -23,7 +23,9 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
 
 class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 
@@ -76,11 +78,12 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 					gwasParams.getStrandType(),
 					gwasParams.getGtCode() // Gt code (deprecated)
 					);
-			MultiOperations.loadMatrixDoGWASifOK(
+			final CommonRunnable loadGwasTask = new Threaded_Loader_GWASifOK(
 					loadDescription, // Format
 					Boolean.parseBoolean(args.get("use-dummy-samples")), // Dummy samples
 					false, // Do GWAS
 					gwasParams); // gwasParams (dummy)
+			MultiOperations.queueTask(loadGwasTask);
 
 			return true;
 		}

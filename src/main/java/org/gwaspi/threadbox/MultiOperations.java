@@ -29,7 +29,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
-import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
@@ -44,7 +43,7 @@ public class MultiOperations {
 	private MultiOperations() {
 	}
 
-	private static void queueTask(CommonRunnable task) {
+	public static void queueTask(CommonRunnable task) {
 
 		SwingWorkerItem swi = new SwingWorkerItem(task);
 		SwingWorkerItemList.add(swi);
@@ -53,22 +52,6 @@ public class MultiOperations {
 	public static void doMatrixQAs(final DataSetKey parentKey) {
 
 		CommonRunnable task = new Threaded_MatrixQA(parentKey);
-
-		queueTask(task);
-	}
-
-	/** LOAD & GWAS if requested and OK */
-	public static void loadMatrixDoGWASifOK(
-			final GenotypesLoadDescription loadDescription,
-			final boolean dummySamples,
-			final boolean performGwas,
-			final GWASinOneGOParams gwasParams)
-	{
-		CommonRunnable task = new Threaded_Loader_GWASifOK(
-				loadDescription,
-				dummySamples,
-				performGwas,
-				gwasParams);
 
 		queueTask(task);
 	}
