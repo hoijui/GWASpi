@@ -32,7 +32,7 @@ import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
 
-class TestScriptCommand extends AbstractScriptCommand {
+public class TestScriptCommand extends AbstractScriptCommand {
 
 	private static final List<OPType> QA_OPERATION_TYPES;
 	static {
@@ -134,16 +134,18 @@ class TestScriptCommand extends AbstractScriptCommand {
 		return false;
 	}
 
-	static void ensureMatrixQAs(final MatrixKey matrixKey, final GWASinOneGOParams gwasParams) {
+	public static void ensureQAOperations(final DataSetKey dataSetKey, final GWASinOneGOParams gwasParams) {
 
-		final DataSetKey abstractMatrixKey = new DataSetKey(matrixKey);
-
-		final List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(QA_OPERATION_TYPES, abstractMatrixKey, true);
+		final List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(QA_OPERATION_TYPES, dataSetKey, true);
 
 		if (gwasParams.isProceed() && missingOPs.size() > 0) {
 			gwasParams.setProceed(false);
 			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-			MultiOperations.doMatrixQAs(abstractMatrixKey);
+			MultiOperations.doMatrixQAs(dataSetKey);
 		}
+	}
+
+	public static void ensureMatrixQAs(final MatrixKey matrixKey, final GWASinOneGOParams gwasParams) {
+		ensureQAOperations(new DataSetKey(matrixKey), gwasParams);
 	}
 }

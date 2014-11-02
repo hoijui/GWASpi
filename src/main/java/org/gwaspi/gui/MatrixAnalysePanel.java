@@ -44,6 +44,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.gwaspi.cli.TestScriptCommand;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -446,11 +447,6 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				List<OPType> necessaryOPs = new ArrayList<OPType>();
-				necessaryOPs.add(OPType.SAMPLE_QA);
-				necessaryOPs.add(OPType.MARKER_QA);
-				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, observedElementKey, true);
-
 				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(observedElementKey, OPType.MARKER_QA);
 				if (qaMarkersOps.isEmpty()) {
 					Dialogs.showWarningDialogue("You must perform a Markers Quality Assurance before running a Marker Census operation!");
@@ -502,14 +498,7 @@ public class MatrixAnalysePanel extends JPanel {
 					ProcessTab.getSingleton().showTab();
 				}
 
-				// <editor-fold defaultstate="expanded" desc="QA BLOCK">
-				if (gwasParams.isProceed() && missingOPs.size() > 0) {
-					gwasParams.setProceed(false);
-					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(observedElementKey);
-				}
-				// </editor-fold>
-
+				TestScriptCommand.ensureQAOperations(observedElementKey, gwasParams);
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
 				gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
@@ -641,11 +630,6 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				List<OPType> necessaryOPs = new ArrayList<OPType>();
-				necessaryOPs.add(OPType.SAMPLE_QA);
-				necessaryOPs.add(OPType.MARKER_QA);
-				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, observedElementKey, true);
-
 				DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
@@ -675,12 +659,7 @@ public class MatrixAnalysePanel extends JPanel {
 					ProcessTab.getSingleton().showTab();
 				}
 
-				// QA BLOCK
-				if (gwasParams.isProceed() && missingOPs.size() > 0) {
-					gwasParams.setProceed(false);
-					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(observedElementKey);
-				}
+				TestScriptCommand.ensureQAOperations(observedElementKey, gwasParams);
 
 				// GWAS BLOCK
 				if (gwasParams.isProceed()
