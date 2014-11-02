@@ -25,7 +25,9 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_GTFreq_HW;
 
 class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand {
 
@@ -100,7 +102,8 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
-				MultiOperations.doGTFreqDoHW(gwasParams);
+				final CommonRunnable gtFreqHwTask = new Threaded_GTFreq_HW(gwasParams);
+				MultiOperations.queueTask(gtFreqHwTask);
 				return true;
 			}
 		}

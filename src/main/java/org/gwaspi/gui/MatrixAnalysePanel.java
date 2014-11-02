@@ -75,8 +75,10 @@ import org.gwaspi.operations.combi.CombiTestParamsGUI;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.Threaded_GTFreq_HW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -502,7 +504,9 @@ public class MatrixAnalysePanel extends JPanel {
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
 				gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
-				MultiOperations.doGTFreqDoHW(gwasParams);
+				final CommonRunnable gtFreqHwTask = new Threaded_GTFreq_HW(gwasParams);
+				MultiOperations.queueTask(gtFreqHwTask);
+
 			}
 			// </editor-fold>
 			} catch (Exception ex) {

@@ -99,14 +99,6 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doGTFreqDoHW(final GWASinOneGOParams gwasParams) {
-
-		CommonRunnable task = new Threaded_GTFreq_HW(gwasParams);
-
-		queueTask(task);
-	}
-
-	/** LOAD & GWAS */
 	public static void doTest(
 			final OperationKey censusOPKey,
 			final OperationKey hwOPKey,
