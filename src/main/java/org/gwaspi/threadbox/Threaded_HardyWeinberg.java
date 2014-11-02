@@ -27,7 +27,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.MatrixOperation;
-import static org.gwaspi.operations.OperationManager.performOperation;
+import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
@@ -115,14 +115,14 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 			final MatrixOperation operation = new HardyWeinbergOperation(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW, operation.getProgressSource(), null);
 			progressSource.setNewStatus(ProcessStatus.RUNNING);
-			hardyWeinbergOperationKey = performOperation(operation);
+			hardyWeinbergOperationKey = OperationManager.performOperation(operation);
 
 			final HardyWeinbergOutputParams hardyWeinbergOutputParams
 					= new HardyWeinbergOutputParams(hardyWeinbergOperationKey, params.getMarkersQAOpKey());
 			final OutputHardyWeinberg outputHardyWeinberg
 					= new OutputHardyWeinberg(hardyWeinbergOutputParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW_REPORTS, outputHardyWeinberg.getProgressSource(), null);
-			performOperation(outputHardyWeinberg);
+			OperationManager.performOperation(outputHardyWeinberg);
 			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 		}
 	}
