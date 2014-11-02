@@ -49,13 +49,6 @@ public class MultiOperations {
 		SwingWorkerItemList.add(swi);
 	}
 
-	public static void doMatrixQAs(final DataSetKey parentKey) {
-
-		CommonRunnable task = new Threaded_MatrixQA(parentKey);
-
-		queueTask(task);
-	}
-
 	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
 
 		lockProperties.getStudyIds().add(dataSet.getOrigin().getStudyId());

@@ -30,7 +30,9 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_MatrixQA;
 
 public class TestScriptCommand extends AbstractScriptCommand {
 
@@ -141,7 +143,8 @@ public class TestScriptCommand extends AbstractScriptCommand {
 		if (gwasParams.isProceed() && missingOPs.size() > 0) {
 			gwasParams.setProceed(false);
 			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-			MultiOperations.doMatrixQAs(dataSetKey);
+			final CommonRunnable task = new Threaded_MatrixQA(dataSetKey);
+			MultiOperations.queueTask(task);
 		}
 	}
 
