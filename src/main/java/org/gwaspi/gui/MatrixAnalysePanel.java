@@ -79,6 +79,7 @@ import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_GTFreq_HW;
+import org.gwaspi.threadbox.Threaded_GWAS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -681,7 +682,8 @@ public class MatrixAnalysePanel extends JPanel {
 							&& affectionStates.contains(Affection.AFFECTED))
 					{
 						gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
-						MultiOperations.doGWASwithAlterPhenotype(gwasParams);
+						final CommonRunnable gwasTask = new Threaded_GWAS(gwasParams);
+						MultiOperations.queueTask(gwasTask);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
 						MultiOperations.updateProcessOverviewStartNext();

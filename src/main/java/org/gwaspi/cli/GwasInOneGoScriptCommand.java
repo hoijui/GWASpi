@@ -25,7 +25,9 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_GWAS;
 
 class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 
@@ -115,7 +117,8 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 
 			// GWAS block
 			if (gwasParams.isProceed()) {
-				MultiOperations.doGWASwithAlterPhenotype(gwasParams);
+				final CommonRunnable gwasTask = new Threaded_GWAS(gwasParams);
+				MultiOperations.queueTask(gwasTask);
 				return true;
 			}
 		}

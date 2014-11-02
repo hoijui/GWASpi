@@ -90,15 +90,6 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	/** LOAD & GWAS */
-	public static void doGWASwithAlterPhenotype(
-			final GWASinOneGOParams gwasParams)
-	{
-		CommonRunnable task = new Threaded_GWAS(gwasParams);
-
-		queueTask(task);
-	}
-
-	/** LOAD & GWAS */
 	public static void doTest(
 			final OperationKey censusOPKey,
 			final OperationKey hwOPKey,
