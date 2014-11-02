@@ -19,6 +19,7 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -38,7 +39,7 @@ class TestScriptCommand extends AbstractScriptCommand {
 		List<OPType> qaOpTypes = new ArrayList<OPType>();
 		qaOpTypes.add(OPType.SAMPLE_QA);
 		qaOpTypes.add(OPType.MARKER_QA);
-		QA_OPERATION_TYPES = qaOpTypes;
+		QA_OPERATION_TYPES = Collections.unmodifiableList(qaOpTypes);
 	}
 
 	private final OPType testType;
