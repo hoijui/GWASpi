@@ -52,7 +52,7 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 		boolean studyExists = checkStudy(studyKey);
 
 		File sampleInfoFile = new File(args.get("sample-info-file"));
-		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) {
+		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) { // FIXME instead of this null-check, check if arg is given in the above line!
 			final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
 			MultiOperations.queueTask(updateSampleInfoTask);
 			return true;
