@@ -52,7 +52,9 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_TranslateMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -346,8 +348,8 @@ public class MatrixTrafoPanel extends JPanel {
 //								null);
 //
 //					if (validationMatrixOperation.isValid()) {
-						// HACK use doMatrixOperation instead!
-						MultiOperations.doTranslateAB12ToACGT(params);
+						final CommonRunnable translateTask = new Threaded_TranslateMatrix(params);
+						MultiOperations.queueTask(translateTask);
 //					} else {
 //						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
 //					}
