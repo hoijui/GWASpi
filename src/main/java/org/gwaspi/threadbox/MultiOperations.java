@@ -31,7 +31,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.operations.merge.MergeMatrixOperationParams;
@@ -114,13 +113,6 @@ public class MultiOperations {
 //		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 //
 //		queueTask(task, lockProperties);
-	}
-
-	public static void doExtractData(final MatrixDataExtractorParams params) {
-
-		CommonRunnable task = new Threaded_ExtractMatrix(params);
-
-		queueTask(task);
 	}
 
 	public static void doTranslateAB12ToACGT(final MatrixGenotypesTranslatorParams params) {
