@@ -78,7 +78,7 @@ public class MultiOperations {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DELETERS">
-	private static void queueDeleteTask(SwingDeleterItem sdi) {
+	private static void queueTask(SwingDeleterItem sdi) {
 
 		SwingDeleterItemList.add(sdi);
 	}
@@ -86,19 +86,19 @@ public class MultiOperations {
 	public static void deleteStudy(final StudyKey studyKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(studyKey, deleteReports);
-		queueDeleteTask(sdi);
+		queueTask(sdi);
 	}
 
 	public static void deleteMatrix(final MatrixKey matrixKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(matrixKey, deleteReports);
-		queueDeleteTask(sdi);
+		queueTask(sdi);
 	}
 
 	public static void deleteOperation(final OperationKey operationKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(operationKey, deleteReports);
-		queueDeleteTask(sdi);
+		queueTask(sdi);
 	}
 	//</editor-fold>
 
