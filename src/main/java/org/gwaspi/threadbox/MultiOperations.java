@@ -26,7 +26,6 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.MatrixOperation;
 
 public class MultiOperations {
 
@@ -77,19 +76,6 @@ public class MultiOperations {
 	public static TaskLockProperties createTaskLockProperties(final DataSetKey parent) {
 		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
-
-	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
-	public static void doMatrixOperation(final MatrixOperation matrixOperation) {
-		throw new UnsupportedOperationException("implement (and use) me!"); // TODO
-//		CommonRunnable task = new Threaded_MatrixOperation(matrixOperation);
-//
-//		TaskLockProperties lockProperties = new TaskLockProperties();
-//		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
-//		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
-//
-//		queueTask(task, lockProperties);
-	}
-	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="DELETERS">
 	private static void queueDeleteTask(SwingDeleterItem sdi) {
