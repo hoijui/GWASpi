@@ -31,7 +31,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
-import org.gwaspi.operations.merge.MergeMatrixOperationParams;
 
 public class MultiOperations {
 
@@ -111,13 +110,6 @@ public class MultiOperations {
 //		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 //
 //		queueTask(task, lockProperties);
-	}
-
-	public static void doMergeMatrix(final MergeMatrixOperationParams params) {
-
-		CommonRunnable task = new Threaded_MergeMatrices(params);
-
-		queueTask(task);
 	}
 
 	public static void doStrandFlipMatrix(MatrixGenotypesFlipperParams params) {
