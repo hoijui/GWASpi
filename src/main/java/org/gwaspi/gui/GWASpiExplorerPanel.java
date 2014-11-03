@@ -195,16 +195,6 @@ public class GWASpiExplorerPanel extends JPanel {
 		return main;
 	}
 
-	public void refreshContentPanel() {
-
-		try {
-			Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
-			selectNode(lastSelectedNodeId);
-		} catch (IOException ex) {
-			log.warn(null, ex);
-		}
-	}
-
 	private TreePath getPathForNode(final int nodeId) {
 
 		final TreePath path;

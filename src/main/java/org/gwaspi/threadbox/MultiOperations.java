@@ -131,12 +131,6 @@ public class MultiOperations {
 		}
 	}
 
-	private static void refreshPanel() {
-		if (StartGWASpi.guiMode) {
-			GWASpiExplorerPanel.getSingleton().refreshContentPanel();
-		}
-	}
-
 	public static void updateProcessOverviewStartNext() throws IOException {
 		SwingWorkerItemList.startNext();
 	}
