@@ -30,7 +30,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 
 public class MultiOperations {
 
@@ -110,13 +109,6 @@ public class MultiOperations {
 //		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 //
 //		queueTask(task, lockProperties);
-	}
-
-	public static void doStrandFlipMatrix(MatrixGenotypesFlipperParams params) {
-
-		CommonRunnable task = new Threaded_FlipStrandMatrix(params);
-
-		queueTask(task);
 	}
 
 	public static void updateSampleInfo(final int studyId, final File sampleInfoFile) {

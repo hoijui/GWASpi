@@ -54,6 +54,7 @@ import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_FlipStrandMatrix;
 import org.gwaspi.threadbox.Threaded_TranslateMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -417,8 +418,8 @@ public class MatrixTrafoPanel extends JPanel {
 							description,
 							newMatrixName,
 							flipMarkersFile);
-						// HACK use doMatrixOperation instead!
-						MultiOperations.doStrandFlipMatrix(params);
+						final CommonRunnable flipTask = new Threaded_FlipStrandMatrix(params);
+						MultiOperations.queueTask(flipTask);
 //					} else {
 //						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
 //					}
