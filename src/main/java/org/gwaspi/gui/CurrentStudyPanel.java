@@ -46,8 +46,10 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +115,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_desc));
 		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
-		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study, this));
+		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(studyKey, this));
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
 		btn_Back.setAction(new BackAction());
@@ -169,12 +171,12 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class LoadSampleInfoAction extends AbstractAction {
 
-		private final Study study;
+		private final StudyKey studyKey;
 		private final Component dialogParent;
 
-		LoadSampleInfoAction(Study study, final Component dialogParent) {
+		LoadSampleInfoAction(StudyKey studyKey, final Component dialogParent) {
 
-			this.study = study;
+			this.studyKey = studyKey;
 			this.dialogParent = dialogParent;
 			putValue(NAME, Text.Study.updateSampleInfo);
 		}
@@ -193,7 +195,8 @@ public class CurrentStudyPanel extends JPanel {
 				}
 
 				ProcessTab.getSingleton().showTab();
-				MultiOperations.updateSampleInfo(study.getId(), sampleInfoFile);
+				final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+				MultiOperations.queueTask(updateSampleInfoTask);
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
 				log.error(Text.All.warnLoadError, ex);

@@ -17,7 +17,6 @@
 
 package org.gwaspi.threadbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
@@ -109,13 +108,6 @@ public class MultiOperations {
 //		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 //
 //		queueTask(task, lockProperties);
-	}
-
-	public static void updateSampleInfo(final int studyId, final File sampleInfoFile) {
-
-		CommonRunnable task = new Threaded_UpdateSampleInfo(new StudyKey(studyId), sampleInfoFile);
-
-		queueTask(task);
 	}
 	//</editor-fold>
 

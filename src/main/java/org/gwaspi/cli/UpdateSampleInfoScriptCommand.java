@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
 
 class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
@@ -51,9 +53,8 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
 		File sampleInfoFile = new File(args.get("sample-info-file"));
 		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) {
-			MultiOperations.updateSampleInfo(
-					studyKey.getId(),
-					sampleInfoFile);
+			final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+			MultiOperations.queueTask(updateSampleInfoTask);
 			return true;
 		}
 
