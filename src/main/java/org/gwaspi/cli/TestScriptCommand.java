@@ -33,6 +33,7 @@ import org.gwaspi.operations.OperationManager;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_MatrixQA;
+import org.gwaspi.threadbox.Threaded_Test;
 
 public class TestScriptCommand extends AbstractScriptCommand {
 
@@ -124,11 +125,12 @@ public class TestScriptCommand extends AbstractScriptCommand {
 
 			// test block
 			if (gwasParams.isProceed()) {
-				MultiOperations.doTest(
+				final CommonRunnable testTask = new Threaded_Test(
 						gtFreqKey,
 						hwKey,
 						gwasParams,
 						testType);
+				MultiOperations.queueTask(testTask);
 				return true;
 			}
 		}

@@ -20,14 +20,12 @@ package org.gwaspi.threadbox;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
 
 public class MultiOperations {
@@ -79,24 +77,6 @@ public class MultiOperations {
 	public static TaskLockProperties createTaskLockProperties(final DataSetKey parent) {
 		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
-
-	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	/** LOAD & GWAS */
-	public static void doTest(
-			final OperationKey censusOPKey,
-			final OperationKey hwOPKey,
-			final GWASinOneGOParams gwasParams,
-			final OPType testType)
-	{
-		CommonRunnable task = new Threaded_Test(
-				censusOPKey,
-				hwOPKey,
-				gwasParams,
-				testType);
-
-		queueTask(task);
-	}
-	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
 	public static void doMatrixOperation(final MatrixOperation matrixOperation) {
