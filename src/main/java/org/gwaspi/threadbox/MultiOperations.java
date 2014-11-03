@@ -31,8 +31,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.MatrixOperation;
-import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
-import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
@@ -101,15 +99,6 @@ public class MultiOperations {
 				hwOPKey,
 				gwasParams,
 				testType);
-
-		queueTask(task);
-	}
-
-	public static void doCombiTest(
-			final CombiTestOperationParams paramsTest,
-			final ByCombiWeightsFilterOperationParams paramsFilter)
-	{
-		CommonRunnable task = new Threaded_Combi(paramsTest, paramsFilter);
 
 		queueTask(task);
 	}

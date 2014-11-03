@@ -78,6 +78,7 @@ import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.Threaded_Combi;
 import org.gwaspi.threadbox.Threaded_GTFreq_HW;
 import org.gwaspi.threadbox.Threaded_GWAS;
 import org.slf4j.Logger;
@@ -411,7 +412,8 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed) {
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (testType == OPType.COMBI_ASSOC_TEST) {
-									MultiOperations.doCombiTest(combiTestParams, combiFilterParams);
+									final CommonRunnable combiTask = new Threaded_Combi(combiTestParams, combiFilterParams);
+									MultiOperations.queueTask(combiTask);
 								} else if (censusOPKey != null && hwOPKey != null) {
 									MultiOperations.doTest(
 											censusOPKey,
