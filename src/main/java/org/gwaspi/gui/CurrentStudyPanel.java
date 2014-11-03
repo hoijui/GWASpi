@@ -245,8 +245,8 @@ public class CurrentStudyPanel extends JPanel {
 				int[] selectedMatrices = table.getSelectedRows();
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
+					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+					if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 						dialogParent.setCursor(CursorUtils.WAIT_CURSOR);
 						for (int i = 0; i < selectedMatrices.length; i++) {
 							int tmpMatrixRow = selectedMatrices[i];
@@ -254,11 +254,11 @@ public class CurrentStudyPanel extends JPanel {
 							MatrixKey matrixKey = new MatrixKey(studyKey, matrixid);
 							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
 							if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
-								boolean deleteReport = false;
-								if (deleteReportOption == JOptionPane.YES_OPTION) {
-									deleteReport = true;
+								boolean deleteReports = false;
+								if (deleteReportsOption == JOptionPane.YES_OPTION) {
+									deleteReports = true;
 								}
-								MultiOperations.deleteMatrix(matrixKey, deleteReport);
+								MultiOperations.deleteMatrix(matrixKey, deleteReports);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
@@ -289,14 +289,14 @@ public class CurrentStudyPanel extends JPanel {
 			if (SwingWorkerItemList.permitsDeletionOf(studyKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
+					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+					if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 
-						boolean deleteReport = false;
-						if (deleteReportOption == JOptionPane.YES_OPTION) {
-							deleteReport = true;
+						boolean deleteReports = false;
+						if (deleteReportsOption == JOptionPane.YES_OPTION) {
+							deleteReports = true;
 						}
-						MultiOperations.deleteStudy(studyKey, deleteReport);
+						MultiOperations.deleteStudy(studyKey, deleteReports);
 					}
 				}
 			} else {

@@ -214,16 +214,16 @@ public class MatrixMarkerQAPanel extends JPanel {
 				if (SwingWorkerItemList.permitsDeletionOf(currentOPKey)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
-						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
+						int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+						if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 							if (option == JOptionPane.YES_OPTION) {
-								boolean deleteReport = false;
-								if (deleteReportOption == JOptionPane.YES_OPTION) {
-									deleteReport = true;
+								boolean deleteReports = false;
+								if (deleteReportsOption == JOptionPane.YES_OPTION) {
+									deleteReports = true;
 								}
 								MultiOperations.deleteOperation(
 										currentOPKey,
-										deleteReport);
+										deleteReports);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
 							}

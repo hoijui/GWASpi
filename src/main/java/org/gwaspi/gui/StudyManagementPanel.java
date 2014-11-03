@@ -358,19 +358,19 @@ public class StudyManagementPanel extends JPanel {
 
 				int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
+					int deleteReportsOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
 					for (int i = 0; i < selectedStudyIds.length; i++) {
 						int studyId = selectedStudyIds[i];
 						StudyKey studyKey = new StudyKey(studyId);
 						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
 						if (SwingWorkerItemList.permitsDeletionOf(studyKey)) {
-							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
+							if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 
-								boolean deleteReport = false;
-								if (deleteReportOption == JOptionPane.YES_OPTION) {
-									deleteReport = true;
+								boolean deleteReports = false;
+								if (deleteReportsOption == JOptionPane.YES_OPTION) {
+									deleteReports = true;
 								}
-								MultiOperations.deleteStudy(studyKey, deleteReport);
+								MultiOperations.deleteStudy(studyKey, deleteReports);
 							}
 						} else {
 							Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);

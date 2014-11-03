@@ -338,10 +338,10 @@ public class CurrentMatrixPanel extends JPanel {
 			if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteMatrix(matrixKey, deleteReport);
+					final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+					if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+						MultiOperations.deleteMatrix(matrixKey, deleteReports);
 					}
 				}
 			} else {

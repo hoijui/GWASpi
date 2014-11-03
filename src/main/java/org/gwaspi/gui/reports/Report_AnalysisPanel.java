@@ -181,12 +181,12 @@ public class Report_AnalysisPanel extends JPanel {
 			if (SwingWorkerItemList.permitsDeletionOf(OperationKey.valueOf(currentOP))) { // XXX FIXME? should it be permitsDeletionOf
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if ((deleteReportOption != JOptionPane.CANCEL_OPTION)
+					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+					if ((deleteReportsOption != JOptionPane.CANCEL_OPTION)
 							&& (option == JOptionPane.YES_OPTION))
 					{
-						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteOperation(OperationKey.valueOf(currentOP), deleteReport);
+						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+						MultiOperations.deleteOperation(OperationKey.valueOf(currentOP), deleteReports);
 					}
 				}
 			} else {
