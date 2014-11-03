@@ -50,8 +50,10 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
+import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.Threaded_ExportMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,7 +268,8 @@ public class CurrentMatrixPanel extends JPanel {
 			// execute the exporting operation
 			final MatrixExporterParams matrixExporterParams
 					= new MatrixExporterParams(dataSetMetadata.getDataSetKey(), format, expPhenotype);
-			MultiOperations.doExportMatrix(matrixExporterParams);
+			final CommonRunnable exportTask = new Threaded_ExportMatrix(matrixExporterParams);
+			MultiOperations.queueTask(exportTask);
 		}
 	}
 
