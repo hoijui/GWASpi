@@ -93,7 +93,7 @@ public class Report_AnalysisPanel extends JPanel {
 		txtA_OpDesc.setText((currentOP == null) ? "<NONE>" : currentOP.getDescription());
 		scrl_OpDesc.setViewportView(txtA_OpDesc);
 
-		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrixKey, this, currentOP));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrixKey, this, operationKey));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT OPERATION DESC">
 		GroupLayout pnl_OperationDescLayout = new GroupLayout(pnl_OperationDesc);
@@ -165,20 +165,20 @@ public class Report_AnalysisPanel extends JPanel {
 
 		private final MatrixKey parentMatrixKey;
 		private final Component dialogParent;
-		private final OperationMetadata currentOP;
+		private final OperationKey currentOpKey;
 
-		DeleteOperationAction(MatrixKey parentMatrixKey, Component dialogParent, OperationMetadata currentOP) {
+		DeleteOperationAction(MatrixKey parentMatrixKey, Component dialogParent, OperationKey currentOpKey) {
 
 			this.parentMatrixKey = parentMatrixKey;
 			this.dialogParent = dialogParent;
-			this.currentOP = currentOP;
+			this.currentOpKey = currentOpKey;
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOf(OperationKey.valueOf(currentOP))) { // XXX FIXME? should it be permitsDeletionOf
+			if (SwingWorkerItemList.permitsDeletionOf(currentOpKey)) { // XXX FIXME? should it be permitsDeletionOf
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -186,7 +186,7 @@ public class Report_AnalysisPanel extends JPanel {
 							&& (option == JOptionPane.YES_OPTION))
 					{
 						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteOperation(OperationKey.valueOf(currentOP), deleteReports);
+						MultiOperations.deleteOperation(currentOpKey, deleteReports);
 					}
 				}
 			} else {
