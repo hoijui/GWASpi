@@ -45,6 +45,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,11 +222,9 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportsOption == JOptionPane.YES_OPTION) {
 									deleteReports = true;
 								}
-								MultiOperations.deleteOperation(
-										currentOPKey,
-										deleteReports);
-
-								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
+								final SwingDeleterItem operationDeleter = new SwingDeleterItem(currentOPKey, deleteReports);
+								MultiOperations.queueTask(operationDeleter);
+								// XXX OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
 							}
 							GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);

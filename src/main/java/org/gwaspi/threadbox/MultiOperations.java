@@ -24,8 +24,6 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.StudyKey;
 
 public class MultiOperations {
 
@@ -77,30 +75,10 @@ public class MultiOperations {
 		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
 
-	//<editor-fold defaultstate="expanded" desc="DELETERS">
-	private static void queueTask(SwingDeleterItem sdi) {
+	public static void queueTask(SwingDeleterItem sdi) {
 
 		SwingDeleterItemList.add(sdi);
 	}
-
-	public static void deleteStudy(final StudyKey studyKey, final boolean deleteReports) {
-
-		SwingDeleterItem sdi = new SwingDeleterItem(studyKey, deleteReports);
-		queueTask(sdi);
-	}
-
-	public static void deleteMatrix(final MatrixKey matrixKey, final boolean deleteReports) {
-
-		SwingDeleterItem sdi = new SwingDeleterItem(matrixKey, deleteReports);
-		queueTask(sdi);
-	}
-
-	public static void deleteOperation(final OperationKey operationKey, final boolean deleteReports) {
-
-		SwingDeleterItem sdi = new SwingDeleterItem(operationKey, deleteReports);
-		queueTask(sdi);
-	}
-	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	public static void printFinished(String text) {

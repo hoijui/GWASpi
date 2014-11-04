@@ -48,6 +48,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
 import org.slf4j.Logger;
@@ -258,8 +259,8 @@ public class CurrentStudyPanel extends JPanel {
 								if (deleteReportsOption == JOptionPane.YES_OPTION) {
 									deleteReports = true;
 								}
-								MultiOperations.deleteMatrix(matrixKey, deleteReports);
-								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
+								final SwingDeleterItem matrixDeleter = new SwingDeleterItem(matrixKey, deleteReports);
+								MultiOperations.queueTask(matrixDeleter);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 							}
@@ -296,7 +297,8 @@ public class CurrentStudyPanel extends JPanel {
 						if (deleteReportsOption == JOptionPane.YES_OPTION) {
 							deleteReports = true;
 						}
-						MultiOperations.deleteStudy(studyKey, deleteReports);
+						final SwingDeleterItem studyDeleter = new SwingDeleterItem(studyKey, deleteReports);
+						MultiOperations.queueTask(studyDeleter);
 					}
 				}
 			} else {

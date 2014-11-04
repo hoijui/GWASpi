@@ -50,21 +50,21 @@ public class SwingDeleterItem extends CommonRunnable {
 	private final OperationKey operationKey;
 	private final ProgressHandler progressHandler;
 
-	SwingDeleterItem(
+	public SwingDeleterItem(
 			StudyKey studyKey,
 			boolean deleteReports)
 	{
 		this(studyKey, null, null, deleteReports);
 	}
 
-	SwingDeleterItem(
+	public SwingDeleterItem(
 			MatrixKey matrixKey,
 			boolean deleteReports)
 	{
 		this(null, matrixKey, null, deleteReports);
 	}
 
-	SwingDeleterItem(
+	public SwingDeleterItem(
 			OperationKey operationKey,
 			boolean deleteReports)
 	{

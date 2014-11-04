@@ -52,6 +52,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_ExportMatrix;
 import org.slf4j.Logger;
@@ -341,7 +342,8 @@ public class CurrentMatrixPanel extends JPanel {
 					final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 					if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteMatrix(matrixKey, deleteReports);
+						final SwingDeleterItem matrixDeleter = new SwingDeleterItem(matrixKey, deleteReports);
+						MultiOperations.queueTask(matrixDeleter);
 					}
 				}
 			} else {
