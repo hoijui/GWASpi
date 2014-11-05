@@ -30,6 +30,7 @@ import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
@@ -69,6 +70,11 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	@Override
 	public ProgressSource getProgressSource() {
+		return progressSource;
+	}
+
+	@Override
+	protected ProgressHandler getProgressHandler() {
 		return progressSource;
 	}
 

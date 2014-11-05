@@ -102,6 +102,11 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	}
 
 	@Override
+	protected ProgressHandler getProgressHandler() {
+		return progressSource;
+	}
+
+	@Override
 	public TaskLockProperties getTaskLockProperties() {
 		return taskLockProperties;
 	}

@@ -195,6 +195,11 @@ public class SwingDeleterItem extends CommonRunnable {
 	}
 
 	@Override
+	protected ProgressHandler getProgressHandler() {
+		return progressHandler;
+	}
+
+	@Override
 	public TaskLockProperties getTaskLockProperties() {
 		return EMPTY_TASK_LOCK_PROPERTIES;
 	}

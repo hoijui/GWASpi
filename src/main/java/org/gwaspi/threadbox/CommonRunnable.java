@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 
@@ -39,6 +40,7 @@ public abstract class CommonRunnable implements Runnable {
 
 	protected abstract Logger createLog();
 
+	protected abstract ProgressHandler getProgressHandler();
 	public abstract ProgressSource getProgressSource();
 
 	public abstract TaskLockProperties getTaskLockProperties();

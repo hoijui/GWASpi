@@ -50,6 +50,11 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	}
 
 	@Override
+	protected ProgressHandler getProgressHandler() {
+		return progressForwarder;
+	}
+
+	@Override
 	public TaskLockProperties getTaskLockProperties() {
 		return taskLockProperties;
 	}

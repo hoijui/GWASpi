@@ -63,6 +63,11 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	}
 
 	@Override
+	protected ProgressHandler getProgressHandler() {
+		return progressHandler;
+	}
+
+	@Override
 	public TaskLockProperties getTaskLockProperties() {
 		return taskLockProperties;
 	}
