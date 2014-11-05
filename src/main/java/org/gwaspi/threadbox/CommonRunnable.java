@@ -83,7 +83,7 @@ public abstract class CommonRunnable implements Runnable {
 
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
 			MultiOperations.updateProcessOverviewStartNext();
-		} catch (Throwable thr) {
+		} catch (Throwable thr) { // TODO separately catch thread-interrupted-exception, ABORTing the task/runnable
 			MultiOperations.printError(getName());
 			if (thr instanceof OutOfMemoryError) {
 				getLog().error(Text.App.outOfMemoryError);
