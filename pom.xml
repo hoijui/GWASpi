@@ -402,8 +402,21 @@
 	<profiles>
 		<profile>
 			<id>JPA-Hibernate</id>
+			<!--
+				We use Hibernate as the (default activated) JPA provider.
+				NOTE To use an other one, add an other profile for it.
+			-->
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<!--
+					Specify this property to deactivate the profile.
+					This is preffered to activeByDefault, see explanation here:
+					http://www.andrewspencer.net/2011/maven-profile-best-practices/
+					It also prevent the profile to be inactive during the test phase,
+					which makes the tests fail.
+				-->
+				<property>
+					<name>!excludeHibernate</name>
+				</property>
 			</activation>
 			<dependencies>
 				<dependency>
