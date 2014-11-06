@@ -28,11 +28,18 @@ public class TaskQueueStatusChangedEvent extends EventObject {
 	private final Task task;
 	private final ProgressSource progressSource; // HACK we should not need this, as we could just use getSource.getProgressSource(), but these are currently not the same (HACKy!)
 
+	/**
+	 * @deprecated use other ctor only, and remove this one
+	 */
 	public TaskQueueStatusChangedEvent(final TaskQueue source, final Task task, final ProgressSource progressSource) {
 		super(source);
 
 		this.task = task;
 		this.progressSource = progressSource;
+	}
+
+	public TaskQueueStatusChangedEvent(final TaskQueue source, final Task task) {
+		this(source, task, task.getProgressSource());
 	}
 
 	@Override
