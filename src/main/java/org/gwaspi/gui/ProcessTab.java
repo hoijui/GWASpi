@@ -59,12 +59,12 @@ import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
-import org.gwaspi.threadbox.TaskEvent;
-import org.gwaspi.threadbox.TasksListener;
+import org.gwaspi.threadbox.TaskQueueStatusChangedEvent;
+import org.gwaspi.threadbox.TaskQueueListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessTab extends JPanel implements TasksListener, ProgressListener {
+public class ProcessTab extends JPanel implements TaskQueueListener, ProgressListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
@@ -197,9 +197,9 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 	}
 
 	@Override
-	public void taskRegistered(TaskEvent evt) {
+	public void taskStatusChanged(final TaskQueueStatusChangedEvent evt) {
 
-		final ProgressSource progressSource = evt.getTask().getProgressSource();
+		final ProgressSource progressSource = evt.getSource().getProgressSource();
 
 		evt.getProgressSource().addProgressListener(this); // XXX This is not very nice.. to have two different, yet very similar progress sources, one for the outer task (Swing*Item) and one for the inner task (CommonRunnable (in case of SwingWorkerItem), SwingDeleterItem (in case of SwingDeleterItem))
 

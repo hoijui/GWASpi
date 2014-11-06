@@ -23,18 +23,19 @@ import org.gwaspi.progress.ProgressSource;
 /**
  * Contains details about a task that is being registered or deleted.
  */
-public class TaskEvent extends EventObject {
+public class TaskQueueStatusChangedEvent extends EventObject {
 
-	private final ProgressSource progressSource;
+	private final ProgressSource progressSource; // HACK we should not need this, as we could just use getSource.getProgressSource(), but these are currently not the same (HACKy!)
 
-	public TaskEvent(CommonRunnable source, ProgressSource progressSource) {
+	public TaskQueueStatusChangedEvent(final Task source, final ProgressSource progressSource) {
 		super(source);
 
 		this.progressSource = progressSource;
 	}
 
-	public CommonRunnable getTask() {
-		return (CommonRunnable) getSource();
+	@Override
+	public Task getSource() {
+		return (Task) super.getSource();
 	}
 
 	public ProgressSource getProgressSource() {

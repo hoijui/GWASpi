@@ -29,7 +29,7 @@ public class SwingWorkerItemList {
 	private static List<Integer> parentStudyIds = new ArrayList<Integer>();
 	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
 	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
-	private static List<TasksListener> taskListeners = new ArrayList<TasksListener>();
+	private static List<TaskQueueListener> taskListeners = new ArrayList<TaskQueueListener>();
 
 	private SwingWorkerItemList() {
 	}
@@ -38,22 +38,22 @@ public class SwingWorkerItemList {
 	 * Registers a task listener.
 	 * @param tasksListener this listener will receive task-registered and -deleted events
 	 */
-	public static void addTaskListener(TasksListener tasksListener) {
+	public static void addTaskListener(TaskQueueListener tasksListener) {
 		taskListeners.add(tasksListener);
 	}
 
-	public static void removeTaskListener(TasksListener tasksListener) {
+	public static void removeTaskListener(TaskQueueListener tasksListener) {
 		taskListeners.remove(tasksListener);
 	}
 
-	static List<TasksListener> getTaskListeners() {
+	static List<TaskQueueListener> getTaskListeners() {
 		return taskListeners;
 	}
 
-	static void fireTaskRegistered(final TaskEvent taskEvent) {
+	static void fireTaskRegistered(final TaskQueueStatusChangedEvent taskEvent) {
 
-		for (TasksListener tasksListener : getTaskListeners()) {
-			tasksListener.taskRegistered(taskEvent);
+		for (TaskQueueListener tasksListener : getTaskListeners()) {
+			tasksListener.taskStatusChanged(taskEvent);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class SwingWorkerItemList {
 			startNow(swi);
 		}
 
-		final TaskEvent taskEvent = new TaskEvent(swi.getTask(), swi.getTask().getProgressSource());
+		final TaskQueueStatusChangedEvent taskEvent = new TaskQueueStatusChangedEvent(swi, swi.getTask().getProgressSource());
 		fireTaskRegistered(taskEvent);
 	}
 

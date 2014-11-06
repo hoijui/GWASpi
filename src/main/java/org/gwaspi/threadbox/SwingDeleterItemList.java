@@ -55,7 +55,7 @@ public class SwingDeleterItemList {
 			deleteAllListed();
 		}
 
-		final TaskEvent taskEvent = new TaskEvent(sdi, sdi.getProgressSource());
+		final TaskQueueStatusChangedEvent taskEvent = new TaskQueueStatusChangedEvent(sdi, sdi.getProgressSource());
 		SwingWorkerItemList.fireTaskRegistered(taskEvent);
 	}
 

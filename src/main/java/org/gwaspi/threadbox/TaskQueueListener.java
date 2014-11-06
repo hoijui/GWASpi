@@ -22,17 +22,11 @@ import java.util.EventListener;
 /**
  * Is interested in tasks being registered and deleted.
  */
-public interface TasksListener extends EventListener {
+public interface TaskQueueListener extends EventListener {
 
 	/**
-	 * Signals that a new task was registered.
-	 * @param evt contains details about the task at stake
+	 * Signals that the status of a task in regard to a queue changed.
+	 * @param evt contains details about the task and status change at stake
 	 */
-	void taskRegistered(TaskEvent evt);
-
-//	/**
-//	 * Signals that a task was deleted.
-//	 * @param evt contains details about the task at stake
-//	 */
-//	void taskDeleted(TaskEvent evt);
+	void taskStatusChanged(final TaskQueueStatusChangedEvent evt);
 }
