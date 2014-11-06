@@ -121,7 +121,7 @@ public class SwingDeleterItemList {
 			log.info("");
 			log.info(Text.Processes.abortingProcess);
 			log.info(sdi.getDescription());
-			log.info("Delete Launch Time: {}", sdi.getLaunchTime());
+			log.info("Delete Launch Time: {}", org.gwaspi.global.Utils.getShortDateTimeAsString(sdi.getCreateTime()));
 			log.info("");
 		}
 	}

@@ -259,9 +259,9 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 			spreadSheet[count][0] = count;
 			spreadSheet[count][1] = studyIdsStr.toString();
 			spreadSheet[count][2] = swingWorkerItem.getTask().getDetailedName() != null ? swingWorkerItem.getTask().getDetailedName() : " - ";
-			spreadSheet[count][3] = swingWorkerItem.getLaunchTime() != null ? swingWorkerItem.getLaunchTime() : " - ";
-			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? swingWorkerItem.getStartTime() : " - ";
-			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? swingWorkerItem.getEndTime() : " - ";
+			spreadSheet[count][3] = swingWorkerItem.getCreateTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getCreateTime()) : " - ";
+			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getStartTime()) : " - ";
+			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getEndTime()) : " - ";
 			spreadSheet[count][6] = swingWorkerItem.getStatus() != null ? swingWorkerItem.getStatus().toString() : " - ";
 			spreadSheet[count][7] = " ";
 
@@ -273,9 +273,9 @@ public class ProcessTab extends JPanel implements TasksListener, ProgressListene
 			spreadSheet[count][0] = "Del_" + deleteIndex++;
 			spreadSheet[count][1] = swingDeleterItem.getStudyKey();
 			spreadSheet[count][2] = swingDeleterItem.getDescription() != null ? swingDeleterItem.getDescription() : " - ";
-			spreadSheet[count][3] = swingDeleterItem.getLaunchTime() != null ? swingDeleterItem.getLaunchTime() : " - ";
-			spreadSheet[count][4] = swingDeleterItem.getStartTime() != null ? swingDeleterItem.getStartTime() : " - ";
-			spreadSheet[count][5] = swingDeleterItem.getEndTime() != null ? swingDeleterItem.getEndTime() : " - ";
+			spreadSheet[count][3] = swingDeleterItem.getCreateTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getCreateTime()) : " - ";
+			spreadSheet[count][4] = swingDeleterItem.getStartTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getStartTime()) : " - ";
+			spreadSheet[count][5] = swingDeleterItem.getEndTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getEndTime()) : " - ";
 			spreadSheet[count][6] = swingDeleterItem.getStatus()!= null ? swingDeleterItem.getStatus().toString() : " - ";
 			spreadSheet[count][7] = " ";
 

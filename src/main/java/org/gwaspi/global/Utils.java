@@ -286,20 +286,25 @@ public class Utils {
 		return dateOut;
 	}
 
-	public static String getShortDateTimeAsString() {
+	public static String getShortDateTimeAsString(final Date time) {
 
-		Date now = new Date();
 		final String dateStr;
 		synchronized (mediumDateFormatter) {
-			dateStr = mediumDateFormatter.format(now);
+			dateStr = mediumDateFormatter.format(time);
 		}
 		final String timeStr;
 		synchronized (longTimeFormatter) {
-			timeStr = longTimeFormatter.format(now);
+			timeStr = longTimeFormatter.format(time);
 		}
 		final String dateOut = dateStr + " " + timeStr;
 
 		return dateOut;
+	}
+
+	public static String getShortDateTimeAsString() {
+
+		final Date now = new Date();
+		return getShortDateTimeAsString(now);
 	}
 
 	public static String getMediumDateTimeAsString() {

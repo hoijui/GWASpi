@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
+import java.util.Date;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -39,9 +40,9 @@ public class SwingDeleterItem extends CommonRunnable {
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
-	private String launchTime; // TODO change this to type Date. same with the two other times
-	private String startTime;
-	private String endTime;
+	private final Date createTime;
+	private Date startTime;
+	private Date endTime;
 	private QueueState queueState;
 	private String description;
 	private final boolean deleteReports;
@@ -79,7 +80,7 @@ public class SwingDeleterItem extends CommonRunnable {
 	{
 		super("Delete", getToDeleteShortDescription(studyKey, matrixKey, operationKey, deleteReports));
 
-		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
+		this.createTime = new Date();
 		this.startTime = null;
 		this.endTime = null;
 		this.queueState = QueueState.QUEUED;
@@ -127,15 +128,15 @@ public class SwingDeleterItem extends CommonRunnable {
 		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
 	}
 
-	public String getLaunchTime() {
-		return launchTime;
+	public Date getCreateTime() {
+		return createTime;
 	}
 
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public String getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
@@ -168,19 +169,19 @@ public class SwingDeleterItem extends CommonRunnable {
 	public void setQueueState(QueueState queueState) {
 
 		if ((startTime == null) && queueState.equals(QueueState.PROCESSING)) {
-			setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			setStartTime(new Date());
 		} else if ((endTime == null) && QueueState.isFinalizingState(queueState)) {
-			setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			setEndTime(new Date());
 		}
 		this.queueState = queueState;
 		progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
 	}
 
-	private void setEndTime(String endTime) {
+	private void setEndTime(final Date endTime) {
 		this.endTime = endTime;
 	}
 
-	private void setStartTime(String startTime) {
+	private void setStartTime(final Date startTime) {
 		this.startTime = startTime;
 	}
 

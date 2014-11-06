@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.util.Date;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.slf4j.Logger;
@@ -27,14 +28,14 @@ public class SwingWorkerItem {
 	private final Logger log = LoggerFactory.getLogger(SwingWorkerItem.class);
 
 	private final CommonRunnable task;
-	private final String launchTime;
-	private String startTime;
-	private String endTime;
+	private final Date createTime;
+	private Date startTime;
+	private Date endTime;
 	private QueueState queueState;
 
 	SwingWorkerItem(final CommonRunnable task) {
 
-		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
+		this.createTime = new Date();
 		this.startTime = null;
 		this.endTime = null;
 		this.task = task;
@@ -66,15 +67,15 @@ public class SwingWorkerItem {
 		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
 	}
 
-	public String getLaunchTime() {
-		return launchTime;
+	public Date getCreateTime() {
+		return createTime;
 	}
 
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
-	public String getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
 
@@ -89,9 +90,9 @@ public class SwingWorkerItem {
 	public void setQueueState(QueueState queueState) {
 
 		if ((startTime == null) && queueState.equals(QueueState.PROCESSING)) {
-			setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			setStartTime(new Date());
 		} else if ((endTime == null) && QueueState.isFinalizingState(queueState)) {
-			setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			setEndTime(new Date());
 		}
 		this.queueState = queueState;
 
@@ -107,11 +108,11 @@ public class SwingWorkerItem {
 		}
 	}
 
-	private void setEndTime(String endTime) {
+	private void setEndTime(final Date endTime) {
 		this.endTime = endTime;
 	}
 
-	private void setStartTime(String startTime) {
+	private void setStartTime(final Date startTime) {
 		this.startTime = startTime;
 	}
 }

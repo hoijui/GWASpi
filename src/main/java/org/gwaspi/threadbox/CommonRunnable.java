@@ -75,7 +75,7 @@ public abstract class CommonRunnable implements Runnable {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
 				getLog().info("Process Name: " + thisSwi.getTask().getDetailedName());
-				getLog().info("Process Launch Time: " + thisSwi.getLaunchTime());
+				getLog().info("Process Launch Time: " + org.gwaspi.global.Utils.getShortDateTimeAsString(thisSwi.getCreateTime()));
 				getLog().info("");
 				getLog().info("");
 			} else {
