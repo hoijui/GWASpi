@@ -25,17 +25,23 @@ import org.gwaspi.progress.ProgressSource;
  */
 public class TaskQueueStatusChangedEvent extends EventObject {
 
+	private final Task task;
 	private final ProgressSource progressSource; // HACK we should not need this, as we could just use getSource.getProgressSource(), but these are currently not the same (HACKy!)
 
-	public TaskQueueStatusChangedEvent(final Task source, final ProgressSource progressSource) {
+	public TaskQueueStatusChangedEvent(final TaskQueue source, final Task task, final ProgressSource progressSource) {
 		super(source);
 
+		this.task = task;
 		this.progressSource = progressSource;
 	}
 
 	@Override
-	public Task getSource() {
-		return (Task) super.getSource();
+	public TaskQueue getSource() {
+		return (TaskQueue) super.getSource();
+	}
+
+	public Task getTask() {
+		return task;
 	}
 
 	public ProgressSource getProgressSource() {

@@ -95,7 +95,7 @@ public class SwingWorkerItemList {
 			startNow(swi);
 		}
 
-		final TaskQueueStatusChangedEvent taskEvent = new TaskQueueStatusChangedEvent(swi, swi.getTask().getProgressSource());
+		final TaskQueueStatusChangedEvent taskEvent = new TaskQueueStatusChangedEvent(null, swi, swi.getTask().getProgressSource());
 		fireTaskRegistered(taskEvent);
 	}
 

@@ -199,7 +199,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 	@Override
 	public void taskStatusChanged(final TaskQueueStatusChangedEvent evt) {
 
-		final ProgressSource progressSource = evt.getSource().getProgressSource();
+		final ProgressSource progressSource = evt.getTask().getProgressSource();
 
 		evt.getProgressSource().addProgressListener(this); // XXX This is not very nice.. to have two different, yet very similar progress sources, one for the outer task (Swing*Item) and one for the inner task (CommonRunnable (in case of SwingWorkerItem), SwingDeleterItem (in case of SwingDeleterItem))
 
