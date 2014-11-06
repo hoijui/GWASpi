@@ -173,9 +173,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 		GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 
-		if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			return resultOperationKeys;
-		}
+		// NOTE ABORTION_POINT We could be gracefully abort here
 		final DataSetKey parent = new DataSetKey(matrixKey);
 		final Threaded_MatrixQA matrixQA = new Threaded_MatrixQA(parent, true);
 		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, matrixQA.getProgressSource(), null);

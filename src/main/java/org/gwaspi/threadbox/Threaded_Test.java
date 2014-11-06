@@ -143,25 +143,25 @@ public class Threaded_Test extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
-		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey testOpKey = OperationManager.performCleanTests(
-					censusOpKey,
-					hwOpKey,
-					gwasParams.getDiscardMarkerHWTreshold(),
-					testType,
-					progressSource);
+		// NOTE ABORTION_POINT We could be gracefully abort here
 
-			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (testOpKey != null) {
-				final TestOutputParams testOutputParams = new TestOutputParams(testOpKey, testType, markersQAOpKey);
-				final MatrixOperation reportsGenerationOperation = new OutputTest(testOutputParams);
-				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_REPORTS, reportsGenerationOperation.getProgressSource(), null);
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		OperationKey testOpKey = OperationManager.performCleanTests(
+				censusOpKey,
+				hwOpKey,
+				gwasParams.getDiscardMarkerHWTreshold(),
+				testType,
+				progressSource);
+
+		// Make Reports (needs newMatrixId, QAopId, AssocOpId)
+		if (testOpKey != null) {
+			final TestOutputParams testOutputParams = new TestOutputParams(testOpKey, testType, markersQAOpKey);
+			final MatrixOperation reportsGenerationOperation = new OutputTest(testOutputParams);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_REPORTS, reportsGenerationOperation.getProgressSource(), null);
 //				OperationManager.performOperation(reportsGenerationOperation); // XXX We can not do that, because OutputTest does not support getParams() yet, so instead we do ...
-				reportsGenerationOperation.processMatrix();
-				progressSource.setNewStatus(ProcessStatus.FINALIZING);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
-			}
+			reportsGenerationOperation.processMatrix();
+			progressSource.setNewStatus(ProcessStatus.FINALIZING);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}

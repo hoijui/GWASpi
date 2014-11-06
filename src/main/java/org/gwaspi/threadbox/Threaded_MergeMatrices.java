@@ -120,18 +120,16 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final DataSetDestination dataSetDestination
-					= MatrixFactory.generateMatrixDataSetDestination(params, MergeMatrixMetadataFactory.SINGLETON);
-			final MatrixOperation matrixOperation = createMatrixOperation(params, dataSetDestination);
+		final DataSetDestination dataSetDestination
+				= MatrixFactory.generateMatrixDataSetDestination(params, MergeMatrixMetadataFactory.SINGLETON);
+		final MatrixOperation matrixOperation = createMatrixOperation(params, dataSetDestination);
 
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MERGE, matrixOperation.getProgressSource(), null);
-			progressSource.setNewStatus(ProcessStatus.RUNNING);
-			OperationManager.performOperation(matrixOperation);
-			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MERGE, matrixOperation.getProgressSource(), null);
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		OperationManager.performOperation(matrixOperation);
+		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
-		}
+		Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

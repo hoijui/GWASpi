@@ -66,10 +66,12 @@ public abstract class CommonRunnable implements Runnable {
 
 			thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
 
+			// NOTE ABORTION_POINT We could be gracefully abort here
+
 			runInternal(thisSwi);
 
 			// FINISH OFF
-			if (thisSwi.getQueueState().equals(QueueState.ABORT)) {
+			if (getProgressSource().getStatus().isBad()) {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
 				getLog().info("Process Name: " + thisSwi.getTask().getDetailedName());

@@ -118,6 +118,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 	private OperationKey checkPerformMarkerCensus(Logger log, SwingWorkerItem thisSwi, GWASinOneGOParams gwasParams) throws Exception {
 
+		OperationKey censusOpKey = null;
+
 		final ProgressHandler prepareForMcPh = new IndeterminateProgressHandler(mcPreparationProcessInfo);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_PREPARE_MARKER_CENSUS, prepareForMcPh, null);
 		prepareForMcPh.setNewStatus(ProcessStatus.INITIALIZING);
@@ -129,57 +131,56 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
 		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
 
+		// NOTE ABORTION_POINT We could be gracefully abort here
+
 		//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 		// GENOTYPE FREQ. BY PHENOFILE OR DB AFFECTION
-		OperationKey censusOpKey = null;
 		prepareForMcPh.setNewStatus(ProcessStatus.RUNNING);
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
-			if (phenotypeFile != null) {
-				// BY EXTERNAL PHENOTYPE FILE
-				// use Sample Info file affection state
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
+		final File phenotypeFile = markerCensusOperationParams.getPhenotypeFile();
+		if (phenotypeFile != null) {
+			// BY EXTERNAL PHENOTYPE FILE
+			// use Sample Info file affection state
+			Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
 
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					log.info("Updating Sample Info in DB");
-					final SampleInfoExtractorDataSetDestination sampleInfoExtractor
-							= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
-					SamplesParserManager.scanSampleInfo(
-							markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
-							cImport.ImportFormat.GWASpi,
-							phenotypeFile.getPath(),
-							sampleInfoExtractor);
-					Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
-					SampleInfoList.insertSampleInfos(sampleInfos);
+			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+			{
+				log.info("Updating Sample Info in DB");
+				final SampleInfoExtractorDataSetDestination sampleInfoExtractor
+						= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
+				SamplesParserManager.scanSampleInfo(
+						markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
+						cImport.ImportFormat.GWASpi,
+						phenotypeFile.getPath(),
+						sampleInfoExtractor);
+				Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
+				SampleInfoList.insertSampleInfos(sampleInfos);
 
-					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
-					markerCensusOperationParams.setName(censusName);
-				} else {
-					log.warn(Text.Operation.warnAffectionMissing);
-					return censusOpKey;
-				}
+				String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
+				markerCensusOperationParams.setName(censusName);
 			} else {
-				// BY DB AFFECTION
-				// use Sample Info from the DB to extract affection state
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.collectAffectionStates(markerCensusOperationParams.getParent());
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
-					markerCensusOperationParams.setName(censusName);
-				} else {
-					log.warn(Text.Operation.warnAffectionMissing);
-					return censusOpKey;
-				}
+				log.warn(Text.Operation.warnAffectionMissing);
+				return censusOpKey;
 			}
-			prepareForMcPh.setNewStatus(ProcessStatus.COMPLEETED);
-
-			final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
-			censusOpKey = OperationManager.performOperation(markerCensusOperation);
+		} else {
+			// BY DB AFFECTION
+			// use Sample Info from the DB to extract affection state
+			Set<SampleInfo.Affection> affectionStates = SamplesParserManager.collectAffectionStates(markerCensusOperationParams.getParent());
+			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+			{
+				String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
+				markerCensusOperationParams.setName(censusName);
+			} else {
+				log.warn(Text.Operation.warnAffectionMissing);
+				return censusOpKey;
+			}
 		}
+		prepareForMcPh.setNewStatus(ProcessStatus.COMPLEETED);
+
+		final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
+		censusOpKey = OperationManager.performOperation(markerCensusOperation);
 
 		return censusOpKey;
 	}
@@ -215,10 +216,12 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		markerCensusOperationKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);
 
+		// NOTE ABORTION_POINT We could be gracefully abort here
+
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& (markerCensusOperationKey != null))
-		{
+		if (markerCensusOperationKey == null) {
+			getLog().warn("Hardy&Weinberg operation canceled because Marker-Census is not available");
+		} else {
 			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
 			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);

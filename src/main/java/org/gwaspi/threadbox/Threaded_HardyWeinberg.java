@@ -116,20 +116,18 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			progressSource.setNewStatus(ProcessStatus.INITIALIZING);
-			final MatrixOperation operation = new HardyWeinbergOperation(params);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW, operation.getProgressSource(), null);
-			progressSource.setNewStatus(ProcessStatus.RUNNING);
-			hardyWeinbergOperationKey = OperationManager.performOperation(operation);
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
+		final MatrixOperation operation = new HardyWeinbergOperation(params);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW, operation.getProgressSource(), null);
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		hardyWeinbergOperationKey = OperationManager.performOperation(operation);
 
-			final HardyWeinbergOutputParams hardyWeinbergOutputParams
-					= new HardyWeinbergOutputParams(hardyWeinbergOperationKey, params.getMarkersQAOpKey());
-			final OutputHardyWeinberg outputHardyWeinberg
-					= new OutputHardyWeinberg(hardyWeinbergOutputParams);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW_REPORTS, outputHardyWeinberg.getProgressSource(), null);
-			OperationManager.performOperation(outputHardyWeinberg);
-			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
-		}
+		final HardyWeinbergOutputParams hardyWeinbergOutputParams
+				= new HardyWeinbergOutputParams(hardyWeinbergOperationKey, params.getMarkersQAOpKey());
+		final OutputHardyWeinberg outputHardyWeinberg
+				= new OutputHardyWeinberg(hardyWeinbergOutputParams);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW_REPORTS, outputHardyWeinberg.getProgressSource(), null);
+		OperationManager.performOperation(outputHardyWeinberg);
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

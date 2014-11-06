@@ -160,20 +160,17 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getAnnotationFilePath(),
 				sampleInfoExtractor);
 
-		final DataSetKey parent;
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			LoadManager.dispatchLoadByFormat(
-					loadDescription,
-					sampleInfoExtractor.getSampleInfos(),
-					dataReceiver,
-					loadingMatrixMetadataFactory);
-			dataReceiver.done();
-			resultMatrixKey = dataReceiver.getResultMatrixKey();
-			MultiOperations.printCompleted("Loading Genotypes");
-			parent = new DataSetKey(resultMatrixKey);
-		} else {
-			return;
-		}
+		// NOTE ABORTION_POINT We could be gracefully abort here
+
+		LoadManager.dispatchLoadByFormat(
+				loadDescription,
+				sampleInfoExtractor.getSampleInfos(),
+				dataReceiver,
+				loadingMatrixMetadataFactory);
+		dataReceiver.done();
+		resultMatrixKey = dataReceiver.getResultMatrixKey();
+		MultiOperations.printCompleted("Loading Genotypes");
+		final DataSetKey parent = new DataSetKey(resultMatrixKey);
 
 		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(thisSwi, parent.getMatrixParent(), progressSource);
 

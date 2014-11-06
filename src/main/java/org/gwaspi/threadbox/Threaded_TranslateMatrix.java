@@ -90,20 +90,18 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			progressSource.setNewStatus(ProcessStatus.INITIALIZING);
-			final DataSetDestination dataSetDestination
-					= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
-			MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
+		final DataSetDestination dataSetDestination
+				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
+		MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
 
-			progressSource.setNewStatus(ProcessStatus.RUNNING);
-//			OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixTranslator does not support getParams() yet, so instead we do ...
-			matrixOperation.processMatrix();
-			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
+//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixTranslator does not support getParams() yet, so instead we do ...
+		matrixOperation.processMatrix();
+		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-			Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
-			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
-		}
+		Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }
