@@ -20,10 +20,11 @@ package org.gwaspi.threadbox;
 import java.util.Date;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
+import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SwingWorkerItem {
+public class SwingWorkerItem implements Task {
 
 	private final Logger log = LoggerFactory.getLogger(SwingWorkerItem.class);
 
@@ -59,6 +60,7 @@ public class SwingWorkerItem {
 		return queueState;
 	}
 
+	@Override
 	public ProcessStatus getStatus() {
 		return toProcessStatus(getQueueState());
 	}
@@ -67,14 +69,17 @@ public class SwingWorkerItem {
 		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
 	}
 
+	@Override
 	public Date getCreateTime() {
 		return createTime;
 	}
 
+	@Override
 	public Date getStartTime() {
 		return startTime;
 	}
 
+	@Override
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -114,5 +119,30 @@ public class SwingWorkerItem {
 
 	private void setStartTime(final Date startTime) {
 		this.startTime = startTime;
+	}
+
+	@Override
+	public String getName() {
+		return getTask().getName();
+	}
+
+	@Override
+	public String getDescription() {
+		return getTask().getDetailedName();
+	}
+
+	@Override
+	public ProgressSource getProgressSource() {
+		return getTask().getProgressSource();
+	}
+
+	@Override
+	public TaskLockProperties getTaskLockProperties() {
+		return getTask().getTaskLockProperties();
+	}
+
+	@Override
+	public void run() {
+		getTask().run();
 	}
 }

@@ -35,7 +35,7 @@ import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SwingDeleterItem extends CommonRunnable {
+public class SwingDeleterItem extends CommonRunnable implements Task {
 
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
@@ -120,6 +120,7 @@ public class SwingDeleterItem extends CommonRunnable {
 		return queueState;
 	}
 
+	@Override
 	public ProcessStatus getStatus() {
 		return SwingWorkerItem.toProcessStatus(getQueueState());
 	}
@@ -128,14 +129,17 @@ public class SwingDeleterItem extends CommonRunnable {
 		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
 	}
 
+	@Override
 	public Date getCreateTime() {
 		return createTime;
 	}
 
+	@Override
 	public Date getStartTime() {
 		return startTime;
 	}
 
+	@Override
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -156,6 +160,7 @@ public class SwingDeleterItem extends CommonRunnable {
 		return deleteReports;
 	}
 
+	@Override
 	public String getDescription() {
 
 		if (description == null) {
