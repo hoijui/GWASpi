@@ -81,16 +81,16 @@ public class MultiOperations {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	public static void printFinished(String text) {
-		org.gwaspi.global.Utils.sysoutFinish(text);
+	public static void printFinished(String operationName) {
+		org.gwaspi.global.Utils.sysoutFinish(operationName);
 	}
 
-	public static void printCompleted(String text) {
-		org.gwaspi.global.Utils.sysoutCompleted(text);
+	public static void printCompleted(String operationName) {
+		org.gwaspi.global.Utils.sysoutCompleted(operationName);
 	}
 
-	public static void printError(String text) {
-		org.gwaspi.global.Utils.sysoutError(text);
+	public static void printError(String operationName) {
+		org.gwaspi.global.Utils.sysoutError(operationName);
 	}
 
 	public static void updateTree() throws IOException {
