@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -181,5 +182,13 @@ public class TaskQueue {
 		} finally {
 			doneLock.unlock();
 		}
+	}
+
+	public List<Task> getTasks() {
+		return Collections.unmodifiableList(tasks);
+	}
+
+	public int size() {
+		return tasks.size();
 	}
 }
