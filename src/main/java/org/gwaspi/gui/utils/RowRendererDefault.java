@@ -72,7 +72,6 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, int row, int column) {
 
 		if (table.getColumnModel().getColumnCount() == 8) {
-			ImageIcon ico;
 			ProcessStatus status;
 			List<SwingWorkerItem> swingWorkers  = SwingWorkerItemList.getItems();
 			if (swingWorkers.size() > row) {
@@ -82,17 +81,15 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 				status = swingDeleters.get(row - swingWorkers.size()).getStatus();
 			}
 
-			if (column == 0 || column == 1) {
-				ico = null;
+			if (column == 0 || column == 1 || column == 6 || column == 7) {
 				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 				TableColumn col = table.getColumnModel().getColumn(column);
 				col.setPreferredWidth(25);
-			} else if (column == 6) {
-				ico = null;
-				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-				TableColumn col = table.getColumnModel().getColumn(column);
-				col.setPreferredWidth(25);
-			} else if (column == 7) {
+			} else {
+				tableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+			}
+			final ImageIcon ico;
+			if (column == 7) {
 				final URL imageIconUrl;
 				if (status.isEnd()) {
 					imageIconUrl = ICON_PATH_NO_ABORT;
@@ -100,12 +97,8 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 					imageIconUrl = ICON_PATH_ABORT;
 				}
 				ico = new ImageIcon(imageIconUrl);
-				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-				TableColumn col = table.getColumnModel().getColumn(column);
-				col.setPreferredWidth(25);
 			} else {
 				ico = null;
-				tableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 			}
 			tableCellRenderer.setIcon(ico);
 		}
