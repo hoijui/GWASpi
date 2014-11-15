@@ -34,9 +34,9 @@ import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SwingDeleterItem extends CommonRunnable {
+public class Deleter extends CommonRunnable {
 
-	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
+	private static final Logger log = LoggerFactory.getLogger(Deleter.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
 	private final boolean deleteReports;
@@ -45,28 +45,28 @@ public class SwingDeleterItem extends CommonRunnable {
 	private final OperationKey operationKey;
 	private final ProgressHandler progressHandler;
 
-	public SwingDeleterItem(
+	public Deleter(
 			StudyKey studyKey,
 			boolean deleteReports)
 	{
 		this(studyKey, null, null, deleteReports);
 	}
 
-	public SwingDeleterItem(
+	public Deleter(
 			MatrixKey matrixKey,
 			boolean deleteReports)
 	{
 		this(null, matrixKey, null, deleteReports);
 	}
 
-	public SwingDeleterItem(
+	public Deleter(
 			OperationKey operationKey,
 			boolean deleteReports)
 	{
 		this(null, null, operationKey, deleteReports);
 	}
 
-	private SwingDeleterItem(
+	private Deleter(
 			StudyKey studyKey,
 			MatrixKey matrixKey,
 			OperationKey operationKey,
@@ -124,7 +124,7 @@ public class SwingDeleterItem extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(SwingDeleterItem.class);
+		return LoggerFactory.getLogger(Deleter.class);
 	}
 
 	@Override

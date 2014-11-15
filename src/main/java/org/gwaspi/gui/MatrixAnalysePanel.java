@@ -77,7 +77,7 @@ import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.SwingDeleterItem;
+import org.gwaspi.threadbox.Deleter;
 import org.gwaspi.threadbox.Threaded_Combi;
 import org.gwaspi.threadbox.Threaded_GTFreq_HW;
 import org.gwaspi.threadbox.Threaded_GWAS;
@@ -582,7 +582,7 @@ public class MatrixAnalysePanel extends JPanel {
 				operationKey = selectedOperation.getValue();
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
 				if (MultiOperations.permitsDeletionOf(operationKey)) {
-					final SwingDeleterItem operationDeleter = new SwingDeleterItem(operationKey, deleteReports);
+					final Deleter operationDeleter = new Deleter(operationKey, deleteReports);
 					MultiOperations.queueTask(operationDeleter);
 					tableModel.removeRow(selectedOperation.getKey());
 					// XXX OperationManager.deleteOperationAndChildren(parentMatrixKey.getStudyKey(), opId, deleteReport);

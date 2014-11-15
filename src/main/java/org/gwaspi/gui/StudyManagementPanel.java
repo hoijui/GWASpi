@@ -54,7 +54,7 @@ import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.SwingDeleterItem;
+import org.gwaspi.threadbox.Deleter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -370,7 +370,7 @@ public class StudyManagementPanel extends JPanel {
 								if (deleteReportsOption == JOptionPane.YES_OPTION) {
 									deleteReports = true;
 								}
-								final SwingDeleterItem studyDeleter = new SwingDeleterItem(studyKey, deleteReports);
+								final Deleter studyDeleter = new Deleter(studyKey, deleteReports);
 								MultiOperations.queueTask(studyDeleter);
 							}
 						} else {

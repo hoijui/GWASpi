@@ -45,7 +45,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.SwingDeleterItem;
+import org.gwaspi.threadbox.Deleter;
 
 public class Report_AnalysisPanel extends JPanel {
 
@@ -186,7 +186,7 @@ public class Report_AnalysisPanel extends JPanel {
 							&& (option == JOptionPane.YES_OPTION))
 					{
 						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
-						final SwingDeleterItem operationDeleter = new SwingDeleterItem(currentOpKey, deleteReports);
+						final Deleter operationDeleter = new Deleter(currentOpKey, deleteReports);
 						MultiOperations.queueTask(operationDeleter);
 					}
 				}

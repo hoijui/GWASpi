@@ -79,7 +79,7 @@ public class MultiOperations {
 		throw new UnsupportedOperationException("This should be replaced by a mechanism of the kind of  new DeleteTaskX().isValid()");
 	}
 
-	public static void queueTask(final SwingDeleterItem sdi) {
+	public static void queueTask(final Deleter sdi) {
 
 		final Task task = new DefaultTask(sdi);
 		TaskQueue.getInstance().queueTask(task);
