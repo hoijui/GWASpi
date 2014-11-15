@@ -32,7 +32,7 @@ public class MultiOperations {
 
 	public static void queueTask(CommonRunnable task) {
 
-		SwingWorkerItem swi = new SwingWorkerItem(task);
+		DefaultTask swi = new DefaultTask(task);
 		TaskQueue.getInstance().queueTask(swi);
 	}
 
@@ -81,7 +81,7 @@ public class MultiOperations {
 
 	public static void queueTask(SwingDeleterItem sdi) {
 
-		SwingWorkerItem swi = new SwingWorkerItem(sdi);
+		DefaultTask swi = new DefaultTask(sdi);
 		TaskQueue.getInstance().queueTask(swi);
 	}
 

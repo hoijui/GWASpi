@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * with {@link Thread#interrupt()}, does cleanup (TODO!),
  * and sets the status to ABORTED.
  */
-public class SwingWorkerItem implements Task {
+public class DefaultTask implements Task {
 
-	private final Logger log = LoggerFactory.getLogger(SwingWorkerItem.class);
+	private final Logger log = LoggerFactory.getLogger(DefaultTask.class);
 
 	private final CommonRunnable task;
 	private final Date createTime;
@@ -40,7 +40,7 @@ public class SwingWorkerItem implements Task {
 	private Date endTime;
 	private QueueState queueStatus;
 
-	SwingWorkerItem(final CommonRunnable task) {
+	DefaultTask(final CommonRunnable task) {
 
 		this.createTime = new Date();
 		this.startTime = null;
@@ -151,7 +151,7 @@ public class SwingWorkerItem implements Task {
 	@Override
 	public void run() {
 
-		SwingWorkerItem thisSwi = null;
+		DefaultTask thisSwi = null;
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getTask().getDetailedName());
 			org.gwaspi.global.Config.initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
