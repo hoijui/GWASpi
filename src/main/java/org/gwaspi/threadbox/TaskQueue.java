@@ -35,6 +35,8 @@ import org.gwaspi.progress.ProcessStatusChangeEvent;
 
 public class TaskQueue {
 
+	private static final TaskQueue SINGLETON = new TaskQueue();
+
 	private final List<TaskQueueListener> taskListeners;
 	/**
 	 * All the tasks in original queue order.
@@ -60,6 +62,10 @@ public class TaskQueue {
 	private final Lock queueLock;
 	private final Lock scheduleLock;
 	private final Lock doneLock;
+
+	public static TaskQueue getInstance() { // HACK bad singleton implementation
+		return SINGLETON;
+	}
 
 	private class TaskQueueProgressListener extends AbstractProgressListener {
 
@@ -88,7 +94,7 @@ public class TaskQueue {
 		}
 	}
 
-	public TaskQueue() {
+	private TaskQueue() {
 
 		this.taskListeners = new ArrayList<TaskQueueListener>();
 		this.tasks = new LinkedList<Task>();
