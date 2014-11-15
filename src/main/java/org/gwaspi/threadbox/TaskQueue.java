@@ -219,4 +219,12 @@ public class TaskQueue {
 	public int size() {
 		return tasks.size();
 	}
+
+	/**
+	 * Returns whether there are unfinished tasks.
+	 * @return true if there are not yet done tasks in the queue, false otherwise.
+	 */
+	public boolean isActive() {
+		return (tasks.size() > done.size());
+	}
 }
