@@ -30,10 +30,10 @@ public class MultiOperations {
 	private MultiOperations() {
 	}
 
-	public static void queueTask(CommonRunnable task) {
+	public static void queueTask(final CommonRunnable job) {
 
-		DefaultTask swi = new DefaultTask(task);
-		TaskQueue.getInstance().queueTask(swi);
+		final Task task = new DefaultTask(job);
+		TaskQueue.getInstance().queueTask(task);
 	}
 
 	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
@@ -79,10 +79,10 @@ public class MultiOperations {
 		throw new UnsupportedOperationException("This should be replaced by a mechanism of the kind of  new DeleteTaskX().isValid()");
 	}
 
-	public static void queueTask(SwingDeleterItem sdi) {
+	public static void queueTask(final SwingDeleterItem sdi) {
 
-		DefaultTask swi = new DefaultTask(sdi);
-		TaskQueue.getInstance().queueTask(swi);
+		final Task task = new DefaultTask(sdi);
+		TaskQueue.getInstance().queueTask(task);
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
