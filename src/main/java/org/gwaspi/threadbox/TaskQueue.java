@@ -24,6 +24,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.gwaspi.progress.AbstractProgressListener;
@@ -48,9 +52,10 @@ public class TaskQueue {
 	 * The tasks that already ended.
 	 */
 	private final List<Task> done;
-	private final Map<Thread, Task> threadToTask;
-	private final Map<Task, Thread> taskToThread;
+//	private final Map<Future, Task> futureToTask;
+	private final Map<Task, Future> taskToFuture;
 	private final Map<Task, TaskQueueProgressListener> taskToProgressListener;
+	private final ExecutorService executorService;
 	private final TaskDependencyHandler dependencyHandler;
 	private final Lock queueLock;
 	private final Lock scheduleLock;
@@ -75,6 +80,14 @@ public class TaskQueue {
 		}
 	}
 
+	private static class TaskThreadFactory implements ThreadFactory {
+
+		@Override
+		public Thread newThread(Runnable runnable) {
+			return new Thread(runnable, "Tasks executor");
+		}
+	}
+
 	public TaskQueue() {
 
 		this.taskListeners = new ArrayList<TaskQueueListener>();
@@ -82,13 +95,14 @@ public class TaskQueue {
 		this.queued = new LinkedList<Task>(); // TODO maybe rather use an other implementation here
 		this.scheduled = new LinkedList<Task>();
 		this.done = new LinkedList<Task>();
-		this.threadToTask = new HashMap<Thread, Task>();
-		this.taskToThread = new HashMap<Task, Thread>();
+//		this.futureToTask = new HashMap<Future, Task>();
+		this.taskToFuture = new HashMap<Task, Future>();
 		this.taskToProgressListener = new HashMap<Task, TaskQueueProgressListener>();
 		this.dependencyHandler = new TaskDependencyHandler();
 		this.queueLock = new ReentrantLock();
 		this.scheduleLock = new ReentrantLock();
 		this.doneLock = new ReentrantLock();
+		this.executorService = Executors.newSingleThreadExecutor(new TaskThreadFactory());
 	}
 
 	/**
@@ -138,14 +152,28 @@ public class TaskQueue {
 			if (!wasQueued) {
 				return;
 			}
-			final Thread thread = new Thread(task);
-			threadToTask.put(thread, task);
-			taskToThread.put(task, thread);
+			final Future<?> taskFuture = executorService.submit(task);
+//			futureToTask.put(taskFuture, task);
+			taskToFuture.put(task, taskFuture);
 			scheduled.add(task);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
-			thread.start();
 		} finally {
 			scheduleLock.unlock();
+		}
+	}
+
+	public boolean abort(final Task task) {
+
+		doneLock.lock();
+		try {
+			final Future<?> taskFuture = taskToFuture.get(task);
+			if (taskFuture == null) {
+				// is not scheduled
+				return false;
+			}
+			return taskFuture.cancel(true);
+		} finally {
+			doneLock.unlock();
 		}
 	}
 
@@ -157,9 +185,9 @@ public class TaskQueue {
 			if (!wasScheduled) {
 				return;
 			}
-			final Thread thread = taskToThread.get(task);
-			threadToTask.remove(thread);
-			taskToThread.remove(task);
+			final Future<?> taskFuture = taskToFuture.get(task);
+//			futureToTask.remove(taskFuture);
+			taskToFuture.remove(task);
 			dependencyHandler.remove(task);
 			done.add(task);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
