@@ -149,8 +149,18 @@ public class TaskQueue {
 			taskToProgressListener.put(task, progressListener);
 			task.getProgressSource().addProgressListener(progressListener);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
+			tryToSchedule();
 		} finally {
 			queueLock.unlock();
+		}
+	}
+
+	private void tryToSchedule() {
+
+		for (final Task queuedTask : queued) {
+//			if (dependencyHandler.canBeDoneNow(queuedTask)) { // HACK we need to do this!
+				schedule(queuedTask);
+//			}
 		}
 	}
 
