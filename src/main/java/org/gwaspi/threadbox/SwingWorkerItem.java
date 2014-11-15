@@ -18,8 +18,8 @@
 package org.gwaspi.threadbox;
 
 import java.util.Date;
+import org.gwaspi.global.Text;
 import org.gwaspi.progress.ProcessStatus;
-import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class SwingWorkerItem implements Task {
 	private final Date createTime;
 	private Date startTime;
 	private Date endTime;
-	private QueueState queueState;
+	private QueueState queueStatus;
 
 	SwingWorkerItem(final CommonRunnable task) {
 
@@ -40,33 +40,25 @@ public class SwingWorkerItem implements Task {
 		this.startTime = null;
 		this.endTime = null;
 		this.task = task;
-		this.queueState = QueueState.QUEUED;
+		this.queueStatus = QueueState.CREATED;
 	}
 
-	public static ProcessStatus toProcessStatus(QueueState queueState) {
-
-		switch (queueState) {
-			case ABORT: return ProcessStatus.ABORTED;
-			case DELETED: return null;
-			case DONE: return ProcessStatus.COMPLEETED;
-			case ERROR: return ProcessStatus.FAILED;
-			case PROCESSING: return ProcessStatus.RUNNING;
-			case QUEUED: return ProcessStatus.INITIALIZING;
-			default: return null;
-		}
-	}
-
-	public QueueState getQueueState() {
-		return queueState;
-	}
+//	public static ProcessStatus toProcessStatus(QueueState queueState) {
+//
+//		switch (queueState) {
+//			case ABORT: return ProcessStatus.ABORTED;
+//			case DELETED: return null;
+//			case DONE: return ProcessStatus.COMPLEETED;
+//			case ERROR: return ProcessStatus.FAILED;
+//			case PROCESSING: return ProcessStatus.RUNNING;
+//			case QUEUED: return ProcessStatus.INITIALIZING;
+//			default: return null;
+//		}
+//	}
 
 	@Override
-	public ProcessStatus getStatus() {
-		return toProcessStatus(getQueueState());
-	}
-
-	public boolean isCurrent() {
-		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
+	public QueueState getStatus() {
+		return queueStatus;
 	}
 
 	@Override
@@ -80,45 +72,54 @@ public class SwingWorkerItem implements Task {
 	}
 
 	@Override
+	public void setStartTime(final Date startTime) {
+
+		if (this.startTime != null) {
+			throw new IllegalStateException("start-time is already set");
+		}
+
+		this.startTime = startTime;
+	}
+
+	@Override
 	public Date getEndTime() {
 		return endTime;
+	}
+
+	@Override
+	public void setEndTime(final Date endTime) {
+
+		if (this.endTime != null) {
+			throw new IllegalStateException("end-time is already set");
+		}
+
+		this.endTime = endTime;
 	}
 
 	public CommonRunnable getTask() {
 		return task;
 	}
 
-	public String getTimeStamp() {
-		return task.getTimeStamp();
-	}
+	@Override
+	public void setStatus(final QueueState queueStatus) {
 
-	public void setQueueState(QueueState queueState) {
-
-		if ((startTime == null) && queueState.equals(QueueState.PROCESSING)) {
+		if ((startTime == null) && queueStatus.equals(QueueState.PROCESSING)) {
 			setStartTime(new Date());
-		} else if ((endTime == null) && QueueState.isFinalizingState(queueState)) {
+		} else if ((endTime == null) && queueStatus.equals(QueueState.DONE)) {
 			setEndTime(new Date());
 		}
-		this.queueState = queueState;
+		this.queueStatus = queueStatus;
 
-		if (task.getProgressSource() instanceof ProgressHandler) {
-			final ProgressHandler progressHandler = (ProgressHandler) task.getProgressSource(); // HACK
-			progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueState));
-		} else {
-			log.warn("Non-serious program code problem detected: {}\nMore Info: '{}' '{}' '{}'",
-					"We can not report failure of the process to the progress API.",
-					task.getName(),
-					task.getDetailedName(),
-					task.getProgressSource().getClass().getCanonicalName());
-		}
-	}
-
-	private void setEndTime(final Date endTime) {
-		this.endTime = endTime;
-	}
-
-	private void setStartTime(final Date startTime) {
-		this.startTime = startTime;
+//		if (task.getProgressSource() instanceof ProgressHandler) {
+//			final ProgressHandler progressHandler = (ProgressHandler) task.getProgressSource(); // HACK
+//			progressHandler.setNewStatus(SwingWorkerItem.toProcessStatus(queueStatus));
+//		} else {
+//			log.warn("Non-serious program code problem detected: {}\nMore Info: '{}' '{}' '{}'",
+//					"We can not report failure of the process to the progress API.",
+//					task.getName(),
+//					task.getDetailedName(),
+//					task.getProgressSource().getClass().getCanonicalName());
+//		}
 	}
 
 	@Override
@@ -143,6 +144,49 @@ public class SwingWorkerItem implements Task {
 
 	@Override
 	public void run() {
-		getTask().run();
+
+		SwingWorkerItem thisSwi = null;
+		try {
+			org.gwaspi.global.Utils.sysoutStart(getTask().getDetailedName());
+			org.gwaspi.global.Config.initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
+
+			// NOTE ABORTION_POINT We could be gracefully abort here
+
+			getTask().run();
+			if (Thread.currentThread().isInterrupted()) {
+				throw new InterruptedException("Abortion of the task was requested");
+			}
+		} catch (InterruptedException thr) {
+			// NOTE We receive this exception only in certain special cases,
+			//   NOT always when Thread#interrupt() is called on us!
+			getTask().getProgressHandler().setNewStatus(ProcessStatus.ABORTED);
+		} catch (Throwable thr) {
+			getTask().getProgressHandler().setNewStatus(ProcessStatus.FAILED);
+
+			MultiOperations.printError(getName());
+			if (thr instanceof OutOfMemoryError) {
+				log.error(Text.App.outOfMemoryError);
+			}
+			log.error("Failed performing " + getName(), thr);
+			try {
+				setStatus(QueueState.DONE);
+			} catch (Exception ex1) {
+				log.warn("Failed flagging items with state 'error': " + getName(), ex1);
+			}
+		}
+
+		// FINISH OFF
+		if (getProgressSource().getStatus().isBad()) {
+			log.info("");
+			log.info(Text.Processes.abortingProcess);
+			log.info("Process Name: " + getName());
+			log.info("Process Launch Time: " + org.gwaspi.global.Utils.getShortDateTimeAsString(thisSwi.getCreateTime()));
+			log.info("");
+			log.info("");
+		} else {
+			MultiOperations.printFinished("Performing " + getTask().getDetailedName());
+			setStatus(QueueState.DONE);
+		}
+
 	}
 }

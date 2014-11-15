@@ -42,12 +42,12 @@ import javax.swing.JTextArea;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
+import org.gwaspi.gui.utils.TaskQueueTableModel;
 import org.gwaspi.progress.ProcessDetailsChangeEvent;
 import org.gwaspi.progress.ProcessStatusChangeEvent;
 import org.gwaspi.progress.ProgressEvent;
@@ -55,10 +55,7 @@ import org.gwaspi.progress.ProgressListener;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperSwingProgressListener;
 import org.gwaspi.progress.SwingProgressListener;
-import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingDeleterItemList;
-import org.gwaspi.threadbox.SwingWorkerItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.TaskQueue;
 import org.gwaspi.threadbox.TaskQueueStatusChangedEvent;
 import org.gwaspi.threadbox.TaskQueueListener;
 import org.slf4j.Logger;
@@ -129,7 +126,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		if (singleton == null) {
 			singleton = new ProcessTab();
-			SwingWorkerItemList.addTaskListener(singleton);
+//			SwingWorkerItemList.addTaskListener(singleton);
 		}
 
 		return singleton;
@@ -164,29 +161,14 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 					int rowIndex = getSelectedRow();
 					int colIndex = getSelectedColumn();
 					if (colIndex == 7) { // Abort
-						if (rowIndex < SwingWorkerItemList.size()) {
-							SwingWorkerItemList.flagItemAborted(SwingWorkerItemList.getItemByIndex(rowIndex));
-						} else {
-							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.size());
-						}
+						throw new UnsupportedOperationException("needs to be implemented!"); // TODO implement aborting the selected task, also maybe add pausing support!
 					}
 				}
 			});
 			setDefaultRenderer(Object.class, new RowRendererProcessOverviewWithAbortIcon());
 			setSelectionMode(0);
 
-			setModel(new DefaultTableModel(
-					buildProcessTableModel(),
-					new String[] {
-						Text.Processes.id,
-						Text.Study.studyID,
-						Text.Processes.processeName,
-						Text.Processes.launchTime,
-						Text.Processes.startTime,
-						Text.Processes.endTime,
-						Text.Processes.queueState,
-						Text.All.abort
-					}));
+			setModel(new TaskQueueTableModel(TaskQueue.getInstance()));
 			scrollRectToVisible(getBounds());
 		}
 
@@ -235,54 +217,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 			ProcessTab.getSingleton().toggleBusyLogo();
 		}
-	}
-
-	private static Object[][] buildProcessTableModel() {
-
-		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
-		List<SwingDeleterItem> swingDeleterItems = SwingDeleterItemList.getItems();
-
-		Object[][] spreadSheet = new Object[swingWorkerItems.size() + swingDeleterItems.size()][8];
-		int count = 0;
-		for (SwingWorkerItem swingWorkerItem : swingWorkerItems) {
-			StringBuilder studyIdsStr = new StringBuilder();
-			for (Integer studyId : swingWorkerItem.getTask().getTaskLockProperties().getStudyIds()) {
-				studyIdsStr.append(", ");
-				studyIdsStr.append(studyId.toString());
-			}
-			if (studyIdsStr.length() == 0) {
-				studyIdsStr.append(" - ");
-			} else {
-				studyIdsStr.delete(0, 2); // delete the first ", "
-			}
-
-			spreadSheet[count][0] = count;
-			spreadSheet[count][1] = studyIdsStr.toString();
-			spreadSheet[count][2] = swingWorkerItem.getTask().getDetailedName() != null ? swingWorkerItem.getTask().getDetailedName() : " - ";
-			spreadSheet[count][3] = swingWorkerItem.getCreateTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getCreateTime()) : " - ";
-			spreadSheet[count][4] = swingWorkerItem.getStartTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getStartTime()) : " - ";
-			spreadSheet[count][5] = swingWorkerItem.getEndTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingWorkerItem.getEndTime()) : " - ";
-			spreadSheet[count][6] = swingWorkerItem.getStatus() != null ? swingWorkerItem.getStatus().toString() : " - ";
-			spreadSheet[count][7] = " ";
-
-			count++;
-		}
-
-		int deleteIndex = 0;
-		for (SwingDeleterItem swingDeleterItem : swingDeleterItems) {
-			spreadSheet[count][0] = "Del_" + deleteIndex++;
-			spreadSheet[count][1] = swingDeleterItem.getStudyKey();
-			spreadSheet[count][2] = swingDeleterItem.getDescription() != null ? swingDeleterItem.getDescription() : " - ";
-			spreadSheet[count][3] = swingDeleterItem.getCreateTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getCreateTime()) : " - ";
-			spreadSheet[count][4] = swingDeleterItem.getStartTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getStartTime()) : " - ";
-			spreadSheet[count][5] = swingDeleterItem.getEndTime() != null ? org.gwaspi.global.Utils.getShortDateTimeAsString(swingDeleterItem.getEndTime()) : " - ";
-			spreadSheet[count][6] = swingDeleterItem.getStatus()!= null ? swingDeleterItem.getStatus().toString() : " - ";
-			spreadSheet[count][7] = " ";
-
-			count++;
-		}
-
-		return spreadSheet;
 	}
 
 	private void startBusyLogo() {

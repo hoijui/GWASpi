@@ -18,22 +18,23 @@
 package org.gwaspi.threadbox;
 
 public enum QueueState {
+	/** just created, not yet added to a queue */
+	CREATED,
+	/** is to be done somewhen in the future */
 	QUEUED,
-	PROCESSING,
-	DONE,
-	ABORT,
-	ERROR,
-	DELETED;
-
 	/**
-	 * Checks whether a given state is one at the end of a life-cycle.
-	 * @param queueState to be checked
-	 * @return true, if queueState is necessarily at the end of a life-cycle.
+	 * has unsatisfied requirements.
+	 * For example, an operation, outputting data that is to be read, is not yet done.
 	 */
-	public static boolean isFinalizingState(QueueState queueState) {
-
-		return ((queueState == QueueState.DONE)
-				|| (queueState == QueueState.ABORT)
-				|| (queueState == QueueState.ERROR));
-	}
+	UNSATIFIED,
+	/** awaiting free processing capabilities (for example a free slot in a thread-set) */
+	SCHEDULED,
+	/** currently being processed in a thread */
+	PROCESSING,
+	/** currently being processed in a thread, but not actually receiving CPU time */
+	PAUSED,
+	/** done processing */
+	DONE,
+	/** removed from the queue */
+	REMOVED;
 }

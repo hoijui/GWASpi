@@ -20,7 +20,6 @@ package org.gwaspi.gui.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
-import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -28,10 +27,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.progress.ProcessStatus;
-import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingDeleterItemList;
-import org.gwaspi.threadbox.SwingWorkerItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.Task;
 
 public class RowRendererDefault extends DefaultTableCellRenderer {
 
@@ -69,17 +65,11 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 		tableCellRenderer.setIcon(ico);
 	}
 
-	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, int row, int column) {
+	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, Object value, int row, int column) {
 
 		if (table.getColumnModel().getColumnCount() == 8) {
-			ProcessStatus status;
-			List<SwingWorkerItem> swingWorkers  = SwingWorkerItemList.getItems();
-			if (swingWorkers.size() > row) {
-				status = swingWorkers.get(row).getStatus();
-			} else {
-				List<SwingDeleterItem> swingDeleters = SwingDeleterItemList.getItems();
-				status = swingDeleters.get(row - swingWorkers.size()).getStatus();
-			}
+			final Task task = (Task) value;
+			final ProcessStatus status = task.getProgressSource().getStatus();
 
 			if (column == 0 || column == 1 || column == 6 || column == 7) {
 				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);

@@ -49,7 +49,6 @@ import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,7 +253,7 @@ public class CurrentStudyPanel extends JPanel {
 							int matrixid = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
 							MatrixKey matrixKey = new MatrixKey(studyKey, matrixid);
 							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
+							if (MultiOperations.permitsDeletionOf(matrixKey)) {
 								boolean deleteReports = false;
 								if (deleteReportsOption == JOptionPane.YES_OPTION) {
 									deleteReports = true;
@@ -287,7 +286,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOf(studyKey)) {
+			if (MultiOperations.permitsDeletionOf(studyKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

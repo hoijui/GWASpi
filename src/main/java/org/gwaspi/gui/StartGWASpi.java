@@ -41,8 +41,7 @@ import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.threadbox.SwingDeleterItemList;
-import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.TaskQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,14 +234,14 @@ public class StartGWASpi extends JFrame {
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent we) {
-					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
-					if (jobsPending == 0) {
-						we.getWindow().setVisible(false);
-					} else {
+					final boolean jobsPending = TaskQueue.getInstance().isActive();
+					if (jobsPending) {
 						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
 						if (decision == JOptionPane.YES_OPTION) {
 							we.getWindow().setVisible(false);
 						}
+					} else {
+						we.getWindow().setVisible(false);
 					}
 				}
 			});

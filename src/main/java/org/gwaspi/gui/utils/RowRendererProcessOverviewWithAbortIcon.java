@@ -26,7 +26,7 @@ public class RowRendererProcessOverviewWithAbortIcon extends RowRendererDefault 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
 		super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 
-		setAbortIcon(this, table, row, column);
+		setAbortIcon(this, table, value, row, column);
 
 		return this;
 	}

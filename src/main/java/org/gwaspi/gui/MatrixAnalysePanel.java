@@ -581,7 +581,7 @@ public class MatrixAnalysePanel extends JPanel {
 			for (Map.Entry<Integer, OperationKey> selectedOperation : operationsToDelete.entrySet()) {
 				operationKey = selectedOperation.getValue();
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-				if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
+				if (MultiOperations.permitsDeletionOf(operationKey)) {
 					final SwingDeleterItem operationDeleter = new SwingDeleterItem(operationKey, deleteReports);
 					MultiOperations.queueTask(operationDeleter);
 					tableModel.removeRow(selectedOperation.getKey());

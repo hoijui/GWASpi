@@ -18,7 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
-import org.gwaspi.global.Text;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
@@ -65,40 +65,17 @@ public abstract class CommonRunnable implements Runnable {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
 			org.gwaspi.global.Config.initPreferences(false, null, null);
 
-			thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
+//			thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
 
 			// NOTE ABORTION_POINT We could be gracefully abort here
 
 			runInternal(thisSwi);
 
-			// FINISH OFF
-			if (getProgressSource().getStatus().isBad()) {
-				getLog().info("");
-				getLog().info(Text.Processes.abortingProcess);
-				getLog().info("Process Name: " + thisSwi.getTask().getDetailedName());
-				getLog().info("Process Launch Time: " + org.gwaspi.global.Utils.getShortDateTimeAsString(thisSwi.getCreateTime()));
-				getLog().info("");
-				getLog().info("");
-			} else {
-				MultiOperations.printFinished("Performing " + getDetailedName());
-				SwingWorkerItemList.flagItemDone(thisSwi);
-			}
-
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
-			MultiOperations.updateProcessOverviewStartNext();
-		} catch (Throwable thr) { // TODO separately catch thread-interrupted-exception, ABORTing the task/runnable
-			MultiOperations.printError(getName());
-			if (thr instanceof OutOfMemoryError) {
-				getLog().error(Text.App.outOfMemoryError);
-			}
-			getLog().error("Failed performing " + getName(), thr);
-			try {
-				SwingWorkerItemList.flagItemError(thisSwi);
-				MultiOperations.updateTree();
-				MultiOperations.updateProcessOverviewStartNext();
-			} catch (Exception ex1) {
-				getLog().warn("Failed flagging items with state 'error'", ex1);
-			}
+//			MultiOperations.updateProcessOverviewStartNext();
+		} catch (IOException ex) { // TODO separately catch thread-interrupted-exception, ABORTing the task/runnable
+			getLog().error("Failed performing " + getName(), ex);
+			getProgressHandler().setNewStatus(ProcessStatus.FAILED);
 		}
 	}
 

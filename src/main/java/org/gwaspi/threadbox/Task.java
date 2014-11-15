@@ -18,7 +18,6 @@
 package org.gwaspi.threadbox;
 
 import java.util.Date;
-import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 
 /**
@@ -30,13 +29,16 @@ import org.gwaspi.progress.ProgressSource;
  */
 public interface Task extends Runnable {
 
-	ProcessStatus getStatus();
+	QueueState getStatus();
+	void setStatus(final QueueState status);
 
 	Date getCreateTime();
 
 	Date getStartTime();
+	void setStartTime(final Date startTime);
 
 	Date getEndTime();
+	void setEndTime(final Date endTime);
 
 	String getName();
 

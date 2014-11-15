@@ -36,8 +36,7 @@ import java.util.Map;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.StudyList;
-import org.gwaspi.threadbox.SwingDeleterItemList;
-import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.gwaspi.threadbox.TaskQueue;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -249,15 +248,13 @@ public abstract class AbstractTestScripts {
 		StartGWASpi startGWASpi = new StartGWASpi();
 		startGWASpi.start(argsList);
 
-		int sum = 999;
 		do {
 			try {
 				Thread.sleep(250);
 			} catch (InterruptedException ex) {
 				ex.printStackTrace();
 			}
-			sum = SwingWorkerItemList.sizePending() + SwingDeleterItemList.size();
-		} while (sum > 0);
+		} while (TaskQueue.getInstance().isActive());
 	}
 
 	protected static String[] createArgs(String scriptPath, String logPath) {

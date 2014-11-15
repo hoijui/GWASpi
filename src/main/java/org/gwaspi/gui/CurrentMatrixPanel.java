@@ -53,7 +53,6 @@ import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_ExportMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -336,7 +335,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			// TODO test if the deleted item is required for a queued worker
-			if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
+			if (MultiOperations.permitsDeletionOf(matrixKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

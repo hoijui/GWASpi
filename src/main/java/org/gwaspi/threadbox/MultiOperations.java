@@ -33,7 +33,7 @@ public class MultiOperations {
 	public static void queueTask(CommonRunnable task) {
 
 		SwingWorkerItem swi = new SwingWorkerItem(task);
-		SwingWorkerItemList.add(swi);
+		TaskQueue.getInstance().queueTask(swi);
 	}
 
 	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
@@ -75,9 +75,14 @@ public class MultiOperations {
 		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
 
+	public static boolean permitsDeletionOf(Object toDelete) {
+		throw new UnsupportedOperationException("This should be replaced by a mechanism of the kind of  new DeleteTaskX().isValid()");
+	}
+
 	public static void queueTask(SwingDeleterItem sdi) {
 
-		SwingDeleterItemList.add(sdi);
+		SwingWorkerItem swi = new SwingWorkerItem(sdi);
+		TaskQueue.getInstance().queueTask(swi);
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
@@ -109,12 +114,14 @@ public class MultiOperations {
 		}
 	}
 
+	/** @deprecated */
 	public static void updateProcessOverviewStartNext() throws IOException {
-		SwingWorkerItemList.startNext();
+//		SwingWorkerItemList.startNext();
 	}
 
+	/** @deprecated */
 	public static void updateProcessOverviewDeleteNext() throws IOException {
-		SwingDeleterItemList.deleteAllListed();
+//		SwingDeleterItemList.deleteAllListed();
 	}
 	//</editor-fold>
 }
