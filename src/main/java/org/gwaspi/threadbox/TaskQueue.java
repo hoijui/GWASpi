@@ -56,6 +56,7 @@ public class TaskQueue {
 	private final List<Task> done;
 //	private final Map<Future, Task> futureToTask;
 	private final Map<Task, Future> taskToFuture;
+	private final Map<Task, Integer> taskToIndex;
 	private final Map<Task, TaskQueueProgressListener> taskToProgressListener;
 	private final ExecutorService executorService;
 	private final TaskDependencyHandler dependencyHandler;
@@ -103,6 +104,7 @@ public class TaskQueue {
 		this.done = new LinkedList<Task>();
 //		this.futureToTask = new HashMap<Future, Task>();
 		this.taskToFuture = new HashMap<Task, Future>();
+		this.taskToIndex = new HashMap<Task, Integer>();
 		this.taskToProgressListener = new HashMap<Task, TaskQueueProgressListener>();
 		this.dependencyHandler = new TaskDependencyHandler();
 		this.queueLock = new ReentrantLock();
@@ -138,13 +140,15 @@ public class TaskQueue {
 
 		queueLock.lock();
 		try {
+			final int taskIndex = tasks.size();
 			tasks.add(task);
+			taskToIndex.put(task, taskIndex);
 			queued.add(task);
 			dependencyHandler.add(task);
 			final TaskQueueProgressListener progressListener = new TaskQueueProgressListener(task);
 			taskToProgressListener.put(task, progressListener);
 			task.getProgressSource().addProgressListener(progressListener);
-			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
+			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 		} finally {
 			queueLock.unlock();
 		}
@@ -162,7 +166,8 @@ public class TaskQueue {
 //			futureToTask.put(taskFuture, task);
 			taskToFuture.put(task, taskFuture);
 			scheduled.add(task);
-			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
+			final Integer taskIndex = taskToIndex.get(task);
+			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 		} finally {
 			scheduleLock.unlock();
 		}
@@ -196,7 +201,8 @@ public class TaskQueue {
 			taskToFuture.remove(task);
 			dependencyHandler.remove(task);
 			done.add(task);
-			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
+			final Integer taskIndex = taskToIndex.get(task);
+			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 		} finally {
 			doneLock.unlock();
 		}
@@ -210,7 +216,8 @@ public class TaskQueue {
 			for (final Task doneTask : done) {
 				final TaskQueueProgressListener progressListener = taskToProgressListener.remove(doneTask);
 				doneTask.getProgressSource().removeProgressListener(progressListener);
-				fireStatusChanged(new TaskQueueStatusChangedEvent(this, doneTask));
+				final Integer taskIndex = taskToIndex.remove(doneTask);
+				fireStatusChanged(new TaskQueueStatusChangedEvent(this, doneTask, taskIndex));
 			}
 			done.clear();
 		} finally {
