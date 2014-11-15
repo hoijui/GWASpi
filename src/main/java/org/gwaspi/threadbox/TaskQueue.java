@@ -50,6 +50,7 @@ public class TaskQueue {
 	private final Map<Thread, Task> threadToTask;
 	private final Map<Task, Thread> taskToThread;
 	private final Map<Task, TaskQueueProgressListener> taskToProgressListener;
+	private final TaskDependencyHandler dependencyHandler;
 	private final Lock queueLock;
 	private final Lock scheduleLock;
 	private final Lock doneLock;
@@ -83,6 +84,7 @@ public class TaskQueue {
 		this.threadToTask = new HashMap<Thread, Task>();
 		this.taskToThread = new HashMap<Task, Thread>();
 		this.taskToProgressListener = new HashMap<Task, TaskQueueProgressListener>();
+		this.dependencyHandler = new TaskDependencyHandler();
 		this.queueLock = new ReentrantLock();
 		this.scheduleLock = new ReentrantLock();
 		this.doneLock = new ReentrantLock();
@@ -117,6 +119,7 @@ public class TaskQueue {
 		try {
 			tasks.add(task);
 			queued.add(task);
+			dependencyHandler.add(task);
 			final TaskQueueProgressListener progressListener = new TaskQueueProgressListener(task);
 			taskToProgressListener.put(task, progressListener);
 			task.getProgressSource().addProgressListener(progressListener);
@@ -156,6 +159,7 @@ public class TaskQueue {
 			final Thread thread = taskToThread.get(task);
 			threadToTask.remove(thread);
 			taskToThread.remove(task);
+			dependencyHandler.remove(task);
 			done.add(task);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task));
 		} finally {
