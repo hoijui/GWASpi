@@ -23,10 +23,13 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.gwaspi.global.Text;
+import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.Task;
 import org.gwaspi.threadbox.TaskQueue;
+import org.gwaspi.threadbox.TaskQueueListener;
+import org.gwaspi.threadbox.TaskQueueStatusChangedEvent;
 
-public class TaskQueueTableModel extends AbstractTableModel {
+public class TaskQueueTableModel extends AbstractTableModel implements TaskQueueListener {
 
 	private static final String NO_DATA_AVAILABLE = "-";
 	private static final List<String> COLUMN_NAMES;
@@ -47,6 +50,8 @@ public class TaskQueueTableModel extends AbstractTableModel {
 	public TaskQueueTableModel(final TaskQueue dataSource) {
 
 		this.dataSource = dataSource;
+
+		dataSource.addTaskListener(this);
 	}
 
 	@Override
@@ -103,8 +108,21 @@ public class TaskQueueTableModel extends AbstractTableModel {
 			case 4: return sanitizeAndToString(selectedTask.getStartTime());
 			case 5: return sanitizeAndToString(selectedTask.getEndTime());
 			case 6: return sanitizeAndToString(selectedTask.getStatus());
-			case 7: return "";
+			case 7: return selectedTask;
 			default: throw new IllegalStateException("Can not fetch index for task-queue table: " + columnIndex);
+		}
+	}
+
+	@Override
+	public void taskStatusChanged(TaskQueueStatusChangedEvent evt) {
+
+		final QueueState newStatus = evt.getTask().getStatus();
+		if (newStatus.equals(QueueState.QUEUED)) {
+			fireTableRowsInserted(evt.getQueueIndex(), evt.getQueueIndex());
+		} else if (newStatus.equals(QueueState.REMOVED)) {
+			fireTableRowsDeleted(evt.getQueueIndex(), evt.getQueueIndex());
+		} else {
+			fireTableRowsUpdated(evt.getQueueIndex(), evt.getQueueIndex());
 		}
 	}
 }
