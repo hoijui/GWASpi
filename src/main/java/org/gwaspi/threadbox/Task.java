@@ -21,6 +21,13 @@ import java.util.Date;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 
+/**
+ * A task, visible to the user of the application as such.
+ * It is usually long-running, forms some kind of a logically alone-standing unit
+ * and might be scheduled as is in a multi-threaded system.
+ * It could be a single operation, like a trend-test, or a combination of many operations
+ * and report generations, like the COMBI analysis.
+ */
 public interface Task extends Runnable {
 
 	ProcessStatus getStatus();
