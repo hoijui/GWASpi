@@ -114,7 +114,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final MatrixOperation operation = new HardyWeinbergOperation(params);

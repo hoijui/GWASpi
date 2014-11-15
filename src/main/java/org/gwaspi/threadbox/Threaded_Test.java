@@ -115,7 +115,7 @@ public class Threaded_Test extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 

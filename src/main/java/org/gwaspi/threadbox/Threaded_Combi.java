@@ -116,7 +116,7 @@ public class Threaded_Combi extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 //		List<Operation> operations = OperationsList.getOperationsList(params.getMatrixKey().getId());
 //		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
@@ -141,7 +141,7 @@ public class Threaded_Combi extends CommonRunnable {
 		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(new DataSetKey(combiFilterOpKey), false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
-		CommonRunnable.doRunNowInThread(threaded_MatrixQA, thisSwi);
+		CommonRunnable.doRunNowInThread(threaded_MatrixQA);
 		final OperationKey qaSamplesOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
 		final OperationKey qaMarkersOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
 

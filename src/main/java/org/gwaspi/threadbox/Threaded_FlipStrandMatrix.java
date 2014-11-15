@@ -87,7 +87,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination
@@ -100,7 +100,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 		matrixOperation.processMatrix();
 		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-		Threaded_MatrixQA.matrixCompleeted(thisSwi, resultMatrixKey, progressSource);
+		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

@@ -136,7 +136,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final LoadingMatrixMetadataFactory loadingMatrixMetadataFactory
@@ -173,7 +173,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		MultiOperations.printCompleted("Loading Genotypes");
 		final DataSetKey parent = new DataSetKey(resultMatrixKey);
 
-		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(thisSwi, parent.getMatrixParent(), progressSource);
+		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(parent.getMatrixParent(), progressSource);
 
 		if (performGwas) {
 			final OperationKey samplesQAOpKey = qaOpKeys[0];
@@ -192,7 +192,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			{
 				final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
 				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
-				CommonRunnable.doRunNowInThread(threaded_GWAS, thisSwi);
+				CommonRunnable.doRunNowInThread(threaded_GWAS);
 			} else {
 				getLog().warn("GWAS is not performed, because the data set did not contain both affected and unaffected samples");
 			}

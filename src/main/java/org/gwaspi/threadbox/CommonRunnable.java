@@ -50,26 +50,23 @@ public abstract class CommonRunnable implements Runnable {
 		return log;
 	}
 
-	public static void doRunNowInThread(CommonRunnable task, SwingWorkerItem thisSwi) throws IOException {
+	public static void doRunNowInThread(CommonRunnable task) throws IOException {
 
-		task.runInternal(thisSwi);
+		task.runInternal();
 	}
 
-	protected abstract void runInternal(SwingWorkerItem thisSwi) throws IOException;
+	protected abstract void runInternal() throws IOException;
 
 	@Override
 	public final void run() {
 
-		SwingWorkerItem thisSwi = null;
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
 			org.gwaspi.global.Config.initPreferences(false, null, null);
 
-//			thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
-
 			// NOTE ABORTION_POINT We could be gracefully abort here
 
-			runInternal(thisSwi);
+			runInternal();
 
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
 //			MultiOperations.updateProcessOverviewStartNext();

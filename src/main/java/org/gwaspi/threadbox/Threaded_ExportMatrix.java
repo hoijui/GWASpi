@@ -61,7 +61,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		final MatrixExporter mEx = new MatrixExporter(params);
 		progressForwarder.setInnerProgressHandler((ProgressHandler) mEx.getProgressSource()); // HACK

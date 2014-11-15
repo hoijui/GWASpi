@@ -129,7 +129,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		List<OPType> necessaryOpTypes = new ArrayList<OPType>();
@@ -167,7 +167,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
-	static OperationKey[] matrixCompleeted(SwingWorkerItem thisSwi, MatrixKey matrixKey, final SuperProgressSource superProgressSource)
+	static OperationKey[] matrixCompleeted(MatrixKey matrixKey, final SuperProgressSource superProgressSource)
 			throws IOException
 	{
 		OperationKey[] resultOperationKeys = new OperationKey[2];
@@ -180,7 +180,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, matrixQA.getProgressSource(), null);
 
 		// run within this thread
-		CommonRunnable.doRunNowInThread(matrixQA, thisSwi);
+		CommonRunnable.doRunNowInThread(matrixQA);
 
 		resultOperationKeys[0] = matrixQA.getSamplesQAOperationKey();
 		resultOperationKeys[1] = matrixQA.getMarkersQAOperationKey();

@@ -96,42 +96,42 @@ public class Threaded_GWAS extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GTFREQ_HW, threaded_GTFreq_HW.getProgressSource(), null);
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW, thisSwi);
+		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW);
 
 		OperationKey censusOpKey = threaded_GTFreq_HW.getMarkerCensusOperationKey();
 		OperationKey hwOpKey = threaded_GTFreq_HW.getHardyWeinbergOperationKey();
-		performGWAS(gwasParams, thisSwi, censusOpKey, hwOpKey, progressSource);
+		performGWAS(gwasParams, censusOpKey, hwOpKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
-	private static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws IOException {
+	private static void performGWAS(GWASinOneGOParams gwasParams, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws IOException {
 
 		// tests (need newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if ((censusOpKey != null) && (hwOpKey != null)) {
 			// NOTE ABORTION_POINT We could be gracefully abort here
 			if (gwasParams.isPerformAllelicTests()) {
-				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.ALLELICTEST, superProgressSource, PLACEHOLDER_PS_ALLELIC_TEST);
+				performTest(gwasParams, censusOpKey, hwOpKey, OPType.ALLELICTEST, superProgressSource, PLACEHOLDER_PS_ALLELIC_TEST);
 			}
 
 			// NOTE ABORTION_POINT We could be gracefully abort here
 			if (gwasParams.isPerformGenotypicTests()) {
-				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.GENOTYPICTEST, superProgressSource, PLACEHOLDER_PS_GENOTYPIC_TEST);
+				performTest(gwasParams, censusOpKey, hwOpKey, OPType.GENOTYPICTEST, superProgressSource, PLACEHOLDER_PS_GENOTYPIC_TEST);
 			}
 
 			// NOTE ABORTION_POINT We could be gracefully abort here
 			if (gwasParams.isPerformTrendTests()) {
-				performTest(gwasParams, thisSwi, censusOpKey, hwOpKey, OPType.TRENDTEST, superProgressSource, PLACEHOLDER_PS_TREND_TEST);
+				performTest(gwasParams, censusOpKey, hwOpKey, OPType.TRENDTEST, superProgressSource, PLACEHOLDER_PS_TREND_TEST);
 			}
 		}
 	}
 
-	private static void performTest(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final OPType testType, final SuperProgressSource superProgressSource, ProgressSource placeholderPS) throws IOException {
+	private static void performTest(GWASinOneGOParams gwasParams, OperationKey censusOpKey, OperationKey hwOpKey, final OPType testType, final SuperProgressSource superProgressSource, ProgressSource placeholderPS) throws IOException {
 
 		final OperationKey markersQAOpKey = gwasParams.getMarkerCensusOperationParams().getMarkerQAOpKey();
 
@@ -144,7 +144,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		final Threaded_Test threaded_Test = new Threaded_Test(censusOpKey, hwOpKey, gwasParams, testType);
 		superProgressSource.replaceSubProgressSource(placeholderPS, threaded_Test.getProgressSource(), null);
 		try {
-			CommonRunnable.doRunNowInThread(threaded_Test, thisSwi);
+			CommonRunnable.doRunNowInThread(threaded_Test);
 		} catch (Exception ex) {
 			throw new IOException(ex);
 		}

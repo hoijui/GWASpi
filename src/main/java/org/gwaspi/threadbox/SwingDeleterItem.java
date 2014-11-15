@@ -144,7 +144,7 @@ public class SwingDeleterItem extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		// we are actually going to delete the item
 		if (getStudyKey() != null) {

@@ -79,7 +79,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
+	protected void runInternal() throws IOException {
 
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 		final SampleInfoExtractorDataSetDestination sampleInfoExtractor
