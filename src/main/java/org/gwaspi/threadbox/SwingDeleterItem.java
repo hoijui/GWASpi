@@ -39,7 +39,6 @@ public class SwingDeleterItem extends CommonRunnable {
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItem.class);
 	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
-	private String description;
 	private final boolean deleteReports;
 	private final StudyKey studyKey;
 	private final MatrixKey matrixKey;
