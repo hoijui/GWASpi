@@ -17,6 +17,7 @@
 
 package org.gwaspi.global;
 
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,6 +51,8 @@ public class XMLParser {
 
 			// parse using builder to get DOM representation of the XML file
 			dom = db.parse(XMLurl);
+		} catch (UnknownHostException ex) {
+			log.debug("UnknownHostException: {}", ex.getMessage());
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
