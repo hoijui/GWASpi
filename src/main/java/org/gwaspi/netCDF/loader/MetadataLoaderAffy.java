@@ -54,7 +54,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws IOException {
 		loadMarkers(
 				samplesReceiver,
 				loadDescription.getAnnotationFilePath(),
@@ -62,7 +62,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 				loadDescription.getStudyKey());
 	}
 
-	private void loadMarkers(DataSetDestination samplesReceiver, String annotationPath, ImportFormat format, StudyKey studyKey) throws Exception {
+	private void loadMarkers(DataSetDestination samplesReceiver, String annotationPath, ImportFormat format, StudyKey studyKey) throws IOException {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

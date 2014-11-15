@@ -46,7 +46,6 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 
 public class Report_AnalysisPanel extends JPanel {
 

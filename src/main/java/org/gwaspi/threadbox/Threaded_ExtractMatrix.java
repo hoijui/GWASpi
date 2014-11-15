@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination

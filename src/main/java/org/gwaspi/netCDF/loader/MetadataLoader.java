@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.loader;
 
+import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
 public interface MetadataLoader {
@@ -38,5 +39,5 @@ public interface MetadataLoader {
 	 */
 	StrandType getFixedStrandFlag();
 
-	void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception;
+	void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws IOException;
 }

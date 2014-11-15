@@ -36,7 +36,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		File sampleFile = new File(sampleInfoPath);
 

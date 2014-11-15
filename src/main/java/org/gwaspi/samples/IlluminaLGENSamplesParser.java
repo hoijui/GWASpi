@@ -34,7 +34,7 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(IlluminaLGENSamplesParser.class);
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		File[] sampleFiles = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 

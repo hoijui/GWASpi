@@ -117,7 +117,7 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination

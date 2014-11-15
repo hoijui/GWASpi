@@ -49,7 +49,7 @@ public class LoadManager {
 			Map<SampleKey, SampleInfo> sampleInfos,
 			DataSetDestination dataReceiver,
 			final LoadingMatrixMetadataFactory loadingMatrixMetadataFactory)
-			throws Exception
+			throws IOException
 	{
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
 

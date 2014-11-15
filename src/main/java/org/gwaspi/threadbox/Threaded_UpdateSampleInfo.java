@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.SampleInfo;
@@ -78,7 +79,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 		final SampleInfoExtractorDataSetDestination sampleInfoExtractor

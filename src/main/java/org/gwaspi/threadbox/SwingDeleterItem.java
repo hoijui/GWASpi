@@ -211,7 +211,7 @@ public class SwingDeleterItem extends CommonRunnable implements Task {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		// we are actually going to delete the item
 		if (getQueueState().equals(QueueState.QUEUED)) {

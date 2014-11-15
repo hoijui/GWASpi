@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -115,7 +116,7 @@ public class Threaded_Combi extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 //		List<Operation> operations = OperationsList.getOperationsList(params.getMatrixKey().getId());
 //		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);

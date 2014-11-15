@@ -104,7 +104,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Collection<SampleInfo> sampleInfos2 = new ArrayList<SampleInfo>(sampleInfos.values());
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();
@@ -147,7 +147,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
 			GenotypeEncoding guessedGTCode)
-			throws Exception
+			throws IOException
 	{
 		int dataStartRow = Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);

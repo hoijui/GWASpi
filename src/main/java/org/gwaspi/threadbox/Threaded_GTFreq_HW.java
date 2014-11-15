@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -116,7 +117,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		return LoggerFactory.getLogger(Threaded_GTFreq_HW.class);
 	}
 
-	private OperationKey checkPerformMarkerCensus(Logger log, SwingWorkerItem thisSwi, GWASinOneGOParams gwasParams) throws Exception {
+	private OperationKey checkPerformMarkerCensus(Logger log, SwingWorkerItem thisSwi, GWASinOneGOParams gwasParams) throws IOException {
 
 		OperationKey censusOpKey = null;
 
@@ -211,7 +212,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		markerCensusOperationKey = checkPerformMarkerCensus(getLog(), thisSwi, gwasParams);

@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
 import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.progress.ProgressHandler;
@@ -60,7 +61,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		final MatrixExporter mEx = new MatrixExporter(params);
 		progressForwarder.setInnerProgressHandler((ProgressHandler) mEx.getProgressSource()); // HACK

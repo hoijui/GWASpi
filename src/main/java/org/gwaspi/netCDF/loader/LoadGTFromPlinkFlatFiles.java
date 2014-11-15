@@ -72,7 +72,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		File file = new File(loadDescription.getAnnotationFilePath());
 		FileReader inputFileReader = new FileReader(file);

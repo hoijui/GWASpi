@@ -131,7 +131,7 @@ public class SamplesParserManager {
 		return affections;
 	}
 
-	public static void scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath, DataSetDestination samplesReceiver) throws Exception {
+	public static void scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath, DataSetDestination samplesReceiver) throws IOException {
 		sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath, samplesReceiver);
 	}
 

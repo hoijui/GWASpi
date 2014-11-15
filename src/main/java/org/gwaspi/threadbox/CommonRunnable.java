@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
 import org.gwaspi.global.Text;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
@@ -49,12 +50,12 @@ public abstract class CommonRunnable implements Runnable {
 		return log;
 	}
 
-	public static void doRunNowInThread(CommonRunnable task, SwingWorkerItem thisSwi) throws Exception {
+	public static void doRunNowInThread(CommonRunnable task, SwingWorkerItem thisSwi) throws IOException {
 
 		task.runInternal(thisSwi);
 	}
 
-	protected abstract void runInternal(SwingWorkerItem thisSwi) throws Exception;
+	protected abstract void runInternal(SwingWorkerItem thisSwi) throws IOException;
 
 	@Override
 	public final void run() {

@@ -81,7 +81,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
@@ -108,7 +108,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 //			Map<MarkerKey, ?> sortedMetadata,
 //			List<String> samplesAL,
 //			GenotypeEncoding guessedGTCode)
-			throws Exception
+			throws IOException
 	{
 		final List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.keySet());
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();

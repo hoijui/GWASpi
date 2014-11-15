@@ -46,7 +46,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

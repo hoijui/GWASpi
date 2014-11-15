@@ -78,7 +78,6 @@ import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingDeleterItem;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.gwaspi.threadbox.Threaded_Combi;
 import org.gwaspi.threadbox.Threaded_GTFreq_HW;
 import org.gwaspi.threadbox.Threaded_GWAS;

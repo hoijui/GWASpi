@@ -37,7 +37,7 @@ public class HapmapSamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		FileReader inputFileReader = null;
 		BufferedReader inputBufferReader = null;

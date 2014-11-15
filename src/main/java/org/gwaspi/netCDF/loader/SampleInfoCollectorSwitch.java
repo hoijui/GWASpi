@@ -74,7 +74,7 @@ public class SampleInfoCollectorSwitch {
 			String altSampleInfoPath1,
 			String altSampleInfoPath2,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		switch (format) {
 			case Affymetrix_GenomeWide6:

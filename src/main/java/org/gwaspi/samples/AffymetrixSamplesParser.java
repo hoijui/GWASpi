@@ -18,6 +18,7 @@
 package org.gwaspi.samples;
 
 import java.io.File;
+import java.io.IOException;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -25,7 +26,7 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 

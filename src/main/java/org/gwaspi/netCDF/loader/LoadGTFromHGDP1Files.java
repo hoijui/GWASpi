@@ -82,7 +82,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();

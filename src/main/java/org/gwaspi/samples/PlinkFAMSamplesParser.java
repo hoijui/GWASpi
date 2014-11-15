@@ -33,7 +33,7 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 	private static final Logger LOG = LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		File sampleFile = new File(sampleInfoPath);
 

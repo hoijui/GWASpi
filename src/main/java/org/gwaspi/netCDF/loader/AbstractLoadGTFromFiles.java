@@ -97,7 +97,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return true;
 	}
 
-	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
+	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws IOException {
 
 		samplesReceiver.startLoadingMarkerMetadatas(false);
 		markerSetMetadataLoader.loadMarkers(samplesReceiver, loadDescription);
@@ -110,7 +110,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			GenotypesLoadDescription loadDescription,
 			Map<SampleKey, SampleInfo> sampleInfos,
 			DataSetDestination dataReceiver)
-			throws Exception
+			throws IOException
 	{
 		final MarkerInfoExtractorDataSetDestination markerInfoExtractor
 				= new MarkerInfoExtractorDataSetDestination(dataReceiver);
@@ -126,7 +126,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();

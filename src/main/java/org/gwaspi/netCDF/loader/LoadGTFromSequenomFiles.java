@@ -82,7 +82,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);

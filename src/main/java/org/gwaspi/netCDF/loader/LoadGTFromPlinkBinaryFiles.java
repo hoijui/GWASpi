@@ -80,7 +80,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 

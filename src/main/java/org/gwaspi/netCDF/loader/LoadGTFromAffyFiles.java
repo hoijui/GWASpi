@@ -82,7 +82,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			Map<SampleKey, SampleInfo> sampleInfos,
 			Map<MarkerKey, MarkerMetadata> markerInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
@@ -132,7 +132,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			File file,
 			Map<MarkerKey, byte[]> sortedAlleles,
 			List<SampleKey> samples)
-			throws Exception
+			throws IOException
 	{
 		// LOAD INPUT FILE
 		// GET SAMPLEID

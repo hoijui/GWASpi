@@ -34,7 +34,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkStandardSamplesParser.class);
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
 		File sampleFile = new File(sampleInfoPath);
 

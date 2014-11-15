@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -85,7 +86,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			GenotypesLoadDescription loadDescription,
 			Map<SampleKey, SampleInfo> sampleInfos,
 			DataSetDestination samplesReceiver)
-			throws Exception
+			throws IOException
 	{
 		final Collection<SampleInfo> sampleInfos2 = sampleInfos.values();
 
@@ -179,7 +180,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver, MatrixMetadata importMatrixMetadata)
-			throws Exception
+			throws IOException
 	{
 		int result = MatrixKey.NULL_ID;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();

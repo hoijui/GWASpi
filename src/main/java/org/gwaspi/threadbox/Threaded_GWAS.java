@@ -96,7 +96,7 @@ public class Threaded_GWAS extends CommonRunnable {
 	}
 
 	@Override
-	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
+	protected void runInternal(SwingWorkerItem thisSwi) throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
@@ -110,7 +110,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
-	private static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws Exception {
+	private static void performGWAS(GWASinOneGOParams gwasParams, SwingWorkerItem thisSwi, OperationKey censusOpKey, OperationKey hwOpKey, final SuperProgressSource superProgressSource) throws IOException {
 
 		// tests (need newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if ((censusOpKey != null) && (hwOpKey != null)) {
