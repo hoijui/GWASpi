@@ -24,6 +24,12 @@ import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A wrapper for a task that adds managing functionality.
+ * Probably most importantly, it allows to interrupt the task
+ * with {@link Thread#interrupt()}, does cleanup (TODO!),
+ * and sets the status to ABORTED.
+ */
 public class SwingWorkerItem implements Task {
 
 	private final Logger log = LoggerFactory.getLogger(SwingWorkerItem.class);
