@@ -144,7 +144,11 @@ public class IntroPanel extends JPanel {
 		scroll_Help.setViewportView(list_Help);
 
 		//<editor-fold defaultstate="expanded" desc="CONTACT + IBE">
-		txtP_Contact.setText(Text.App.cite + "\n" + Text.App.contact + "\nAuthors: " + Text.App.authors + "\nLicense: " + Text.App.license);
+		txtP_Contact.setText(
+				Text.App.cite + "\n"
+				+ Text.App.contact + "\n"
+				+ "Authors: " + Text.App.authors + "\n"
+				+ "License: " + Text.App.license);
 		scroll_Contact.setViewportView(txtP_Contact);
 
 		GroupLayout pnl_IBELayout = new GroupLayout(pnl_IBE);
