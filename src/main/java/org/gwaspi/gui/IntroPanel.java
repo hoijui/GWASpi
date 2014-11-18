@@ -146,7 +146,7 @@ public class IntroPanel extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="CONTACT + IBE">
 		txtP_Contact.setText(
 				Text.App.cite + "\n"
-				+ Text.App.contact + "\n"
+				+ "Contact information: " + Text.App.contact + "\n"
 				+ "Authors: " + Text.App.authors + "\n"
 				+ "License: " + Text.App.license);
 		scroll_Contact.setViewportView(txtP_Contact);
