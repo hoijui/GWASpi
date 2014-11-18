@@ -34,7 +34,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,6 +233,7 @@ public class JPAStudyService implements StudyService {
 		SampleInfoList.deleteSamples(studyKey);
 	}
 
+	@Override
 	public void updateStudy(Study study) throws IOException {
 
 		EntityManager em = null;
