@@ -132,7 +132,7 @@ public class StartGWASpi extends JFrame {
 		out.println(Text.App.license);
 		out.println();
 		out.println("command line switches:");
-		out.println("\t--" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info");
+		out.println("\t--" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info and exit");
 		out.println("\t--" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
