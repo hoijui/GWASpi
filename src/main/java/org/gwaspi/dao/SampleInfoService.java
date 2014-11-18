@@ -29,11 +29,7 @@ public interface SampleInfoService {
 
 	SampleInfo getSample(SampleKey key) throws IOException;
 
-	List<SampleKey> getSampleKeys() throws IOException;
-
 	List<SampleKey> getSampleKeys(StudyKey studyKey) throws IOException;
-
-	List<SampleInfo> getSamples() throws IOException;
 
 	List<SampleInfo> getSamples(StudyKey studyKey) throws IOException;
 

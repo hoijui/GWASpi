@@ -47,10 +47,6 @@ public class SampleInfoList {
 		return sampleInfoService;
 	}
 
-	public static List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
-		return getSampleInfoService().getSamples();
-	}
-
 	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(StudyKey studyKey) throws IOException {
 		return getSampleInfoService().getSamples(studyKey);
 	}

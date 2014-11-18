@@ -34,9 +34,6 @@ import org.gwaspi.global.Extractor;
 @IdClass(SampleKey.class)
 @NamedQueries({
 	@NamedQuery(
-		name = "sampleInfo_listKeys",
-		query = "SELECT s.studyId, s.sampleId, s.familyId FROM SampleInfo s"),
-	@NamedQuery(
 		name = "sampleInfo_listKeysByStudyId",
 		query = "SELECT s.studyId, s.sampleId, s.familyId FROM SampleInfo s WHERE s.studyId = :studyId"),
 	@NamedQuery(

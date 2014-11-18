@@ -93,11 +93,6 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleKey> getSampleKeys() throws IOException {
-		return getSampleKeys(null);
-	}
-
-	@Override
 	public List<SampleKey> getSampleKeys(StudyKey studyKey) throws IOException {
 
 		List<SampleKey> sampleKeys = Collections.EMPTY_LIST;
@@ -128,24 +123,6 @@ public class JPASampleInfoService implements SampleInfoService {
 		}
 
 		return sampleKeys;
-	}
-
-	@Override
-	public List<SampleInfo> getSamples() throws IOException {
-
-		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			sampleInfos = em.createNamedQuery("sampleInfo_list").getResultList();
-		} catch (Exception ex) {
-			throw new IOException("Failed fetching all sample-infos", ex);
-		} finally {
-			close(em);
-		}
-
-		return sampleInfos;
 	}
 
 	@Override
