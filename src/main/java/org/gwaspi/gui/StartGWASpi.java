@@ -50,6 +50,7 @@ public class StartGWASpi extends JFrame {
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
 	public static final String COMMAND_LINE_SWITCH_HELP = "help";
+	public static final String COMMAND_LINE_SWITCH_LICENSE = "license";
 	public static final String COMMAND_LINE_SWITCH_LOG = "log";
 	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
 	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
@@ -129,19 +130,28 @@ public class StartGWASpi extends JFrame {
 
 		out.println(Text.App.appName);
 		out.println(Text.App.appDescription);
-		out.println(Text.App.license);
 		out.println();
 		out.println("command line switches:");
 		out.println("\t--" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info and exit");
+		out.println("\t--" + COMMAND_LINE_SWITCH_LICENSE + "\t:\t" + "Show the GWASpi software license and exit");
 		out.println("\t--" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
+	}
+
+	public static void printLicense(final PrintStream out) {
+
+		out.println(Text.App.appName + " license: " + Text.App.license);
+		// TODO read full licnese text from LICENSE file in the jar, and print it to the command line
 	}
 
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_HELP)) {
 			printHelp(System.out);
+			return;
+		} else if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_LICENSE)) {
+			printLicense(System.out);
 			return;
 		}
 
