@@ -17,11 +17,15 @@
 
 package org.gwaspi.global;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.Serializable;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -41,6 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Semaphore;
 import org.gwaspi.constants.cGlobal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +62,14 @@ public class Utils {
 	private static final DateFormat mediumDateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, dateLocale);
 	private static final DateFormat timeStampFormat = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+	private static final String MANIFEST_LOCATION = "/META-INF/MANIFEST.MF";
+	public static final String MANIFEST_PROPERTY_VERSION = "Implementation-Version";
+	public static final String MANIFEST_PROPERTY_BUILD = "Implementation-Build";
+	public static final String MANIFEST_PROPERTY_BUILD_TIMESTAMP = "Build-Timestamp";
+	public static final String MANIFEST_PROPERTY_JDK_VERSION = "Build-Jdk";
+
+	private static Properties manifestProperties = null;
+	private static Semaphore manifestPropertiesInit = new Semaphore(1);
 
 	/**
 	 * This filter only returns files, not directories
@@ -97,6 +111,90 @@ public class Utils {
 		currentAppPath = cGlobal.USER_DIR_DEFAULT;
 		//JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], currentAppPath);
 		return currentAppPath;
+	}
+
+	/**
+	/**
+	 * Reads all (JAR archive) manifest properties from the class-path.
+	 * @return properties read from MANIFEST.MF
+	 */
+	private static Properties readManifest() {
+
+		Properties manifestProps = null;
+
+		InputStream manifestFileIn = null;
+		InputStreamReader manifestFileReader = null;
+		LineNumberReader manifestFileLineReader = null;
+		try {
+			manifestFileIn = Utils.class.getResourceAsStream(MANIFEST_LOCATION);
+			if (manifestFileIn == null) {
+				throw new IOException("Failed locating resource in the classpath: " + MANIFEST_LOCATION);
+			}
+			manifestFileReader = new InputStreamReader(manifestFileIn);
+			manifestFileLineReader = new LineNumberReader(manifestFileReader);
+
+			final Properties tmpProps = new Properties();
+			// As the manifest file uses ": " as separatortains of key and value,
+			// instead of "=" (as it is in "*.properties" files),
+			// we can not use <code>tmpProps.load(manifestFileIn);</code>,
+			// but have to parse the file directly.
+			String manifestLine = manifestFileLineReader.readLine();
+			while (manifestLine != null) {
+				manifestLine = manifestLine.trim();
+				if (!manifestLine.isEmpty() && !manifestLine.startsWith("#")) {
+					final String[] keyAndValue = manifestLine.split(": ", 2);
+					tmpProps.put(keyAndValue[0], keyAndValue[1]);
+				}
+				manifestLine = manifestFileLineReader.readLine();
+			}
+			manifestProps = tmpProps;
+		} catch (final Exception ex) {
+			log.warn("Failed reading the manifest file", ex);
+			manifestProps = new Properties();
+		} finally {
+			final Closeable topCloseable;
+			if (manifestFileLineReader != null) {
+				topCloseable = manifestFileLineReader;
+			} else if (manifestFileReader != null) {
+				topCloseable = manifestFileReader;
+			} else if (manifestFileIn != null) {
+				topCloseable = manifestFileIn;
+			} else {
+				topCloseable = null;
+			}
+			if (topCloseable != null) {
+				try {
+					topCloseable.close();
+				} catch (final IOException ioex) {
+					log.warn("Failed closing stream to manifest file", ioex);
+				}
+			}
+		}
+
+		return manifestProps;
+	}
+
+	/**
+	 * Returns the (buffered) properties from this applications MANIFEST.MF file in the
+	 * META-INF directory of the class-path.
+	 * @return properties from MANIFEST.MF
+	 */
+	public static Properties getManifestProperties() {
+
+		if (manifestProperties == null) {
+			try {
+				manifestPropertiesInit.acquire();
+				if (manifestProperties == null) {
+					manifestProperties = readManifest();
+				}
+			} catch (final InterruptedException ex) {
+				// do nothing
+			} finally {
+				manifestPropertiesInit.release();
+			}
+		}
+
+		return manifestProperties;
 	}
 
 	public static File createFolder(File folder) throws IOException {

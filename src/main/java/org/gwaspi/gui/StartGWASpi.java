@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -40,6 +41,7 @@ import javax.swing.plaf.metal.OceanTheme;
 import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.threadbox.TaskQueue;
 import org.slf4j.Logger;
@@ -50,6 +52,7 @@ public class StartGWASpi extends JFrame {
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
 	public static final String COMMAND_LINE_SWITCH_HELP = "help";
+	public static final String COMMAND_LINE_SWITCH_VERSION = "version";
 	public static final String COMMAND_LINE_SWITCH_LICENSE = "license";
 	public static final String COMMAND_LINE_SWITCH_LOG = "log";
 	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
@@ -133,10 +136,25 @@ public class StartGWASpi extends JFrame {
 		out.println();
 		out.println("command line switches:");
 		out.println("\t--" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info and exit");
+		out.println("\t--" + COMMAND_LINE_SWITCH_VERSION + "\t:\t" + "Show the GWASpi version and exit");
 		out.println("\t--" + COMMAND_LINE_SWITCH_LICENSE + "\t:\t" + "Show the GWASpi software license and exit");
 		out.println("\t--" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
+	}
+
+	public static void printVersion(final PrintStream out) {
+
+		final Properties manifestProperties = Utils.getManifestProperties();
+		final String version = manifestProperties.getProperty(Utils.MANIFEST_PROPERTY_VERSION);
+		final String build = manifestProperties.getProperty(Utils.MANIFEST_PROPERTY_BUILD);
+		final String buildTimestamp = manifestProperties.getProperty(Utils.MANIFEST_PROPERTY_BUILD_TIMESTAMP);
+		final String jdkVersion = manifestProperties.getProperty(Utils.MANIFEST_PROPERTY_JDK_VERSION);
+
+		out.println(Text.App.appName + " version: " + version);
+		out.println("Build ID: " + build);
+		out.println("Build timestamp: " + buildTimestamp);
+		out.println("Build JDK: " + jdkVersion);
 	}
 
 	public static void printLicense(final PrintStream out) {
@@ -149,6 +167,9 @@ public class StartGWASpi extends JFrame {
 
 		if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_HELP)) {
 			printHelp(System.out);
+			return;
+		} else if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_VERSION)) {
+			printVersion(System.out);
 			return;
 		} else if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_LICENSE)) {
 			printLicense(System.out);
