@@ -98,18 +98,6 @@ public class JPAMatrixService implements MatrixService {
 		}
 	}
 
-	private static List<MatrixKey> convertFieldsToMatrixKeys(List<Object[]> studyIdMatrixIds) {
-
-		List<MatrixKey> matrices = new ArrayList<MatrixKey>(studyIdMatrixIds.size());
-		for (Object[] matrixKeyParts : studyIdMatrixIds) {
-			matrices.add(new MatrixKey(
-					new StudyKey((Integer) matrixKeyParts[0]),
-					(Integer) matrixKeyParts[1]));
-		}
-
-		return matrices;
-	}
-
 	private static List<MatrixKey> convertMatrixIdsToKeys(final StudyKey studyKey, final List<Integer> matrixIds) {
 
 		final List<MatrixKey> matrixKeys = new ArrayList<MatrixKey>(matrixIds.size());
