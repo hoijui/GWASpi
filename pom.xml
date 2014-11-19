@@ -322,7 +322,14 @@
 					<archive>
 						<manifest>
 							<mainClass>${project.mainClass}</mainClass>
+							<!-- These allow us to easily find out the project version at runtime. -->
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+							<Build-Timestamp>${timestamp}</Build-Timestamp>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
