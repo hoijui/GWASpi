@@ -30,6 +30,8 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.StudyList;
 import org.gwaspi.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
@@ -45,7 +47,15 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 
 		boolean isInitiated = Config.initPreferences(true, null, null);
 
-		MatrixKey matrix = MatricesList.getMatrixList().get(0);
+		final List<StudyKey> studies = StudyList.getStudies();
+		MatrixKey matrix = null;
+		for (final StudyKey study : studies) {
+			final List<MatrixKey> studyMatrices = MatricesList.getMatrixList(study);
+			if (!studyMatrices.isEmpty()) {
+				matrix = studyMatrices.get(0);
+				break;
+			}
+		}
 		OperationMetadata qaMarkersOperation = OperationsList.getOffspringOperationsMetadata(matrix, OPType.MARKER_QA).get(0);
 		OperationKey qaMarkersOperationKey = OperationKey.valueOf(qaMarkersOperation);
 		OperationManager.generateOperationDataSet(qaMarkersOperationKey);

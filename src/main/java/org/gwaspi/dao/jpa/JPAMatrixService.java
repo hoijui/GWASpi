@@ -270,7 +270,7 @@ public class JPAMatrixService implements MatrixService {
 					+ " (id not found)", ex);
 			close(em);
 			LOG.info("Available matrices:");
-			List<MatrixKey> matrixList = getMatrixKeys();
+			List<MatrixKey> matrixList = getMatrixKeys(matrixKey.getStudyKey());
 			StringBuilder matrices = new StringBuilder();
 			for (MatrixKey mat : matrixList) {
 				matrices.append(" {study-id: ");
