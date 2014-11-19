@@ -111,25 +111,6 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeys() throws IOException {
-
-		List<MatrixKey> matrices = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			List<Object[]> matricesKeyParts = em.createNamedQuery("matrixMetadata_listKeys").getResultList();
-			matrices = convertFieldsToMatrixKeys(matricesKeyParts);
-//		} catch (Exception ex) {
-//			LOG.error("Failed fetching all matrices", ex);
-		} finally {
-			close(em);
-		}
-
-		return matrices;
-	}
-
-	@Override
 	public List<MatrixKey> getMatrixKeys(StudyKey studyKey) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;

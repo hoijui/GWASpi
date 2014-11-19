@@ -53,9 +53,6 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 		name = "matrixMetadata_listKeysByFriendlyName",
 		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.friendlyName = :friendlyName"),
 	@NamedQuery(
-		name = "matrixMetadata_listKeys",
-		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm"),
-	@NamedQuery(
 		name = "matrixMetadata_listIdsByStudyId",
 		query = "SELECT mm.matrixId FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 	@NamedQuery(

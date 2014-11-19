@@ -49,10 +49,6 @@ public final class MatricesList {
 		return getMatrixService().getMatrixKeys(studyKey);
 	}
 
-	public static List<MatrixKey> getMatrixList() throws IOException {
-		return getMatrixService().getMatrixKeys();
-	}
-
 	public static List<MatrixMetadata> getMatricesTable(StudyKey studyKey) throws IOException {
 		return getMatrixService().getMatrices(studyKey);
 	}
