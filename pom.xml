@@ -280,6 +280,7 @@
 						</manifest>
 						<manifestEntries>
 							<Implementation-Build>${buildNumber}</Implementation-Build>
+							<Build-Timestamp>${timestamp}</Build-Timestamp>
 						</manifestEntries>
 					</archive>
 				</configuration>
