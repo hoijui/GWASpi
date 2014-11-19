@@ -47,11 +47,11 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 		name = "matrixMetadata_fetchById",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixId = :id"),
 	@NamedQuery(
-		name = "matrixMetadata_listKeysBySimpleName",
-		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.simpleName = :simpleName"),
+		name = "matrixMetadata_listKeysByStudyIdAndSimpleName",
+		query = "SELECT mm.matrixId FROM MatrixMetadata mm WHERE mm.studyId = :studyId AND mm.simpleName = :simpleName"),
 	@NamedQuery(
-		name = "matrixMetadata_listKeysByFriendlyName",
-		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.friendlyName = :friendlyName"),
+		name = "matrixMetadata_listKeysByStudyIdAndFriendlyName",
+		query = "SELECT mm.matrixId FROM MatrixMetadata mm WHERE mm.studyId = :studyId AND mm.friendlyName = :friendlyName"),
 	@NamedQuery(
 		name = "matrixMetadata_listIdsByStudyId",
 		query = "SELECT mm.matrixId FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),

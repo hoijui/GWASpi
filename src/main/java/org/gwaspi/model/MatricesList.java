@@ -78,11 +78,11 @@ public final class MatricesList {
 		}
 	}
 
-	public static List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
-		return getMatrixService().getMatrixKeysBySimpleName(simpleName);
+	public static List<MatrixKey> getMatrixKeysBySimpleName(final StudyKey studyKey, final String simpleName) throws IOException {
+		return getMatrixService().getMatrixKeysBySimpleName(studyKey, simpleName);
 	}
 
-	public static List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
-		return getMatrixService().getMatrixKeysByName(friendlyName);
+	public static List<MatrixKey> getMatrixKeysByName(final StudyKey studyKey, final String friendlyName) throws IOException {
+		return getMatrixService().getMatrixKeysByName(studyKey, friendlyName);
 	}
 }

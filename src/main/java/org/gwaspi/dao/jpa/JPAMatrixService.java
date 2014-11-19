@@ -110,6 +110,16 @@ public class JPAMatrixService implements MatrixService {
 		return matrices;
 	}
 
+	private static List<MatrixKey> convertMatrixIdsToKeys(final StudyKey studyKey, final List<Integer> matrixIds) {
+
+		final List<MatrixKey> matrixKeys = new ArrayList<MatrixKey>(matrixIds.size());
+		for (final Integer matrixId : matrixIds) {
+			matrixKeys.add(new MatrixKey(studyKey, matrixId));
+		}
+
+		return matrixKeys;
+	}
+
 	@Override
 	public List<MatrixKey> getMatrixKeys(StudyKey studyKey) throws IOException {
 
@@ -269,16 +279,17 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
+	public List<MatrixKey> getMatrixKeysBySimpleName(final StudyKey studyKey, final String simpleName) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_listKeysBySimpleName");
+			Query query = em.createNamedQuery("matrixMetadata_listKeysByStudyIdAndSimpleName");
+			query.setParameter("studyId", studyKey.getId());
 			query.setParameter("simpleName", simpleName);
-			matrices = convertFieldsToMatrixKeys(query.getResultList());
+			matrices = convertMatrixIdsToKeys(studyKey, query.getResultList());
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName
 					+ " (id not found)", ex);
@@ -292,16 +303,17 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
+	public List<MatrixKey> getMatrixKeysByName(final StudyKey studyKey, final String friendlyName) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_listKeysByFriendlyName");
+			Query query = em.createNamedQuery("matrixMetadata_listKeysByStudyIdAndFriendlyName");
+			query.setParameter("studyId", studyKey.getId());
 			query.setParameter("friendlyName", friendlyName);
-			matrices = convertFieldsToMatrixKeys(query.getResultList());
+			matrices = convertMatrixIdsToKeys(studyKey, query.getResultList());
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName
 					+ " (id not found)", ex);

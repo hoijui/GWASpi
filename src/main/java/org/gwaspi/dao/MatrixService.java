@@ -29,9 +29,9 @@ public interface MatrixService {
 
 	MatrixMetadata getMatrix(MatrixKey matrixKey) throws IOException;
 
-	List<MatrixKey> getMatrixKeysBySimpleName(String simpleNamer) throws IOException;
+	List<MatrixKey> getMatrixKeysBySimpleName(final StudyKey studyKey, final String simpleName) throws IOException;
 
-	List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException;
+	List<MatrixKey> getMatrixKeysByName(final StudyKey studyKey, final String friendlyName) throws IOException;
 
 	List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException;
 

@@ -110,7 +110,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int matrixId = Integer.parseInt(idValue);
 			return new MatrixKey(studyKey, matrixId);
 		} else {
-			List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(nameValue);
+			List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(studyKey, nameValue);
 			return matrixKeysByName.isEmpty() ? null : matrixKeysByName.get(0);
 		}
 	}
