@@ -51,11 +51,6 @@ public class ReportsList {
 	}
 
 	/** @deprecated use {@link #getReportsList(DataSetKey)} instead */
-	public static List<Report> getReportsList(MatrixKey parentMatrixKey) throws IOException {
-		return getReportService().getReports(new DataSetKey(parentMatrixKey));
-	}
-
-	/** @deprecated use {@link #getReportsList(DataSetKey)} instead */
 	public static List<Report> getReportsList(OperationKey parentOperationKey) throws IOException {
 		return getReportService().getReports(new DataSetKey(parentOperationKey));
 	}
