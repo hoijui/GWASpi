@@ -200,4 +200,16 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 	protected void setParentOperationId(int parentOperationId) {
 		this.parentOperationId = parentOperationId;
 	}
+
+	@Transient
+	public DataSetKey getParent() {
+
+		final MatrixKey originMatrixKey = new MatrixKey(getStudyKey(), getParentMatrixId());
+		if (getParentOperationId() == OperationKey.NULL_ID) {
+			return new DataSetKey(originMatrixKey);
+		} else {
+			final OperationKey parentOperationKey = new OperationKey(originMatrixKey, getParentOperationId());
+			return new DataSetKey(parentOperationKey);
+		}
+	}
 }
