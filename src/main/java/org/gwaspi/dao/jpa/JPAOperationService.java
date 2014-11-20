@@ -360,7 +360,7 @@ public class JPAOperationService implements OperationService {
 					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(childOperations.get(i)));
 					final OperationKey childOperationKey = OperationKey.valueOf(childOperations.get(i));
 					if (deleteReports) {
-						ReportsList.deleteReportByOperationKey(childOperationKey);
+						ReportsList.deleteReports(new DataSetKey(childOperationKey));
 					}
 
 					EntityManager em = null;
@@ -385,7 +385,7 @@ public class JPAOperationService implements OperationService {
 			} else {
 				org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 				if (deleteReports) {
-					ReportsList.deleteReportByOperationKey(operationKey);
+					ReportsList.deleteReports(new DataSetKey(operationKey));
 				}
 
 				EntityManager em = null;

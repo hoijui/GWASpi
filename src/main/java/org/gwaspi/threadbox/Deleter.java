@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -192,7 +193,7 @@ public class Deleter extends CommonRunnable {
 			try {
 				progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-				ReportsList.deleteReportByMatrixKey(getMatrixKey());
+				ReportsList.deleteReports(new DataSetKey(getMatrixKey()));
 				MultiOperations.printCompleted("deleting Reports from Matrix ID: " + getMatrixKey());
 
 				progressHandler.setNewStatus(ProcessStatus.COMPLEETED);

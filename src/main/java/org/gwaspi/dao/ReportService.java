@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportKey;
@@ -39,7 +37,5 @@ public interface ReportService {
 
 	void insertReport(Report report) throws IOException;
 
-	void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException;
-
-	void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException;
+	void deleteReports(final DataSetKey parent) throws IOException;
 }

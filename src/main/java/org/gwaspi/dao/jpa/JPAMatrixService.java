@@ -28,6 +28,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.MatrixService;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
@@ -209,7 +210,7 @@ public class JPAMatrixService implements MatrixService {
 			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}
 
-		ReportsList.deleteReportByMatrixKey(matrixKey);
+		ReportsList.deleteReports(new DataSetKey(matrixKey));
 
 		// DELETE MATRIX NETCDF FILE
 		File matrixFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);

@@ -76,11 +76,7 @@ public class ReportsList {
 		getReportService().insertReport(report);
 	}
 
-	public static void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException {
-		getReportService().deleteReportByMatrixKey(parentMatrixKey);
-	}
-
-	public static void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException {
-		getReportService().deleteReportByOperationKey(parentOperationKey);
+	public static void deleteReports(final DataSetKey parent) throws IOException {
+		getReportService().deleteReports(parent);
 	}
 }

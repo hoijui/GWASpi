@@ -227,7 +227,16 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public void deleteReportByMatrixKey(MatrixKey parentMatrixKey) throws IOException {
+	public void deleteReports(final DataSetKey parent) throws IOException {
+
+		if (parent.isMatrix()) {
+			deleteReports(parent.getMatrixParent());
+		} else {
+			deleteReports(parent.getOperationParent());
+		}
+	}
+
+	private void deleteReports(final MatrixKey parentMatrixKey) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -248,8 +257,7 @@ public class JPAReportService implements ReportService {
 		}
 	}
 
-	@Override
-	public void deleteReportByOperationKey(OperationKey parentOperationKey) throws IOException {
+	private void deleteReports(final OperationKey parentOperationKey) throws IOException {
 
 		EntityManager em = null;
 		try {
