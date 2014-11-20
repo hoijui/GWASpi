@@ -62,6 +62,7 @@ public class Utils {
 	private static final DateFormat mediumDateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, dateLocale);
 	private static final DateFormat timeStampFormat = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+	private static final String LICENSE_LOCATION = "/META-INF/gwaspi/LICENSE";
 	private static final String MANIFEST_LOCATION = "/META-INF/MANIFEST.MF";
 	public static final String MANIFEST_PROPERTY_VERSION = "Implementation-Version";
 	public static final String MANIFEST_PROPERTY_BUILD = "Implementation-Build";
@@ -114,6 +115,55 @@ public class Utils {
 	}
 
 	/**
+	 * Reads the LICENSE file from the class-path.
+	 * @return the content of the LICENSE file
+	 */
+	public static String readLicense() {
+
+		InputStream in = null;
+		InputStreamReader reader = null;
+		LineNumberReader lineReader = null;
+		try {
+			in = Utils.class.getResourceAsStream(LICENSE_LOCATION);
+			if (in == null) {
+				throw new IOException("Failed locating LICENSE file in the classpath: " + LICENSE_LOCATION);
+			}
+
+			reader = new InputStreamReader(in);
+			lineReader = new LineNumberReader(reader);
+
+			final String lineSeparator = System.getProperty("line.separator");
+			final StringBuilder licenseFileContents = new StringBuilder();
+			String line = lineReader.readLine();
+			while (line != null) {
+				licenseFileContents.append(line).append(lineSeparator);
+				line = lineReader.readLine();
+			}
+			return licenseFileContents.toString();
+		} catch (final Exception ex) {
+			log.warn("Failed reading the LICENSE file", ex);
+			return "Error when reading LICENSE file";
+		} finally {
+			final Closeable topCloseable;
+			if (lineReader != null) {
+				topCloseable = lineReader;
+			} else if (reader != null) {
+				topCloseable = reader;
+			} else if (in != null) {
+				topCloseable = in;
+			} else {
+				topCloseable = null;
+			}
+			if (topCloseable != null) {
+				try {
+					topCloseable.close();
+				} catch (final IOException ioex) {
+					log.warn("Failed closing stream to the LICENSE file", ioex);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Reads all (JAR archive) manifest properties from the class-path.
 	 * @return properties read from MANIFEST.MF

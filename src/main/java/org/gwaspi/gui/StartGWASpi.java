@@ -160,7 +160,13 @@ public class StartGWASpi extends JFrame {
 	public static void printLicense(final PrintStream out) {
 
 		out.println(Text.App.appName + " license: " + Text.App.license);
-		// TODO read full licnese text from LICENSE file in the jar, and print it to the command line
+
+		out.println();
+		final String licenseFileContent = Utils.readLicense();
+		out.println("Full license text:");
+		out.println("################################################################################");
+		out.println(licenseFileContent);
+		out.println("################################################################################");
 	}
 
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
