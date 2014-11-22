@@ -224,6 +224,19 @@
 	</reporting>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>META-INF/**/*</include>
+					<include>img/**/*</include>
+					<include>samples/**/*</include>
+					<include>logback.xml</include>
+					<include>version.xml</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
