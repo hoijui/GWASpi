@@ -81,7 +81,10 @@ public class TaskQueue {
 		public void statusChanged(ProcessStatusChangeEvent evt) {
 
 			if (evt.getNewStatus().isEnd()) {
-				task.getProgressSource().removeProgressListener(this); // XXX This will probably throw or at least cause later: a concurrent modification exception
+				// NOTE This would cause a ConcurrentModificationException
+				//   in AbstractProgressSource#fireStatusChanged(),
+				//   if it was not for the precaution in that very method.
+				task.getProgressSource().removeProgressListener(this);
 				done(task);
 			}
 		}

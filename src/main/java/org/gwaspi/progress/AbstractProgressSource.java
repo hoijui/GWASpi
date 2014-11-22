@@ -105,7 +105,12 @@ public abstract class AbstractProgressSource<ST> implements ProgressSource<ST> {
 	protected void fireStatusChanged(final ProcessStatusChangeEvent evt) {
 
 		currentStatus = evt.getNewStatus();
-		for (ProgressListener progressListener : progressListeners) {
+		// Using this copy of the list prevents ConcurrentModificationException's
+		// when we try to add to or remove from the list of listeners as a result
+		// of the status changing.
+		final List<ProgressListener> progressListenersCopy
+				= new ArrayList<ProgressListener>(progressListeners);
+		for (ProgressListener progressListener : progressListenersCopy) {
 			progressListener.statusChanged(evt);
 		}
 	}
