@@ -282,7 +282,7 @@ public class Config {
 		return derbyCenter;
 	}
 
-	public static Document getLocalVersionDom() throws URISyntaxException {
+	private static Document getLocalVersionDom() throws URISyntaxException {
 
 		URL localVersionPath = Config.class.getResource(cGlobal.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
