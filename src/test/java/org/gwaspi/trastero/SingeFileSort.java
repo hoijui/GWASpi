@@ -39,7 +39,7 @@ public class SingeFileSort {
 	}
 
 	public static String sortFile(String filePath, int compareIndex) throws IOException {
-		File tempSorted = null;
+		File tempSorted;
 
 		try {
 			FileReader fr = new FileReader(filePath);
@@ -49,7 +49,7 @@ public class SingeFileSort {
 			int rnd = Math.abs(generator.nextInt());
 			tempSorted = new File(org.gwaspi.global.Config.getConfigValue(
 					cGlobal.SORT_SINGLE_DIR_CONFIG,
-					cGlobal.USER_DIR_DEFAULT).toString()
+					cGlobal.USER_DIR_DEFAULT)
 					+ "/" + rnd + ".csv");
 			FileWriter fw = new FileWriter(tempSorted);
 			BufferedWriter bw = new BufferedWriter(fw);
@@ -118,10 +118,9 @@ public class SingeFileSort {
 					}
 				}
 				// check if one still has rows
-				for (int i = 0; i < filerows.size(); i++) {
-
+				for (final String[] filerow : filerows) {
 					someFileStillHasRows = false;
-					if (filerows.get(i) != null) {
+					if (filerow != null) {
 						if (minIndex < 0) {
 							//log.trace("mindex < 0 and found row not null" + filerows.get(i).toString());
 							System.exit(-1);
@@ -157,6 +156,7 @@ public class SingeFileSort {
 		} catch (Exception ex) {
 			log.error(null, ex);
 			System.exit(-1);
+			return null;
 		}
 
 		return tempSorted.getPath();
