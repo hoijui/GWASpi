@@ -235,6 +235,14 @@
 					<include>version.xml</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>.</directory>
+				<targetPath>META-INF/gwaspi</targetPath>
+				<includes>
+					<include>LICENSE</include>
+					<include>README.markdown</include>
+				</includes>
+			</resource>
 		</resources>
 
 		<plugins>
