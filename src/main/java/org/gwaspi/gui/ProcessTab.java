@@ -259,7 +259,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 	}
 
 	public void showTab() {
-		StartGWASpi.allTabs.setSelectedIndex(StartGWASpi.allTabs.getTabCount() - 1);
+		StartGWASpi.getMainFrame().getTabs().setSelectedComponent(this);
 		startBusyLogo();
 	}
 
