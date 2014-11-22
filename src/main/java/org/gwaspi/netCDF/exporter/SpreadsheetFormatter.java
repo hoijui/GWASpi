@@ -28,6 +28,13 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
+import static org.gwaspi.netCDF.exporter.Formatter.PLACEHOLDER_PS_EXPORT;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +47,34 @@ public class SpreadsheetFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"format and export in a simple spreadsheet (CSV) format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos & genotypes");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"format and export marker infos");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final double headerTimeFraction = 1.0 / (dataSetSource.getNumSamples() + 1);
+		final IndeterminateProgressHandler exportMarkersPS = new IndeterminateProgressHandler(exportMarkersPI);
+		exportPS.addSubProgressSource(exportMarkersPS, headerTimeFraction);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 1.0 - headerTimeFraction);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -52,6 +84,7 @@ public class SpreadsheetFormatter implements Formatter {
 		String sep = cExport.separator_REPORTS;
 
 		//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
@@ -59,16 +92,21 @@ public class SpreadsheetFormatter implements Formatter {
 			pedBW = new BufferedWriter(pedFW);
 
 			// HEADER CONTAINING MARKER IDs
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
 				pedBW.append(sep);
 				pedBW.append(key.getMarkerId());
 			}
+			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
 			pedBW.append("\n");
 			pedBW.flush();
+			exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 			// Iterate through all samples
+			exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 			int sampleNb = 0;
 			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 				// Individual ID
 				pedBW.append(sampleKey.getSampleId());
@@ -84,11 +122,10 @@ public class SpreadsheetFormatter implements Formatter {
 				pedBW.append("\n");
 				pedBW.flush();
 
+				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
-				if (sampleNb % 100 == 0) {
-					log.info("Samples exported to Fleur file: {}", sampleNb);
-				}
 			}
+			exportSamplesPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Samples exported to Fleur file: {}", sampleNb);
 
 			result = true;
@@ -97,6 +134,7 @@ public class SpreadsheetFormatter implements Formatter {
 				pedBW.close();
 			}
 		}
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		return result;

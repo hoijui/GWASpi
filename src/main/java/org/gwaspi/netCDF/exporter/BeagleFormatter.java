@@ -39,6 +39,11 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +56,40 @@ class BeagleFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"export in the GWASpi internal format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos");
+		final ProcessInfo exportGenotypesPI = new SubProcessInfo(
+				exportPI,
+				"export genotypes",
+				"format and export genotypes");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"export marker infos");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 0.02);
+
+		final IntegerProgressHandler exportGenotypesPS = new IntegerProgressHandler(exportGenotypesPI, 0, dataSetSource.getNumMarkers()- 1);
+		exportPS.addSubProgressSource(exportGenotypesPS, 0.9);
+
+		final IntegerProgressHandler exportMarkersPS = new IntegerProgressHandler(exportMarkersPI, 0, dataSetSource.getNumMarkers()- 1);
+		exportPS.addSubProgressSource(exportMarkersPS, 0.08);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -62,6 +98,7 @@ class BeagleFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_BEAGLE;
 
+		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter beagleBW = null;
 		try {
 			FileWriter beagleFW = new FileWriter(new File(exportDir.getPath(),
@@ -95,6 +132,8 @@ class BeagleFormatter implements Formatter {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
+			int sampleIndex = 0;
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
@@ -132,7 +171,10 @@ class BeagleFormatter implements Formatter {
 				affectionLine.append(sampleInfo.getAffectionStr());
 				affectionLine.append(sep);
 				affectionLine.append(sampleInfo.getAffectionStr());
+				exportSamplesPS.setProgress(sampleIndex);
+				sampleIndex++;
 			}
+			exportSamplesPS.setNewStatus(ProcessStatus.FINALIZING);
 			beagleBW.append(sampleLine);
 			beagleBW.append("\n");
 			beagleBW.append(sexLine);
@@ -147,12 +189,16 @@ class BeagleFormatter implements Formatter {
 			beagleBW.append("\n");
 			beagleBW.append(affectionLine);
 			beagleBW.append("\n");
+			beagleBW.flush();
+			exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPES">
 			// Iterate through markers
+			exportGenotypesPS.setNewStatus(ProcessStatus.INITIALIZING);
 			int markerNb = 0;
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			exportGenotypesPS.setNewStatus(ProcessStatus.INITIALIZING);
 			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
 				beagleBW.append("M" + sep + markerKey.toString());
 
@@ -165,11 +211,10 @@ class BeagleFormatter implements Formatter {
 				}
 
 				beagleBW.append("\n");
+				exportGenotypesPS.setProgress(markerNb);
 				markerNb++;
-				if (markerNb % 100 == 0) {
-					log.info("Markers exported to Beagle file: {}", markerNb);
-				}
 			}
+			exportGenotypesPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Markers exported to Beagle file: {}", markerNb);
 			//</editor-fold>
 		} finally {
@@ -177,9 +222,11 @@ class BeagleFormatter implements Formatter {
 				beagleBW.close();
 			}
 		}
+		exportGenotypesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="BEAGLE MARKER FILE">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter markerBW = null;
 		try {
 			FileWriter markerFW = new FileWriter(new File(exportDir.getPath(),
@@ -216,6 +263,8 @@ class BeagleFormatter implements Formatter {
 			//     Allele 2
 
 			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+			int markerIndex = 0;
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
 				markerBW.write(curMarkerMetadata.getRsId());
 				markerBW.write(sep);
@@ -230,9 +279,11 @@ class BeagleFormatter implements Formatter {
 				}
 
 				markerBW.write('\n');
+				exportMarkersPS.setProgress(markerIndex);
+				markerIndex++;
 			}
-
-			log.info("Markers exported to MARKER file: {}", dataSetSource.getMarkersMetadatasSource().size());
+			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
+			log.info("Markers exported to MARKER file: {}", markerIndex);
 
 			result = true;
 		} finally {
@@ -240,7 +291,9 @@ class BeagleFormatter implements Formatter {
 				markerBW.close();
 			}
 		}
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return result;
 	}

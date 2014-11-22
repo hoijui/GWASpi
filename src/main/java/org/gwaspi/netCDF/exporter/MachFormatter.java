@@ -31,9 +31,19 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Exports a Sample-Infos, Marker-Infos & Genotypes data-set to the Mach format.
+ * NOTE This only works correctly if the markers in the source data-set to be exported
+ *   are ordered by chromosome.
+ */
 public class MachFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
@@ -44,9 +54,19 @@ public class MachFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"export data per chromosome in the Mach format");
+
+		final IntegerProgressHandler exportPS = new IntegerProgressHandler(exportPI, 0, dataSetSource.getNumChromosomes() - 1);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -63,6 +83,8 @@ public class MachFormatter implements Formatter {
 		int end = 0;
 		String dataSetName = rdDataSetMetadata.getFriendlyName();
 		List<String> chrMarkerRsIds = new LinkedList<String>();
+		int chromosomeIndex = 0;
+		exportPS.setNewStatus(ProcessStatus.RUNNING);
 		for (MarkerMetadata value : dataSetSource.getMarkersMetadatasSource()) {
 			String chr = value.getChr();
 
@@ -79,6 +101,8 @@ public class MachFormatter implements Formatter {
 					exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
 					start = end;
 					chrMarkerRsIds.clear();
+					exportPS.setProgress(chromosomeIndex);
+					chromosomeIndex++;
 				}
 				tmpChr = chr;
 			}
@@ -86,6 +110,9 @@ public class MachFormatter implements Formatter {
 		}
 		exportChromosomeToMped(exportDir, dataSetName, dataSetSource, samplesGenotypesIterators, tmpChr, start, end);
 		exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
+		exportPS.setProgress(chromosomeIndex);
+		chromosomeIndex++;
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return true;
 	}

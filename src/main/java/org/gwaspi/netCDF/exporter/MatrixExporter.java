@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.global.Text;
@@ -34,9 +35,10 @@ import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.progress.DefaultProcessInfo;
-import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SuperProgressSource;
 
 public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 
@@ -50,6 +52,14 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 					"Export data",
 					"Export data to an external format",
 					null);
+
+	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	static {
+		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
+				= new LinkedHashMap<ProgressSource, Double>(1);
+		tmpSubProgressSourcesAndWeights.put(Formatter.PLACEHOLDER_PS_EXPORT, 1.0);
+		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+	}
 
 	private static final Map<ExportFormat, Formatter> FORMATTERS;
 	static {
@@ -69,6 +79,7 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 	private final MatrixExporterParams params;
 	private final DataSetMetadata rdDataSetMetadata;
 	private final DataSetSource rdDataSetSource;
+	private final SuperProgressSource progressSource;
 
 	public MatrixExporter(MatrixExporterParams params) throws IOException {
 
@@ -77,6 +88,7 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 		rdDataSetMetadata = MatricesList.getDataSetMetadata(rdDataSetKey);
 
 		rdDataSetSource = MatrixFactory.generateDataSetSource(rdDataSetKey);
+		this.progressSource = new SuperProgressSource(PROCESS_INFO, subProgressSourcesAndWeights);
 	}
 
 	@Override
@@ -91,13 +103,13 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 
 	@Override
 	public ProgressSource getProgressSource() throws IOException {
-
-		return new NullProgressHandler(new DefaultProcessInfo("<TODO implement ME!>", null)); // FIXME actually implement a read progress handler/tracker for this class! This probably has to be delegated to the formatter classes!
+		return progressSource;
 	}
 
 	@Override
 	public int processMatrix() throws IOException {
 
+		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		String exportPath = Study.constructExportsPath(rdDataSetMetadata.getStudyKey());
 		String taskDesc = "exporting Data to \"" + exportPath + "\"";
 		org.gwaspi.global.Utils.sysoutStart(taskDesc);
@@ -105,16 +117,19 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 		org.gwaspi.global.Utils.createFolder(new File(exportPath));
 		Formatter formatter = FORMATTERS.get(params.getExportFormat());
 
+		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		boolean result = formatter.export(
 				exportPath,
 				rdDataSetMetadata,
 				rdDataSetSource,
+				progressSource,
 				params.getPhenotype());
 		if (!result) {
 			throw new IOException("Failed to export, reason unknown. Maybe there is additional info in the log before this entry."); // XXX Bad way of ding it, use exceptions before already?
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return Integer.MIN_VALUE;
 	}

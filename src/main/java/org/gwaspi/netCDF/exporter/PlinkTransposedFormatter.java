@@ -28,6 +28,12 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import static org.gwaspi.netCDF.exporter.Formatter.PLACEHOLDER_PS_EXPORT;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +46,33 @@ public class PlinkTransposedFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"format and export in the PLink-Flat-Transposed format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"format and export marker infos & genotypes");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final IntegerProgressHandler exportMarkersPS = new IntegerProgressHandler(exportMarkersPI, 0, dataSetSource.getNumMarkers() - 1);
+		exportPS.addSubProgressSource(exportMarkersPS, 0.95);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 0.05);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -52,6 +82,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		String sep = cExport.separator_PLINK;
 
 		//<editor-fold defaultstate="expanded" desc="TPED FILE">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter tpedBW = null;
 		try {
 			FileWriter tpedFW = new FileWriter(new File(exportDir.getPath(),
@@ -65,6 +96,8 @@ public class PlinkTransposedFormatter implements Formatter {
 			// Genotypes
 
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			int markerIndex = 0;
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
 				tpedBW.write(curMarkerMetadata.getChr());
 				tpedBW.write(sep);
@@ -83,7 +116,10 @@ public class PlinkTransposedFormatter implements Formatter {
 				}
 
 				tpedBW.write('\n');
+				exportMarkersPS.setProgress(markerIndex);
+				markerIndex++;
 			}
+			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
 
 			log.info("Markers exported to tped: {}",
 					dataSetSource.getMarkersGenotypesSource().size());
@@ -92,9 +128,11 @@ public class PlinkTransposedFormatter implements Formatter {
 				tpedBW.close();
 			}
 		}
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="TFAM FILE">
+		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(new File(exportDir.getPath(),
@@ -103,6 +141,7 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
@@ -135,10 +174,8 @@ public class PlinkTransposedFormatter implements Formatter {
 				tfamBW.append("\n");
 				tfamBW.flush();
 
+				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
-				if (sampleNb % 100 == 0) {
-					log.info("Samples exported: {}", sampleNb);
-				}
 			}
 
 			result = true;
@@ -147,6 +184,7 @@ public class PlinkTransposedFormatter implements Formatter {
 				tfamBW.close();
 			}
 		}
+		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		return result;

@@ -20,8 +20,15 @@ package org.gwaspi.netCDF.exporter;
 import java.io.IOException;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.progress.NullProgressHandler;
+import org.gwaspi.progress.ProgressSource;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 
 interface Formatter {
+
+	static final ProgressSource PLACEHOLDER_PS_EXPORT = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_EXPORT", null));
 
 	/**
 	 * Exports a given data-set (sample-infos, marker-infos and genotypes) into a certain format.
@@ -36,6 +43,7 @@ interface Formatter {
 			final String exportPath,
 			final DataSetMetadata rdDataSetMetadata,
 			final DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			final String phenotype)
 			throws IOException;
 }

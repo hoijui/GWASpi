@@ -28,6 +28,11 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +45,33 @@ public class PlinkFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"format and export in the PLink-Flat format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos & genotypes");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"format and export marker infos");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 0.95);
+
+		final IntegerProgressHandler exportMarkersPS = new IntegerProgressHandler(exportMarkersPI, 0, dataSetSource.getNumMarkers() - 1);
+		exportPS.addSubProgressSource(exportMarkersPS, 0.05);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -53,6 +82,7 @@ public class PlinkFormatter implements Formatter {
 		String sepBig = cExport.separator_PLINK_big;
 
 		//<editor-fold defaultstate="expanded" desc="PED FILE">
+		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
@@ -62,6 +92,7 @@ public class PlinkFormatter implements Formatter {
 			// Iterate through all samples
 			int sampleNb = 0;
 			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
@@ -103,20 +134,21 @@ public class PlinkFormatter implements Formatter {
 				pedBW.append("\n");
 				pedBW.flush();
 
+				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
-				if (sampleNb % 100 == 0) {
-					log.info("Samples exported to PED file: {}", sampleNb);
-				}
 			}
+			exportSamplesPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Samples exported to PED file: {}", sampleNb);
 		} finally {
 			if (pedBW != null) {
 				pedBW.close();
 			}
 		}
+		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="MAP FILE">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter mapBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(new File(exportDir.getPath(),
@@ -129,6 +161,8 @@ public class PlinkFormatter implements Formatter {
 			//     Genetic distance (morgans)
 			//     Base-pair position (bp units)
 
+			int markerIndex = 0;
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
 				mapBW.write(curMarkerMetadata.getChr());
 				mapBW.write(sep);
@@ -138,10 +172,11 @@ public class PlinkFormatter implements Formatter {
 				mapBW.write(sep);
 				mapBW.write(String.valueOf(curMarkerMetadata.getPos()));
 				mapBW.write('\n');
+				exportMarkersPS.setProgress(markerIndex);
+				markerIndex++;
 			}
-
-			log.info("Markers exported to MAP file: {}",
-					dataSetSource.getMarkersMetadatasSource().size());
+			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
+			log.info("Markers exported to MAP file: {}", markerIndex);
 
 			result = true;
 		} finally {
@@ -149,6 +184,7 @@ public class PlinkFormatter implements Formatter {
 				mapBW.close();
 			}
 		}
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		return result;

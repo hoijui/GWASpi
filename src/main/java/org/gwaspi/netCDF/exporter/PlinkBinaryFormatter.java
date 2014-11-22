@@ -37,8 +37,14 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
+import static org.gwaspi.netCDF.exporter.Formatter.PLACEHOLDER_PS_EXPORT;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +78,40 @@ public class PlinkBinaryFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"export in the PLink-Binary format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos");
+		final ProcessInfo exportGenotypesPI = new SubProcessInfo(
+				exportPI,
+				"export genotypes",
+				"format and export genotypes");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"export marker infos");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final IntegerProgressHandler exportMarkersPS = new IntegerProgressHandler(exportMarkersPI, 0, dataSetSource.getNumMarkers()- 1);
+		exportPS.addSubProgressSource(exportMarkersPS, 0.08);
+
+		final IntegerProgressHandler exportGenotypesPS = new IntegerProgressHandler(exportGenotypesPI, 0, dataSetSource.getNumMarkers()- 1);
+		exportPS.addSubProgressSource(exportGenotypesPS, 0.9);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 0.02);
+
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -101,6 +138,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		final List<Byte> majorAlleles = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		File bimFile = new File(exportDir.getPath(),
 				rdDataSetMetadata.getFriendlyName() + ".bim");
 		BufferedWriter bimBW = null;
@@ -118,6 +156,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 			int markerIndex = 0;
 			Iterator<Double> minorAllelesFrequenciesIt = minorAllelesFrequencies.iterator();
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 			for (MarkerMetadata curMarkerMetadata : markersMetadata) {
 				bimBW.write(curMarkerMetadata.getChr());
 				bimBW.write(sep);
@@ -146,18 +185,21 @@ public class PlinkBinaryFormatter implements Formatter {
 				bimBW.write((char) (byte) majorAllele);
 
 				bimBW.write('\n');
+				exportMarkersPS.setProgress(markerIndex);
 				markerIndex++;
 			}
-
+			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
 			org.gwaspi.global.Utils.sysoutCompleted("Exporting BIM file to " + bimFile.getAbsolutePath());
 		} finally {
 			if (bimBW != null) {
 				bimBW.close();
 			}
 		}
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="BED FILE">
+		exportGenotypesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = dataSetSource.getSamplesKeysSource().size();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
@@ -188,6 +230,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			byte[] wrBytes = new byte[byteChunkSize];
 			// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			exportGenotypesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (int markerIndex = 0; markerIndex < nbOfMarkers; markerIndex++) {
 				byte tmpMinorAllele = minorAlleles.get(markerIndex);
 				byte tmpMajorAllele = majorAlleles.get(markerIndex);
@@ -224,7 +267,9 @@ public class PlinkBinaryFormatter implements Formatter {
 						byteCount = 0;
 					}
 				}
+				exportGenotypesPS.setProgress(markerIndex);
 			}
+			exportGenotypesPS.setNewStatus(ProcessStatus.FINALIZING);
 
 			// WRITE LAST BITES TO FILE
 			bedBW.write(wrBytes, 0, byteCount);
@@ -235,9 +280,11 @@ public class PlinkBinaryFormatter implements Formatter {
 				bedBW.close();
 			}
 		}
+		exportGenotypesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="FAM FILE">
+		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		File famFile = new File(exportDir.getPath(),
 				rdDataSetMetadata.getFriendlyName() + ".fam");
 		BufferedWriter tfamBW = null;
@@ -247,6 +294,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 				sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleInfo);
 
@@ -284,18 +332,17 @@ public class PlinkBinaryFormatter implements Formatter {
 				tfamBW.append("\n");
 				tfamBW.flush();
 
+				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
-				if (sampleNb % 100 == 0) {
-					log.info("Samples exported: {}", sampleNb);
-				}
 			}
-
+			exportSamplesPS.setNewStatus(ProcessStatus.FINALIZING);
 			org.gwaspi.global.Utils.sysoutCompleted("Exporting FAM file to " + famFile.getAbsolutePath());
 		} finally {
 			if (tfamBW != null) {
 				tfamBW.close();
 			}
 		}
+		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 
 		return result;

@@ -27,6 +27,12 @@ import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.progress.IndeterminateProgressHandler;
+import org.gwaspi.progress.IntegerProgressHandler;
+import org.gwaspi.progress.ProcessInfo;
+import org.gwaspi.progress.ProcessStatus;
+import org.gwaspi.progress.SubProcessInfo;
+import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +45,39 @@ public class GWASpiFormatter implements Formatter {
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
+			final SuperProgressSource superProgressSource,
 			String phenotype)
 			throws IOException
 	{
-		File exportDir = new File(exportPath);
+		final ProcessInfo exportPI = new SubProcessInfo(
+				superProgressSource.getInfo(),
+				"export",
+				"export in the GWASpi internal format");
+		final ProcessInfo exportSamplesPI = new SubProcessInfo(
+				exportPI,
+				"export samples",
+				"format and export sample infos");
+		final ProcessInfo exportMarkersPI = new SubProcessInfo(
+				exportPI,
+				"export markers",
+				"export marker infos and genotypes");
+
+		final SuperProgressSource exportPS = new SuperProgressSource(exportPI);
+		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
+		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
+
+		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
+		exportPS.addSubProgressSource(exportSamplesPS, 0.8);
+
+		final IndeterminateProgressHandler exportMarkersPS = new IndeterminateProgressHandler(exportMarkersPI);
+		exportPS.addSubProgressSource(exportMarkersPS, 0.2);
+
+		File exportDir = new File(exportPath); // HACK FIXME TODO replace these 4 lines with a function (common to all formatters)
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
 		}
 
+		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		boolean result = false;
 		String sep = cExport.separator_SAMPLE_INFO;
 		BufferedWriter sampleInfoBW = null;
@@ -61,6 +92,7 @@ public class GWASpiFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
+			exportSamplesPS.setNewStatus(ProcessStatus.RUNNING);
 			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 //				FamilyID
 //				SampleID
@@ -107,10 +139,8 @@ public class GWASpiFormatter implements Formatter {
 				sampleInfoBW.write('\n');
 				sampleInfoBW.flush();
 
+				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
-				if (sampleNb % 100 == 0) {
-					log.info("Samples exported: {}", sampleNb);
-				}
 			}
 			//</editor-fold>
 		} finally {
@@ -118,22 +148,27 @@ public class GWASpiFormatter implements Formatter {
 				sampleInfoBW.close();
 			}
 		}
+		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 		//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
+		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		try {
 			File origFile = MatrixMetadata.generatePathToNetCdfFileGeneric(rdDataSetMetadata);
 			File newFile = new File(exportDir.getPath(),
 					rdDataSetMetadata.getFriendlyName() + ".nc");
-			if (origFile.exists()) {
+			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
+			if (origFile.exists()) { // FIXME throw an exception if it does not exist!
 				org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			}
+			exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 			result = true;
 		} catch (Exception ex) {
-			Dialogs.showWarningDialogue("A table saving error has occurred");
+			Dialogs.showWarningDialogue("A table saving error has occurred"); // HACK we should not show a dialog, at least not here! (if at all, then in a more abstract/higher-level place)
 			log.error("A table saving error has occurred", ex);
 		}
 		//</editor-fold>
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return result;
 	}
