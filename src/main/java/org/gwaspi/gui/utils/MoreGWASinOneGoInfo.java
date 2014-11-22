@@ -195,7 +195,7 @@ public class MoreGWASinOneGoInfo extends JDialog {
 
 		switch (format) {
 			case BEAGLE:
-				cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
+				cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.CHROMOSOMES.toArray()));
 				cmb_Chromosome.setSelectedIndex(0);
 				setConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
 				pnl_Questions.add(lbl_Chromosome, c);

@@ -134,7 +134,7 @@ public class GWASinOneGoDialog extends JFrame {
 		int rowNb = 0;
 		//<editor-fold defaultstate="expanded" desc="FORMAT DEPENDANT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
-		cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
+		cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.CHROMOSOMES.toArray()));
 		cmb_Chromosome.setSelectedIndex(0);
 
 		lbl_Strand.setText("  " + Text.Dialog.strand);

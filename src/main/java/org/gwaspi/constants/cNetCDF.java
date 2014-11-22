@@ -17,8 +17,11 @@
 
 package org.gwaspi.constants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class cNetCDF {
@@ -338,10 +341,14 @@ public class cNetCDF {
 			}
 		}
 
-		public static final String[] Chromosomes = new String[] {
-			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-			"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-			"21", "22", "X", "Y", "XY", "MT"};
+		public static final List<String> CHROMOSOMES;
+		static {
+			final String[] tmpChromosomes = new String[] {
+					"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+					"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+					"21", "22", "X", "Y", "XY", "MT"};
+			CHROMOSOMES = Collections.unmodifiableList(Arrays.asList(tmpChromosomes));
+		}
 
 		public static enum OPType {
 

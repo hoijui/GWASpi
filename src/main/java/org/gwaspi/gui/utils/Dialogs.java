@@ -228,7 +228,7 @@ public class Dialogs {
 	}
 
 	public static String showChromosomeSelectCombo() {
-		String[] chroms = cNetCDF.Defaults.Chromosomes;
+		final List<String> chroms = cNetCDF.Defaults.CHROMOSOMES;
 
 		String chr = (String) JOptionPane.showInputDialog(
 				null,
@@ -236,8 +236,8 @@ public class Dialogs {
 				"Chromosome",
 				JOptionPane.QUESTION_MESSAGE,
 				null,
-				chroms,
-				chroms[0]);
+				chroms.toArray(),
+				chroms.get(0));
 
 		return chr;
 	}
