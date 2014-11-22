@@ -197,7 +197,7 @@ public class Dialogs {
 	}
 
 	public static String showPhenotypeColumnsSelectCombo() {
-		String[] phenotype = cDBSamples.f_PHENOTYPES_COLUMNS;
+		final List<String> phenotype = cDBSamples.f_PHENOTYPES_COLUMNS;
 
 		String expPhenotype = (String) JOptionPane.showInputDialog(
 				null,
@@ -205,8 +205,8 @@ public class Dialogs {
 				"Phenotype column to use",
 				JOptionPane.QUESTION_MESSAGE,
 				null,
-				phenotype,
-				phenotype[0]);
+				phenotype.toArray(),
+				phenotype.get(0));
 
 		return expPhenotype;
 	}

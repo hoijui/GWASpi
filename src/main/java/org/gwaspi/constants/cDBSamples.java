@@ -17,6 +17,9 @@
 
 package org.gwaspi.constants;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 
@@ -38,17 +41,21 @@ public class cDBSamples {
 	public static final String f_POOL_ID = "pool_id";
 	public static final String f_APPROVED = "approved";
 	public static final String f_STATUS_ID_FK = "status_id_fk";
-	public static final String[] f_PHENOTYPES_COLUMNS = new String[] {
-		f_AFFECTION,
-		f_AGE,
-		f_CATEGORY,
-		f_DISEASE,
-		f_FAMILY_ID,
-		f_FATHER_ID,
-		f_MOTHER_ID,
-		f_POPULATION,
-		f_SEX
-	};
+	public static final List<String> f_PHENOTYPES_COLUMNS;
+	static {
+		final ArrayList<String> tmpPhenotypesColumns = new ArrayList<String>();
+		tmpPhenotypesColumns.add(f_AFFECTION);
+		tmpPhenotypesColumns.add(f_AGE);
+		tmpPhenotypesColumns.add(f_CATEGORY);
+		tmpPhenotypesColumns.add(f_DISEASE);
+		tmpPhenotypesColumns.add(f_FAMILY_ID);
+		tmpPhenotypesColumns.add(f_FATHER_ID);
+		tmpPhenotypesColumns.add(f_MOTHER_ID);
+		tmpPhenotypesColumns.add(f_POPULATION);
+		tmpPhenotypesColumns.add(f_SEX);
+		tmpPhenotypesColumns.trimToSize();
+		f_PHENOTYPES_COLUMNS = Collections.unmodifiableList(tmpPhenotypesColumns);
+	}
 
 	public static Object parseFromField(String fieldName, String value) {
 
