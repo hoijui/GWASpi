@@ -24,7 +24,7 @@ import org.gwaspi.model.DataSetSource;
 interface Formatter {
 
 	/**
-	 *
+	 * Exports a given data-set (sample-infos, marker-infos and genotypes) into a certain format.
 	 * @param exportPath
 	 * @param rdDataSetMetadata
 	 * @param dataSetSource
@@ -33,9 +33,9 @@ interface Formatter {
 	 * @throws IOException
 	 */
 	boolean export(
-			String exportPath,
-			DataSetMetadata rdDataSetMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
+			final String exportPath,
+			final DataSetMetadata rdDataSetMetadata,
+			final DataSetSource dataSetSource,
+			final String phenotype)
 			throws IOException;
 }
