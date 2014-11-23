@@ -56,7 +56,7 @@ public class Threaded_Test extends CommonRunnable {
 	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
-				= new LinkedHashMap<ProgressSource, Double>(2);
+				= new LinkedHashMap<ProgressSource, Double>(3);
 		tmpSubProgressSourcesAndWeights.put(ByHardyWeinbergThresholdFilterOperation.PLACEHOLDER_PS_HW_TF, 0.3);
 		tmpSubProgressSourcesAndWeights.put(AllelicAssociationTestOperation.PLACEHOLDER_PS_TEST, 0.4);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TEST_REPORTS, 0.3);
