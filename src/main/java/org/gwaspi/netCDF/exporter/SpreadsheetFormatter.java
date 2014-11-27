@@ -43,7 +43,7 @@ public class SpreadsheetFormatter implements Formatter {
 	private final Logger log = LoggerFactory.getLogger(SpreadsheetFormatter.class);
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -77,7 +77,6 @@ public class SpreadsheetFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		boolean result = false;
 		String sep = cExport.separator_REPORTS;
 
 		//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
@@ -124,8 +123,6 @@ public class SpreadsheetFormatter implements Formatter {
 			}
 			exportSamplesPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Samples exported to Fleur file: {}", sampleNb);
-
-			result = true;
 		} finally {
 			if (pedBW != null) {
 				pedBW.close();
@@ -133,7 +130,6 @@ public class SpreadsheetFormatter implements Formatter {
 		}
 		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
-
-		return result;
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

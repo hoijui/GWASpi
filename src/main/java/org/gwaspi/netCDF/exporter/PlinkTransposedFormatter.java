@@ -42,7 +42,7 @@ public class PlinkTransposedFormatter implements Formatter {
 	private final Logger log = LoggerFactory.getLogger(PlinkTransposedFormatter.class);
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -75,7 +75,6 @@ public class PlinkTransposedFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		boolean result = false;
 		String sep = cExport.separator_PLINK;
 
 		//<editor-fold defaultstate="expanded" desc="TPED FILE">
@@ -174,8 +173,6 @@ public class PlinkTransposedFormatter implements Formatter {
 				exportSamplesPS.setProgress(sampleNb);
 				sampleNb++;
 			}
-
-			result = true;
 		} finally {
 			if (tfamBW != null) {
 				tfamBW.close();
@@ -183,7 +180,6 @@ public class PlinkTransposedFormatter implements Formatter {
 		}
 		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
-
-		return result;
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

@@ -50,7 +50,7 @@ public class MachFormatter implements Formatter {
 	private static final String SEP = cExport.separator_MACH;
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -110,8 +110,6 @@ public class MachFormatter implements Formatter {
 		exportPS.setProgress(chromosomeIndex);
 		chromosomeIndex++;
 		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
-
-		return true;
 	}
 
 	private void exportChromosomeToMped(File exportDir, String dataSetName, DataSetSource dataSetSource, List<Iterator<byte[]>> samplesGenotypesIterators, String chr, int startPos, int endPos) throws IOException {

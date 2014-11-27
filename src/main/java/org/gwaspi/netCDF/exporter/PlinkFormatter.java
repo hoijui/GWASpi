@@ -41,7 +41,7 @@ public class PlinkFormatter implements Formatter {
 	private final Logger log = LoggerFactory.getLogger(PlinkFormatter.class);
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -74,7 +74,6 @@ public class PlinkFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		boolean result = false;
 		String sep = cExport.separator_PLINK;
 		String sepBig = cExport.separator_PLINK_big;
 
@@ -174,8 +173,6 @@ public class PlinkFormatter implements Formatter {
 			}
 			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Markers exported to MAP file: {}", markerIndex);
-
-			result = true;
 		} finally {
 			if (mapBW != null) {
 				mapBW.close();
@@ -183,7 +180,6 @@ public class PlinkFormatter implements Formatter {
 		}
 		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
-
-		return result;
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

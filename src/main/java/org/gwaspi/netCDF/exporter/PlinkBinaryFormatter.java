@@ -74,7 +74,7 @@ public class PlinkBinaryFormatter implements Formatter {
 	}
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -114,7 +114,6 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		boolean result = false;
 		String sep = cExport.separator_PLINK;
 
 		final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
@@ -341,8 +340,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		}
 		exportSamplesPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
-
-		return result;
+		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	private static byte[] translateTo00011011Byte(byte[] tempGT, byte tmpMinorAllele, byte tmpMajorAllele) {

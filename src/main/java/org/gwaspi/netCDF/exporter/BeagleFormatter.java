@@ -52,7 +52,7 @@ class BeagleFormatter implements Formatter {
 	private final Logger log = LoggerFactory.getLogger(BeagleFormatter.class);
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -92,7 +92,6 @@ class BeagleFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		boolean result = false;
 		String sep = cExport.separator_BEAGLE;
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
@@ -281,8 +280,6 @@ class BeagleFormatter implements Formatter {
 			}
 			exportMarkersPS.setNewStatus(ProcessStatus.FINALIZING);
 			log.info("Markers exported to MARKER file: {}", markerIndex);
-
-			result = true;
 		} finally {
 			if (markerBW != null) {
 				markerBW.close();
@@ -291,7 +288,5 @@ class BeagleFormatter implements Formatter {
 		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 		//</editor-fold>
 		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
-
-		return result;
 	}
 }

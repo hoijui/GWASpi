@@ -36,10 +36,9 @@ interface Formatter {
 	 * @param rdDataSetMetadata
 	 * @param dataSetSource
 	 * @param phenotype
-	 * @return true if formatting and exporting went through successfully, false otherwise
 	 * @throws IOException
 	 */
-	boolean export(
+	void export(
 			final String exportPath,
 			final DataSetMetadata rdDataSetMetadata,
 			final DataSetSource dataSetSource,

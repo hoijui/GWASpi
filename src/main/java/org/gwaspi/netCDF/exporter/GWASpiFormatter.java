@@ -36,7 +36,7 @@ import org.gwaspi.progress.SuperProgressSource;
 public class GWASpiFormatter implements Formatter {
 
 	@Override
-	public boolean export(
+	public void export(
 			String exportPath,
 			DataSetMetadata rdDataSetMetadata,
 			DataSetSource dataSetSource,
@@ -70,7 +70,6 @@ public class GWASpiFormatter implements Formatter {
 		final File exportDir = Utils.checkDirPath(exportPath);
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
-		boolean result = false;
 		String sep = cExport.separator_SAMPLE_INFO;
 		BufferedWriter sampleInfoBW = null;
 		try {
@@ -153,11 +152,7 @@ public class GWASpiFormatter implements Formatter {
 		}
 		org.gwaspi.global.Utils.copyFile(origFile, newFile);
 		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
-
-		result = true;
 		//</editor-fold>
 		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
-
-		return result;
 	}
 }

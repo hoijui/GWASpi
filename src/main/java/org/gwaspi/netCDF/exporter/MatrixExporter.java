@@ -118,15 +118,12 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 		Formatter formatter = FORMATTERS.get(params.getExportFormat());
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		boolean result = formatter.export(
+		formatter.export(
 				exportPath,
 				rdDataSetMetadata,
 				rdDataSetSource,
 				progressSource,
 				params.getPhenotype());
-		if (!result) {
-			throw new IOException("Failed to export, reason unknown. Maybe there is additional info in the log before this entry."); // XXX Bad way of ding it, use exceptions before already?
-		}
 
 		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
