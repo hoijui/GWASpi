@@ -129,6 +129,24 @@ public class StudyManagementPanel extends JPanel {
 		}
 	}
 
+	private static final class StudyTable extends JTable {
+
+		@Override
+		public boolean isCellEditable(int row, int col) {
+			return false;
+		}
+
+		@Override
+		public Component prepareRenderer(final TableCellRenderer renderer, final int rowIndex, final int vColIndex) {
+			final Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+			if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
+				final JComponent jc = (JComponent) c;
+				jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
+			}
+			return c;
+		}
+	}
+
 	public StudyManagementPanel() throws IOException {
 
 		pnl_StudyDesc = new JPanel();
@@ -145,22 +163,7 @@ public class StudyManagementPanel extends JPanel {
 		btn_Help = new JButton();
 		btn_Back = new JButton();
 		scrl_StudiesTable = new JScrollPane();
-		tbl_StudiesTable = new JTable() {
-			@Override
-			public boolean isCellEditable(int row, int col) {
-				return false;
-			}
-
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
-				Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-				if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-					JComponent jc = (JComponent) c;
-					jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
-				}
-				return c;
-			}
-		};
+		tbl_StudiesTable = new StudyTable();
 		tbl_StudiesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Study.studies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
