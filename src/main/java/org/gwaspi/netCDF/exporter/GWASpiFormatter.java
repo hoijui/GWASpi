@@ -32,12 +32,8 @@ import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GWASpiFormatter implements Formatter {
-
-	private final Logger log = LoggerFactory.getLogger(GWASpiFormatter.class);
 
 	@Override
 	public boolean export(
@@ -148,21 +144,17 @@ public class GWASpiFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
 		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
-		try {
-			File origFile = MatrixMetadata.generatePathToNetCdfFileGeneric(rdDataSetMetadata);
-			File newFile = new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".nc");
-			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
-			if (!origFile.exists()) {
-				throw new IOException("Could not find internal markers storage file");
-			}
-			org.gwaspi.global.Utils.copyFile(origFile, newFile);
-			exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
-
-			result = true;
-		} catch (Exception ex) {
-			log.error("A table saving error has occurred", ex);
+		File origFile = MatrixMetadata.generatePathToNetCdfFileGeneric(rdDataSetMetadata);
+		File newFile = new File(exportDir.getPath(),
+				rdDataSetMetadata.getFriendlyName() + ".nc");
+		exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
+		if (!origFile.exists()) {
+			throw new IOException("Could not find internal markers storage file");
 		}
+		org.gwaspi.global.Utils.copyFile(origFile, newFile);
+		exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
+
+		result = true;
 		//</editor-fold>
 		exportPS.setNewStatus(ProcessStatus.COMPLEETED);
 
