@@ -314,7 +314,7 @@ public class Utils {
 		return files;
 	}
 
-	public static void copyFile(File in, File out) throws Exception {
+	public static void copyFile(File in, File out) throws IOException {
 
 		FileChannel inChannel = new FileInputStream(in).getChannel();
 		FileChannel outChannel = new FileOutputStream(out).getChannel();
