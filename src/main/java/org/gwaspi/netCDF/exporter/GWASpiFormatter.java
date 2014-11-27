@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
@@ -162,7 +161,6 @@ public class GWASpiFormatter implements Formatter {
 
 			result = true;
 		} catch (Exception ex) {
-			Dialogs.showWarningDialogue("A table saving error has occurred"); // HACK we should not show a dialog, at least not here! (if at all, then in a more abstract/higher-level place)
 			log.error("A table saving error has occurred", ex);
 		}
 		//</editor-fold>
