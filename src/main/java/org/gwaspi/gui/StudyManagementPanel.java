@@ -380,11 +380,6 @@ public class StudyManagementPanel extends JPanel {
 							Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 						}
 					}
-					try {
-						GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-					} catch (IOException ex) {
-						log.error(null, ex);
-					}
 				}
 			}
 		}
