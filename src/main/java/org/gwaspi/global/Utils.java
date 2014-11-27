@@ -140,7 +140,7 @@ public class Utils {
 				line = lineReader.readLine();
 			}
 			return licenseFileContents.toString();
-		} catch (final Exception ex) {
+		} catch (final IOException ex) {
 			log.warn("Failed reading the LICENSE file", ex);
 			return "Error when reading LICENSE file";
 		} finally {
@@ -198,7 +198,7 @@ public class Utils {
 				manifestLine = manifestFileLineReader.readLine();
 			}
 			manifestProps = tmpProps;
-		} catch (final Exception ex) {
+		} catch (final IOException ex) {
 			log.warn("Failed reading the manifest file", ex);
 			manifestProps = new Properties();
 		} finally {
