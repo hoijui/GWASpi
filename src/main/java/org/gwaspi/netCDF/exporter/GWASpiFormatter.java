@@ -154,9 +154,10 @@ public class GWASpiFormatter implements Formatter {
 			File newFile = new File(exportDir.getPath(),
 					rdDataSetMetadata.getFriendlyName() + ".nc");
 			exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
-			if (origFile.exists()) { // FIXME throw an exception if it does not exist!
-				org.gwaspi.global.Utils.copyFile(origFile, newFile);
+			if (!origFile.exists()) {
+				throw new IOException("Could not find internal markers storage file");
 			}
+			org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			exportMarkersPS.setNewStatus(ProcessStatus.COMPLEETED);
 
 			result = true;
