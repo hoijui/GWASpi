@@ -73,10 +73,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		final IntegerProgressHandler exportSamplesPS = new IntegerProgressHandler(exportSamplesPI, 0, dataSetSource.getNumSamples() - 1);
 		exportPS.addSubProgressSource(exportSamplesPS, 0.05);
 
-		File exportDir = new File(exportPath);
-		if (!exportDir.exists() || !exportDir.isDirectory()) {
-			return false;
-		}
+		final File exportDir = Utils.checkDirPath(exportPath);
 
 		boolean result = false;
 		String sep = cExport.separator_PLINK;

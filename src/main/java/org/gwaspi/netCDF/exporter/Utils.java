@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.exporter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,19 @@ import org.gwaspi.model.SamplesInfosSource;
 public class Utils {
 
 	private Utils() {
+	}
+
+	public static File checkDirPath(final String path) throws IOException {
+
+		final File dir = new File(path);
+		if (!dir.exists()) {
+			throw new IOException("Directory does not exist: " + path);
+		}
+		if (!dir.isDirectory()) {
+			throw new IOException("Path does not point to a directory: " + path);
+		}
+
+		return dir;
 	}
 
 	public static Map<SampleKey, SampleInfo> createSampleKeyToInfoMap(final SamplesInfosSource samplesInfosSource) {

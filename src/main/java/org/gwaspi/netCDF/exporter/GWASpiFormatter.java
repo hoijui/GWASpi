@@ -72,10 +72,7 @@ public class GWASpiFormatter implements Formatter {
 		final IndeterminateProgressHandler exportMarkersPS = new IndeterminateProgressHandler(exportMarkersPI);
 		exportPS.addSubProgressSource(exportMarkersPS, 0.2);
 
-		File exportDir = new File(exportPath); // HACK FIXME TODO replace these 4 lines with a function (common to all formatters)
-		if (!exportDir.exists() || !exportDir.isDirectory()) {
-			return false;
-		}
+		final File exportDir = Utils.checkDirPath(exportPath);
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		boolean result = false;

@@ -67,10 +67,7 @@ public class MachFormatter implements Formatter {
 		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_EXPORT, exportPS, null);
 		exportPS.setNewStatus(ProcessStatus.INITIALIZING);
 
-		File exportDir = new File(exportPath);
-		if (!exportDir.exists() || !exportDir.isDirectory()) {
-			return false;
-		}
+		final File exportDir = Utils.checkDirPath(exportPath);
 
 		List<Iterator<byte[]>> samplesGenotypesIterators = new ArrayList<Iterator<byte[]>>(dataSetSource.getSamplesGenotypesSource().size());
 		for (GenotypesList sampleGenotypesList : dataSetSource.getSamplesGenotypesSource()) {
