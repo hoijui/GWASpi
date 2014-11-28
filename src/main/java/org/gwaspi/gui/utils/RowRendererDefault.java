@@ -68,9 +68,6 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, Object value, int row, int column) {
 
 		if (table.getColumnModel().getColumnCount() == 8) {
-			final Task task = (Task) value;
-			final ProcessStatus status = task.getProgressSource().getStatus();
-
 			if (column == 0 || column == 1 || column == 6 || column == 7) {
 				tableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 				TableColumn col = table.getColumnModel().getColumn(column);
@@ -80,6 +77,8 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 			}
 			final ImageIcon ico;
 			if (column == 7) {
+				final Task task = (Task) value;
+				final ProcessStatus status = task.getProgressSource().getStatus();
 				final URL imageIconUrl;
 				if (status.isEnd()) {
 					imageIconUrl = ICON_PATH_NO_ABORT;
