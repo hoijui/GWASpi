@@ -65,7 +65,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
-	private final JScrollPane scrl_Overview;
+	private final JScrollPane scrl_tasksList;
 	private final JPanel pnl_progress;
 	private final List<SwingProgressListener> taskProgressDisplays;
 	private static ProcessTab singleton = null;
@@ -75,13 +75,13 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
 		final JPanel pnl_tasks = new JPanel();
-		this.scrl_Overview = new JScrollPane();
+		this.scrl_tasksList = new JScrollPane();
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
 		scrl_progress.setViewportView(this.pnl_progress);
 		pnl_tasks.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_tasks.add(scrl_Overview, BorderLayout.NORTH);
+		pnl_tasks.add(scrl_tasksList, BorderLayout.NORTH);
 		pnl_tasks.add(scrl_progress, BorderLayout.CENTER);
 
 		final JPanel pnl_log = new JPanel();
@@ -204,11 +204,11 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		if (StartGWASpi.guiMode) {
 			final JTable tmpTable = new ProcessesTable();
-			final int x = scrl_Overview.getHorizontalScrollBar().getValue();
-			final int y = scrl_Overview.getVerticalScrollBar().getValue();
-			scrl_Overview.setViewportView(tmpTable);
-			scrl_Overview.getHorizontalScrollBar().setValue(x);
-			scrl_Overview.getVerticalScrollBar().setValue(y);
+			final int x = scrl_tasksList.getHorizontalScrollBar().getValue();
+			final int y = scrl_tasksList.getVerticalScrollBar().getValue();
+			scrl_tasksList.setViewportView(tmpTable);
+			scrl_tasksList.getHorizontalScrollBar().setValue(x);
+			scrl_tasksList.getVerticalScrollBar().setValue(y);
 		}
 	}
 
