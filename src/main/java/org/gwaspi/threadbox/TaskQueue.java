@@ -211,7 +211,7 @@ public class TaskQueue {
 			if (!wasScheduled) {
 				return;
 			}
-			final Future<?> taskFuture = taskToFuture.get(task);
+//			final Future<?> taskFuture = taskToFuture.get(task);
 //			futureToTask.remove(taskFuture);
 			taskToFuture.remove(task);
 			dependencyHandler.remove(task);
