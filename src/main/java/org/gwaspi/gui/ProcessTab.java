@@ -76,8 +76,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		final JPanel pnl_top = new JPanel();
 		this.scrl_Overview = new JScrollPane();
-//		final JPanel pnl_Logo = new JPanel();
-//		final JLabel lbl_Logo = new JLabel();
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
@@ -107,9 +105,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
-//		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
-//		pnl_Logo.setMaximumSize(new Dimension(100, 100));
-//		pnl_Logo.setPreferredSize(new Dimension(100, 100));
 		txtA_ProcessLog.setColumns(20);
 		txtA_ProcessLog.setRows(5);
 		txtA_ProcessLog.setEditable(false);
@@ -214,53 +209,11 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 			scrl_Overview.setViewportView(tmpTable);
 			scrl_Overview.getHorizontalScrollBar().setValue(x);
 			scrl_Overview.getVerticalScrollBar().setValue(y);
-
-			ProcessTab.getSingleton().toggleBusyLogo();
 		}
-	}
-
-	private void startBusyLogo() {
-
-//		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
-//		Icon logo = new ImageIcon(logoPath);
-//
-//		lbl_Logo.setIcon(logo);
-//		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
-	}
-
-	private void toggleBusyLogo() {
-
-//		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
-//		int count = 0;
-//		boolean idle = true;
-//		while (count < swingWorkerItems.size()) {
-//			QueueState queueState = swingWorkerItems.get(count).getQueueState();
-//			if (!queueState.equals(QueueState.DONE)
-//					&& !queueState.equals(QueueState.ABORT)
-//					&& !queueState.equals(QueueState.ERROR)) {
-//				idle = false;
-////			} else {
-////				idle = true;
-//			}
-//			count++;
-//		}
-//
-//		final String logoResourcePath;
-//		if (idle) {
-//			logoResourcePath = "/img/logo/logo_stopped.png";
-//		} else {
-//			logoResourcePath = "/img/logo/logo_busy.gif";
-//		}
-//		URL logoPath = ProcessTab.class.getResource(logoResourcePath);
-//		Icon logo = new ImageIcon(logoPath);
-//
-//		lbl_Logo.setIcon(logo);
-//		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
 	public void showTab() {
 		StartGWASpi.getMainFrame().getTabs().setSelectedComponent(this);
-		startBusyLogo();
 	}
 
 	private static class SaveAsAction extends AbstractAction {
