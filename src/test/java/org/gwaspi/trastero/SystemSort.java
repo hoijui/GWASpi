@@ -38,12 +38,11 @@ public class SystemSort {
 		File[] alreadySortedFiles = org.gwaspi.global.Utils.listFiles(processingDir);
 		numFiles = alreadySortedFiles.length;
 
-		for (int i = 0; i < filesToImport.length; i++) {
-			String cmd = getCommandLine(filesToImport[i].getPath(), format);
+		for (final File fileToImport : filesToImport) {
+			String cmd = getCommandLine(fileToImport.getPath(), format);
 			org.gwaspi.global.SysCommandExecutor.sysCommandExecute(cmd);
-			filesToImport[i].delete();
+			fileToImport.delete();
 		}
-
 	}
 
 	public static String getCommandLine(String pathToFile, String format) throws IOException {
@@ -51,7 +50,7 @@ public class SystemSort {
 		String commandLine = "";
 		String outputPath = org.gwaspi.global.Config.getConfigValue(
 				GlobalConstants.SORT_EXEC_DIR_CONFIG,
-				GlobalConstants.USER_DIR_DEFAULT).toString()
+				GlobalConstants.USER_DIR_DEFAULT)
 				+ "/" + format + "/" + (numFiles - 1) + ".csv";
 		numFiles++;
 
