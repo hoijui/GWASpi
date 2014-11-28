@@ -23,7 +23,7 @@ import java.util.List;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 
-public class cDBSamples {
+public class DBSamplesConstants {
 
 	// * ALL SAMPLES INFO *
 	public static final String f_ID = "order_id";
@@ -59,27 +59,27 @@ public class cDBSamples {
 
 	public static Object parseFromField(String fieldName, String value) {
 
-		if (fieldName.equals(cDBSamples.f_SAMPLE_ID)) {
+		if (fieldName.equals(DBSamplesConstants.f_SAMPLE_ID)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(cDBSamples.f_FAMILY_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_FAMILY_ID)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(cDBSamples.f_SEX)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_SEX)) {
 			return Sex.parse(value);
-		} else if (fieldName.equals(cDBSamples.f_AFFECTION)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_AFFECTION)) {
 			return Affection.parse(value);
-		} else if (fieldName.equals(cDBSamples.f_CATEGORY)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_CATEGORY)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(cDBSamples.f_DISEASE)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_DISEASE)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(cDBSamples.f_POPULATION)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_POPULATION)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(cDBSamples.f_AGE)) {
+		} else if (fieldName.equals(DBSamplesConstants.f_AGE)) {
 			return Integer.parseInt(value);
 		} else {
 			throw new IllegalArgumentException("Can not parse to type of sample field \"" + fieldName + "\"");
 		}
 	}
 
-	private cDBSamples() {
+	private DBSamplesConstants() {
 	}
 }

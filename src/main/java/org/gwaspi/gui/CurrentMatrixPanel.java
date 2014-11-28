@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -243,7 +243,7 @@ public class CurrentMatrixPanel extends JPanel {
 				return;
 			}
 
-			String expPhenotype = cDBSamples.f_AFFECTION;
+			String expPhenotype = DBSamplesConstants.f_AFFECTION;
 			if (format.equals(cExport.ExportFormat.PLINK_Binary)
 					|| format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat))
 			{

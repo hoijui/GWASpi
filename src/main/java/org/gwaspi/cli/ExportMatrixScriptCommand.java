@@ -19,7 +19,7 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
@@ -74,7 +74,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 		if (studyExists) {
 			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
-					dataSetKey, format, cDBSamples.f_AFFECTION);
+					dataSetKey, format, DBSamplesConstants.f_AFFECTION);
 			final CommonRunnable exportTask = new Threaded_ExportMatrix(matrixExporterParams);
 			MultiOperations.queueTask(exportTask);
 			return true;

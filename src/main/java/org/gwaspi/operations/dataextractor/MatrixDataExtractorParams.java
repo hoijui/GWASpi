@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.model.DataSetKey;
@@ -153,7 +153,7 @@ public class MatrixDataExtractorParams extends AbstractMatrixCreatingOperationPa
 					// - sample sex         (cDBSamples.f_SEX)
 					// which use different types (String, Sex, Affection, int),
 					// and thus we have to support multiple types here
-					((Collection<Object>) sampleCriteria).add(cDBSamples.parseFromField(samplePickerVar, l));
+					((Collection<Object>) sampleCriteria).add(DBSamplesConstants.parseFromField(samplePickerVar, l));
 //				}
 			}
 			br.close();

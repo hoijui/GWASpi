@@ -27,7 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cGlobal;
@@ -197,7 +197,7 @@ public class Dialogs {
 	}
 
 	public static String showPhenotypeColumnsSelectCombo() {
-		final List<String> phenotype = cDBSamples.f_PHENOTYPES_COLUMNS;
+		final List<String> phenotype = DBSamplesConstants.f_PHENOTYPES_COLUMNS;
 
 		String expPhenotype = (String) JOptionPane.showInputDialog(
 				null,
