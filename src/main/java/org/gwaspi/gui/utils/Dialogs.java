@@ -28,10 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.gwaspi.constants.DBSamplesConstants;
-import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cGlobal;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -167,7 +165,7 @@ public class Dialogs {
 	}
 
 	public static ImportFormat showTechnologySelectCombo() {
-		ImportFormat[] formats = cImport.ImportFormat.values();
+		ImportFormat[] formats = ImportFormat.values();
 
 		ImportFormat technology = (ImportFormat) JOptionPane.showInputDialog(
 				null,
@@ -182,7 +180,7 @@ public class Dialogs {
 	}
 
 	public static ExportFormat showExportFormatsSelectCombo() {
-		ExportFormat[] formats = cExport.ExportFormat.values();
+		ExportFormat[] formats = ExportFormat.values();
 
 		ExportFormat expFormat = (ExportFormat) JOptionPane.showInputDialog(
 				null,

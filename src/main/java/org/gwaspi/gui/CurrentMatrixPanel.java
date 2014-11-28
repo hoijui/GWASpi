@@ -32,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import org.gwaspi.constants.DBSamplesConstants;
-import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -244,11 +243,11 @@ public class CurrentMatrixPanel extends JPanel {
 			}
 
 			String expPhenotype = DBSamplesConstants.f_AFFECTION;
-			if (format.equals(cExport.ExportFormat.PLINK_Binary)
-					|| format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat))
+			if (format.equals(ExportFormat.PLINK_Binary)
+					|| format.equals(ExportFormat.Eigensoft_Eigenstrat))
 			{
 				// SELECT PHENOTYPE COLUMN TO USE
-				if (format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
+				if (format.equals(ExportFormat.Eigensoft_Eigenstrat)) {
 					expPhenotype = Dialogs.showPhenotypeColumnsSelectCombo();
 				}
 
