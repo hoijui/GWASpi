@@ -51,6 +51,7 @@ import org.gwaspi.gui.utils.TaskQueueTableModel;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperSwingProgressListener;
 import org.gwaspi.progress.SwingProgressListener;
+import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.TaskQueue;
 import org.gwaspi.threadbox.TaskQueueStatusChangedEvent;
 import org.gwaspi.threadbox.TaskQueueListener;
@@ -158,6 +159,10 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 	@Override
 	public void taskStatusChanged(final TaskQueueStatusChangedEvent evt) {
+
+		if (!evt.getTask().getStatus().equals(QueueState.QUEUED)) {
+			return;
+		}
 
 		final ProgressSource progressSource = evt.getTask().getProgressSource();
 
