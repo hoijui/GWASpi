@@ -32,6 +32,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,6 +46,19 @@ import org.slf4j.LoggerFactory;
 public class IntroPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(IntroPanel.class);
+
+	public static void main(String[] args) throws IOException {
+
+		final IntroPanel pane = new IntroPanel();
+		final JFrame frame = new JFrame("IntroPanel tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
 	public IntroPanel() {
 

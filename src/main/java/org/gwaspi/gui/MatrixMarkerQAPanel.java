@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -50,6 +51,19 @@ public class MatrixMarkerQAPanel extends JPanel {
 	private static final String NONE = "<NONE>";
 
 	private final OperationKey currentOPKey;
+
+	public static void main(String[] args) throws IOException {
+
+		final MatrixMarkerQAPanel pane = new MatrixMarkerQAPanel(null, -1);
+		final JFrame frame = new JFrame("MatrixMarkerQAPanel tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
 	public MatrixMarkerQAPanel(final MatrixKey parentMatrixKey, final int opId) throws IOException {
 

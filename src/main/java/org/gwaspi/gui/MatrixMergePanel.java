@@ -17,6 +17,7 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -32,6 +33,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -87,6 +89,19 @@ public class MatrixMergePanel extends JPanel {
 	private final JTextArea txtA_ParentMatrixDesc;
 	private final JTextField txt_NewMatrixName;
 	// End of variables declaration
+
+	public static void main(String[] args) throws IOException {
+
+		final MatrixMergePanel pane = new MatrixMergePanel(null);
+		final JFrame frame = new JFrame("MatrixMergePanel tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
 	public MatrixMergePanel(MatrixKey parentMatrixKey) throws IOException {
 

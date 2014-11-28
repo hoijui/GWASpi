@@ -98,6 +98,19 @@ public class DataSetAnalysePanel extends JPanel {
 		CENSUS_TYPES = Collections.unmodifiableList(tmpCensusTypes);
 	}
 
+	public static void main(String[] args) throws IOException {
+
+		final DataSetAnalysePanel pane = new DataSetAnalysePanel(null);
+		final JFrame frame = new JFrame("DataSetAnalysePanel tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
 	private final DataSetKey observedElementKey;
 	private final OperationMetadata currentOP;
 
