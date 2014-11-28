@@ -71,7 +71,9 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
 		final JPanel pnl_tasks = new JPanel();
+		final JTable processesTable = new ProcessesTable();
 		final JScrollPane scrl_tasksList = new JScrollPane();
+		scrl_tasksList.setViewportView(processesTable);
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
