@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -93,6 +94,10 @@ public class StudyManagementPanel extends JPanel {
 		StudyTableModel(final List<Study> studies) {
 
 			this.studies = studies;
+		}
+
+		public Study getStudyAt(final int row) {
+			return studies.get(row);
 		}
 
 		@Override
@@ -353,19 +358,19 @@ public class StudyManagementPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			if (tbl_StudiesTable.getSelectedRow() != -1) {
+				final StudyTableModel model = (StudyTableModel) tbl_StudiesTable.getModel();
 				int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
-				int[] selectedStudyIds = new int[selectedStudyRows.length];
+				final List<Study> selectedStudies = new ArrayList<Study>(selectedStudyRows.length);
 				for (int i = 0; i < selectedStudyRows.length; i++) {
-					selectedStudyIds[i] = (Integer) tbl_StudiesTable.getModel().getValueAt(selectedStudyRows[i], 0);
+					selectedStudies.add(model.getStudyAt(selectedStudyRows[i]));
 				}
 
 				int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportsOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
-					for (int i = 0; i < selectedStudyIds.length; i++) {
-						int studyId = selectedStudyIds[i];
-						StudyKey studyKey = new StudyKey(studyId);
-						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+					for (final Study selectedStudy : selectedStudies) {
+						final StudyKey studyKey = StudyKey.valueOf(selectedStudy);
+						// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
 						if (MultiOperations.permitsDeletionOf(studyKey)) {
 							if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
 
