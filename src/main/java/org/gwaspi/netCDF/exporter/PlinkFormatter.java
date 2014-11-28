@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -74,8 +74,8 @@ public class PlinkFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = cExport.separator_PLINK;
-		String sepBig = cExport.separator_PLINK_big;
+		String sep = ExportConstants.separator_PLINK;
+		String sepBig = ExportConstants.separator_PLINK_big;
 
 		//<editor-fold defaultstate="expanded" desc="PED FILE">
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);

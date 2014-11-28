@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
@@ -114,7 +114,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = cExport.separator_PLINK;
+		String sep = ExportConstants.separator_PLINK;
 
 		final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
 

@@ -31,14 +31,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.global.Extractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ReportWriter {
 
-	private static final String SEP = cExport.separator_REPORTS;
+	private static final String SEP = ExportConstants.separator_REPORTS;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReportWriter.class);
 
@@ -139,7 +139,7 @@ public class ReportWriter {
 
 		final boolean withKey = (keyExtractor != null);
 
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		outputBW.append(header);
 
 		for (S entry : readContent) {
@@ -215,7 +215,7 @@ public class ReportWriter {
 
 		String l;
 		int count = 0;
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		Iterator<S> readContentIt = readContent.iterator();
 		while ((l = inputBR.readLine()) != null) {
 			if (count == 0) {

@@ -28,7 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.gwaspi.constants.DBSamplesConstants;
-import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;

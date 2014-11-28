@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class MachFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
-	private static final String SEP = cExport.separator_MACH;
+	private static final String SEP = ExportConstants.separator_MACH;
 
 	@Override
 	public void export(

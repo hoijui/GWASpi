@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
@@ -330,7 +330,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			sortedOrigIndices.add(trendTestOperationEntry.getIndex());
 		}
 
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(getParams().getTestOperationKey().getParentMatrixKey());
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();

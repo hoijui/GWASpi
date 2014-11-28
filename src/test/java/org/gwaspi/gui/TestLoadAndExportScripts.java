@@ -21,7 +21,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cImport;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -185,7 +185,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
-		substitutions.put("\\$\\{FORMAT\\}", cExport.ExportFormat.PLINK.name());
+		substitutions.put("\\$\\{FORMAT\\}", ExportConstants.ExportFormat.PLINK.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_exportPlinkFlat_" + compareMapFileName + "_" + comparePedFileName + ".txt");

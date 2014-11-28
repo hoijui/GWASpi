@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;

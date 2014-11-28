@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
@@ -143,7 +143,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 		}
 
 		// GET MARKER INFO
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
 		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());

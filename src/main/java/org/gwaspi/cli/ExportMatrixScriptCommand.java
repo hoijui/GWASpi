@@ -20,7 +20,7 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.DBSamplesConstants;
-import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;

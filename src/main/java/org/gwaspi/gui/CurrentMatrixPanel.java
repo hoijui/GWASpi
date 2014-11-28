@@ -32,7 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import org.gwaspi.constants.DBSamplesConstants;
-import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;

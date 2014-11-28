@@ -17,7 +17,7 @@
 
 package org.gwaspi.constants;
 
-public class cExport {
+public class ExportConstants {
 
 	public static final String separator_PLINK = " ";
 	public static final String separator_PLINK_big = "\t";
@@ -46,6 +46,6 @@ public class cExport {
 		}
 	}
 
-	private cExport() {
+	private ExportConstants() {
 	}
 }

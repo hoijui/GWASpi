@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -77,7 +77,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 
 		//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
 		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);

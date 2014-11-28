@@ -21,7 +21,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
@@ -70,7 +70,7 @@ public class GWASpiFormatter implements Formatter {
 		final File exportDir = Utils.checkDirPath(exportPath);
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
-		String sep = cExport.separator_SAMPLE_INFO;
+		String sep = ExportConstants.separator_SAMPLE_INFO;
 		BufferedWriter sampleInfoBW = null;
 		try {
 			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">

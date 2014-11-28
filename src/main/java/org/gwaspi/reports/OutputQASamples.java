@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -173,7 +173,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 
 	private static void createSortedSampleMissingnessReport(OperationKey samplesQAopKey, final File sampleMissOutFile) throws IOException {
 
-		final String sep = cExport.separator_REPORTS;
+		final String sep = ExportConstants.separator_REPORTS;
 
 		final QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
 		final List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());

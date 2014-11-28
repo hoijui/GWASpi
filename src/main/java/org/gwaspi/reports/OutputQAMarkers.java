@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
@@ -183,7 +183,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
@@ -285,7 +285,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
-		String sep = cExport.separator_REPORTS;
+		String sep = ExportConstants.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(unsortedOrigIndices, markersMetadatas);

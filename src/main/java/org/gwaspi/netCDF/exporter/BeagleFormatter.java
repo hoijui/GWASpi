@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
@@ -92,7 +92,7 @@ class BeagleFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = cExport.separator_BEAGLE;
+		String sep = ExportConstants.separator_BEAGLE;
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter beagleBW = null;

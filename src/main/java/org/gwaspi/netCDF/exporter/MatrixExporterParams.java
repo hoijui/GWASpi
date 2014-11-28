@@ -16,7 +16,7 @@
  */
 package org.gwaspi.netCDF.exporter;
 
-import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.operations.AbstractOperationParams;
 
