@@ -74,34 +74,34 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
-		final JPanel pnl_top = new JPanel();
+		final JPanel pnl_tasks = new JPanel();
 		this.scrl_Overview = new JScrollPane();
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
 		scrl_progress.setViewportView(this.pnl_progress);
-		pnl_top.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_top.add(scrl_Overview, BorderLayout.NORTH);
-		pnl_top.add(scrl_progress, BorderLayout.CENTER);
+		pnl_tasks.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_tasks.add(scrl_Overview, BorderLayout.NORTH);
+		pnl_tasks.add(scrl_progress, BorderLayout.CENTER);
 
-		final JPanel pnl_center = new JPanel();
+		final JPanel pnl_log = new JPanel();
 		final JScrollPane scrl_ProcessLog = new JScrollPane();
 		scrl_progress.setMinimumSize(new Dimension(300, 250));
 		final JTextArea txtA_ProcessLog = new JTextArea();
-		pnl_center.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_center.add(scrl_ProcessLog, BorderLayout.CENTER);
+		pnl_log.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_log.add(scrl_ProcessLog, BorderLayout.CENTER);
 
-		final JPanel pnl_bottom = new JPanel();
+		final JPanel pnl_buttons = new JPanel();
 		final JPanel pnl_bottomButtonsEast = new JPanel();
 		final JButton btn_Save = new JButton();
 		pnl_bottomButtonsEast.add(btn_Save);
-		pnl_bottom.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_bottom.add(pnl_bottomButtonsEast, BorderLayout.EAST);
+		pnl_buttons.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
+		pnl_buttons.add(pnl_bottomButtonsEast, BorderLayout.EAST);
 
 		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		this.add(pnl_top, BorderLayout.NORTH);
-		this.add(pnl_center, BorderLayout.CENTER);
-		this.add(pnl_bottom, BorderLayout.SOUTH);
+		this.add(pnl_tasks, BorderLayout.NORTH);
+		this.add(pnl_log, BorderLayout.CENTER);
+		this.add(pnl_buttons, BorderLayout.SOUTH);
 
 		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
