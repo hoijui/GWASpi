@@ -48,10 +48,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import org.gwaspi.gui.utils.TaskQueueTableModel;
-import org.gwaspi.progress.ProcessDetailsChangeEvent;
-import org.gwaspi.progress.ProcessStatusChangeEvent;
-import org.gwaspi.progress.ProgressEvent;
-import org.gwaspi.progress.ProgressListener;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperSwingProgressListener;
 import org.gwaspi.progress.SwingProgressListener;
@@ -61,7 +57,7 @@ import org.gwaspi.threadbox.TaskQueueListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessTab extends JPanel implements TaskQueueListener, ProgressListener {
+public class ProcessTab extends JPanel implements TaskQueueListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
@@ -127,19 +123,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 		return singleton;
 	}
 
-	@Override
-	public void processDetailsChanged(ProcessDetailsChangeEvent evt) {
-		updateProcessOverview();
-	}
-
-	@Override
-	public void statusChanged(ProcessStatusChangeEvent evt) {
-		updateProcessOverview();
-	}
-
-	@Override
-	public void progressHappened(ProgressEvent evt) {}
-
 	private static class ProcessesTable extends JTable {
 
 		public ProcessesTable() {
@@ -178,8 +161,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 
 		final ProgressSource progressSource = evt.getTask().getProgressSource();
 
-		evt.getProgressSource().addProgressListener(this); // XXX This is not very nice.. to have two different, yet very similar progress sources, one for the outer task (Swing*Item) and one for the inner task (CommonRunnable (in case of SwingWorkerItem), SwingDeleterItem (in case of SwingDeleterItem))
-
 		SwingProgressListener taskProgressDisplay
 				= SuperSwingProgressListener.newDisplay(progressSource);
 		progressSource.addProgressListener(taskProgressDisplay);
@@ -195,20 +176,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgesSmall))));
 		pnl_progress.add(taskGUI, 0); // TODO maybe we should instead replace the compleeted ones? and/or add at the bottom and scroll down?
 		taskProgressDisplays.add(taskProgressDisplay);
-
-		updateProcessOverview();
-	}
-
-	private void updateProcessOverview() {
-
-		if (StartGWASpi.guiMode) {
-			final JTable tmpTable = new ProcessesTable();
-			final int x = scrl_tasksList.getHorizontalScrollBar().getValue();
-			final int y = scrl_tasksList.getVerticalScrollBar().getValue();
-			scrl_tasksList.setViewportView(tmpTable);
-			scrl_tasksList.getHorizontalScrollBar().setValue(x);
-			scrl_tasksList.getVerticalScrollBar().setValue(y);
-		}
 	}
 
 	public void showTab() {
