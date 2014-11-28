@@ -151,6 +151,7 @@ public class TaskQueue {
 			final TaskQueueProgressListener progressListener = new TaskQueueProgressListener(task);
 			taskToProgressListener.put(task, progressListener);
 			task.getProgressSource().addProgressListener(progressListener);
+			task.setStatus(QueueState.QUEUED);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 			tryToSchedule();
 		} finally {
@@ -180,6 +181,7 @@ public class TaskQueue {
 			taskToFuture.put(task, taskFuture);
 			scheduled.add(task);
 			final Integer taskIndex = taskToIndex.get(task);
+			task.setStatus(QueueState.SCHEDULED);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 		} finally {
 			scheduleLock.unlock();
@@ -215,6 +217,7 @@ public class TaskQueue {
 			dependencyHandler.remove(task);
 			done.add(task);
 			final Integer taskIndex = taskToIndex.get(task);
+			task.setStatus(QueueState.DONE);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
 		} finally {
 			doneLock.unlock();
@@ -230,6 +233,7 @@ public class TaskQueue {
 				final TaskQueueProgressListener progressListener = taskToProgressListener.remove(doneTask);
 				doneTask.getProgressSource().removeProgressListener(progressListener);
 				final Integer taskIndex = taskToIndex.remove(doneTask);
+				doneTask.setStatus(QueueState.REMOVED);
 				fireStatusChanged(new TaskQueueStatusChangedEvent(this, doneTask, taskIndex));
 			}
 			done.clear();
