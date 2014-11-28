@@ -119,7 +119,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 		if (singleton == null) {
 			singleton = new ProcessTab();
-//			SwingWorkerItemList.addTaskListener(singleton);
+			TaskQueue.getInstance().addTaskListener(singleton);
 		}
 
 		return singleton;
