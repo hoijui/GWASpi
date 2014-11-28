@@ -62,7 +62,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
-	private final JScrollPane scrl_tasksList;
 	private final JPanel pnl_progress;
 	private final List<SwingProgressListener> taskProgressDisplays;
 	private static ProcessTab singleton = null;
@@ -72,7 +71,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
 		final JPanel pnl_tasks = new JPanel();
-		this.scrl_tasksList = new JScrollPane();
+		final JScrollPane scrl_tasksList = new JScrollPane();
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
