@@ -193,7 +193,6 @@ public class ProcessTab extends JPanel implements TaskQueueListener, ProgressLis
 		taskGUI.setBorder(new CompoundBorder(
 				new EmptyBorder(allEdgesSmall),
 				new CompoundBorder(new TitledBorder(""), new EmptyBorder(allEdgesSmall))));
-		pnl_progress.add(taskGUI);
 		pnl_progress.add(taskGUI, 0); // TODO maybe we should instead replace the compleeted ones? and/or add at the bottom and scroll down?
 		taskProgressDisplays.add(taskProgressDisplay);
 
