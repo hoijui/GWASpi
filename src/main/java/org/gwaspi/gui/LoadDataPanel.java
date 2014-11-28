@@ -46,7 +46,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -722,7 +721,7 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// CHECK IF HOMONYM .PED FILE EXISTS IN PLINK CASE
-			if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
+			if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK)) {
 				// Use standard file opener
 				Dialogs.selectAndSetFileDialog(txt_File1, "");
 				if (!txt_File1.getText().isEmpty()) {
@@ -736,7 +735,7 @@ public class LoadDataPanel extends JPanel {
 						}
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK_Binary)) {
 				// Use standard file opener
 				Dialogs.selectAndSetFileDialog(txt_File1, "");
 				if (!txt_File1.getText().isEmpty()) {
@@ -757,7 +756,7 @@ public class LoadDataPanel extends JPanel {
 						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.Sequenom)) {
 				// Use directory selector
 				Dialogs.selectAndSetDirectoryDialog(txt_File1, "", ""); // only dirs
 			} else {
@@ -778,7 +777,7 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
-			if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
+			if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK)) {
 				Dialogs.selectAndSetFileDialog(txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File mapFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".map");
@@ -791,7 +790,7 @@ public class LoadDataPanel extends JPanel {
 						}
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK_Binary)) {
 				Dialogs.selectAndSetFileDialog(txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File bedFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".bed");
@@ -811,11 +810,11 @@ public class LoadDataPanel extends JPanel {
 						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.BEAGLE)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.BEAGLE)) {
 				Dialogs.selectAndSetFileDialog(txt_File2, "");
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.HGDP1)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.HGDP1)) {
 				Dialogs.selectAndSetFileDialog(txt_File2, "");
-			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
+			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.Sequenom)) {
 				Dialogs.selectAndSetFileDialog(txt_File2, "");
 			} else {
 				Dialogs.selectAndSetDirectoryDialog(txt_File2, "", ""); // only dirs

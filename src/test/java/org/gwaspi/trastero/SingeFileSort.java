@@ -27,7 +27,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import org.gwaspi.constants.GlobalConstants;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.Separators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,13 +58,13 @@ public class SingeFileSort {
 			boolean someFileStillHasRows = false;
 
 			// get each one past the header
-			header = br.readLine().split(cImport.Separators.separators_CommaTab_rgxp);
+			header = br.readLine().split(Separators.separators_CommaTab_rgxp);
 			bw.write(flattenArray(header, ",") + "\n");
 
 			// get the first row
 			String line = br.readLine();
 			if (line != null) {
-				filerows.add(line.split(cImport.Separators.separators_CommaTab_rgxp));
+				filerows.add(line.split(Separators.separators_CommaTab_rgxp));
 				someFileStillHasRows = true;
 			} else {
 				filerows.add(null);
@@ -112,7 +112,7 @@ public class SingeFileSort {
 					// get another row from the file that had the min
 					line = br.readLine();
 					if (line != null) {
-						filerows.set(minIndex, line.split(cImport.Separators.separators_CommaTab_rgxp));
+						filerows.set(minIndex, line.split(Separators.separators_CommaTab_rgxp));
 					} else {
 						filerows.set(minIndex, null);
 					}
@@ -139,7 +139,7 @@ public class SingeFileSort {
 							line = br.readLine();
 							if (line != null) {
 								someFileStillHasRows = true;
-								filerows.set(i, line.split(cImport.Separators.separators_CommaTab_rgxp));
+								filerows.set(i, line.split(Separators.separators_CommaTab_rgxp));
 							}
 						}
 

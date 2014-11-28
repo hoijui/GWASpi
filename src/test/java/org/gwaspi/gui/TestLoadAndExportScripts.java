@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -39,7 +39,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 	 */
 	private static String testLoadPlinkBinary(Setup setup, String name) throws Exception {
 
-		String matrixName = cImport.ImportFormat.PLINK_Binary.name() + "." + name;
+		String matrixName = ImportFormat.PLINK_Binary.name() + "." + name;
 
 		if (setup.getMatrixIds().containsKey(matrixName)) {
 			// this data is already loaded
@@ -81,7 +81,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", famFile.getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
-		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.PLINK_Binary.name());
+		substitutions.put("\\$\\{FORMAT\\}", ImportFormat.PLINK_Binary.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_loadPlinkFlat_" + bedFileName + "_" + famFileName + "_" + bimFileName + ".txt");
@@ -100,7 +100,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 	 */
 	static String testLoadPlinkFlat(Setup setup, String name) throws Exception {
 
-		String matrixName = cImport.ImportFormat.PLINK.name() + "." + name;
+		String matrixName = ImportFormat.PLINK.name() + "." + name;
 
 		if (setup.getMatrixIds().containsKey(matrixName)) {
 			// this data is already loaded
@@ -138,7 +138,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", "no info file");
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
-		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.PLINK.name());
+		substitutions.put("\\$\\{FORMAT\\}", ImportFormat.PLINK.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_loadPlinkFlat_" + mapFileName + "_" + pedFileName + ".txt");
@@ -204,7 +204,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 	private void testLoadHGDP1(Setup setup, String name) throws Exception {
 
-		String matrixName = cImport.ImportFormat.HGDP1.name() + "." + name;
+		String matrixName = ImportFormat.HGDP1.name() + "." + name;
 
 		String markersFileName = name + ".markers.txt";
 		String samplesFileName = name + ".samples.txt";
@@ -236,7 +236,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{IN_FILE_2\\}", samplesFile.getAbsolutePath());
 		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
-		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.HGDP1.name());
+		substitutions.put("\\$\\{FORMAT\\}", ImportFormat.HGDP1.name());
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", "no info file");
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 

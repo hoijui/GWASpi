@@ -35,7 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
@@ -145,7 +145,7 @@ public class GWASinOneGoDialog extends JFrame {
 		cmb_GTCode.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.GenotypeEncoding.values()));
 		cmb_GTCode.setSelectedIndex(0);
 
-		switch (cImport.ImportFormat.compareTo(format)) {
+		switch (ImportFormat.compareTo(format)) {
 			case BEAGLE:
 				setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
 				pnl_Questions.add(lbl_Chromosome, c);

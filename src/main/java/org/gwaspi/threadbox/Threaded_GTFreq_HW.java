@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -151,7 +151,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 						= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
 				SamplesParserManager.scanSampleInfo(
 						markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
-						cImport.ImportFormat.GWASpi,
+						ImportFormat.GWASpi,
 						phenotypeFile.getPath(),
 						sampleInfoExtractor);
 				Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
