@@ -33,7 +33,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import org.gwaspi.cli.ScriptUtils;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
@@ -284,7 +284,7 @@ public class Config {
 
 	private static Document getLocalVersionDom() throws URISyntaxException {
 
-		URL localVersionPath = Config.class.getResource(cGlobal.LOCAL_VERSION_XML);
+		URL localVersionPath = Config.class.getResource(GlobalConstants.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
 		return localDom;
@@ -323,7 +323,7 @@ public class Config {
 
 	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 
-		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
 		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
 
 		String lastMnhttThreshold = Config.getConfigValue(
@@ -402,7 +402,7 @@ public class Config {
 				List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
 				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 
-				URL remoteVersionPath = new URL(cGlobal.REMOTE_VERSION_XML);
+				URL remoteVersionPath = new URL(GlobalConstants.REMOTE_VERSION_XML);
 				Document remoteDom = null;
 				try {
 					remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());

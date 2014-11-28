@@ -47,7 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +109,7 @@ public class Utils {
 	private static String currentAppPath = "";
 
 	public static String getAppPath() {
-		currentAppPath = cGlobal.USER_DIR_DEFAULT;
+		currentAppPath = GlobalConstants.USER_DIR_DEFAULT;
 		//JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], currentAppPath);
 		return currentAppPath;
 	}

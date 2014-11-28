@@ -20,7 +20,7 @@ package org.gwaspi.constants;
 import java.awt.Color;
 import javax.swing.UIManager;
 
-public class cGlobal {
+public class GlobalConstants {
 
 	public static final String OSNAME = System.getProperty("os.name");
 	public static final String OSARCH = System.getProperty("os.arch");
@@ -39,6 +39,6 @@ public class cGlobal {
 	public static final Color selectionBackground = UIManager.getColor("Table.selectionBackground");
 	public static final Color selectionForeground = UIManager.getColor("Table.selectionForeground");
 
-	private cGlobal() {
+	private GlobalConstants() {
 	}
 }

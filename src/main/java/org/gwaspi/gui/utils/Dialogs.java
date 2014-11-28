@@ -29,7 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.ExportConstants.ExportFormat;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -329,7 +329,7 @@ public class Dialogs {
 
 	// <editor-fold defaultstate="expanded" desc="FILE OPEN DIALOGUES">
 	public static void selectAndSetFileDialog(JTextField textField, final String filter) {
-		selectAndSetFileInCurrentDirDialog(cGlobal.HOMEDIR, textField, filter);
+		selectAndSetFileInCurrentDirDialog(GlobalConstants.HOMEDIR, textField, filter);
 	}
 
 	public static void selectAndSetFileInCurrentDirDialog(String dir, JTextField textField, final String filter) {
@@ -351,7 +351,7 @@ public class Dialogs {
 		try {
 //			File tmpFile = new File(dir);
 //			if(!tmpFile.exists()){
-			String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+			String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
 			fc.setCurrentDirectory(new File(tmpDir));
 //			}
 		} catch (IOException ex) {
@@ -421,7 +421,7 @@ public class Dialogs {
 		if (currentSelection == null) {
 			// getting the latest opened dir
 			try {
-				final String dir = Config.getConfigValue(propertyName, cGlobal.HOMEDIR);
+				final String dir = Config.getConfigValue(propertyName, GlobalConstants.HOMEDIR);
 				fc.setCurrentDirectory(new File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -459,7 +459,7 @@ public class Dialogs {
 		if (okOption == JOptionPane.OK_OPTION) {
 			// getting the last opened dir
 			try {
-				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
 				fc.setCurrentDirectory(new File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);

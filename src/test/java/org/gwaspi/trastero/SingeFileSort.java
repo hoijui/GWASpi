@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.cImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +48,8 @@ public class SingeFileSort {
 			Random generator = new Random();
 			int rnd = Math.abs(generator.nextInt());
 			tempSorted = new File(org.gwaspi.global.Config.getConfigValue(
-					cGlobal.SORT_SINGLE_DIR_CONFIG,
-					cGlobal.USER_DIR_DEFAULT)
+					GlobalConstants.SORT_SINGLE_DIR_CONFIG,
+					GlobalConstants.USER_DIR_DEFAULT)
 					+ "/" + rnd + ".csv");
 			FileWriter fw = new FileWriter(tempSorted);
 			BufferedWriter bw = new BufferedWriter(fw);

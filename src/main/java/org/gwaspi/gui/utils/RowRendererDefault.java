@@ -25,7 +25,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.threadbox.Task;
 
@@ -98,17 +98,17 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 		Color bg;
 		if (!selected) {
-			bg = (row % 2 == 0 ? cGlobal.alternateRowColor : cGlobal.background);
+			bg = (row % 2 == 0 ? GlobalConstants.alternateRowColor : GlobalConstants.background);
 		} else {
-			bg = cGlobal.selectionBackground;
+			bg = GlobalConstants.selectionBackground;
 		}
 		tableCellRenderer.setBackground(bg);
 
 		Color fg;
 		if (selected) {
-			fg = cGlobal.selectionForeground;
+			fg = GlobalConstants.selectionForeground;
 		} else {
-			fg = cGlobal.foreground;
+			fg = GlobalConstants.foreground;
 		}
 		tableCellRenderer.setForeground(fg);
 	}

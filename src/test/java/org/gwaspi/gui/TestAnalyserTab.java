@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.SysCommandExecutor;
 import org.gwaspi.gui.utils.Dialogs;
@@ -209,12 +209,12 @@ public class TestAnalyserTab extends JPanel {
 
 	private void button_PathToTfamActionPerformed(ActionEvent evt) throws IOException {
 		// Use standard file opener
-		Dialogs.selectAndSetFileInCurrentDirDialog(Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, cGlobal.HOMEDIR), textField_PathToTfam, ".tfam");
+		Dialogs.selectAndSetFileInCurrentDirDialog(Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, GlobalConstants.HOMEDIR), textField_PathToTfam, ".tfam");
 	}
 
 	private void button_PathToTpedActionPerformed(ActionEvent evt) throws IOException {
 		// Use standard file opener
-		Dialogs.selectAndSetFileInCurrentDirDialog(Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, cGlobal.HOMEDIR), textField_PathToTped, ".tped");
+		Dialogs.selectAndSetFileInCurrentDirDialog(Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, GlobalConstants.HOMEDIR), textField_PathToTped, ".tped");
 	}
 
 	private void combo_AnalysisActionPerformed(ActionEvent evt) throws IOException {

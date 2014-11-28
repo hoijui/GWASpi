@@ -19,7 +19,7 @@ package org.gwaspi.global;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.GlobalConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +56,9 @@ public class SysCommandExecutor {
 		try {
 			Runtime rt = Runtime.getRuntime();
 
-			if (cGlobal.OSNAME.equals("Linux")) {
+			if (GlobalConstants.OSNAME.equals("Linux")) {
 				pr = rt.exec(cmd);
-			} else if (cGlobal.OSNAME.contains("Windows")) {
+			} else if (GlobalConstants.OSNAME.contains("Windows")) {
 				pr = rt.exec("cmd /c " + cmd);
 			}
 //			else { // TODO implement for at least OS X
