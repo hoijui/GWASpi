@@ -86,6 +86,7 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 					imageIconUrl = ICON_PATH_ABORT;
 				}
 				ico = new ImageIcon(imageIconUrl);
+				tableCellRenderer.setText("");
 			} else {
 				ico = null;
 			}
