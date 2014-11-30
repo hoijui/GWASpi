@@ -19,7 +19,8 @@ package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
@@ -70,43 +71,59 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 		this.taskProgressDisplays = new ArrayList<SwingProgressListener>();
 
-		final JPanel pnl_tasks = new JPanel();
+		final GridBagLayout layout = new GridBagLayout();
+		final int gapSpace = 5;
+		// we use every second row and column as a spacer
+		layout.columnWidths = new int[] {0, gapSpace, 0};
+		layout.rowHeights = new int[] {0, gapSpace, 0, gapSpace, 0, gapSpace, 0, gapSpace, 0};
+		setLayout(layout);
+
+		final GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridwidth = 3;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 0.1;
+
 		final JTable processesTable = new ProcessesTable();
-		final JScrollPane scrl_tasksList = new JScrollPane();
-		scrl_tasksList.setViewportView(processesTable);
+		// without this line, the table would request a huge size by default,
+		// and thus cripple the layout on small scales
+		processesTable.setPreferredScrollableViewportSize(processesTable.getPreferredSize());
+		final JScrollPane scrl_processesTable = new JScrollPane();
+		scrl_processesTable.setViewportView(processesTable);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.weighty = 0.3;
+		this.add(scrl_processesTable, gridBagConstraints);
+
 		final JScrollPane scrl_progress = new JScrollPane();
 		this.pnl_progress = new JPanel();
 		this.pnl_progress.setLayout(new GridLayout(0, 1));
 		scrl_progress.setViewportView(this.pnl_progress);
-		pnl_tasks.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_tasks.add(scrl_tasksList, BorderLayout.NORTH);
-		pnl_tasks.add(scrl_progress, BorderLayout.CENTER);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 2;
+		gridBagConstraints.weighty = 0.3;
+		this.add(scrl_progress, gridBagConstraints);
 
-		final JPanel pnl_log = new JPanel();
 		final JScrollPane scrl_ProcessLog = new JScrollPane();
-		scrl_progress.setMinimumSize(new Dimension(300, 250));
 		final JTextArea txtA_ProcessLog = new JTextArea();
-		pnl_log.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_log.add(scrl_ProcessLog, BorderLayout.CENTER);
-
-		final JPanel pnl_buttons = new JPanel();
-		final JPanel pnl_bottomButtonsEast = new JPanel();
-		final JButton btn_Save = new JButton();
-		pnl_bottomButtonsEast.add(btn_Save);
-		pnl_buttons.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		pnl_buttons.add(pnl_bottomButtonsEast, BorderLayout.EAST);
-
-		this.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP));
-		this.add(pnl_tasks, BorderLayout.NORTH);
-		this.add(pnl_log, BorderLayout.CENTER);
-		this.add(pnl_buttons, BorderLayout.SOUTH);
-
-		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
-
-		txtA_ProcessLog.setColumns(20);
 		txtA_ProcessLog.setRows(5);
 		txtA_ProcessLog.setEditable(false);
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 4;
+		gridBagConstraints.weighty = 0.3;
+		this.add(scrl_ProcessLog, gridBagConstraints);
+
+		final JButton btn_Save = new JButton();
+		gridBagConstraints.fill = GridBagConstraints.NONE;
+		gridBagConstraints.gridx = 2;
+		gridBagConstraints.gridy = 6;
+		gridBagConstraints.weighty = 0.0;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+		this.add(btn_Save, gridBagConstraints);
+
+		this.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Processes.processes)); // NOI18N
 
 		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
 
