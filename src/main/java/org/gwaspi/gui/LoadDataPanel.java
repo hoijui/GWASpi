@@ -46,7 +46,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;

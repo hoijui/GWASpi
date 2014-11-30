@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -134,7 +134,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		Map<SampleKey, Integer> sampleOrderMap = new LinkedHashMap<SampleKey, Integer>();
 
 		String sampleHeader = inputBufferReader.readLine();
-		String[] headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+		String[] headerFields = sampleHeader.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 		for (int i = 0; i < headerFields.length; i++) {
 			if (!headerFields[i].isEmpty()) {
 				String sampleId = headerFields[i];
@@ -146,7 +146,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			//GET ALLELES FROM MARKER ROWS
-			String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			MarkerKey currMarkerId = MarkerKey.valueOf(cVals[Standard.markerId]);
 
 			Integer columnNb = sampleOrderMap.get(sampleKey);

@@ -18,7 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 
 /**
  * Used when loading a data-set from an external source

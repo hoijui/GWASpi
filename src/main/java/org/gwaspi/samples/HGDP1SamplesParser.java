@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -48,7 +48,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 
 			String sampleIdHeader = inputBufferReader.readLine();
 
-			String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] sampleIds = sampleIdHeader.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			for (int i = 1; i < sampleIds.length; i++) {
 				String sampleId = sampleIds[i];
 				SampleInfo sampleInfo = new SampleInfo(

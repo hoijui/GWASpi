@@ -35,7 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;

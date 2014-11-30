@@ -20,7 +20,7 @@ package org.gwaspi.datasource.netcdf;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;

@@ -48,7 +48,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.MatrixAnalysePanel;
@@ -279,7 +279,7 @@ public class Report_QASamplesSummary extends JPanel {
 						if (l == null) {
 							break;
 						}
-						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+						String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 
 						String familyId = cVals[0];
 						String sampleId = cVals[1];

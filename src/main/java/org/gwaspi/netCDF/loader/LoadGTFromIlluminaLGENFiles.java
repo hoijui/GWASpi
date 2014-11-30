@@ -27,8 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -139,7 +139,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		Map<MarkerKey, byte[]> tempMarkerSet = new LinkedHashMap<MarkerKey, byte[]>();
 		SampleKey currentSampleKey = new SampleKey(loadDescription.getStudyKey(), "", SampleKey.FAMILY_ID_NONE);
 		while ((l = inputBufferReader.readLine()) != null) {
-			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
+			String[] cVals = l.split(ImportConstants.Separators.separators_CommaTab_rgxp);
 			String tmpSampleId = cVals[1];
 
 			if (tmpSampleId.equals(currentSampleKey.getSampleId())) {

@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -60,8 +60,8 @@ public class BeagleSamplesParser implements SamplesParser {
 				}
 			}
 
-			String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-			String[] beagleAffections = affectionHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] sampleIds = sampleIdHeader.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+			String[] beagleAffections = affectionHeader.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 
 			for (int i = 2; i < beagleAffections.length; i++) {
 				SampleInfo sampleInfo = new SampleInfo(

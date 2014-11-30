@@ -45,7 +45,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
@@ -284,7 +284,7 @@ public class Report_QAMarkersSummary extends JPanel {
 						if (l == null) {
 							break;
 						}
-						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+						String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 						Object[] row = new Object[columns.length];
 
 						String markerId = cVals[0];

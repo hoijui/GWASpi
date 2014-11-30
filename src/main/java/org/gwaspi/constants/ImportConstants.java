@@ -20,11 +20,11 @@ package org.gwaspi.constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class cImport {
+public class ImportConstants {
 
-	private static final Logger log = LoggerFactory.getLogger(cImport.class);
+	private static final Logger log = LoggerFactory.getLogger(ImportConstants.class);
 
-	private cImport() {
+	private ImportConstants() {
 	}
 
 	public static enum ImportFormat {

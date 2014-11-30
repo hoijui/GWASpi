@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -45,20 +45,20 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 
 			while (inputBufferReader.ready()) {
 				String l = inputBufferReader.readLine();
-				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+				String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 
-				String sexStr = cVals[cImport.Annotation.Plink_Binary.ped_sex];
+				String sexStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_sex];
 				sexStr = sexStr.equals("-9") ? "0" : sexStr;
-				String affectionStr = cVals[cImport.Annotation.Plink_Binary.ped_affection];
+				String affectionStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_affection];
 				affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
 				SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 				SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 				SampleInfo sampleInfo = new SampleInfo(
 						studyKey,
-						cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
-						cVals[cImport.Annotation.Plink_Binary.ped_familyId],
-						cVals[cImport.Annotation.Plink_Binary.ped_fatherId],
-						cVals[cImport.Annotation.Plink_Binary.ped_motherId],
+						cVals[ImportConstants.Annotation.Plink_Binary.ped_sampleId],
+						cVals[ImportConstants.Annotation.Plink_Binary.ped_familyId],
+						cVals[ImportConstants.Annotation.Plink_Binary.ped_fatherId],
+						cVals[ImportConstants.Annotation.Plink_Binary.ped_motherId],
 						sex,
 						affection
 						);

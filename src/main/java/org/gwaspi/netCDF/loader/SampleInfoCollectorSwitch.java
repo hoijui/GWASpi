@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
@@ -61,7 +61,7 @@ public class SampleInfoCollectorSwitch {
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String header = inputBufferReader.readLine();
 		inputBufferReader.close();
-		String[] cVals = header.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+		String[] cVals = header.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 
 		return (cVals.length == 6);
 	}

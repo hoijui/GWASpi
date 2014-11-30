@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Sequenom;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.Sequenom;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
@@ -100,7 +100,7 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
 
-			String[] mapVals = l.split(cImport.Separators.separators_Tab_rgxp);
+			String[] mapVals = l.split(ImportConstants.Separators.separators_Tab_rgxp);
 			String markerId = mapVals[Sequenom.annot_markerId].trim();
 			String rsId = "";
 			try {

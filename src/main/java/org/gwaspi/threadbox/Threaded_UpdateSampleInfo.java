@@ -20,7 +20,7 @@ package org.gwaspi.threadbox;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;

@@ -20,7 +20,7 @@ package org.gwaspi.netCDF.loader;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 

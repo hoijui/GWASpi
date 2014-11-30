@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.GWASpi;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
 import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
@@ -449,7 +449,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		/*String header = */phenotypeBR.readLine(); // ignore header block
 		String l;
 		while ((l = phenotypeBR.readLine()) != null) {
-			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+			String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 			SampleInfo info = new SampleInfo(
 					studyKey,
 					cVals[GWASpi.sampleId],

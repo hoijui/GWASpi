@@ -27,7 +27,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import org.gwaspi.constants.GlobalConstants;
-import org.gwaspi.constants.cImport.Separators;
+import org.gwaspi.constants.ImportConstants.Separators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

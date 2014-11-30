@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -85,19 +85,19 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 				// Parse the line.
 				SampleInfo sampleInfo;
 				if (line != null) {
-					String[] cVals = line.split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
-					String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
+					String[] cVals = line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp, 10);
+					String sexStr = cVals[ImportConstants.Annotation.Plink_Standard.ped_sex];
 					sexStr = sexStr.equals("-9") ? "0" : sexStr;
-					String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
+					String affectionStr = cVals[ImportConstants.Annotation.Plink_Standard.ped_affection];
 					affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
 					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 					sampleInfo = new SampleInfo(
 							studyKey,
-							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
-							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
-							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
-							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
+							cVals[ImportConstants.Annotation.Plink_Standard.ped_sampleId],
+							cVals[ImportConstants.Annotation.Plink_Standard.ped_familyId],
+							cVals[ImportConstants.Annotation.Plink_Standard.ped_fatherId],
+							cVals[ImportConstants.Annotation.Plink_Standard.ped_motherId],
 							sex,
 							affection
 							);

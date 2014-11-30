@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -50,23 +50,23 @@ public class GwaspiSamplesParser implements SamplesParser {
 					inputBufferReader.readLine(); // Skip header
 				} else {
 					int i = 0;
-					for (String field : inputBufferReader.readLine().split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10)) {
+					for (String field : inputBufferReader.readLine().split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp, 10)) {
 						cVals[i] = field;
 						i++;
 					}
 					SampleInfo sampleInfo = new SampleInfo(
 							studyKey,
-							cVals[cImport.Annotation.GWASpi.sampleId],
-							cVals[cImport.Annotation.GWASpi.familyId],
+							cVals[ImportConstants.Annotation.GWASpi.sampleId],
+							cVals[ImportConstants.Annotation.GWASpi.familyId],
 							SampleInfo.ORDER_NULL_ID,
-							cVals[cImport.Annotation.GWASpi.fatherId],
-							cVals[cImport.Annotation.GWASpi.motherId],
-							SampleInfo.Sex.parse(cVals[cImport.Annotation.GWASpi.sex]),
-							SampleInfo.Affection.parse(cVals[cImport.Annotation.GWASpi.affection]),
-							cVals[cImport.Annotation.GWASpi.category],
-							cVals[cImport.Annotation.GWASpi.disease],
-							cVals[cImport.Annotation.GWASpi.population],
-							Integer.parseInt(cVals[cImport.Annotation.GWASpi.age]),
+							cVals[ImportConstants.Annotation.GWASpi.fatherId],
+							cVals[ImportConstants.Annotation.GWASpi.motherId],
+							SampleInfo.Sex.parse(cVals[ImportConstants.Annotation.GWASpi.sex]),
+							SampleInfo.Affection.parse(cVals[ImportConstants.Annotation.GWASpi.affection]),
+							cVals[ImportConstants.Annotation.GWASpi.category],
+							cVals[ImportConstants.Annotation.GWASpi.disease],
+							cVals[ImportConstants.Annotation.GWASpi.population],
+							Integer.parseInt(cVals[ImportConstants.Annotation.GWASpi.age]),
 							"",
 							Integer.MIN_VALUE,
 							Integer.MIN_VALUE

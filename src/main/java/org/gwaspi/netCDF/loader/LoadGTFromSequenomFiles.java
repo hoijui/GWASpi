@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
@@ -138,7 +138,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
-				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
+				String[] cVals = l.split(ImportConstants.Separators.separators_Tab_rgxp);
 				String currSampleId = cVals[Standard.sampleId];
 				// NOTE The Sequenom format does not have a family-ID
 				SampleKey currSampleKey = new SampleKey(studyKey, currSampleId, SampleKey.FAMILY_ID_NONE);

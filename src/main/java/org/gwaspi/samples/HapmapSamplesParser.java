@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
@@ -49,7 +49,7 @@ public class HapmapSamplesParser implements SamplesParser {
 					inputFileReader = new FileReader(sampleFile);
 					inputBufferReader = new BufferedReader(inputFileReader);
 					String header = inputBufferReader.readLine();
-					String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+					String[] hapmapVals = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 					for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
 						SampleInfo sampleInfo = new SampleInfo(
 								studyKey, hapmapVals[j]);
@@ -79,7 +79,7 @@ public class HapmapSamplesParser implements SamplesParser {
 
 				String header = inputBufferReader.readLine();
 
-				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+				String[] hapmapVals = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 				for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
 					SampleInfo sampleInfo = new SampleInfo(
 								studyKey, hapmapVals[i]);

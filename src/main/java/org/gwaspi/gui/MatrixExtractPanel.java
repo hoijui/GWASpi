@@ -44,7 +44,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
@@ -586,7 +586,7 @@ public class MatrixExtractPanel extends JPanel {
 						mi_marker_criteria = "";
 					}
 					Set<Object> markerCriteria = new HashSet<Object>();
-					String[] mVals = mi_marker_criteria.split(cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					String[] mVals = mi_marker_criteria.split(ImportConstants.Separators.separators_CommaSpaceTabLf_rgxp);
 					for (String markerCrit : mVals) {
 						if (!markerCrit.isEmpty()) {
 							if ((markerPickCase == SetMarkerPickCase.MARKERS_INCLUDE_BY_ID)
@@ -604,7 +604,7 @@ public class MatrixExtractPanel extends JPanel {
 						mi_sample_criteria = "";
 					}
 					Set<Object> sampleCriteria = new HashSet<Object>();
-					String[] sVals = mi_sample_criteria.split(cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					String[] sVals = mi_sample_criteria.split(ImportConstants.Separators.separators_CommaSpaceTabLf_rgxp);
 					for (String sampleCrit : sVals) {
 						if (!sampleCrit.isEmpty()) {
 //							if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)

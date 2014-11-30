@@ -24,8 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
@@ -122,7 +122,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] markerVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			String markerId = markerVals[Plink_Standard.map_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
@@ -163,7 +163,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] mapVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			String markerId = mapVals[Plink_Standard.map_markerId].trim();
 			origMarkerIdSetMap.put(MarkerKey.valueOf(markerId), cNetCDF.Defaults.DEFAULT_GT);
 		}

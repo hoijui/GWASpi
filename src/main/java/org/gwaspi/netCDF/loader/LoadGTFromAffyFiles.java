@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -154,7 +154,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		Map<MarkerKey, byte[]> tempMarkerSet = new HashMap<MarkerKey, byte[]>();
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
+			String[] cVals = l.split(ImportConstants.Separators.separators_CommaTab_rgxp);
 
 			byte[] alleles;
 			switch (loadDescription.getFormat()) {

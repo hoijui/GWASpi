@@ -26,9 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.Plink_Standard;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -87,7 +87,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			// PURGE WRITE MARKER SET
 			List<byte[]> markerAlleles = new ArrayList<byte[]>(numMarkers);
 
-			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_CommaSpaceTab_rgxp);
+			StringTokenizer st = new StringTokenizer(l, ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 
 			// skip to genotype data
 			String familyId = "";

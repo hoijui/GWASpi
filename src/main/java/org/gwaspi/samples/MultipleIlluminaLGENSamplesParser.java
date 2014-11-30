@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -62,11 +62,11 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 				String l;
 				while (inputBufferReader.ready()) {
 					l = inputBufferReader.readLine();
-					String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+					String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 					SampleInfo sampleInfo = new SampleInfo(
 							studyKey,
-							cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
-							cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
+							cVals[ImportConstants.Annotation.Plink_LGEN.lgen_sampleId],
+							cVals[ImportConstants.Annotation.Plink_LGEN.lgen_familyId],
 							"0",
 							"0",
 							SampleInfo.Sex.UNKNOWN,

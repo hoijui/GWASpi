@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.HGDP1_Standard;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.HGDP1_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
@@ -99,7 +99,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] markerVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			String markerId = markerVals[HGDP1_Standard.rsId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {

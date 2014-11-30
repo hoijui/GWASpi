@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
@@ -192,7 +192,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 			if (line.startsWith("I")) { // Found first marker row!
 				String sampleHeader = line;
-				String[] headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+				String[] headerFields = sampleHeader.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
 					String sampleId = headerFields[i];
 					// NOTE The Beagle format does not have a family-ID
@@ -200,7 +200,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				}
 			} else if (line.startsWith("M")) { // Found first marker row!
 				// GET ALLELES FROM MARKER ROWS
-				String[] cVals = line.split(cImport.Separators.separators_SpaceTab_rgxp);
+				String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 				MarkerKey markerKey = MarkerKey.valueOf(cVals[Standard.markerId]);
 
 				Integer columnNb = sampleOrder.get(sampleKey);

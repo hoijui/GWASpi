@@ -29,8 +29,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -157,7 +157,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		for (int i = 0; i < dataStartRow; i++) {
 			header = inputBufferReader.readLine();
 		}
-		String[] headerFields = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+		String[] headerFields = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 
 		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 		for (int i = Standard.sampleId; i < headerFields.length; i++) {
@@ -171,7 +171,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 			// MEMORY LEAN METHOD
 			if (sampleColumnNb != null) {
-				StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_SpaceTab_rgxp);
+				StringTokenizer st = new StringTokenizer(l, ImportConstants.Separators.separators_SpaceTab_rgxp);
 				String markerId = st.nextToken();
 
 				//read genotypes from this point on
@@ -217,7 +217,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		String header = inputAnnotationBr.readLine();
 		inputAnnotationBr.close();
 
-		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
+		String[] hapmapVals = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 
 		for (int i = Standard.sampleId; i < hapmapVals.length; i++) {
 			uniqueSamples.add(new SampleInfo(studyKey, hapmapVals[i]));

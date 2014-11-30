@@ -24,9 +24,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.HapmapGT_Standard;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
@@ -109,7 +109,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
-			String[] hapmapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] hapmapVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
 			// "chr;pos;markerId"

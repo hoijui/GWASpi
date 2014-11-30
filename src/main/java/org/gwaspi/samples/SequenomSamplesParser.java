@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -45,10 +45,10 @@ public class SequenomSamplesParser implements SamplesParser {
 		while (inputBufferReader.ready()) {
 			l = inputBufferReader.readLine();
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
-				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+				String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 				// TODO maybe use more then just the sampleId read from the Sequenom file?
 				SampleInfo sampleInfo = new SampleInfo(
-						studyKey, cVals[cImport.Annotation.Sequenom.sampleId]);
+						studyKey, cVals[ImportConstants.Annotation.Sequenom.sampleId]);
 				// NOTE this is done in DataSet, by using LinkedHashSet for the sampleInfos
 //				if (!sampleInfos.contains(sampleInfo)) {
 					samplesReceiver.addSampleInfo(sampleInfo);

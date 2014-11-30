@@ -26,9 +26,9 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.GWASpi;
-import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.ImportConstants.Annotation.GWASpi;
+import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.global.ExtractorList;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
@@ -146,7 +146,7 @@ public class SamplesParserManager {
 		String header = inputBufferReader.readLine(); // ignore header block
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+			String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 			result.add(Affection.parse(cVals[GWASpi.affection]));
 		}
 
