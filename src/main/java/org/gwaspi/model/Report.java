@@ -28,7 +28,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 
 @Entity
 @Table(name = "report")

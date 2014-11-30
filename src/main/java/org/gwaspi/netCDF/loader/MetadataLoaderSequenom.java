@@ -25,8 +25,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.Annotation.Sequenom;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
-			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] keyValues = entry.getKey().split(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[1]);
 
 			// rsId
@@ -118,9 +118,9 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 
 			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbKey.append(pos);
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
 			// rsId

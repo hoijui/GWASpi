@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -180,7 +180,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			final OperationKey markersQAOpKey = qaOpKeys[1];
 			final MarkerCensusOperationParams markerCensusOperationParams
 					= new MarkerCensusOperationParams(parent, samplesQAOpKey, markersQAOpKey);
-			final String markerCensusName = cNetCDF.Defaults.DEFAULT_AFFECTION;
+			final String markerCensusName = NetCDFConstants.Defaults.DEFAULT_AFFECTION;
 			markerCensusOperationParams.setName(markerCensusName);
 			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
 

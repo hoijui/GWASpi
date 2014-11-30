@@ -25,7 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;

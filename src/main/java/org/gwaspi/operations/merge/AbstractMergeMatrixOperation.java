@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ExtendedMarkerKey;
 import org.gwaspi.model.GenotypesList;

@@ -18,7 +18,7 @@
 package org.gwaspi.operations.markercensus;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
@@ -42,12 +42,12 @@ public class MarkerCensusOperationMetadataFactory
 	{
 		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
 
-		cNetCDF.Defaults.OPType opType = getTypeInfo().getType();
+		NetCDFConstants.Defaults.OPType opType = getTypeInfo().getType();
 
 		String description = "Genotype frequency count -" + params.getName() + "- on " + rdDataSetMetadata.getFriendlyName();
 		if (params.getPhenotypeFile() != null) {
 			description += "\nCase/Control status read from file: " + params.getPhenotypeFile().getPath();
-			opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
+			opType = NetCDFConstants.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
 		return new OperationMetadata(

@@ -19,7 +19,7 @@ package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -35,7 +35,7 @@ public class CombiTestOperationFactory
 					false,
 					"COMBI Test",
 					"Assigns a weight to each marker, rating its ability to predict the affection", // FIXME TODO We need a more elaborate description of this operation!
-					cNetCDF.Defaults.OPType.COMBI_ASSOC_TEST,
+					NetCDFConstants.Defaults.OPType.COMBI_ASSOC_TEST,
 					true,
 					false);
 

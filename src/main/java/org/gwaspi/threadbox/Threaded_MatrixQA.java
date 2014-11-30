@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;

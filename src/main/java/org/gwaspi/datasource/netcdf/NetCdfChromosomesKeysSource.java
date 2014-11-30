@@ -18,7 +18,7 @@
 package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomeKeyFactory;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -35,8 +35,8 @@ public class NetCdfChromosomesKeysSource extends AbstractNetCdfKeysSource<Chromo
 	 */
 	private static final int DEFAULT_CHUNK_SIZE = 100;
 
-	private static final String varDimension = cNetCDF.Dimensions.DIM_CHRSET;
-	private static final String varKeys = cNetCDF.Variables.VAR_CHR_IN_MATRIX;
+	private static final String varDimension = NetCDFConstants.Dimensions.DIM_CHRSET;
+	private static final String varKeys = NetCDFConstants.Variables.VAR_CHR_IN_MATRIX;
 
 	private ChromosomesKeysSource originSource;
 
@@ -51,7 +51,7 @@ public class NetCdfChromosomesKeysSource extends AbstractNetCdfKeysSource<Chromo
 	}
 
 	public static ChromosomesKeysSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
-		return new NetCdfChromosomesKeysSource(origin, rdNetCdfFile, cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX);
+		return new NetCdfChromosomesKeysSource(origin, rdNetCdfFile, NetCDFConstants.Variables.VAR_CHR_IN_MATRIX_IDX);
 	}
 
 	@Override

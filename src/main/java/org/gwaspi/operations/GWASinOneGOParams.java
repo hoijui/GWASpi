@@ -17,8 +17,8 @@
 
 package org.gwaspi.operations;
 
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 
 public class GWASinOneGOParams {

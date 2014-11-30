@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 
 public class ComparatorChrAutPosMarkerIdAsc
 		implements Comparator<String>, Serializable
@@ -32,8 +32,8 @@ public class ComparatorChrAutPosMarkerIdAsc
 	public int compare(String a, String b) {
 		// a & b have this format: "chr;[pseudo-autosomal1;pseudo-autosomal2;]pos;markerId"
 
-		String[] aVals = a.split(cNetCDF.Defaults.TMP_SEPARATOR);
-		String[] bVals = b.split(cNetCDF.Defaults.TMP_SEPARATOR);
+		String[] aVals = a.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
+		String[] bVals = b.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
 
 		String chrA = aVals[0];
 		String chrB = bVals[0];

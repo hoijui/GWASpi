@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -142,7 +142,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 				} else if ((sampleGTs1 != null) && sampleSet1Indices.containsKey(markerKey)) {
 					genotype = sampleGTs1.get(sampleSet1Indices.get(markerKey));
 				} else {
-					genotype = cNetCDF.Defaults.DEFAULT_GT;
+					genotype = NetCDFConstants.Defaults.DEFAULT_GT;
 				}
 
 				wrComboSortedMarkerGTs.add(genotype);

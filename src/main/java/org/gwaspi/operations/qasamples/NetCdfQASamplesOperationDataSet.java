@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -78,16 +78,16 @@ public class NetCdfQASamplesOperationDataSet
 			throws IOException
 	{
 		// Define Variables
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, samplesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, samplesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, samplesSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, samplesSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, samplesSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, samplesSpace);
 	}
 
 	@Override
 	public List<Double> getMissingRatios(int from, int to) throws IOException {
 
 		List<Double> missingRatios = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, from, to, missingRatios, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGRAT, from, to, missingRatios, null);
 //		// the old way:
 //		OperationMetadata rdOPMetadata = OperationsList.getOperation(getResultOperationKey());
 //		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(getResultOperationKey(), from, to);
@@ -103,7 +103,7 @@ public class NetCdfQASamplesOperationDataSet
 	public List<Integer> getMissingCounts(int from, int to) throws IOException {
 
 		List<Integer> missingCount = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, from, to, missingCount, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGCOUNT, from, to, missingCount, null);
 
 		return missingCount;
 	}
@@ -112,7 +112,7 @@ public class NetCdfQASamplesOperationDataSet
 	public List<Double> getHetzyRatios(int from, int to) throws IOException {
 
 		List<Double> hetzyRatios = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, from, to, hetzyRatios, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_SAMPLES_HETZYRAT, from, to, hetzyRatios, null);
 
 		return hetzyRatios;
 	}
@@ -177,9 +177,9 @@ public class NetCdfQASamplesOperationDataSet
 			index++;
 		}
 		try {
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, origin, netCdfMissingRatios);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, origin, netCdfMissingCounts);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, origin, netCdfHetzyRatios);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGRAT, origin, netCdfMissingRatios);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_SAMPLES_MISSINGCOUNT, origin, netCdfMissingCounts);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_SAMPLES_HETZYRAT, origin, netCdfHetzyRatios);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

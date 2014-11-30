@@ -17,7 +17,7 @@
 
 package org.gwaspi.operations.qamarkers;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.operations.AbstractOperationParams;
 

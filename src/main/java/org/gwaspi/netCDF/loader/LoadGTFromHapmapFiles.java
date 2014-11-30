@@ -31,9 +31,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -120,7 +120,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 
 			for (File gtFileToImport : gtFilesToImport) {
 				loadIndividualFiles(
@@ -176,7 +176,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 				//read genotypes from this point on
 				int k = 1;
-				byte[] tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
+				byte[] tmpAlleles = NetCDFConstants.Defaults.DEFAULT_GT;
 				while (k <= (Integer) sampleColumnNb) {
 					if (k < (Integer) sampleColumnNb) {
 						st.nextToken();
@@ -185,7 +185,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 					if (k == (Integer) sampleColumnNb) {
 						String strAlleles = st.nextToken();
 						if (strAlleles.equals(Standard.missing)) {
-							tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
+							tmpAlleles = NetCDFConstants.Defaults.DEFAULT_GT;
 						} else {
 							tmpAlleles = new byte[] {
 								(byte) strAlleles.charAt(0),
@@ -199,8 +199,8 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		}
 		inputBufferReader.close();
 
-		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
-				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+		if (guessedGTCode.equals(NetCDFConstants.Defaults.GenotypeEncoding.UNKNOWN)
+				|| guessedGTCode.equals(NetCDFConstants.Defaults.GenotypeEncoding.O12))
 		{
 			guessedGTCode = Utils.detectGTEncoding(alleles.values());
 		}

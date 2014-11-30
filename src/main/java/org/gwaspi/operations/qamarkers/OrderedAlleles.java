@@ -17,7 +17,7 @@
 
 package org.gwaspi.operations.qamarkers;
 
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
+import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.global.Extractor;
 
 public class OrderedAlleles {

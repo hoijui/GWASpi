@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
+import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry;
 

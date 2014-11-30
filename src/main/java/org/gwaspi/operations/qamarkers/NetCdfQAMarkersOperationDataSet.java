@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
@@ -101,9 +101,9 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		Dimension markersDim = markersSpace.get(0);
 //		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
 //		Dimension alleleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
-		Dimension allelesStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKER_ALLELES_STRIDE, maxDifferentAllelePerMarker);
-		Dimension genotypesStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKER_GENOTYPES_STRIDE, maxDifferentAllelePairsPerMarker);
-		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
+		Dimension allelesStrideDim = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_MARKER_ALLELES_STRIDE, maxDifferentAllelePerMarker);
+		Dimension genotypesStrideDim = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_MARKER_GENOTYPES_STRIDE, maxDifferentAllelePairsPerMarker);
+		Dimension dim4 = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_4, 4);
 
 //		// MARKER SPACES
 //		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
@@ -124,26 +124,26 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		genotypesSpace.add(genotypesStrideDim);
 
 		// Define OP Variables
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.BYTE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.BYTE, markersSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, DataType.INT, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_AA, DataType.INT, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_Aa, DataType.INT, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_aa, DataType.INT, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_MISSING, DataType.INT, markersSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace); // use VAR_OP_MARKERS_NUM_MISSING instead
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, DataType.BYTE, allelesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, DataType.INT, allelesSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, DataType.INT, allelesSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_1, DataType.BYTE, genotypesSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_ALLELE_2, DataType.BYTE, genotypesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, DataType.INT, genotypesSpace);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, DataType.INT, genotypesSpace);
 	}
 
 //	@Override
@@ -187,11 +187,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Boolean> getMismatchStates(int from, int to) throws IOException {
 
 		List<Byte> mismatchIntegerStates = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
 
 		List<Boolean> mismatchStates = new ArrayList<Boolean>(0);
 		for (Byte mismatchIntegerState : mismatchIntegerStates) {
-			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+			mismatchStates.add(mismatchIntegerState == NetCDFConstants.Defaults.DEFAULT_MISMATCH_YES);
 		}
 
 		return mismatchStates;
@@ -214,7 +214,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Byte> getKnownMajorAllele(int from, int to) throws IOException {
 
 		List<Byte> knownMajorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
 
 		return knownMajorAllele;
 	}
@@ -223,7 +223,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException {
 
 		List<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
 
 		return knownMajorAlleleFreq;
 	}
@@ -232,7 +232,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Byte> getKnownMinorAllele(int from, int to) throws IOException {
 
 		List<Byte> knownMinorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
 
 		return knownMinorAllele;
 	}
@@ -241,7 +241,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException {
 
 		List<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
 
 		return knownMinorAlleleFreq;
 	}
@@ -258,7 +258,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Integer> getNumAAs(int from, int to) throws IOException {
 
 		List<Integer> numAAs = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, from, to, numAAs, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_NUM_AA, from, to, numAAs, null);
 
 		return numAAs;
 	}
@@ -267,7 +267,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Integer> getNumAas(int from, int to) throws IOException {
 
 		List<Integer> numAas = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, from, to, numAas, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_NUM_Aa, from, to, numAas, null);
 
 		return numAas;
 	}
@@ -276,7 +276,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Integer> getNumaas(int from, int to) throws IOException {
 
 		List<Integer> numaas = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, from, to, numaas, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_NUM_aa, from, to, numaas, null);
 
 		return numaas;
 	}
@@ -285,7 +285,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<Integer> getMissingCounts(int from, int to) throws IOException {
 
 		List<Integer> numMissings = new ArrayList<Integer>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, from, to, numMissings, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_NUM_MISSING, from, to, numMissings, null);
 
 		return numMissings;
 	}
@@ -296,7 +296,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //		List<Byte> appearingAllele = new ArrayList<Byte>(0);
 //		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE, from, to, appearingAllele, null);
 		List<int[]> appearingAllelesCount = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to, appearingAllelesCount, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, from, to, appearingAllelesCount, null);
 
 //		Map<Byte, Integer> alleleCounts = new LinkedHashMap<Byte, Integer>(appearingAllele.size());
 //		Iterator<Integer> appearingAllelesCountIt = appearingAllelesCount.iterator();
@@ -312,7 +312,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public List<int[]> getGenotypeCounts(int from, int to) throws IOException {
 
 		List<int[]> appearingGenotypesCount = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, from, to, appearingGenotypesCount, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, from, to, appearingGenotypesCount, null);
 
 		return appearingGenotypesCount;
 	}
@@ -502,8 +502,8 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		for (QAMarkersOperationEntry entry : writeBuffer) {
 			netCdfMismatchStates.setByte(netCdfMismatchStates.getIndex().set(index),
 					entry.getMismatchState()
-							? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-							: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+							? NetCDFConstants.Defaults.DEFAULT_MISMATCH_YES
+							: NetCDFConstants.Defaults.DEFAULT_MISMATCH_NO);
 			netCdfMajorAlleles.setByte(netCdfMajorAlleles.getIndex().set(index), entry.getMajorAllele());
 			netCdfMajorAllelesFrequencies.setDouble(netCdfMajorAllelesFrequencies.getIndex().set(index), entry.getMajorAlleleFrequency());
 			netCdfMinorAlleles.setByte(netCdfMinorAlleles.getIndex().set(index), entry.getMinorAllele());
@@ -527,18 +527,18 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			index++;
 		}
 		try {
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, origin, netCdfMismatchStates);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_MISMATCHSTATE, origin, netCdfMismatchStates);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
 //			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin2D, netCdfCensusAlls);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_AA, origin, netCdfNumAA);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_Aa, origin, netCdfNumAa);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_aa, origin, netCdfNumaa);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_NUM_MISSING, origin, netCdfNumMissing);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, origin2D, netCdfAllelesCount);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, origin2D, netCdfGenotypesCount);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_AA, origin, netCdfNumAA);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_Aa, origin, netCdfNumAa);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_aa, origin, netCdfNumaa);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_NUM_MISSING, origin, netCdfNumMissing);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_ALLELE_COUNT, origin2D, netCdfAllelesCount);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_APPEARING_GENOTYPE_COUNT, origin2D, netCdfGenotypesCount);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

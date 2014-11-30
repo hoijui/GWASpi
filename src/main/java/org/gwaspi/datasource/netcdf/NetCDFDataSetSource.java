@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -185,38 +185,38 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		try {
 			try {
-				studyId = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY).getNumericValue().intValue();
+				studyId = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_STUDY).getNumericValue().intValue();
 			} catch (Exception ex) {
 				LOG.error("No matrix-ID stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
 			try {
-				matrixId = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_ID).getNumericValue().intValue();
+				matrixId = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_MATRIX_ID).getNumericValue().intValue();
 			} catch (Exception ex) {
 				LOG.error("No matrix-ID stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
 			try {
-				friendlyName = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
+				friendlyName = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
 			} catch (Exception ex) {
 				LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
 			try {
-				description = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION).getStringValue();
+				description = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_DESCRIPTION).getStringValue();
 			} catch (Exception ex) {
 				LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
-			technology = ImportFormat.compareTo(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
+			technology = ImportFormat.compareTo(netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_TECHNOLOGY).getStringValue());
 
 			try {
-				gwaspiDBVersion = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+				gwaspiDBVersion = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 			} catch (Exception ex) {
 				LOG.error(null, ex);
 			}
 
-			Variable var = netCDFFile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
+			Variable var = netCDFFile.findVariable(NetCDFConstants.Variables.GLOB_GTENCODING);
 			if (var != null) {
 				try {
 					ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
@@ -227,27 +227,27 @@ public class NetCDFDataSetSource implements DataSetSource {
 				}
 			}
 
-			String strandStr = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
+			String strandStr = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_STRAND).getStringValue();
 			strand = StrandType.fromString(strandStr);
-			hasDictionray = ((Integer) netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
+			hasDictionray = ((Integer) netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
-			Dimension markersDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+			Dimension markersDim = netCDFFile.findDimension(NetCDFConstants.Dimensions.DIM_MARKERSET);
 			numMarkers = markersDim.getLength();
 
-			Dimension samplesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension samplesDim = netCDFFile.findDimension(NetCDFConstants.Dimensions.DIM_SAMPLESET);
 			numSamples = samplesDim.getLength();
 
-			Dimension chromosomesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_CHRSET);
+			Dimension chromosomesDim = netCDFFile.findDimension(NetCDFConstants.Dimensions.DIM_CHRSET);
 			numChromosomes = chromosomesDim.getLength();
 
 			try {
-				matrixType = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE).getStringValue();
+				matrixType = netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_MATRIX_TYPE).getStringValue();
 			} catch (Exception ex) {
 				LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
 			try {
-				creationDate = new Date(Long.parseLong(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getStringValue()));
+				creationDate = new Date(Long.parseLong(netCDFFile.findGlobalAttribute(NetCDFConstants.Attributes.GLOB_CREATION_DATE).getStringValue()));
 			} catch (Exception ex) {
 				LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}

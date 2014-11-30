@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
@@ -134,15 +134,15 @@ public class GWASinOneGoDialog extends JFrame {
 		int rowNb = 0;
 		//<editor-fold defaultstate="expanded" desc="FORMAT DEPENDANT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
-		cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.CHROMOSOMES.toArray()));
+		cmb_Chromosome.setModel(new DefaultComboBoxModel(NetCDFConstants.Defaults.CHROMOSOMES.toArray()));
 		cmb_Chromosome.setSelectedIndex(0);
 
 		lbl_Strand.setText("  " + Text.Dialog.strand);
-		cmb_Strand.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.StrandType.values()));
+		cmb_Strand.setModel(new DefaultComboBoxModel(NetCDFConstants.Defaults.StrandType.values()));
 		cmb_Strand.setSelectedIndex(6);
 
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
-		cmb_GTCode.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.GenotypeEncoding.values()));
+		cmb_GTCode.setModel(new DefaultComboBoxModel(NetCDFConstants.Defaults.GenotypeEncoding.values()));
 		cmb_GTCode.setSelectedIndex(0);
 
 		switch (ImportFormat.compareTo(format)) {

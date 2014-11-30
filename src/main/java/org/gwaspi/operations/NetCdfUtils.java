@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.EnumeratedValueExtractor;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.ChromosomeInfo;
@@ -92,16 +92,16 @@ public class NetCdfUtils {
 
 	public static void saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> values, int sampleIndex) throws IOException {
 
-		final ArrayByte.D3 genotypes = writeToSingleSampleArrayByteD3(values, cNetCDF.Strides.STRIDE_GT);
+		final ArrayByte.D3 genotypes = writeToSingleSampleArrayByteD3(values, NetCDFConstants.Strides.STRIDE_GT);
 		final int[] sampleGTOrigin = new int[] {sampleIndex, 0, 0};
-		write(wrNcFile, cNetCDF.Variables.VAR_GENOTYPES, sampleGTOrigin, genotypes);
+		write(wrNcFile, NetCDFConstants.Variables.VAR_GENOTYPES, sampleGTOrigin, genotypes);
 	}
 
 	public static void saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> rawGenotypes, int markerIndex) throws IOException {
 
-		final ArrayByte.D3 genotypes = writeMapToSingleMarkerArrayByteD3(rawGenotypes, cNetCDF.Strides.STRIDE_GT);
+		final ArrayByte.D3 genotypes = writeMapToSingleMarkerArrayByteD3(rawGenotypes, NetCDFConstants.Strides.STRIDE_GT);
 		final int[] origin = new int[] {0, markerIndex, 0};
-		write(wrNcFile, cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
+		write(wrNcFile, NetCDFConstants.Variables.VAR_GENOTYPES, origin, genotypes);
 	}
 
 	public static void saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double> wrMap, String variable) throws IOException {

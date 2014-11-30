@@ -17,7 +17,7 @@
 package org.gwaspi.operations.combi;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;

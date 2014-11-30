@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponent;
 import org.gwaspi.gui.utils.AbsolutePercentageModel;

@@ -17,7 +17,7 @@
 
 package org.gwaspi.operations.qasamples;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.operations.AbstractOperationParams;
 

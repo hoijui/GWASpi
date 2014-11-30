@@ -27,8 +27,8 @@ import java.util.TreeMap;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -79,8 +79,8 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
-			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
+			String[] keyValues = entry.getKey().split(NetCDFConstants.Defaults.TMP_SEPARATOR); // chr;pos;markerId
+			String[] valValues = entry.getValue().split(NetCDFConstants.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
 			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[1]);
 
 			MarkerMetadata markerInfo = new MarkerMetadata(
@@ -121,16 +121,16 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			String rsId = hapmapVals[HapmapGT_Standard.rsId];
 
 			StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbKey.append(pos); // 1 => pos
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbKey.append(rsId); // 2 => markerId
 
 			// rsId;strand;alleles
 			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
-			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
-			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			sbVal.append(alleles); // 2 => alleles
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());

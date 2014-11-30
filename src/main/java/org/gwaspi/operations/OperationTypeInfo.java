@@ -17,7 +17,7 @@
 
 package org.gwaspi.operations;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 
 /**
  * Contains info about one type of operation.

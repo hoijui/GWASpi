@@ -20,7 +20,7 @@ package org.gwaspi.operations.qamarkers;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
+import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 
 /**
  * Raw statistics (counts) of single allele and genotype

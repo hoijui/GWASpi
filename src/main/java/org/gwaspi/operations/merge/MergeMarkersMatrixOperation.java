@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -120,7 +120,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 					if (dataSet2MarkerIndex >= 0) {
 						genotype = dataSet2SampleGenotypes.get(dataSet2MarkerIndex);
 					} else {
-						genotype = cNetCDF.Defaults.DEFAULT_GT;
+						genotype = NetCDFConstants.Defaults.DEFAULT_GT;
 					}
 				}
 

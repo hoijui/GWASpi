@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.Annotation.GWASpi;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
+import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;

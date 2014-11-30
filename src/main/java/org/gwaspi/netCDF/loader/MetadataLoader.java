@@ -18,7 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 
 public interface MetadataLoader {
 

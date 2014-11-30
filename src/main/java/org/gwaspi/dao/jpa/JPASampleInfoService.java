@@ -30,7 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import org.gwaspi.constants.cNetCDF.Variables;
+import org.gwaspi.constants.NetCDFConstants.Variables;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;

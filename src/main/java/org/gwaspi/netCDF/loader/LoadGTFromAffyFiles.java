@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -87,7 +87,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		final Set<MarkerKey> markerKeys = markerInfos.keySet();
 
 		// PURGE alleles
-		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
@@ -160,7 +160,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			switch (loadDescription.getFormat()) {
 				case Affymetrix_GenomeWide6:
 					if (cVals[Standard.alleles].equals(Standard.missing)) {
-						alleles = cNetCDF.Defaults.DEFAULT_GT;
+						alleles = NetCDFConstants.Defaults.DEFAULT_GT;
 					} else {
 						alleles = new byte[] {
 							(byte) (cVals[Standard.alleles].charAt(0)),
@@ -168,7 +168,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 					}
 					break;
 				default:
-					alleles = new byte[cNetCDF.Strides.STRIDE_GT];
+					alleles = new byte[NetCDFConstants.Strides.STRIDE_GT];
 					break;
 			}
 
@@ -177,7 +177,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		inputBufferReader.close();
 
 		for (MarkerKey key : sortedAlleles.keySet()) {
-			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
+			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : NetCDFConstants.Defaults.DEFAULT_GT;
 			sortedAlleles.put(key, value);
 		}
 		tempMarkerSet.clear();

@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleByte;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 
 public class Utils {
 

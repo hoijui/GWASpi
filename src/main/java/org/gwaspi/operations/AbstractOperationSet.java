@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -84,7 +84,7 @@ public abstract class AbstractOperationSet<K, V> {
 		try {
 			OperationMetadata opMetadata = OperationsList.getOperationMetadata(operationKey);
 			ncfile = NetcdfFile.open(OperationMetadata.generatePathToNetCdfFile(opMetadata).getAbsolutePath());
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_OPSET);
+			Variable var = ncfile.findVariable(NetCDFConstants.Variables.VAR_OPSET);
 
 			if (null == var) {
 				return null;

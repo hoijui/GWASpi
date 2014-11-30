@@ -20,7 +20,7 @@ package org.gwaspi.datasource.netcdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
@@ -40,7 +40,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 	public static final boolean READ_GTS_IN_BULK = true;
 
 	private NetCdfMarkersGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_MARKERSET);
 
 		this.genotypesListFactory = CompactGenotypesList.FACTORY;
 	}
@@ -65,7 +65,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 
 	@Override
 	public List<GenotypesList> getRange(int from, int to) throws IOException {
-		return readMarkerGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to, genotypesListFactory, READ_GTS_IN_BULK);
+		return readMarkerGTs(getReadNetCdfFile(), NetCDFConstants.Variables.VAR_GENOTYPES, from, to, genotypesListFactory, READ_GTS_IN_BULK);
 	}
 
 	public static List<GenotypesList> readMarkerGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromMarkerIndex, int toMarkerIndex, final GenotypesListFactory genotypesListFactory, final boolean readInBulk) throws IOException {

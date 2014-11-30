@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -141,7 +141,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 
 			for (File gtFileToImport : gtFilesToImport) {
 				try {

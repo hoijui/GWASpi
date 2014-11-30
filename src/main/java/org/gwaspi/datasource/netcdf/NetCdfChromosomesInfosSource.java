@@ -20,7 +20,7 @@ package org.gwaspi.datasource.netcdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.MatrixKey;
@@ -39,11 +39,11 @@ public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<Chrom
 	private ChromosomesInfosSource originSource;
 
 	private NetCdfChromosomesInfosSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_CHRSET);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_CHRSET);
 	}
 
 	private NetCdfChromosomesInfosSource(MatrixKey origin, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, cNetCDF.Dimensions.DIM_CHRSET, originalIndices);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, NetCDFConstants.Dimensions.DIM_CHRSET, originalIndices);
 	}
 
 	public static ChromosomesInfosSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
@@ -73,7 +73,7 @@ public class NetCdfChromosomesInfosSource extends AbstractNetCdfListSource<Chrom
 
 		List<ChromosomeInfo> chromosomes;
 
-		List<int[]> chromosomeInfosRaw = readVar(cNetCDF.Variables.VAR_CHR_INFO, from, to);
+		List<int[]> chromosomeInfosRaw = readVar(NetCDFConstants.Variables.VAR_CHR_INFO, from, to);
 
 		chromosomes = new ArrayList<ChromosomeInfo>(chromosomeInfosRaw.size());
 		for (int[] infoRaw : chromosomeInfosRaw) {

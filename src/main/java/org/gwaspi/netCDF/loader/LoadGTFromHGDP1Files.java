@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -90,7 +90,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos2) {
 			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 
 			try {
 				loadIndividualFiles(
@@ -124,7 +124,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		int gtStride = cNetCDF.Strides.STRIDE_GT;
+		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
 		StringBuilder sb = new StringBuilder(gtStride);
 		for (int i = 0; i < sb.capacity(); i++) {
 			sb.append('0');
@@ -153,7 +153,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			if (columnNb != null) {
 				String strAlleles = cVals[columnNb];
 				if (strAlleles.equals(Standard.missing)) {
-					tempMarkerIdMap.put(currMarkerId, cNetCDF.Defaults.DEFAULT_GT);
+					tempMarkerIdMap.put(currMarkerId, NetCDFConstants.Defaults.DEFAULT_GT);
 				} else {
 					byte[] tmpAlleles = new byte[] {
 							(byte) strAlleles.charAt(0),

@@ -18,7 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
@@ -48,7 +48,7 @@ public class MatrixCreatingNetCDFDataSetDestination<PT extends MatrixCreatingOpe
 	}
 
 	@Override
-	protected cNetCDF.Defaults.GenotypeEncoding getGuessedGTCode() {
+	protected NetCDFConstants.Defaults.GenotypeEncoding getGuessedGTCode() {
 		return metadataFactory.getGuessedGTCode(params);
 	}
 

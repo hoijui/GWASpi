@@ -18,7 +18,7 @@
 package org.gwaspi.datasource.netcdf;
 
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerKeyFactory;
@@ -39,7 +39,7 @@ public class NetCdfMarkersKeysSource extends AbstractNetCdfKeysSource<MarkerKey>
 	}
 
 	public static MarkersKeysSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfMarkersKeysSource(origin, rdNetCdfFile, cNetCDF.Dimensions.DIM_MARKERSET, null, cNetCDF.Variables.VAR_MARKERSET);
+		return new NetCdfMarkersKeysSource(origin, rdNetCdfFile, NetCDFConstants.Dimensions.DIM_MARKERSET, null, NetCDFConstants.Variables.VAR_MARKERSET);
 	}
 
 	public static MarkersKeysSource createForOperation(MatrixKey origin, NetcdfFile rdNetCdfFile, boolean operationSetMarkers) throws IOException {
@@ -48,13 +48,13 @@ public class NetCdfMarkersKeysSource extends AbstractNetCdfKeysSource<MarkerKey>
 		final String varOriginalIndices;
 		final String varKeys;
 		if (operationSetMarkers) {
-			varDimension = cNetCDF.Dimensions.DIM_OPSET;
-			varOriginalIndices = cNetCDF.Variables.VAR_OPSET_IDX;
-			varKeys = cNetCDF.Variables.VAR_OPSET;
+			varDimension = NetCDFConstants.Dimensions.DIM_OPSET;
+			varOriginalIndices = NetCDFConstants.Variables.VAR_OPSET_IDX;
+			varKeys = NetCDFConstants.Variables.VAR_OPSET;
 		} else {
-			varDimension = cNetCDF.Dimensions.DIM_IMPLICITSET;
-			varOriginalIndices = cNetCDF.Variables.VAR_IMPLICITSET_IDX;
-			varKeys = cNetCDF.Variables.VAR_IMPLICITSET;
+			varDimension = NetCDFConstants.Dimensions.DIM_IMPLICITSET;
+			varOriginalIndices = NetCDFConstants.Variables.VAR_IMPLICITSET_IDX;
+			varKeys = NetCDFConstants.Variables.VAR_IMPLICITSET;
 		}
 
 		return new NetCdfMarkersKeysSource(origin, rdNetCdfFile, varDimension, varOriginalIndices, varKeys);

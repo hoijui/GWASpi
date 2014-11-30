@@ -19,8 +19,8 @@ package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -64,12 +64,12 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET extends OperationDat
 		final OPType opType = operationMetadata.getOperationType();
 
 		// Define Variables
-		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_T, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_P, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_T, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_P, DataType.DOUBLE, markersSpace);
 		if ((opType == OPType.ALLELICTEST) || (opType == OPType.GENOTYPICTEST)) {
-			ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR, DataType.DOUBLE, markersSpace);
+			ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_OR, DataType.DOUBLE, markersSpace);
 			if (opType == OPType.GENOTYPICTEST) {
-				ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
+				ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
 			}
 		}
 		if (opType == OPType.COMBI_ASSOC_TEST) {

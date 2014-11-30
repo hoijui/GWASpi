@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.gui.StartGWASpi;
@@ -113,9 +113,9 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	public static NetcdfFileWriteable generateNetcdfHandler(MatrixMetadata matrixMetadata)
 			throws InvalidRangeException, IOException
 	{
-		int gtStride = cNetCDF.Strides.STRIDE_GT;
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
+		int markerStride = NetCDFConstants.Strides.STRIDE_MARKER_NAME;
+		int sampleStride = NetCDFConstants.Strides.STRIDE_SAMPLE_NAME;
 //		int strandStride = cNetCDF.Strides.STRIDE_STRAND;
 
 		File writeFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
@@ -126,35 +126,35 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, matrixMetadata.getStudyKey().getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_ID, matrixMetadata.getMatrixId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_STUDY, matrixMetadata.getStudyKey().getId());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_MATRIX_ID, matrixMetadata.getMatrixId());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, matrixMetadata.getDescription());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, matrixMetadata.getStrand().toString());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, matrixMetadata.getHasDictionary() ? 1 : 0);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE, matrixMetadata.getMatrixType());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_DESCRIPTION, matrixMetadata.getDescription());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_STRAND, matrixMetadata.getStrand().toString());
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_HAS_DICTIONARY, matrixMetadata.getHasDictionary() ? 1 : 0);
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_MATRIX_TYPE, matrixMetadata.getMatrixType());
 		// NOTE We save the date as string,
 		//   because NetCDF fails with long
 		//   (though it is suposed to suppoert it),
 		//   and we use the number representation to be Locale independent
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE, String.valueOf(matrixMetadata.getCreationDate().getTime()));
+		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_CREATION_DATE, String.valueOf(matrixMetadata.getCreationDate().getTime()));
 
 		// dimensions
-		Dimension samplesDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_SAMPLESET, matrixMetadata.getNumSamples());
-		Dimension markersDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_MARKERSET, matrixMetadata.getNumMarkers());
-		Dimension chrSetDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_CHRSET, matrixMetadata.getNumChromosomes());
-		Dimension gtStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
-		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
+		Dimension samplesDim = generatePossiblyVarDimension(ncfile, NetCDFConstants.Dimensions.DIM_SAMPLESET, matrixMetadata.getNumSamples());
+		Dimension markersDim = generatePossiblyVarDimension(ncfile, NetCDFConstants.Dimensions.DIM_MARKERSET, matrixMetadata.getNumMarkers());
+		Dimension chrSetDim = generatePossiblyVarDimension(ncfile, NetCDFConstants.Dimensions.DIM_CHRSET, matrixMetadata.getNumChromosomes());
+		Dimension gtStrideDim = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_GTSTRIDE, gtStride);
+		Dimension markerStrideDim = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_MARKERSTRIDE, markerStride);
+		Dimension sampleStrideDim = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
 //		Dimension dim32 = ncfile.addDimension(cNetCDF.Dimensions.DIM_32, 32);
 //		Dimension dim16 = ncfile.addDimension(cNetCDF.Dimensions.DIM_16, 16);
-		Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
-		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
-		Dimension dim2 = ncfile.addDimension(cNetCDF.Dimensions.DIM_2, 2);
-		Dimension dim1 = ncfile.addDimension(cNetCDF.Dimensions.DIM_1, 1);
+		Dimension dim8 = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_8, 8);
+		Dimension dim4 = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_4, 4);
+		Dimension dim2 = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_2, 2);
+		Dimension dim1 = ncfile.addDimension(NetCDFConstants.Dimensions.DIM_1, 1);
 
 		// GENOTYPE SPACES
 		List<Dimension> genotypeSpace = new ArrayList<Dimension>(3);
@@ -205,43 +205,43 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		gtEncodingSpace.add(dim8);
 
 		// Define Marker Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERSET, DataType.CHAR, markersNameSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_MARKERSET, DataType.CHAR, markersNameSpace);
 //		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_MARKERSET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumMarkers()); // NOTE not required, as it can be read from th edimensions directly, which is also more reliable
 
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markersNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_CHR, DataType.CHAR, markerPropertySpace8);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_POS, DataType.INT, markersSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, DataType.CHAR, markerPropertySpace2);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_MARKERS_RSID, DataType.CHAR, markersNameSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_MARKERS_CHR, DataType.CHAR, markerPropertySpace8);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_MARKERS_POS, DataType.INT, markersSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_MARKERS_BASES_DICT, DataType.CHAR, markerPropertySpace2);
 
 		// Define Chromosome Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chromosomesNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chromosomesInfoSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chromosomesNameSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_CHR_INFO, DataType.INT, chromosomesInfoSpace);
 
 		// Define Sample Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleNameSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleNameSpace);
 //		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples()); // NOTE not required, as it can be read from the dimensions directly, which is also more reliable
 		if (saveSamplesMetadata) {
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, DataType.INT, sampleSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_FATHER, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_MOTHER, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLES_SEX, DataType.INT, sampleSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, DataType.INT, sampleSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_DISEASE, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_POPULATION, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_AGE, DataType.INT, sampleSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_FILTER, DataType.CHAR, sampleNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_APPROVED, DataType.INT, sampleSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_STATUS, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_ORDER_ID, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_FATHER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_MOTHER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLES_SEX, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLES_AFFECTION, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_CATEGORY, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_DISEASE, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_POPULATION, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_AGE, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_FILTER, DataType.CHAR, sampleNameSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_APPROVED, DataType.INT, sampleSpace);
+			ncfile.addVariable(NetCDFConstants.Variables.VAR_SAMPLE_STATUS, DataType.INT, sampleSpace);
 		}
 
 		// Define Genotype Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_GENOTYPES, cNetCDF.Attributes.GLOB_STRAND, StrandType.UNKNOWN.toString());
-		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
+		ncfile.addVariableAttribute(NetCDFConstants.Variables.VAR_GENOTYPES, NetCDFConstants.Attributes.GLOB_STRAND, StrandType.UNKNOWN.toString());
+		ncfile.addVariable(NetCDFConstants.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 
 		// ENCODING VARIABLE
-		ncfile.addVariable(cNetCDF.Variables.GLOB_GTENCODING, DataType.CHAR, gtEncodingSpace);
+		ncfile.addVariable(NetCDFConstants.Variables.GLOB_GTENCODING, DataType.CHAR, gtEncodingSpace);
 
 		// CHECK IF JVM IS 32/64 bits to use LFS or not
 		int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
@@ -300,50 +300,50 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		List<SampleKey> sampleKeys = extractKeys(sampleInfos);
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(sampleKeys, NetCDFConstants.Strides.STRIDE_SAMPLE_NAME);
 		int[] sampleOrig2D = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig2D, samplesD2);
+		ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_KEY, sampleOrig2D, samplesD2);
 
 		if (saveSamplesMetadata) {
 			int[] sampleOrig1D = new int[] {0};
 			ArrayInt.D1 samplesD1;
-			final int commonStringMaxLength = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			final int commonStringMaxLength = NetCDFConstants.Strides.STRIDE_SAMPLE_NAME;
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_ORDER_ID);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_ORDER_ID, sampleOrig1D, samplesD1);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_FATHER_ID, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_FATHER, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_FATHER, sampleOrig2D, samplesD2);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_MOTHER_ID, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_MOTHER, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_MOTHER, sampleOrig2D, samplesD2);
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor<SampleInfo, Sex>(SampleInfo.TO_SEX));
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_SEX, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLES_SEX, sampleOrig1D, samplesD1);
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, new Extractor.EnumToIntMetaExtractor<SampleInfo, Affection>(SampleInfo.TO_AFFECTION));
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLES_AFFECTION, sampleOrig1D, samplesD1);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_CATEGORY, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_CATEGORY, sampleOrig2D, samplesD2);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_DISEASE, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_DISEASE, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_DISEASE, sampleOrig2D, samplesD2);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_POPULATION, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_POPULATION, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_POPULATION, sampleOrig2D, samplesD2);
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_AGE);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_AGE, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_AGE, sampleOrig1D, samplesD1);
 
 			samplesD2 = NetCdfUtils.writeValuesToD2ArrayChar(sampleInfos, SampleInfo.TO_FILTER, commonStringMaxLength);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_FILTER, sampleOrig2D, samplesD2);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_FILTER, sampleOrig2D, samplesD2);
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_APPROVED);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_APPROVED, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_APPROVED, sampleOrig1D, samplesD1);
 
 			samplesD1 = NetCdfUtils.writeValuesToD1ArrayInt(sampleInfos, SampleInfo.TO_STATUS);
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLE_STATUS, sampleOrig1D, samplesD1);
+			ncfile.write(NetCDFConstants.Variables.VAR_SAMPLE_STATUS, sampleOrig1D, samplesD1);
 		}
 
 		log.info("Done writing SampleSet to matrix");
@@ -355,31 +355,31 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		final int[] markersOrig = new int[] {0, 0};
 
 		// WRITE RSID
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_RS_ID, NetCDFConstants.Strides.STRIDE_MARKER_NAME);
+		wrNcFile.write(NetCDFConstants.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 		log.info("Done writing RsId to matrix");
 
 		// WRITE MARKERID
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-		wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_MARKER_ID, NetCDFConstants.Strides.STRIDE_MARKER_NAME);
+		wrNcFile.write(NetCDFConstants.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		log.info("Done writing MarkerId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		// Chromosome location for each marker
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
-		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_CHR, NetCDFConstants.Strides.STRIDE_CHR);
+		wrNcFile.write(NetCDFConstants.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markerMetadatas, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[] {0};
-		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
+		wrNcFile.write(NetCDFConstants.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		log.info("Done writing positions to matrix");
 
 		// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
 		if (hasDictionary) {
-			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_ALLELES, cNetCDF.Strides.STRIDE_GT);
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
+			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_ALLELES, NetCDFConstants.Strides.STRIDE_GT);
+			wrNcFile.write(NetCDFConstants.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
 			log.info("Done writing forward alleles to matrix");
 		}
 
@@ -387,21 +387,21 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		int[] gtOrig = new int[] {0, 0};
 		if (strandFlag == null) {
 			// TODO Strand info is buggy in Hapmap bulk download!
-			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
+			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_STRAND, NetCDFConstants.Strides.STRIDE_STRAND);
 		} else {
-			markersD2 = NetCdfUtils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerMetadatas.size());
+			markersD2 = NetCdfUtils.writeSingleValueToD2ArrayChar(strandFlag, NetCDFConstants.Strides.STRIDE_STRAND, markerMetadatas.size());
 		}
-		wrNcFile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
+		wrNcFile.write(NetCDFConstants.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		log.info("Done writing strand info to matrix");
 	}
 
 	private static void saveChromosomeMetadata(Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable wrNcFile) throws IOException {
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
+		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), NetCDFConstants.Variables.VAR_CHR_IN_MATRIX, NetCDFConstants.Strides.STRIDE_CHR);
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, NetCDFConstants.Variables.VAR_CHR_INFO);
 		log.info("Done writing chromosome infos");
 	}
 
@@ -461,11 +461,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 		if (curAllelesMarkerIndex != 1 && curAllelesMarkerIndex % (hyperSlabRows) == 0) {
 			// WRITING HYPERSLABS AT A TIME
-			ArrayByte.D3 genotypesArray = NetCdfUtils.writeListValuesToSamplesHyperSlabArrayByteD3(
-					genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
+			ArrayByte.D3 genotypesArray = NetCdfUtils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), NetCDFConstants.Strides.STRIDE_GT);
 			int[] origin = new int[] {0, (curAllelesMarkerIndex - hyperSlabRows), 0}; // 0, 0, 0 for 1st marker; 0, 1, 0 for 2nd marker ...
 			try {
-				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+				ncfile.write(NetCDFConstants.Variables.VAR_GENOTYPES, origin, genotypesArray);
 				log.info("Stored marker genotype-lists: {} / {}", curAllelesMarkerIndex + 1, matrixMetadata.getNumMarkers());
 			} catch (InvalidRangeException ex) {
 				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
@@ -484,11 +483,11 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			int markerNb = curAllelesMarkerIndex;
 			// WRITING LAST HYPERSLAB
 			int lastHyperSlabRows = markerNb - (genotypesHyperslabs.size() / getDataSet().getSampleInfos().size());
-			ArrayByte.D3 genotypesArray = NetCdfUtils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
+			ArrayByte.D3 genotypesArray = NetCdfUtils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), NetCDFConstants.Strides.STRIDE_GT);
 			int[] origin = new int[] {0, lastHyperSlabRows, 0}; //0, 0, 0 for 1st marker; 0, 1, 0 for 2nd marker....
 //			log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {
-				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+				ncfile.write(NetCDFConstants.Variables.VAR_GENOTYPES, origin, genotypesArray);
 				log.info("Stored marker genotype-lists: {} / {}", curAllelesMarkerIndex + 1, matrixMetadata.getNumMarkers());
 			} catch (InvalidRangeException ex) {
 				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
@@ -509,7 +508,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), getGuessedGTCode().toString());
 			int[] origin = new int[] {0, 0};
-			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+			ncfile.write(NetCDFConstants.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 			StringBuilder description = new StringBuilder(matrixMetadata.getDescription());
 			description.append("Genotype encoding: ");

@@ -31,10 +31,10 @@ import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
@@ -210,7 +210,7 @@ public class Dialogs {
 	}
 
 	public static StrandType showStrandSelectCombo() {
-		StrandType[] strandFlags = cNetCDF.Defaults.StrandType.values();
+		StrandType[] strandFlags = NetCDFConstants.Defaults.StrandType.values();
 
 		StrandType strandType = (StrandType) JOptionPane.showInputDialog(
 				null,
@@ -226,7 +226,7 @@ public class Dialogs {
 	}
 
 	public static String showChromosomeSelectCombo() {
-		final List<String> chroms = cNetCDF.Defaults.CHROMOSOMES;
+		final List<String> chroms = NetCDFConstants.Defaults.CHROMOSOMES;
 
 		String chr = (String) JOptionPane.showInputDialog(
 				null,
@@ -241,7 +241,7 @@ public class Dialogs {
 	}
 
 	public static GenotypeEncoding showGenotypeCodeSelectCombo() {
-		GenotypeEncoding[] gtCode = cNetCDF.Defaults.GenotypeEncoding.values();
+		GenotypeEncoding[] gtCode = NetCDFConstants.Defaults.GenotypeEncoding.values();
 
 		GenotypeEncoding strandType = (GenotypeEncoding) JOptionPane.showInputDialog(
 				null,

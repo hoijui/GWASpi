@@ -19,7 +19,7 @@ package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -36,7 +36,7 @@ public class HardyWeinbergOperationFactory
 					false,
 					Text.Operation.hardyWeiberg,
 					Text.Operation.hardyWeiberg, // TODO We need a more elaborate description of this operation!
-					cNetCDF.Defaults.OPType.HARDY_WEINBERG,
+					NetCDFConstants.Defaults.OPType.HARDY_WEINBERG,
 					true,
 					false);
 

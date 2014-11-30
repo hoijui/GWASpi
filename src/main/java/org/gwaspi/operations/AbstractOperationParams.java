@@ -19,7 +19,7 @@ package org.gwaspi.operations;
 
 import java.util.Collections;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 

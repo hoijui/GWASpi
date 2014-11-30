@@ -27,8 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.HardyWeinberg;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.HardyWeinberg;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
@@ -121,18 +121,18 @@ public class NetCdfHardyWeinbergOperationDataSet
 		// Define OP Variables
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL, DataType.DOUBLE, markersSpace);
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT, DataType.DOUBLE, markersSpace);
 
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALL, DataType.DOUBLE, markersSpace);
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CASE, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CTRL, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALT, DataType.DOUBLE, markersSpace);
 
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALL, DataType.DOUBLE, markersSpace);
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CASE, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT, DataType.DOUBLE, markersSpace);
 	}
 
 	@Override

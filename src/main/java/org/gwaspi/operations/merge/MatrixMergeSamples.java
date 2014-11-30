@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -192,7 +192,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			if (dataSetIndices == 2) {
 				// make sure we use the order of marker keys of the first data set
 				List<byte[]> origReadSampleGenotypes = readSampleGenotypes;
-				readSampleGenotypes = new ArrayList<byte[]>(Collections.nCopies(dataSetSource1.getMarkersKeysSource().size(), cNetCDF.Defaults.DEFAULT_GT));
+				readSampleGenotypes = new ArrayList<byte[]>(Collections.nCopies(dataSetSource1.getMarkersKeysSource().size(), NetCDFConstants.Defaults.DEFAULT_GT));
 				MarkersKeysSource markersKeysSource2 = dataSetSource2.getMarkersKeysSource();
 				int index1 = 0;
 				for (MarkerKey markerKey : dataSetSource1.getMarkersKeysSource()) {

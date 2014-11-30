@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;

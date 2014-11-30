@@ -19,7 +19,7 @@ package org.gwaspi.operations.allelicassociationtest;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -36,7 +36,7 @@ public class AllelicAssociationTestsOperationFactory
 					false,
 					Text.Operation.allelicAssocTest,
 					Text.Operation.allelicAssocTest, // TODO We need a more elaborate description of this operation!
-					cNetCDF.Defaults.OPType.ALLELICTEST,
+					NetCDFConstants.Defaults.OPType.ALLELICTEST,
 					true,
 					false);
 

@@ -25,8 +25,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.constants.ImportConstants.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -73,11 +73,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		log.info("parse and fixup raw marker info");
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
-			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] keyValues = entry.getKey().split(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			int pos = MetadataLoaderPlink.fixPosIfRequired(keyValues[3]);
 
 			// valValues = rsId;strand;alleles
-			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] valValues = entry.getValue().split(NetCDFConstants.Defaults.TMP_SEPARATOR);
 			valValues = fixRsId(keyValues, valValues);
 			keyValues = fixChrData(keyValues);
 
@@ -120,20 +120,20 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			if (!affyId.startsWith("AFFX-") && !inFinalList.equals("NO") && !chr.equals("---") && !snpBlackList.getAffyIdBlacklist().contains(affyId)) {
 				// chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 				StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
-				sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a1]); // 1 => pseudo-autosomal1
-				sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a2]); // 2 => pseudo-autosomal2
-				sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pos]); // 3 => pos
-				sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbKey.append(affyId); // 4 => markerId
 
 				// rsId;strand;alleles
 				StringBuilder sbVal = new StringBuilder(affy6Vals[Affymetrix_GenomeWide6.rsId]); // 0 => rsId
-				sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.strand]); // 1 => strand
-				sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
+				sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
 				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleA]);
 				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleB]); // 2 => alleles
 

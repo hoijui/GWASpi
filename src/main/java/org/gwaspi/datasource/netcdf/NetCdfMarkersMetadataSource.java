@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
@@ -43,7 +43,7 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 			final MatrixKey origin,
 			final NetcdfFile rdNetCdfFile)
 	{
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_MARKERSET);
 
 		this.dataSetSource = dataSetSource;
 		this.originSource = null;
@@ -135,41 +135,41 @@ public class NetCdfMarkersMetadataSource extends AbstractNetCdfListSource<Marker
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_MARKERSET, from, to);
 	}
 
 	public List<String> getRsIds(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_MARKERS_RSID, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_MARKERS_RSID, from, to);
 	}
 
 	public List<String> getChromosomes(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_MARKERS_CHR, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_MARKERS_CHR, from, to);
 	}
 
 	public List<Integer> getPositions(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_MARKERS_POS, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_MARKERS_POS, from, to);
 	}
 
 	public List<String> getAlleles(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_MARKERS_BASES_DICT, from, to);
 	}
 
 	public List<String> getStrands(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all marker info attributes
-		return readVar(cNetCDF.Variables.VAR_GT_STRAND, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_GT_STRAND, from, to);
 	}
 }

@@ -19,7 +19,7 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;

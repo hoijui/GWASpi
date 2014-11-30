@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
@@ -62,7 +62,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
 	private NetCdfSamplesGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_SAMPLESET);
 
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 		this.originSource = null;
@@ -88,7 +88,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 
 	@Override
 	public List<GenotypesList> getRange(int from, int to) throws IOException {
-		return readSampleGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to);
+		return readSampleGTs(getReadNetCdfFile(), NetCDFConstants.Variables.VAR_GENOTYPES, from, to);
 	}
 
 	private List<GenotypesList> readSampleGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromSampleIndex, int toSampleIndex) throws IOException {

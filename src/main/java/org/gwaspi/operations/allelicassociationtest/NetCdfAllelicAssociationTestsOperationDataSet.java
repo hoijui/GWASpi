@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
@@ -92,9 +92,9 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 			index++;
 		}
 		try {
-			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
-			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
-			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_OR, origin, netCdfORs);
+			getNetCdfWriteFile().write(NetCDFConstants.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
+			getNetCdfWriteFile().write(NetCDFConstants.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
+			getNetCdfWriteFile().write(NetCDFConstants.Association.VAR_OP_MARKERS_OR, origin, netCdfORs);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -104,7 +104,7 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 	public List<Double> getTs(int from, int to) throws IOException {
 
 		List<Double> ts = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Association.VAR_OP_MARKERS_T, from, to, ts, null);
 
 		return ts;
 	}
@@ -113,7 +113,7 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 	public List<Double> getPs(int from, int to) throws IOException {
 
 		List<Double> ps = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Association.VAR_OP_MARKERS_P, from, to, ps, null);
 
 		return ps;
 	}
@@ -122,7 +122,7 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 	public List<Double> getORs(int from, int to) throws IOException {
 
 		List<Double> ors = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_OR, from, to, ors, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Association.VAR_OP_MARKERS_OR, from, to, ors, null);
 
 		return ors;
 	}

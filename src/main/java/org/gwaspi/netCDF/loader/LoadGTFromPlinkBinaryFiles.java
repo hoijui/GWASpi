@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -127,7 +127,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 					Map<SampleKey, byte[]> mappedGenotypes = new LinkedHashMap<SampleKey, byte[]>();
 					while (itSampleSet.hasNext()) {
 						SampleKey sampleKey = SampleKey.valueOf(itSampleSet.next());
-						mappedGenotypes.put(sampleKey, cNetCDF.Defaults.DEFAULT_GT);
+						mappedGenotypes.put(sampleKey, NetCDFConstants.Defaults.DEFAULT_GT);
 					}
 
 					alleles = itMarkerSet.next(); // key = markerId, values{allele1 (minor), allele2 (major)}
@@ -156,7 +156,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 											(byte) alleles[0].charAt(0),
 											(byte) alleles[1].charAt(0)});
 								} else if (allele1 && !allele2) { // 10 Missing genotype
-									mappedGenotypes.put(sampleKey, cNetCDF.Defaults.DEFAULT_GT);
+									mappedGenotypes.put(sampleKey, NetCDFConstants.Defaults.DEFAULT_GT);
 								}
 
 								bitsPerRow = bitsPerRow + 2;

@@ -19,7 +19,7 @@ package org.gwaspi.netCDF;
 
 import java.io.File;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.datasource.netcdf.NetCdfMarkersGenotypesSource;
 import org.gwaspi.model.ArrayGenotypesList;
 import org.gwaspi.model.CompactGenotypesList;
@@ -83,7 +83,7 @@ public class BenchmarkReadGTs {
 
 		final NetcdfFile rdNetCdf = NetcdfFile.open(netCdfGTs.getAbsolutePath());
 
-		final Variable var = rdNetCdf.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+		final Variable var = rdNetCdf.findVariable(NetCDFConstants.Variables.VAR_GENOTYPES);
 		final int[] shape = var.getShape();
 		final int numMarkers = shape[0];
 		final int numChunks = (int) Math.ceil((double) numMarkers / chunkSize);
@@ -92,9 +92,8 @@ public class BenchmarkReadGTs {
 			final int chunkFirstMarker = ci * chunkSize;
 			final int chunkLastMarker = Math.min(chunkFirstMarker + chunkSize, numMarkers);
 			final List<GenotypesList> throwAway
-					= NetCdfMarkersGenotypesSource.readMarkerGTs(
-							rdNetCdf,
-							cNetCDF.Variables.VAR_GENOTYPES,
+					= NetCdfMarkersGenotypesSource.readMarkerGTs(rdNetCdf,
+							NetCDFConstants.Variables.VAR_GENOTYPES,
 							chunkFirstMarker,
 							chunkLastMarker,
 							genotypesListFactory,

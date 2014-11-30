@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetKey;
@@ -61,10 +61,10 @@ public class NetCdfMarkerCensusOperationDataSet
 
 	private static final Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
 	static {
-		categoryNetCdfVarName.put(Category.ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-		categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-		categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-		categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+		categoryNetCdfVarName.put(Category.ALL, NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSALL);
+		categoryNetCdfVarName.put(Category.CASE, NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSCASE);
+		categoryNetCdfVarName.put(Category.CONTROL, NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSCTRL);
+		categoryNetCdfVarName.put(Category.ALTERNATE, NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSHW);
 	}
 
 	private ArrayByte.D2 netCdfKnownAlleles;
@@ -112,14 +112,14 @@ public class NetCdfMarkerCensusOperationDataSet
 			List<Dimension> samplesSpace)
 			throws IOException
 	{
-		final int gtStride = cNetCDF.Strides.STRIDE_GT;
+		final int gtStride = NetCDFConstants.Strides.STRIDE_GT;
 
 		// dimensions
 		Dimension markersDim = markersSpace.get(0);
-		Dimension boxes3Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
-		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
-		Dimension gtStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
-		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
+		Dimension boxes3Dim = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_3BOXES, 3);
+		Dimension boxes4Dim = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_4BOXES, 4);
+		Dimension gtStrideDim = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_GTSTRIDE, gtStride);
+		Dimension dim4 = ncFile.addDimension(NetCDFConstants.Dimensions.DIM_4, 4);
 
 		// OP SPACES
 		List<Dimension> markers3Space = new ArrayList<Dimension>(2);
@@ -145,14 +145,14 @@ public class NetCdfMarkerCensusOperationDataSet
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX, DataType.INT, markersSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX, DataType.INT, markersSpace);
 //		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX, DataType.INT, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
+		ncFile.addVariable(NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
 
 		// Define Genotype Variables
-		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.BYTE, allelesSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
+		ncFile.addVariable(NetCDFConstants.Variables.VAR_ALLELES, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(NetCDFConstants.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class NetCdfMarkerCensusOperationDataSet
 	public List<byte[]> getKnownAlleles(int from, int to) throws IOException {
 
 		List<byte[]> knownAlleles = new ArrayList<byte[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Variables.VAR_ALLELES, from, to, knownAlleles, null);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), NetCDFConstants.Variables.VAR_ALLELES, from, to, knownAlleles, null);
 
 		return knownAlleles;
 	}
@@ -270,7 +270,7 @@ public class NetCdfMarkerCensusOperationDataSet
 		if (netCdfCensusAlls == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
-			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), cNetCDF.Strides.STRIDE_GT);
+			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), NetCDFConstants.Strides.STRIDE_GT);
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
 			netCdfCensusCase = new ArrayInt.D2(writeBuffer.size(), 3);
 			netCdfCensusCtrl = new ArrayInt.D2(writeBuffer.size(), 3);
@@ -331,8 +331,8 @@ public class NetCdfMarkerCensusOperationDataSet
 			index++;
 		}
 		try {
-			getNetCdfWriteFile().write(cNetCDF.Variables.VAR_ALLELES, origin, netCdfKnownAlleles);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+			getNetCdfWriteFile().write(NetCDFConstants.Variables.VAR_ALLELES, origin, netCdfKnownAlleles);
+			getNetCdfWriteFile().write(NetCDFConstants.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
 			getNetCdfWriteFile().write(categoryNetCdfVarName.get(Category.CASE), origin, netCdfCensusCase);
 			getNetCdfWriteFile().write(categoryNetCdfVarName.get(Category.CONTROL), origin, netCdfCensusCtrl);
 			getNetCdfWriteFile().write(categoryNetCdfVarName.get(Category.ALTERNATE), origin, netCdfCensusAlt);

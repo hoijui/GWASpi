@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
@@ -49,7 +49,7 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 			final StudyKey studyKey,
 			final NetcdfFile rdNetCdfFile)
 	{
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_SAMPLESET);
 
 		this.dataSetSource = dataSetSource;
 		this.studyKey = studyKey;
@@ -193,83 +193,83 @@ public class NetCdfSamplesInfosSource extends AbstractNetCdfListSource<SampleInf
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_ORDER_ID, from, to);
 	}
 
 	public List<String> getFathers(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_FATHER, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_FATHER, from, to);
 	}
 
 	public List<String> getMothers(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_MOTHER, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_MOTHER, from, to);
 	}
 
 	public List<Sex> getSexes(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, new Extractor.IntToEnumExtractor(Sex.values()), from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLES_SEX, new Extractor.IntToEnumExtractor(Sex.values()), from, to);
 	}
 
 	public List<Affection> getAffections(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLES_AFFECTION, new Extractor.IntToEnumExtractor(Affection.values()), from, to);
 	}
 
 	public List<String> getCategories(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_CATEGORY, from, to);
 	}
 
 	public List<String> getDiseases(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_DISEASE, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_DISEASE, from, to);
 	}
 
 	public List<String> getPopulations(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_POPULATION, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_POPULATION, from, to);
 	}
 
 	public List<Integer> getAges(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_AGE, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_AGE, from, to);
 	}
 
 	public List<String> getFilters(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_FILTER, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_FILTER, from, to);
 	}
 
 	public List<Integer> getApproveds(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_APPROVED, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_APPROVED, from, to);
 	}
 
 	public List<Integer> getStatuses(int from, int to) throws IOException {
 
 		// we are the origin
 		// we have direct storage of all sample info attributes
-		return readVar(cNetCDF.Variables.VAR_SAMPLE_STATUS, from, to);
+		return readVar(NetCDFConstants.Variables.VAR_SAMPLE_STATUS, from, to);
 	}
 }

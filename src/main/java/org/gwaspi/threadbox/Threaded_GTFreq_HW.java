@@ -25,8 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -170,7 +170,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 			{
-				String censusName = gwasParams.getFriendlyName() + " using " + cNetCDF.Defaults.DEFAULT_AFFECTION;
+				String censusName = gwasParams.getFriendlyName() + " using " + NetCDFConstants.Defaults.DEFAULT_AFFECTION;
 				markerCensusOperationParams.setName(censusName);
 			} else {
 				log.warn(Text.Operation.warnAffectionMissing);
@@ -224,7 +224,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			getLog().warn("Hardy&Weinberg operation canceled because Marker-Census is not available");
 		} else {
 			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
-			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
+			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, NetCDFConstants.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
 			CommonRunnable.doRunNowInThread(threaded_HardyWeinberg);

@@ -17,7 +17,7 @@
 
 package org.gwaspi.operations.genotypicassociationtest;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputTest;

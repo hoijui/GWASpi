@@ -19,7 +19,7 @@ package org.gwaspi.operations.genotypicassociationtest;
 
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -35,7 +35,7 @@ public class GenotypicAssociationTestsOperationFactory
 					false,
 					Text.Operation.genoAssocTest,
 					Text.Operation.genoAssocTest, // TODO We need a more elaborate description of this operation!
-					cNetCDF.Defaults.OPType.GENOTYPICTEST,
+					NetCDFConstants.Defaults.OPType.GENOTYPICTEST,
 					true,
 					false);
 

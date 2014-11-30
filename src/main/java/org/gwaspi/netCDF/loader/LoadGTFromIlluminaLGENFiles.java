@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -128,7 +128,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			}
 		}
 
-		int gtStride = cNetCDF.Strides.STRIDE_GT;
+		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
 		StringBuilder sb = new StringBuilder(gtStride);
 		for (int i = 0; i < sb.capacity(); i++) {
 			sb.append('0');
@@ -150,12 +150,12 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			} else {
 				if (!currentSampleKey.getSampleId().equals("")) { // EXCEPT FIRST TIME ROUND
 					// INIT AND PURGE SORTEDMARKERSET Map
-					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 
 					// WRITE Map TO MATRIX
 					for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
 						MarkerKey markerKey = entry.getKey();
-						byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;
+						byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : NetCDFConstants.Defaults.DEFAULT_GT;
 						entry.setValue(value);
 					}
 					tempMarkerSet.clear();
@@ -172,7 +172,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 				byte[] tmpAlleles;
 				if (cVals[Standard.allele1].equals(Standard.missing)
 						&& cVals[Standard.allele2].equals(Standard.missing)) {
-					tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
+					tmpAlleles = NetCDFConstants.Defaults.DEFAULT_GT;
 				} else {
 					tmpAlleles = new byte[] {
 							(byte) (cVals[Standard.allele1].charAt(0)),
@@ -185,17 +185,17 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 
 		// WRITE LAST SAMPLE Map TO MATRIX
 		// INIT AND PURGE SORTEDMARKERSET Map
-		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, cNetCDF.Defaults.DEFAULT_GT);
+		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 		for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
-			byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;
+			byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : NetCDFConstants.Defaults.DEFAULT_GT;
 			entry.setValue(value);
 		}
 		tempMarkerSet.clear();
 
 		GenotypeEncoding guessedGTCode = getGuessedGTCode();
-		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
-				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+		if (guessedGTCode.equals(NetCDFConstants.Defaults.GenotypeEncoding.UNKNOWN)
+				|| guessedGTCode.equals(NetCDFConstants.Defaults.GenotypeEncoding.O12))
 		{
 			guessedGTCode = Utils.detectGTEncoding(sortedAlleles.values());
 		}

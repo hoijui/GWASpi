@@ -17,7 +17,7 @@
 
 package org.gwaspi.global;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.NetCDFConstants;
 
 public class Text {
 
@@ -355,10 +355,10 @@ public class Text {
 		public static final String warnStrandMismatch = "The genotypes are placed on different strands.\nFlip strands first!";
 		public static final String warnExcessMismatch = "Matrix joined. \nThe acceptable number of mismatching genotypes has been crossed!";
 		public static final String warnNoDictionary = "The parent matrix you are trying to translate has no dictionnary!";
-		public static final String warnNotACGT = "The parent matrix you are trying to modify is not encoded as " + cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString();
-		public static final String warnNot1234 = "The parent matrix you are trying to modify is not encoded as " + cNetCDF.Defaults.GenotypeEncoding.O1234;
-		public static final String warnNotAB12 = "The parent matrix you are trying to modify is not encoded as " + cNetCDF.Defaults.GenotypeEncoding.AB0 + " or " + cNetCDF.Defaults.GenotypeEncoding.O12;
-		public static final String warnNotACGTor1234 = "The parent matrix you are trying to modify is not encoded as " + cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString() + " or " + cNetCDF.Defaults.GenotypeEncoding.O1234;
+		public static final String warnNotACGT = "The parent matrix you are trying to modify is not encoded as " + NetCDFConstants.Defaults.GenotypeEncoding.ACGT0.toString();
+		public static final String warnNot1234 = "The parent matrix you are trying to modify is not encoded as " + NetCDFConstants.Defaults.GenotypeEncoding.O1234;
+		public static final String warnNotAB12 = "The parent matrix you are trying to modify is not encoded as " + NetCDFConstants.Defaults.GenotypeEncoding.AB0 + " or " + NetCDFConstants.Defaults.GenotypeEncoding.O12;
+		public static final String warnNotACGTor1234 = "The parent matrix you are trying to modify is not encoded as " + NetCDFConstants.Defaults.GenotypeEncoding.ACGT0.toString() + " or " + NetCDFConstants.Defaults.GenotypeEncoding.O1234;
 		public static final String extract = "Extract";
 		public static final String extractToNewMatrix = "Extract data to new Matrix";
 		public static final String exportMatrix = "Export Matrix";

@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -98,7 +98,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 		if (censusOpKey != null) {
 			OperationMetadata censusOpMetadata = OperationsList.getOperationMetadata(censusOpKey);
 			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(censusOpMetadata.getParent(), OPType.MARKER_QA).get(0));
-			return new HardyWeinbergOperationParams(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
+			return new HardyWeinbergOperationParams(censusOpKey, NetCDFConstants.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 		}
 
 		return null;
