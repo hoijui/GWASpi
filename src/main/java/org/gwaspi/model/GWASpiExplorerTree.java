@@ -42,7 +42,7 @@ import org.gwaspi.gui.CurrentMatrixPanel;
 import org.gwaspi.gui.CurrentStudyPanel;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.IntroPanel;
-import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.DataSetAnalysePanel;
 import org.gwaspi.gui.MatrixMarkerQAPanel;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.StudyManagementPanel;
@@ -315,7 +315,7 @@ public class GWASpiExplorerTree {
 								newContent = emptyPanel;
 							} break;
 							default: {
-								newContent = new MatrixAnalysePanel(new DataSetKey(currentOPKey)); // XXX this does not make much sense, does it?
+								newContent = new DataSetAnalysePanel(new DataSetKey(currentOPKey)); // XXX this does not make much sense, does it?
 							}
 						}
 					} break;

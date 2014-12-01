@@ -143,7 +143,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		btn_Delete.setAction(new DeleteMatrixAction(matrix, this));
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_desc));
-		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(this, matrix, tbl_OperationsTable));
+		btn_DeleteOperation.setAction(new DataSetAnalysePanel.DeleteOperationAction(this, matrix, tbl_OperationsTable));
 		btn_Operation1_1.setAction(new AnalyseDataAction(abstractMatrix));
 		btn_Operation1_2.setAction(new ExtractMatrixAction(new DataSetKey(matrix)));
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
@@ -213,7 +213,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(parentKey));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new DataSetAnalysePanel(parentKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
