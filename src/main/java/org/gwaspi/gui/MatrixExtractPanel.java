@@ -53,11 +53,10 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.threadbox.CommonRunnable;
@@ -93,7 +92,7 @@ public class MatrixExtractPanel extends JPanel {
 		"rsId"
 	};
 
-	private final MatrixKey parentMatrixKey;
+	private final DataSetKey parentDataSetKey;
 	private final List<Object[]> markerPickerTable;
 	private final List<Object[]> samplePickerTable;
 	private final JButton btn_Back;
@@ -126,10 +125,10 @@ public class MatrixExtractPanel extends JPanel {
 	private final JTextField txt_NewMatrixName;
 	private final JTextField txt_SamplesCriteriaFile;
 
-	public MatrixExtractPanel(MatrixKey parentMatrixKey, String newMatrixName, String newMatrixDesc) throws IOException {
+	public MatrixExtractPanel(final DataSetKey parentDataSetKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
-		this.parentMatrixKey = parentMatrixKey;
-		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		this.parentDataSetKey = parentDataSetKey;
+		final DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
 
 		this.markerPickerTable = new ArrayList<Object[]>();
 		this.samplePickerTable = new ArrayList<Object[]>();
@@ -203,7 +202,7 @@ public class MatrixExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
-		lbl_ParentMatrixName.setText(matrixMetadata.getFriendlyName());
+		lbl_ParentMatrixName.setText(dataSetMetadata.getFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
@@ -282,7 +281,7 @@ public class MatrixExtractPanel extends JPanel {
 			markerPickerTable.get(6)[0].toString()};
 		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
-		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrixKey, txtA_MarkersCriteria));
+		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentDataSetKey, txtA_MarkersCriteria));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
 		txtA_MarkersCriteria.setColumns(20);
@@ -499,7 +498,7 @@ public class MatrixExtractPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(new DataSetKey(parentMatrixKey)));
+		btn_Back.setAction(new BackAction(parentDataSetKey));
 
 		btn_Go.setAction(new ExtractAction());
 
@@ -649,7 +648,7 @@ public class MatrixExtractPanel extends JPanel {
 					}
 
 					final MatrixDataExtractorParams params = new MatrixDataExtractorParams(
-							new DataSetKey(parentMatrixKey),
+							parentDataSetKey,
 							description,
 							newMatrixName,
 							markerCriteriaFile,
@@ -707,12 +706,12 @@ public class MatrixExtractPanel extends JPanel {
 
 	private static class MarkersVariableAction extends AbstractAction { // FIXME make static
 
-		private final MatrixKey parentMatrixKey;
+		private final DataSetKey parentDataSetKey;
 		private final JTextArea txtA_MarkersCriteria;
 
-		MarkersVariableAction(MatrixKey parentMatrixKey, JTextArea txtA_MarkersCriteria) throws IOException {
+		MarkersVariableAction(final DataSetKey parentDataSetKey, JTextArea txtA_MarkersCriteria) throws IOException {
 
-			this.parentMatrixKey = parentMatrixKey;
+			this.parentDataSetKey = parentDataSetKey;
 			this.txtA_MarkersCriteria = txtA_MarkersCriteria;
 			putValue(NAME, Text.Trafo.variable);
 		}
@@ -737,7 +736,7 @@ public class MatrixExtractPanel extends JPanel {
 			if (selectedIndex == 1 || selectedIndex == 4) {
 				// Chromosome variables
 				// NOTE The here created String (list of marker IDs) may easily be 10MB+ large!
-				DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+				final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(parentDataSetKey);
 				String markerIdsList;
 				try {
 					markerIdsList = createMarkerIdsList(dataSetSource);

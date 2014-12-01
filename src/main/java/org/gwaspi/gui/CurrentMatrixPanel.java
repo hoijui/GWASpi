@@ -145,7 +145,7 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_desc));
 		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(this, matrix, tbl_OperationsTable));
 		btn_Operation1_1.setAction(new AnalyseDataAction(abstractMatrix));
-		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
+		btn_Operation1_2.setAction(new ExtractMatrixAction(new DataSetKey(matrix)));
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
 		btn_Operation1_4.setAction(new ExportMatrixAction(matrixMetadata));
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
@@ -156,18 +156,18 @@ public class CurrentMatrixPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class ExtractMatrixAction extends AbstractAction {
 
-		private final MatrixKey matrix;
+		private final DataSetKey dataSetKey;
 
-		ExtractMatrixAction(MatrixKey matrix) {
+		ExtractMatrixAction(final DataSetKey dataSetKey) {
 
-			this.matrix = matrix;
+			this.dataSetKey = dataSetKey;
 			putValue(NAME, Text.Trafo.extractData);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix, "", ""));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(dataSetKey, "", ""));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
