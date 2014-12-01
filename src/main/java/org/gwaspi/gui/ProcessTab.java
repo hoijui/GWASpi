@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessTab extends JPanel implements TaskQueueListener {
 
-	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
+	private static final Logger log = LoggerFactory.getLogger(ProcessTab.class);
 
 	private final JPanel pnl_progress;
 	private final List<SwingProgressListener> taskProgressDisplays;
