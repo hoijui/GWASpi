@@ -167,7 +167,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(dataSetKey, "", ""));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new DataSetExtractPanel(dataSetKey, "", ""));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

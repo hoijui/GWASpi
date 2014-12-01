@@ -65,10 +65,10 @@ import org.gwaspi.threadbox.Threaded_ExtractMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatrixExtractPanel extends JPanel {
+public class DataSetExtractPanel extends JPanel {
 
 	private static final Logger log
-			= LoggerFactory.getLogger(MatrixExtractPanel.class);
+			= LoggerFactory.getLogger(DataSetExtractPanel.class);
 
 	/**
 	 * These must match the DB fields == SampleInfo property names.
@@ -125,7 +125,7 @@ public class MatrixExtractPanel extends JPanel {
 	private final JTextField txt_NewMatrixName;
 	private final JTextField txt_SamplesCriteriaFile;
 
-	public MatrixExtractPanel(final DataSetKey parentDataSetKey, String newMatrixName, String newMatrixDesc) throws IOException {
+	public DataSetExtractPanel(final DataSetKey parentDataSetKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
 		this.parentDataSetKey = parentDataSetKey;
 		final DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
