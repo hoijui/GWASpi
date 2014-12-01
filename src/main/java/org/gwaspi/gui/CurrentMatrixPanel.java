@@ -149,7 +149,7 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
 		btn_Operation1_4.setAction(new ExportMatrixAction(matrixMetadata));
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
-		btn_Back.setAction(new LoadDataPanel.BackAction(matrix.getStudyKey()));
+		btn_Back.setAction(new BackAction(matrix.getStudyKey()));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 	}
 

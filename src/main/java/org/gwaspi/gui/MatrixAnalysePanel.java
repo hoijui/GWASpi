@@ -699,25 +699,4 @@ public class MatrixAnalysePanel extends JPanel {
 			}
 		}
 	}
-
-	public static class BackAction extends AbstractAction {
-
-		private final DataSetKey parentElementKey;
-
-		public BackAction(DataSetKey parentElementKey) {
-
-			this.parentElementKey = parentElementKey;
-			final boolean hasParent = (parentElementKey != null);
-			if (!hasParent) {
-				putValue(SHORT_DESCRIPTION, "There is no parent");
-			}
-			setEnabled(hasParent);
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().selectNode(parentElementKey);
-		}
-	}
 }

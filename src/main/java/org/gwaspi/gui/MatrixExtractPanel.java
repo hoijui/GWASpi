@@ -499,7 +499,7 @@ public class MatrixExtractPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey)));
+		btn_Back.setAction(new BackAction(new DataSetKey(parentMatrixKey)));
 
 		btn_Go.setAction(new ExtractAction());
 

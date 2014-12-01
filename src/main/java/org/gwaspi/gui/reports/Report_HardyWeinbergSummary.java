@@ -50,8 +50,8 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
@@ -203,7 +203,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 

@@ -896,20 +896,4 @@ public class LoadDataPanel extends JPanel {
 		return buttonsOK;
 	}
 	//</editor-fold>
-
-	public static class BackAction extends AbstractAction {
-
-		private final StudyKey studyKey;
-
-		public BackAction(StudyKey studyKey) {
-
-			this.studyKey = studyKey;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().selectNode(studyKey);
-		}
-	}
 }

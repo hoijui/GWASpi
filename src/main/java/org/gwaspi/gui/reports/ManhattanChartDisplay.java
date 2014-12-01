@@ -39,8 +39,8 @@ import javax.swing.LayoutStyle;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
@@ -143,7 +143,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="">
 		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
 
-		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(operationKey)));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);

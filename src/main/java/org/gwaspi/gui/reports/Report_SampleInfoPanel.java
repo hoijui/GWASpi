@@ -38,8 +38,8 @@ import javax.swing.table.TableRowSorter;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.LoadDataPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
@@ -149,7 +149,7 @@ public class Report_SampleInfoPanel extends JPanel {
 		//</editor-fold>
 
 		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable, this));
-		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
+		btn_Back.setAction(new BackAction(studyKey));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInfoReport));
 
 		actionLoadReport();

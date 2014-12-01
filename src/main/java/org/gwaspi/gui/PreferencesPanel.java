@@ -124,7 +124,7 @@ public class PreferencesPanel extends JPanel {
 		tbl_PreferencesTable.setModel(new PreferencesTableModel());
 		scrl_PreferencesTable.setViewportView(tbl_PreferencesTable);
 
-		btn_Back.setAction(new StudyManagementPanel.BackAction());
+		btn_Back.setAction(new BackAction());
 
 		resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
 		btn_Reset.setAction(resetPreferencesAction);

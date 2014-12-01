@@ -251,7 +251,7 @@ public class MatrixTrafoPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Back.setAction(new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey)));
+		btn_Back.setAction(new BackAction(new DataSetKey(parentMatrixKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixTranslate));
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">

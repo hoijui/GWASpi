@@ -389,17 +389,4 @@ public class StudyManagementPanel extends JPanel {
 			}
 		}
 	}
-
-	public static class BackAction extends AbstractAction {
-
-		public BackAction() {
-
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().selectNode(0);
-		}
-	}
 }

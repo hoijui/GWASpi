@@ -119,7 +119,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 					TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION,
 					new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(parentMatrixMetadata.getDescription().toString());
+			txtA_Description.setText(parentMatrixMetadata.getDescription());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
@@ -146,7 +146,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		//</editor-fold>
 
-		Action backAction = new MatrixAnalysePanel.BackAction(new DataSetKey(parentMatrixKey));
+		Action backAction = new BackAction(new DataSetKey(parentMatrixKey));
 		btn_Back.setAction(backAction);
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 

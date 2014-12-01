@@ -34,7 +34,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetKey;
@@ -133,7 +133,7 @@ public class Report_AnalysisPanel extends JPanel {
 		pnl_Report = pnl_ReportTmp;
 		pnl_Report.setBorder(BorderFactory.createTitledBorder("Report"));
 
-		btn_Back.setAction(new MatrixAnalysePanel.BackAction(parent));
+		btn_Back.setAction(new BackAction(parent));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(null)); // FIXME no help implemented yet
 
