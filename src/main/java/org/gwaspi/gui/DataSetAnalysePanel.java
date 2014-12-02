@@ -19,6 +19,7 @@ package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Window;
@@ -151,6 +152,14 @@ public class DataSetAnalysePanel extends JPanel {
 		pnl_operationsTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
 		tbl_operationsTable.setModel(new OperationsTableModel(subOperations));
 		tbl_operationsTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		// this returns a reasonable width (based on the actual columns),
+		// but 0 height (only the header would be visible)
+		final Dimension preferredSize = tbl_operationsTable.getPreferredSize();
+		// so we set a sane minimum height
+		preferredSize.height = 100;
+		tbl_operationsTable.setPreferredScrollableViewportSize(preferredSize);
+		tbl_operationsTable.setFillsViewportHeight(true);
+		tbl_operationsTable.setAutoCreateColumnsFromModel(false);
 		scrl_operationsTable.setViewportView(tbl_operationsTable);
 		btn_DeleteOperation.setBackground(CurrentStudyPanel.DANGER_RED);
 		pnl_operationsTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
