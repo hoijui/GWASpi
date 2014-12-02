@@ -49,8 +49,7 @@ import org.slf4j.LoggerFactory;
 
 public class IntroPanel extends JPanel {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(IntroPanel.class);
+	private static final Logger log = LoggerFactory.getLogger(IntroPanel.class);
 
 	// Variables declaration - do not modify
 	private JScrollPane scrl_Logo;
@@ -68,7 +67,6 @@ public class IntroPanel extends JPanel {
 	private JButton btn_start;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	public IntroPanel() {
 		scrl_Logo = new JScrollPane();
 		pnl_Logo = new JPanel();
@@ -84,10 +82,8 @@ public class IntroPanel extends JPanel {
 		btn_preferences = new JButton();
 		btn_start = new JButton();
 
-
 		//setBorder(BorderFactory.createTitledBorder(null, Text.App.appName, border.TitledBorder.DEFAULT_JUSTIFICATION, border.TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 		setBorder(BorderFactory.createTitledBorder(""));
-
 
 		//<editor-fold defaultstate="expanded" desc="LOGO LAYOUT">
 		scrl_Logo.setMaximumSize(new Dimension(190, 151));
@@ -161,8 +157,6 @@ public class IntroPanel extends JPanel {
 				.addGap(0, 100, Short.MAX_VALUE));
 
 		scroll_IBE.setViewportView(pnl_IBE);
-
-
 		//</editor-fold>
 
 		btn_exit.setAction(new ExitAction());
