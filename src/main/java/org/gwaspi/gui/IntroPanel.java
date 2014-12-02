@@ -53,35 +53,29 @@ public class IntroPanel extends JPanel {
 
 	public IntroPanel() {
 
-		final JScrollPane scroll_About = new JScrollPane();
-		final JTextPane txtP_About = new JTextPane();
-		final JScrollPane scroll_Help = new JScrollPane();
-		final JList list_Help = new JList();
-		final JScrollPane scroll_Contact = new JScrollPane();
-		final JTextPane txtP_Contact = new JTextPane();
-		final JButton btn_exit = new JButton();
-		final JButton btn_preferences = new JButton();
-		final JButton btn_start = new JButton();
-
 		//setBorder(BorderFactory.createTitledBorder(null, Text.App.appName, border.TitledBorder.DEFAULT_JUSTIFICATION, border.TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 		setBorder(BorderFactory.createTitledBorder(""));
 
 		//<editor-fold defaultstate="expanded" desc="LOGOS LAYOUT">
-		JButton btn_logo = new JButton();
+		final JButton btn_logo = new JButton();
 		btn_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btn_logo.setAction(new BrowseHomepageAction());
 		btn_logo.setMaximumSize(new Dimension(185, 150));
 		btn_logo.setPreferredSize(new Dimension(185, 150));
 
-		JButton btn_logoIbe = new JButton();
+		final JButton btn_logoIbe = new JButton();
 		btn_logoIbe.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btn_logoIbe.setAction(new BrowseInbAction());
 		//</editor-fold>
 
+		final JScrollPane scroll_About = new JScrollPane();
+		final JTextPane txtP_About = new JTextPane();
 		txtP_About.setEditable(false);
 		txtP_About.setText(Text.App.appDescription);
 		scroll_About.setViewportView(txtP_About);
 
+		final JScrollPane scroll_Help = new JScrollPane();
+		final JList list_Help = new JList();
 		list_Help.setBorder(BorderFactory.createTitledBorder(null, Text.Help.aboutHelp, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		list_Help.setModel(new AbstractListModel() {
 			@Override
@@ -116,6 +110,8 @@ public class IntroPanel extends JPanel {
 		scroll_Help.setViewportView(list_Help);
 
 		//<editor-fold defaultstate="expanded" desc="CONTACT">
+		final JScrollPane scroll_Contact = new JScrollPane();
+		final JTextPane txtP_Contact = new JTextPane();
 		txtP_Contact.setText(
 				Text.App.cite + "\n"
 				+ "Contact information: " + Text.App.contact + "\n"
@@ -124,10 +120,12 @@ public class IntroPanel extends JPanel {
 		scroll_Contact.setViewportView(txtP_Contact);
 		//</editor-fold>
 
+		final JButton btn_exit = new JButton();
+		final JButton btn_preferences = new JButton();
+		final JButton btn_start = new JButton();
+
 		btn_exit.setAction(new ExitAction());
-
 		btn_preferences.setAction(new OpenPreferencesAction());
-
 		btn_start.setAction(new StartAction());
 
 		// <editor-fold defaultstate="expanded" desc="LAYOUT">
