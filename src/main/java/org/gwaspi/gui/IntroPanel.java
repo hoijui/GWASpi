@@ -51,29 +51,17 @@ public class IntroPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(IntroPanel.class);
 
-	// Variables declaration - do not modify
-	private JList list_Help;
-	private JScrollPane scroll_About;
-	private JScrollPane scroll_Contact;
-	private JScrollPane scroll_Help;
-	private JTextPane txtP_About;
-	private JTextPane txtP_Contact;
-	private JButton btn_exit;
-	private JButton btn_preferences;
-	private JButton btn_start;
-	// End of variables declaration
-
 	public IntroPanel() {
 
-		scroll_About = new JScrollPane();
-		txtP_About = new JTextPane();
-		scroll_Help = new JScrollPane();
-		list_Help = new JList();
-		scroll_Contact = new JScrollPane();
-		txtP_Contact = new JTextPane();
-		btn_exit = new JButton();
-		btn_preferences = new JButton();
-		btn_start = new JButton();
+		final JScrollPane scroll_About = new JScrollPane();
+		final JTextPane txtP_About = new JTextPane();
+		final JScrollPane scroll_Help = new JScrollPane();
+		final JList list_Help = new JList();
+		final JScrollPane scroll_Contact = new JScrollPane();
+		final JTextPane txtP_Contact = new JTextPane();
+		final JButton btn_exit = new JButton();
+		final JButton btn_preferences = new JButton();
+		final JButton btn_start = new JButton();
 
 		//setBorder(BorderFactory.createTitledBorder(null, Text.App.appName, border.TitledBorder.DEFAULT_JUSTIFICATION, border.TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 		setBorder(BorderFactory.createTitledBorder(""));
