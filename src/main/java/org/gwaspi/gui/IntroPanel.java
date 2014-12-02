@@ -52,10 +52,6 @@ public class IntroPanel extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(IntroPanel.class);
 
 	// Variables declaration - do not modify
-	private JScrollPane scrl_Logo;
-	private JPanel pnl_Logo;
-	private JScrollPane scroll_IBE;
-	private JPanel pnl_IBE;
 	private JList list_Help;
 	private JScrollPane scroll_About;
 	private JScrollPane scroll_Contact;
@@ -68,10 +64,7 @@ public class IntroPanel extends JPanel {
 	// End of variables declaration
 
 	public IntroPanel() {
-		scrl_Logo = new JScrollPane();
-		pnl_Logo = new JPanel();
-		scroll_IBE = new JScrollPane();
-		pnl_IBE = new JPanel();
+
 		scroll_About = new JScrollPane();
 		txtP_About = new JTextPane();
 		scroll_Help = new JScrollPane();
@@ -85,21 +78,16 @@ public class IntroPanel extends JPanel {
 		//setBorder(BorderFactory.createTitledBorder(null, Text.App.appName, border.TitledBorder.DEFAULT_JUSTIFICATION, border.TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 		setBorder(BorderFactory.createTitledBorder(""));
 
-		//<editor-fold defaultstate="expanded" desc="LOGO LAYOUT">
-		scrl_Logo.setMaximumSize(new Dimension(190, 151));
-		scrl_Logo.setPreferredSize(new Dimension(190, 151));
+		//<editor-fold defaultstate="expanded" desc="LOGOS LAYOUT">
+		JButton btn_logo = new JButton();
+		btn_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btn_logo.setAction(new BrowseHomepageAction());
+		btn_logo.setMaximumSize(new Dimension(185, 150));
+		btn_logo.setPreferredSize(new Dimension(185, 150));
 
-		pnl_Logo.setMaximumSize(new Dimension(185, 150));
-		pnl_Logo.setPreferredSize(new Dimension(185, 150));
-
-		GroupLayout pnl_LogoLayout = new GroupLayout(pnl_Logo);
-		pnl_Logo.setLayout(pnl_LogoLayout);
-		pnl_LogoLayout.setHorizontalGroup(
-				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 188, Short.MAX_VALUE));
-		pnl_LogoLayout.setVerticalGroup(
-				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 157, Short.MAX_VALUE));
+		JButton btn_logoIbe = new JButton();
+		btn_logoIbe.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btn_logoIbe.setAction(new BrowseInbAction());
 		//</editor-fold>
 
 		txtP_About.setEditable(false);
@@ -139,24 +127,13 @@ public class IntroPanel extends JPanel {
 		});
 		scroll_Help.setViewportView(list_Help);
 
-		//<editor-fold defaultstate="expanded" desc="CONTACT + IBE">
+		//<editor-fold defaultstate="expanded" desc="CONTACT">
 		txtP_Contact.setText(
 				Text.App.cite + "\n"
 				+ "Contact information: " + Text.App.contact + "\n"
 				+ "Authors: " + Text.App.authors + "\n"
 				+ "License: " + Text.App.license);
 		scroll_Contact.setViewportView(txtP_Contact);
-
-		GroupLayout pnl_IBELayout = new GroupLayout(pnl_IBE);
-		pnl_IBE.setLayout(pnl_IBELayout);
-		pnl_IBELayout.setHorizontalGroup(
-				pnl_IBELayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 254, Short.MAX_VALUE));
-		pnl_IBELayout.setVerticalGroup(
-				pnl_IBELayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGap(0, 100, Short.MAX_VALUE));
-
-		scroll_IBE.setViewportView(pnl_IBE);
 		//</editor-fold>
 
 		btn_exit.setAction(new ExitAction());
@@ -175,13 +152,13 @@ public class IntroPanel extends JPanel {
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 				.addComponent(scroll_Help, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
 				.addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-				.addComponent(scrl_Logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(scroll_About, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
 				.addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
 				.addComponent(scroll_Contact, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scroll_IBE, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)))
+				.addComponent(btn_logoIbe, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)))
 				.addContainerGap())
 				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 				.addGap(30, 30, 30)
@@ -196,23 +173,21 @@ public class IntroPanel extends JPanel {
 				.addGroup(layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
 				.addComponent(scroll_About, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
-				.addComponent(scrl_Logo, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+				.addComponent(btn_logo, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(scroll_Help, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
 				.addGap(11, 11, 11)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(scroll_Contact, GroupLayout.DEFAULT_SIZE, 122, GroupLayout.PREFERRED_SIZE)
-				.addComponent(scroll_IBE, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addComponent(btn_logoIbe, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGap(18, 18, 18)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_start)
 				.addComponent(btn_exit)
 				.addComponent(btn_preferences))
 				.addContainerGap()));
-		layout.linkSize(SwingConstants.VERTICAL, new Component[]{scroll_Contact, scroll_IBE});
+		layout.linkSize(SwingConstants.VERTICAL, new Component[] {scroll_Contact, btn_logoIbe});
 		// </editor-fold>
-
-		initLogo();
 	}
 
 	private static class OpenPreferencesAction extends AbstractAction {
@@ -261,60 +236,47 @@ public class IntroPanel extends JPanel {
 		}
 	}
 
-	protected void initLogo() {
-		URL logoPath = this.getClass().getResource("/img/logo/logo_white.png");
-		Icon logo = new ImageIcon(logoPath);
+	private static class BrowseHomepageAction extends AbstractAction {
 
-		JButton btn_logo = new JButton(logo);
-		btn_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btn_logo.setBorder(null);
-		btn_logo.addMouseListener(new MouseAdapter() {
-			/**
-			 * check for double click
-			 */
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				try {
-					list_HelpMouseReleased(evt);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
-			}
+		BrowseHomepageAction() {
 
-			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
+			final URL logoPath = this.getClass().getResource("/img/logo/logo_white.png");
+			final Icon logo = new ImageIcon(logoPath);
+
+			putValue(LARGE_ICON_KEY, logo);
+			putValue(NAME, "");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+
+			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(0).getUrl());
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-		});
+		}
+	}
 
-		scrl_Logo.getViewport().add(btn_logo);
-		pnl_Logo.add(scrl_Logo, BorderLayout.CENTER);
+	private static class BrowseInbAction extends AbstractAction {
 
+		BrowseInbAction() {
 
-		URL ibePath = this.getClass().getResource("/img/logo/logo_INB2.png");
-		Icon inbLogo = new ImageIcon(ibePath);
+			final URL logoPath = this.getClass().getResource("/img/logo/logo_INB2.png");
+			final Icon logo = new ImageIcon(logoPath);
 
-		JButton btn_inblogo = new JButton(inbLogo);
-		btn_inblogo.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btn_inblogo.setBorder(null);
-		btn_inblogo.addMouseListener(new MouseAdapter() {
-			/**
-			 * check for double click
-			 */
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				try {
-					list_HelpMouseReleased(evt);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
-			}
+			putValue(LARGE_ICON_KEY, logo);
+			putValue(NAME, "");
+		}
 
-			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+
+			try {
 				URLInDefaultBrowser.browseGenericURL("http://www.inab.org/");
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-		});
-
-		scroll_IBE.getViewport().add(btn_inblogo);
-		pnl_IBE.add(scroll_IBE, BorderLayout.CENTER);
+		}
 	}
 }
