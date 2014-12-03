@@ -20,7 +20,6 @@ package org.gwaspi.gui;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -38,7 +36,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
@@ -65,8 +62,7 @@ public class IntroPanel extends JPanel {
 		gridBagConstraints.weightx = 0.0;
 		gridBagConstraints.weighty = 0.0;
 
-		//setBorder(BorderFactory.createTitledBorder(null, Text.App.appName, border.TitledBorder.DEFAULT_JUSTIFICATION, border.TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
-		setBorder(BorderFactory.createTitledBorder(""));
+		setBorder(GWASpiExplorerPanel.createRegularTitledBorder(""));
 
 		final JButton btn_logo = new JButton();
 		btn_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -100,7 +96,7 @@ public class IntroPanel extends JPanel {
 
 		final JScrollPane scroll_Help = new JScrollPane();
 		final JList list_Help = new JList();
-		list_Help.setBorder(BorderFactory.createTitledBorder(null, Text.Help.aboutHelp, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		list_Help.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Help.aboutHelp)); // NOI18N
 		list_Help.setModel(new HelpListModel());
 		list_Help.addMouseListener(new HelpListMouseListener());
 		scroll_Help.setViewportView(list_Help);
