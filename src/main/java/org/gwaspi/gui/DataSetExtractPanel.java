@@ -132,7 +132,12 @@ public class DataSetExtractPanel extends JPanel {
 	public DataSetExtractPanel(final DataSetKey parentDataSetKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
 		this.parentDataSetKey = parentDataSetKey;
-		final DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
+		final DataSetMetadata dataSetMetadata;
+		if (parentDataSetKey == null) {
+			dataSetMetadata = null;
+		} else {
+			dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
+		}
 
 		this.markerPickerTable = new ArrayList<PickMethod<SetMarkerPickCase>>();
 		markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
@@ -223,7 +228,7 @@ public class DataSetExtractPanel extends JPanel {
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
 		lbl_ParentMatrix.setLabelFor(lbl_ParentMatrixName);
-		lbl_ParentMatrixName.setText(dataSetMetadata.getFriendlyName());
+		lbl_ParentMatrixName.setText((dataSetMetadata == null) ? "<no data-set given>" : dataSetMetadata.getFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		lbl_NewMatrixName.setLabelFor(txt_NewMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));

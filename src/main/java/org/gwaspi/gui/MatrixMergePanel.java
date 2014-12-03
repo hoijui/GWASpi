@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -64,7 +65,6 @@ public class MatrixMergePanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private final MatrixKey parentMatrixKey;
-	private final List<Object[]> matrixItems;
 	private final JButton btn_Back;
 	private final JButton btn_Help;
 	private final JButton btn_Merge;
@@ -91,8 +91,15 @@ public class MatrixMergePanel extends JPanel {
 	public MatrixMergePanel(MatrixKey parentMatrixKey) throws IOException {
 
 		this.parentMatrixKey = parentMatrixKey;
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
-		matrixItems = getMatrixItems(parentMatrixKey.getStudyKey());
+		final MatrixMetadata parentMatrixMetadata;
+		final List<Object[]> matrixItems;
+		if (parentMatrixKey == null) {
+			parentMatrixMetadata = null;
+			matrixItems = Collections.EMPTY_LIST;
+		} else {
+			parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			matrixItems = getMatrixItems(parentMatrixKey.getStudyKey());
+		}
 
 		mergeMethod = new ButtonGroup();
 		pnl_ParentMatrixDesc = new JPanel();
@@ -119,12 +126,14 @@ public class MatrixMergePanel extends JPanel {
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.mergeMatrices)); // NOI18N
 
 		pnl_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
-				Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName())); // NOI18N
+				Text.Matrix.parentMatrix + " " + ((parentMatrixMetadata == null) ? "<NONE>"
+						: parentMatrixMetadata.getFriendlyName()))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.All.description));
-		txtA_ParentMatrixDesc.setText(parentMatrixMetadata.getDescription());
+		txtA_ParentMatrixDesc.setText((parentMatrixMetadata == null) ? "<NONE>"
+				: parentMatrixMetadata.getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 

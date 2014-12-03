@@ -53,7 +53,12 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	public MatrixMarkerQAPanel(final MatrixKey parentMatrixKey, final int opId) throws IOException {
 
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		final MatrixMetadata parentMatrixMetadata;
+		if (parentMatrixKey == null) {
+			parentMatrixMetadata = null;
+		} else {
+			parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		}
 
 		final OperationMetadata currentOP;
 		if (opId != OperationKey.NULL_ID) {
@@ -90,8 +95,10 @@ public class MatrixMarkerQAPanel extends JPanel {
 					: currentOP.getDescription());
 		} else {
 			pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
-					Text.Matrix.matrix + ": " + parentMatrixMetadata.getFriendlyName())); // NOI18N
-			txtA_Description.setText(parentMatrixMetadata.getDescription());
+					Text.Matrix.matrix + ": " + ((parentMatrixMetadata == null) ? NONE
+							: parentMatrixMetadata.getFriendlyName()))); // NOI18N
+			txtA_Description.setText((parentMatrixMetadata == null) ? NONE
+					: parentMatrixMetadata.getDescription());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 

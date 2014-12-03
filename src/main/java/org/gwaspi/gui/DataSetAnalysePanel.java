@@ -104,15 +104,22 @@ public class DataSetAnalysePanel extends JPanel {
 	public DataSetAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
 		this.observedElementKey = observedElementKey;
-		final DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
 		final DataSetKey parent;
-		if (observedElementKey.isOperation()) {
-			currentOP = OperationsList.getOperationMetadata(observedElementKey.getOperationParent());
-			parent = currentOP.getParent();
-		} else {
+		final DataSetMetadata observedElementMetadata;
+		if (observedElementKey == null) {
+			observedElementMetadata = null;
 			currentOP = null;
 			parent = null;
+		} else {
+			observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
+			if (observedElementKey.isOperation()) {
+				currentOP = OperationsList.getOperationMetadata(observedElementKey.getOperationParent());
+				parent = currentOP.getParent();
+			} else {
+				currentOP = null;
+				parent = null;
+			}
 		}
 
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
@@ -121,13 +128,20 @@ public class DataSetAnalysePanel extends JPanel {
 		gwasInOneGoAction.setEnabled(currentOP == null);
 
 //		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(observedElementKey);
-		final List<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
+		final List<OperationMetadata> subOperations;
+		if (observedElementKey == null) {
+			subOperations = Collections.EMPTY_LIST;
+		} else {
+			subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
+		}
 
 		JPanel pnl_desc = new JPanel();
 		JScrollPane scrl_desc = new JScrollPane();
 		JTextArea txtA_desc = new JTextArea();
 		final String title;
-		if (observedElementKey.isOperation()) {
+		if (observedElementKey == null) {
+			title = "No data-set specified";
+		} else if (observedElementKey.isOperation()) {
 			title
 					= Text.Operation.operation + ": " + observedElementMetadata.getFriendlyName()
 					+ ", " + Text.Operation.operationId + ": " + observedElementMetadata.getDataSetKey().getOperationParent().getId();
@@ -140,7 +154,7 @@ public class DataSetAnalysePanel extends JPanel {
 		txtA_desc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
 		txtA_desc.setColumns(20);
 		txtA_desc.setRows(5);
-		txtA_desc.setText(observedElementMetadata.getDescription());
+		txtA_desc.setText((observedElementMetadata == null) ? "<No data-set specified>" : observedElementMetadata.getDescription());
 		scrl_desc.setViewportView(txtA_desc);
 		pnl_desc.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
 		pnl_desc.add(scrl_desc, BorderLayout.CENTER);
@@ -206,6 +220,10 @@ public class DataSetAnalysePanel extends JPanel {
 		this.add(pnl_desc, BorderLayout.NORTH);
 		this.add(pnl_operationsTable, BorderLayout.CENTER);
 		this.add(pnl_Bottom, BorderLayout.SOUTH);
+
+		if (observedElementKey == null) {
+			return;
+		}
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(this, observedElementKey.getOrigin(), tbl_operationsTable));
 		btn_gwasInOneGoAction.setAction(gwasInOneGoAction);
