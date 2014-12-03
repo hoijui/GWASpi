@@ -381,7 +381,7 @@ public class Text {
 		public static final String id = "ID";
 		public static final String processeName = "Process Name";
 		public static final String endTime = "End Time";
-		public static final String queueState = "Activity";
+		public static final String queueState = "State";
 		public static final String cantDeleteRequiredItem = App.appName + " can't delete this Item!\nThis Item is required for a process in the pending processes queue.";
 		public static final String abortingProcess = "********* Process Aborted! **********";
 
