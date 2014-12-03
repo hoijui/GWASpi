@@ -101,36 +101,8 @@ public class IntroPanel extends JPanel {
 		final JScrollPane scroll_Help = new JScrollPane();
 		final JList list_Help = new JList();
 		list_Help.setBorder(BorderFactory.createTitledBorder(null, Text.Help.aboutHelp, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		list_Help.setModel(new AbstractListModel() {
-			@Override
-			public int getSize() {
-				return HelpURLs.INTRO_LINKS.size();
-			}
-
-			@Override
-			public Object getElementAt(int i) {
-				return HelpURLs.INTRO_LINKS.get(i).getLabel();
-			}
-		});
-		list_Help.addMouseListener(new MouseAdapter() {
-			/**
-			 * check for double click
-			 */
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				if (evt.getClickCount() == 2) {
-					try {
-						list_HelpMouseReleased(evt);
-					} catch (IOException ex) {
-						log.error(null, ex);
-					}
-				}
-			}
-
-			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(list_Help.getSelectedIndex()).getUrl());
-			}
-		});
+		list_Help.setModel(new HelpListModel());
+		list_Help.addMouseListener(new HelpListMouseListener());
 		scroll_Help.setViewportView(list_Help);
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 2;
@@ -181,6 +153,38 @@ public class IntroPanel extends JPanel {
 		btn_exit.setAction(new ExitAction());
 		btn_preferences.setAction(new OpenPreferencesAction());
 		btn_start.setAction(new StartAction());
+	}
+
+	private static class HelpListModel extends AbstractListModel {
+
+		@Override
+		public int getSize() {
+			return HelpURLs.INTRO_LINKS.size();
+		}
+
+		@Override
+		public Object getElementAt(int i) {
+			return HelpURLs.INTRO_LINKS.get(i).getLabel();
+		}
+	}
+
+	private static class HelpListMouseListener extends MouseAdapter {
+
+		@Override
+		public void mouseClicked(MouseEvent evt) {
+			// check for double click
+			if (evt.getClickCount() == 2) {
+				try {
+					list_HelpMouseReleased(evt);
+				} catch (IOException ex) {
+					log.error(null, ex);
+				}
+			}
+		}
+
+		private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
+			URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(((JList) evt.getSource()).getSelectedIndex()).getUrl());
+		}
 	}
 
 	private static class OpenPreferencesAction extends AbstractAction {
