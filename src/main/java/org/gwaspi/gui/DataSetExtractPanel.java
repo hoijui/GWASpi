@@ -19,7 +19,6 @@ package org.gwaspi.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -30,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -43,7 +41,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetSamplePickCase;
@@ -162,7 +159,7 @@ public class DataSetExtractPanel extends JPanel {
 		this.btn_Back = new JButton();
 		this.btn_Go = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extractData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.extractData)); // NOI18N
 
 		markerPickerTable.add(new Object[] {"All Markers", SetMarkerPickCase.ALL_MARKERS, null});
 		for (String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
@@ -197,9 +194,9 @@ public class DataSetExtractPanel extends JPanel {
 				pickableSampleField});
 		}
 
-		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extratedMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_MarkerZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.markerSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_NameAndDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.extratedMatrixDetails)); // NOI18N
+		pnl_MarkerZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.markerSelectZone)); // NOI18N
+		pnl_SampleZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.sampleSelectZone)); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
 		lbl_ParentMatrixName.setText(dataSetMetadata.getFriendlyName());
@@ -208,7 +205,7 @@ public class DataSetExtractPanel extends JPanel {
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
-		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
