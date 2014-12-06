@@ -88,10 +88,10 @@ public class Threaded_Test extends CommonRunnable {
 
 		final MatrixKey matrixKey = censusOpKey.getParentMatrixKey();
 		this.taskLockProperties = new TaskLockProperties();
-		this.taskLockProperties.getStudyIds().add(matrixKey.getStudyId());
-		this.taskLockProperties.getMatricesIds().add(matrixKey.getMatrixId());
-		this.taskLockProperties.getOperationsIds().add(censusOpKey.getId());
-		this.taskLockProperties.getOperationsIds().add(hwOpKey.getId());
+		this.taskLockProperties.getRequiredStudies().add(matrixKey.getStudyId());
+		this.taskLockProperties.getRequiredMatrices().add(matrixKey.getMatrixId());
+		this.taskLockProperties.getRequiredOperations().add(censusOpKey.getId());
+		this.taskLockProperties.getRequiredOperations().add(hwOpKey.getId());
 	}
 
 	@Override

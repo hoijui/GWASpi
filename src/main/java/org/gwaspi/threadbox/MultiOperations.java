@@ -38,11 +38,11 @@ public class MultiOperations {
 
 	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
 
-		lockProperties.getStudyIds().add(dataSet.getOrigin().getStudyId());
-		lockProperties.getMatricesIds().add(dataSet.getOrigin().getMatrixId());
+		lockProperties.getRequiredStudies().add(dataSet.getOrigin().getStudyId());
+		lockProperties.getRequiredMatrices().add(dataSet.getOrigin().getMatrixId());
 
 		if (dataSet.isOperation()) {
-			lockProperties.getOperationsIds().add(dataSet.getOperationParent().getId());
+			lockProperties.getRequiredOperations().add(dataSet.getOperationParent().getId());
 		}
 	}
 
@@ -60,12 +60,12 @@ public class MultiOperations {
 //		}
 
 		for (MatrixKey participatingMatrix : participatingMatrices) {
-			lockProperties.getStudyIds().add(participatingMatrix.getStudyId());
-			lockProperties.getMatricesIds().add(participatingMatrix.getMatrixId());
+			lockProperties.getRequiredStudies().add(participatingMatrix.getStudyId());
+			lockProperties.getRequiredMatrices().add(participatingMatrix.getMatrixId());
 		}
 
 		if (parent.isOperation()) {
-			lockProperties.getOperationsIds().add(parent.getOperationParent().getId());
+			lockProperties.getRequiredOperations().add(parent.getOperationParent().getId());
 		}
 
 		return lockProperties;

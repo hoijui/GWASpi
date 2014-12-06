@@ -72,7 +72,7 @@ public class TaskQueueTableModel extends AbstractTableModel implements TaskQueue
 	private static String extractParticipatingStudyIds(final Task task) {
 
 		final StringBuilder studyIdsStr = new StringBuilder();
-		for (final Integer studyId : task.getTaskLockProperties().getStudyIds()) {
+		for (final Integer studyId : task.getTaskLockProperties().getRequiredStudies()) {
 			studyIdsStr.append(", ");
 			studyIdsStr.append(studyId.toString());
 		}

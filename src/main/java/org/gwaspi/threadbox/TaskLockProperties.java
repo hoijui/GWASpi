@@ -28,26 +28,26 @@ import java.util.Collection;
  */
 public class TaskLockProperties {
 
-	private final Collection<Integer> studyIds;
-	private final Collection<Integer> matricesIds;
-	private final Collection<Integer> operationsIds;
+	private final Collection<Integer> requiredStudies;
+	private final Collection<Integer> requiredMatrices;
+	private final Collection<Integer> requiredOperations;
 
 	public TaskLockProperties() {
 
-		this.studyIds = new ArrayList<Integer>();
-		this.matricesIds = new ArrayList<Integer>();
-		this.operationsIds = new ArrayList<Integer>();
+		this.requiredStudies = new ArrayList<Integer>();
+		this.requiredMatrices = new ArrayList<Integer>();
+		this.requiredOperations = new ArrayList<Integer>();
 	}
 
-	public Collection<Integer> getMatricesIds() {
-		return matricesIds;
+	public Collection<Integer> getRequiredMatrices() {
+		return requiredMatrices;
 	}
 
-	public Collection<Integer> getOperationsIds() {
-		return operationsIds;
+	public Collection<Integer> getRequiredOperations() {
+		return requiredOperations;
 	}
 
-	public Collection<Integer> getStudyIds() {
-		return studyIds;
+	public Collection<Integer> getRequiredStudies() {
+		return requiredStudies;
 	}
 }

@@ -55,7 +55,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		this.sampleInfoFile = sampleInfoFile;
 		this.progressHandler = new IndeterminateProgressHandler(processInfo);
 		this.taskLockProperties = new TaskLockProperties();
-		this.taskLockProperties.getStudyIds().add(studyKey.getId());
+		this.taskLockProperties.getRequiredStudies().add(studyKey.getId());
 	}
 
 	@Override

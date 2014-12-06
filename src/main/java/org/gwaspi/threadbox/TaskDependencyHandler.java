@@ -46,9 +46,9 @@ public class TaskDependencyHandler {
 		addRemoveLock.lock();
 		try {
 			final TaskLockProperties taskLockProperties = task.getTaskLockProperties();
-			lockedStudiesIds.addAll(taskLockProperties.getStudyIds());
-			lockedMatricesIds.addAll(taskLockProperties.getMatricesIds());
-			lockedOperationsIds.addAll(taskLockProperties.getOperationsIds());
+			lockedStudiesIds.addAll(taskLockProperties.getRequiredStudies());
+			lockedMatricesIds.addAll(taskLockProperties.getRequiredMatrices());
+			lockedOperationsIds.addAll(taskLockProperties.getRequiredOperations());
 		} finally {
 			addRemoveLock.unlock();
 		}
@@ -75,9 +75,9 @@ public class TaskDependencyHandler {
 //			lockedStudiesIds.removeAll(taskLockProperties.getStudyIds());
 //			lockedMatricesIds.removeAll(taskLockProperties.getMatricesIds());
 //			lockedOperationsIds.removeAll(taskLockProperties.getOperationsIds());
-			removeAllExactlyOnce(lockedStudiesIds, taskLockProperties.getStudyIds());
-			removeAllExactlyOnce(lockedMatricesIds, taskLockProperties.getMatricesIds());
-			removeAllExactlyOnce(lockedOperationsIds, taskLockProperties.getOperationsIds());
+			removeAllExactlyOnce(lockedStudiesIds, taskLockProperties.getRequiredStudies());
+			removeAllExactlyOnce(lockedMatricesIds, taskLockProperties.getRequiredMatrices());
+			removeAllExactlyOnce(lockedOperationsIds, taskLockProperties.getRequiredOperations());
 		} finally {
 			addRemoveLock.unlock();
 		}
