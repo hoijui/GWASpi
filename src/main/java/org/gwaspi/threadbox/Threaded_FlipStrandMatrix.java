@@ -96,7 +96,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixGenotypesFlipper does not support getParams() yet, so instead we do ...
+//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
 		matrixOperation.processMatrix();
 		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 

@@ -98,7 +98,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because MatrixTranslator does not support getParams() yet, so instead we do ...
+//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
 		matrixOperation.processMatrix();
 		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
