@@ -117,6 +117,13 @@ public class TaskQueue {
 	}
 
 	/**
+	 * @see TaskDependencyHandler#canBeDone(Task)
+	 */
+	public boolean canBeDone(final Task task) {
+		return dependencyHandler.canBeDone(task);
+	}
+
+	/**
 	 * Registers a task listener.
 	 * @param tasksListener this listener will receive task-registered and -deleted events
 	 */
@@ -162,9 +169,9 @@ public class TaskQueue {
 	private void tryToSchedule() {
 
 		for (final Task queuedTask : queued) {
-//			if (dependencyHandler.canBeDoneNow(queuedTask)) { // HACK we need to do this!
+			if (dependencyHandler.canBeDone(queuedTask)) {
 				schedule(queuedTask);
-//			}
+			}
 		}
 	}
 

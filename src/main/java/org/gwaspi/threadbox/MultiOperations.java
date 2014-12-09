@@ -68,6 +68,14 @@ public class MultiOperations {
 		throw new UnsupportedOperationException("This should be replaced by a mechanism of the kind of  new DeleteTaskX().isValid()");
 	}
 
+	public static boolean canBeDoneNow(final Task task) {
+		return TaskQueue.getInstance().canBeDone(task);
+	}
+
+	public static boolean canBeDoneNow(final CommonRunnable task) {
+		return canBeDoneNow(new DefaultTask(task));
+	}
+
 	public static void queueTask(final Deleter sdi) {
 
 		final Task task = new DefaultTask(sdi);

@@ -33,12 +33,16 @@ public class TaskDependencyHandler {
 	private final Lock addRemoveLock;
 	private final List<Identifier<StudyKey>> lockedStudies;
 	private final List<Identifier<DataSetKey>> lockedDataSets;
+	private final List<Identifier<StudyKey>> toBeRemovedStudies;
+	private final List<Identifier<DataSetKey>> toBeRemovedDataSets;
 
 	public TaskDependencyHandler() {
 
 		this.addRemoveLock = new ReentrantLock();
 		this.lockedStudies = new ArrayList<Identifier<StudyKey>>();
 		this.lockedDataSets = new ArrayList<Identifier<DataSetKey>>();
+		this.toBeRemovedStudies = new ArrayList<Identifier<StudyKey>>();
+		this.toBeRemovedDataSets = new ArrayList<Identifier<DataSetKey>>();
 	}
 
 	/**
@@ -52,6 +56,8 @@ public class TaskDependencyHandler {
 			final TaskLockProperties taskLockProperties = task.getTaskLockProperties();
 			lockedStudies.addAll(taskLockProperties.getRequiredStudies());
 			lockedDataSets.addAll(taskLockProperties.getRequiredDataSets());
+			toBeRemovedStudies.addAll(taskLockProperties.getRemovingStudies());
+			toBeRemovedDataSets.addAll(taskLockProperties.getRemovingDataSets());
 		} finally {
 			addRemoveLock.unlock();
 		}
@@ -84,6 +90,8 @@ public class TaskDependencyHandler {
 //			lockedDataSets.removeAll(taskLockProperties.getRequiredDataSets());
 			removeAllExactlyOnce(lockedStudies, taskLockProperties.getRequiredStudies());
 			removeAllExactlyOnce(lockedDataSets, taskLockProperties.getRequiredDataSets());
+			removeAllExactlyOnce(toBeRemovedStudies, taskLockProperties.getRemovingStudies());
+			removeAllExactlyOnce(toBeRemovedDataSets, taskLockProperties.getRemovingDataSets());
 		} finally {
 			addRemoveLock.unlock();
 		}
@@ -103,5 +111,40 @@ public class TaskDependencyHandler {
 
 	public boolean permitsDeletionOf(final OperationKey operationKey) {
 		return permitsDeletionOf(new DataSetKey(operationKey));
+	}
+
+	/**
+	 * Check whether a certain tasks requirements are met.
+	 * @param task to check for whether it can be done
+	 * @return true if it can be done, false otherwise
+	 */
+	public boolean canBeDone(final Task task) {
+
+		final TaskLockProperties lockProps = task.getTaskLockProperties();
+		// check if all required things are present and not scheduled for removal
+		for (final Identifier<StudyKey> requiredStudy : lockProps.getRequiredStudies()) {
+			if (requiredStudy.isVirtual() || toBeRemovedStudies.contains(requiredStudy)) {
+				return false;
+			}
+		}
+		for (final Identifier<DataSetKey> requiredDataSet : lockProps.getRequiredDataSets()) {
+			if (requiredDataSet.isVirtual() || toBeRemovedDataSets.contains(requiredDataSet)) {
+				return false;
+			}
+		}
+
+		// check if to-be-removed things are required or not yet/anymore present
+		for (final Identifier<StudyKey> toBeRemovedStudy : lockProps.getRemovingStudies()) {
+			if (toBeRemovedStudy.isVirtual() || lockedStudies.contains(toBeRemovedStudy)) {
+				return false;
+			}
+		}
+		for (final Identifier<DataSetKey> toBeRemovedDataSet : lockProps.getRemovingDataSets()) {
+			if (toBeRemovedDataSet.isVirtual() || lockedDataSets.contains(toBeRemovedDataSet)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
