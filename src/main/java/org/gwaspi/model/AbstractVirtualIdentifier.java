@@ -41,6 +41,10 @@ public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements Vir
 		this(key, NAME_DEFAULT);
 	}
 
+	public AbstractVirtualIdentifier(final String name) {
+		this(null, name);
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 
@@ -147,6 +151,11 @@ public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements Vir
 
 	public boolean isVirtual() {
 		return (key == null);
+	}
+
+	@Override
+	public void setKey(final KT key) {
+		this.key = key;
 	}
 
 	public KT getKey() {

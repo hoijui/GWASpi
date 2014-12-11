@@ -22,4 +22,6 @@ package org.gwaspi.model;
  * It may not have been created, or has already been deleted.
  */
 public interface VirtualIdentifier<KT extends Identifier<KT>> extends Identifier<KT> {
+
+	void setKey(final KT key);
 }
