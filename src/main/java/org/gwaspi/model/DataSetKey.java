@@ -21,7 +21,7 @@ package org.gwaspi.model;
  * Uniquely identifies a matrix or operation,
  * which both may serve as data-set source specifier.
  */
-public final class DataSetKey {
+public final class DataSetKey implements Identifier<DataSetKey> {
 
 	private final MatrixKey matrixParent;
 	private final OperationKey operationParent;
@@ -63,13 +63,84 @@ public final class DataSetKey {
 		return operationParent;
 	}
 
-	@Override
-	public String toString() {
+	public Identifier<?> getInternalIdentifier() {
 
 		if (isMatrix()) {
-			return getMatrixParent().toString();
+			return getMatrixParent();
 		} else {
-			return getOperationParent().toString();
+			return getOperationParent();
+		}
+	}
+
+	@Override
+	public boolean isVirtual() {
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getInternalIdentifier().toString();
+	}
+
+	@Override
+	public String toRawIdString() {
+		return getInternalIdentifier().toRawIdString();
+	}
+
+	@Override
+	public String toIdString() {
+		return getInternalIdentifier().toIdString();
+	}
+
+	@Override
+	public String fetchName() {
+		return getInternalIdentifier().fetchName();
+	}
+
+	@Override
+	public boolean equals(final Object other) {
+
+		if (other == null) {
+			return false;
+		}
+		if (other.getClass().equals(VirtualDataSetIdentifier.class)) {
+			return other.equals(this);
+		}
+		if (!getClass().equals(other.getClass())) {
+			return false;
+		}
+		final DataSetKey otherKey = (DataSetKey) other;
+		if (this.isMatrix() && otherKey.isMatrix()) {
+			return this.getMatrixParent().equals(otherKey.getMatrixParent());
+		} else if (this.isOperation() && otherKey.isOperation()) {
+			return this.getOperationParent().equals(otherKey.getOperationParent());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 23 * hash + (this.matrixParent != null ? this.matrixParent.hashCode() : 0);
+		hash = 23 * hash + (this.operationParent != null ? this.operationParent.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public int compareTo(final Identifier<DataSetKey> other) {
+
+		if (other instanceof DataSetKey) {
+			final DataSetKey otherKey = (DataSetKey) other;
+			if (this.isMatrix() && otherKey.isMatrix()) {
+				return this.getMatrixParent().compareTo(otherKey.getMatrixParent());
+			} else if (this.isOperation() && otherKey.isOperation()) {
+				return this.getOperationParent().compareTo(otherKey.getOperationParent());
+			} else {
+				return this.isMatrix() ? 1 : -1;
+			}
+		} else {
+			return - other.compareTo(this);
 		}
 	}
 }
