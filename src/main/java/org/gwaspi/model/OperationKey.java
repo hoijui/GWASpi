@@ -18,13 +18,12 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
-import java.io.Serializable;
 import javax.persistence.Transient;
 
 /**
  * Uniquely identifies an operation.
  */
-public class OperationKey implements Comparable<OperationKey>, Serializable {
+public class OperationKey implements Identifier<OperationKey> {
 
 	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
@@ -53,15 +52,35 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 				operation.getId());
 	}
 
+	@Transient
 	@Override
-	public int compareTo(OperationKey other) {
-		return hashCode() - other.hashCode();
+	public boolean isVirtual() {
+		return false;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public int compareTo(final Identifier<OperationKey> other) {
+
+		if (other instanceof OperationKey) {
+			final OperationKey otherKey = (OperationKey) other;
+			int diff = this.getParentMatrixKey().compareTo(otherKey.getParentMatrixKey());
+			if (diff == 0) {
+				diff = this.getId() - otherKey.getId();
+			}
+			return diff;
+		} else {
+			return - other.compareTo(this);
+		}
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+
 		if (obj == null) {
 			return false;
+		}
+		if (obj.getClass() == VirtualOperationIdentifier.class) {
+			return obj.equals(this);
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
@@ -81,6 +100,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		return hash;
 	}
 
+	@Override
 	public String toRawIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -92,6 +112,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		return strRep.toString();
 	}
 
+	@Override
 	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -109,6 +130,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 	 * but guarantees to also work if the operation is not available there,
 	 * or an other problem occurs.
 	 */
+	@Override
 	public String fetchName() {
 
 		String operationName;
