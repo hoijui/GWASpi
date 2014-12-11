@@ -38,13 +38,13 @@ import org.slf4j.LoggerFactory;
 public class Deleter extends CommonRunnable {
 
 	private static final Logger log = LoggerFactory.getLogger(Deleter.class);
-	private static final TaskLockProperties EMPTY_TASK_LOCK_PROPERTIES = new TaskLockProperties();
 
 	private final boolean deleteReports;
 	private final StudyKey studyKey;
 	private final MatrixKey matrixKey;
 	private final OperationKey operationKey;
 	private final ProgressHandler progressHandler;
+	private final TaskLockProperties taskLockProperties;
 
 	public Deleter(
 			StudyKey studyKey,
@@ -82,6 +82,15 @@ public class Deleter extends CommonRunnable {
 		this.progressHandler = new IndeterminateProgressHandler(new DefaultProcessInfo(
 				"Delete " + getToDeleteShortDescription(
 						studyKey, matrixKey, operationKey, deleteReports), null));
+		final TaskLockProperties tmpTaskLockProperties = new TaskLockProperties();
+		if (studyKey != null) {
+			tmpTaskLockProperties.addRemoving(studyKey);
+		} else if (matrixKey != null) {
+			tmpTaskLockProperties.addRemoving(new DataSetKey(matrixKey));
+		} else {
+			tmpTaskLockProperties.addRemoving(new DataSetKey(operationKey));
+		}
+		this.taskLockProperties = new UnmodifiableTaskLockProperties(tmpTaskLockProperties);
 	}
 
 	private static String getToDeleteShortDescription(
@@ -140,7 +149,7 @@ public class Deleter extends CommonRunnable {
 
 	@Override
 	public TaskLockProperties getTaskLockProperties() {
-		return EMPTY_TASK_LOCK_PROPERTIES;
+		return taskLockProperties;
 	}
 
 	@Override
