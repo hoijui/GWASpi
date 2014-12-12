@@ -18,13 +18,12 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
-import java.io.Serializable;
 import javax.persistence.Transient;
 
 /**
  * Uniquely identifies a matrix.
  */
-public class MatrixKey implements Comparable<MatrixKey>, Serializable {
+public class MatrixKey implements Identifier<MatrixKey> {
 
 	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
@@ -49,45 +48,55 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 				matrix.getMatrixId());
 	}
 
+	@Transient
 	@Override
-	public boolean equals(Object obj) {
+	public boolean isVirtual() {
+		return false;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
 
 		if (obj == null) {
 			return false;
+		}
+		if (obj.getClass() == VirtualMatrixIdentifier.class) {
+			return obj.equals(this);
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		final MatrixKey other = (MatrixKey) obj;
-		if (this.getStudyId() != other.getStudyId()) {
+		if (!this.getStudyKey().equals(other.getStudyKey())) {
 			return false;
 		}
-		if (this.getMatrixId() != other.getMatrixId()) {
-			return false;
-		}
-
-		return true;
+		return this.getMatrixId() == other.getMatrixId();
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 19 * hash + this.getStudyId();
+		hash = 19 * hash + this.getStudyKey().hashCode();
 		hash = 19 * hash + this.getMatrixId();
 		return hash;
 	}
 
 	@Override
-	public int compareTo(MatrixKey other) {
+	public int compareTo(final Identifier<MatrixKey> other) {
 
-		int diffStudy = this.getStudyId() - other.getStudyId();
-		if (diffStudy == 0) {
-			diffStudy = this.getMatrixId() - other.getMatrixId();
+		if (other instanceof MatrixKey) {
+			final MatrixKey otherKey = (MatrixKey) other;
+			int diff = this.getStudyKey().compareTo(otherKey.getStudyKey());
+			if (diff == 0) {
+				diff = this.getMatrixId() - otherKey.getMatrixId();
+			}
+			return diff;
+		} else {
+			return - other.compareTo(this);
 		}
-
-		return diffStudy;
 	}
 
+	@Override
 	public String toRawIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -98,6 +107,7 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		return strRep.toString();
 	}
 
+	@Override
 	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -115,6 +125,7 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 	 * but guarantees to also work if the matrix is not available there,
 	 * or an other problem occurs.
 	 */
+	@Override
 	public String fetchName() {
 
 		String matrixName;
