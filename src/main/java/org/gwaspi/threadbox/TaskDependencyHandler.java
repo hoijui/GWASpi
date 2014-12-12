@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.gwaspi.model.DataSetKey;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Identifier;
 import org.gwaspi.model.StudyKey;
 
@@ -95,22 +93,6 @@ public class TaskDependencyHandler {
 		} finally {
 			addRemoveLock.unlock();
 		}
-	}
-
-	public boolean permitsDeletionOf(final StudyKey studyKey) {
-		return !lockedStudies.contains(studyKey);
-	}
-
-	public boolean permitsDeletionOf(final DataSetKey dataSetKey) {
-		return !lockedDataSets.contains(dataSetKey);
-	}
-
-	public boolean permitsDeletionOf(final MatrixKey matrixKey) {
-		return permitsDeletionOf(new DataSetKey(matrixKey));
-	}
-
-	public boolean permitsDeletionOf(final OperationKey operationKey) {
-		return permitsDeletionOf(new DataSetKey(operationKey));
 	}
 
 	/**

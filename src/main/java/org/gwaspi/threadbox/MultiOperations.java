@@ -64,10 +64,6 @@ public class MultiOperations {
 		return createTaskLockProperties(parent, Collections.singleton(parent.getOrigin()));
 	}
 
-	public static boolean permitsDeletionOf(Object toDelete) {
-		throw new UnsupportedOperationException("This should be replaced by a mechanism of the kind of  new DeleteTaskX().isValid()");
-	}
-
 	public static boolean canBeDoneNow(final Task task) {
 		return TaskQueue.getInstance().canBeDone(task);
 	}
