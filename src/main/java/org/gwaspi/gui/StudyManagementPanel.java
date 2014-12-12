@@ -359,30 +359,26 @@ public class StudyManagementPanel extends JPanel {
 
 			if (tbl_StudiesTable.getSelectedRow() != -1) {
 				final StudyTableModel model = (StudyTableModel) tbl_StudiesTable.getModel();
-				int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
+				final int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
 				final List<Study> selectedStudies = new ArrayList<Study>(selectedStudyRows.length);
 				for (int i = 0; i < selectedStudyRows.length; i++) {
 					selectedStudies.add(model.getStudyAt(selectedStudyRows[i]));
 				}
 
-				int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
+				final int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportsOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
+					final int deleteReportsOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
 					for (final Study selectedStudy : selectedStudies) {
 						final StudyKey studyKey = StudyKey.valueOf(selectedStudy);
-						// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-						if (MultiOperations.permitsDeletionOf(studyKey)) {
-							if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
-
-								boolean deleteReports = false;
-								if (deleteReportsOption == JOptionPane.YES_OPTION) {
-									deleteReports = true;
-								}
-								final Deleter studyDeleter = new Deleter(studyKey, deleteReports);
-								MultiOperations.queueTask(studyDeleter);
+						if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+							final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+							final Deleter studyDeleter = new Deleter(studyKey, deleteReports);
+							// test if the deleted item is required for a queued worker
+							if (MultiOperations.canBeDoneNow(studyDeleter)) {
+									MultiOperations.queueTask(studyDeleter);
+							} else {
+								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 							}
-						} else {
-							Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 						}
 					}
 				}

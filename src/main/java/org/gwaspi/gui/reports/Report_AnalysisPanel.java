@@ -177,21 +177,20 @@ public class Report_AnalysisPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (MultiOperations.permitsDeletionOf(currentOpKey)) { // XXX FIXME? should it be permitsDeletionOf
-				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
-				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if ((deleteReportsOption != JOptionPane.CANCEL_OPTION)
-							&& (option == JOptionPane.YES_OPTION))
-					{
-						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
-						final Deleter operationDeleter = new Deleter(currentOpKey, deleteReports);
+
+			final int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
+			if (option == JOptionPane.YES_OPTION) {
+				final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+				if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+					final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+					final Deleter operationDeleter = new Deleter(currentOpKey, deleteReports);
+					// test if the deleted item is required for a queued worker
+					if (MultiOperations.canBeDoneNow(operationDeleter)) {
 						MultiOperations.queueTask(operationDeleter);
+					} else {
+						Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 					}
 				}
-			} else {
-				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 			}
 		}
 	}

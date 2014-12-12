@@ -209,31 +209,26 @@ public class MatrixMarkerQAPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
-			try {
-				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (MultiOperations.permitsDeletionOf(currentOPKey)) {
-					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
-					if (option == JOptionPane.YES_OPTION) {
-						int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-						if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
-							if (option == JOptionPane.YES_OPTION) {
-								boolean deleteReports = false;
-								if (deleteReportsOption == JOptionPane.YES_OPTION) {
-									deleteReports = true;
-								}
-								final Deleter operationDeleter = new Deleter(currentOPKey, deleteReports);
-								MultiOperations.queueTask(operationDeleter);
-								// XXX OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
-							}
-							GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-						}
+			final int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
+			if (option == JOptionPane.YES_OPTION) {
+				final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+				if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+					final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+					final Deleter operationDeleter = new Deleter(currentOPKey, deleteReports);
+					// test if the deleted item is required for a queued worker
+					if (MultiOperations.canBeDoneNow(operationDeleter)) {
+						MultiOperations.queueTask(operationDeleter);
+						// XXX OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
+					} else {
+						Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 					}
-				} else {
-					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+					try {
+						GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+						GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
 				}
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}

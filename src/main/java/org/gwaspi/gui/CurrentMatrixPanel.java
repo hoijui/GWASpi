@@ -333,19 +333,19 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
-			// TODO test if the deleted item is required for a queued worker
-			if (MultiOperations.permitsDeletionOf(matrixKey)) {
-				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
-				if (option == JOptionPane.YES_OPTION) {
-					final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if (option == JOptionPane.YES_OPTION && deleteReportsOption != JOptionPane.CANCEL_OPTION) {
-						final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
-						final Deleter matrixDeleter = new Deleter(matrixKey, deleteReports);
+			final int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
+			if (option == JOptionPane.YES_OPTION) {
+				final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+				if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
+					final boolean deleteReports = (deleteReportsOption == JOptionPane.YES_OPTION);
+					final Deleter matrixDeleter = new Deleter(matrixKey, deleteReports);
+					// test if the deleted item is required for a queued worker
+					if (MultiOperations.canBeDoneNow(matrixDeleter)) {
 						MultiOperations.queueTask(matrixDeleter);
+					} else {
+						Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 					}
 				}
-			} else {
-				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 			}
 		}
 	}

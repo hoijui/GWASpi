@@ -586,14 +586,14 @@ public class DataSetAnalysePanel extends JPanel {
 		private void deleteOperations(Map<Integer, OperationKey> operationsToDelete, boolean deleteReports) throws IOException {
 
 			OperationKey operationKey = null;
-			OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
-			for (Map.Entry<Integer, OperationKey> selectedOperation : operationsToDelete.entrySet()) {
+//			OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
+			for (final Map.Entry<Integer, OperationKey> selectedOperation : operationsToDelete.entrySet()) {
 				operationKey = selectedOperation.getValue();
-				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-				if (MultiOperations.permitsDeletionOf(operationKey)) {
-					final Deleter operationDeleter = new Deleter(operationKey, deleteReports);
+				final Deleter operationDeleter = new Deleter(operationKey, deleteReports);
+				// test if the deleted item is required for a queued worker
+				if (MultiOperations.canBeDoneNow(operationDeleter)) {
 					MultiOperations.queueTask(operationDeleter);
-					tableModel.removeRow(selectedOperation.getKey());
+//					tableModel.removeRow(selectedOperation.getKey());
 					// XXX OperationManager.deleteOperationAndChildren(parentMatrixKey.getStudyKey(), opId, deleteReport);
 				} else {
 					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
