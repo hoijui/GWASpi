@@ -149,6 +149,7 @@ public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements Vir
 		return new AbstractVirtualIdentifier<KT>(key);
 	}
 
+	@Override
 	public boolean isVirtual() {
 		return (key == null);
 	}

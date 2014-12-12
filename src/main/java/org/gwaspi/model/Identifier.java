@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public interface Identifier<KT extends Identifier<KT>> extends Comparable<Identifier<KT>>, Serializable {
 
+	boolean isVirtual();
+
 	String toRawIdString();
 
 	String toIdString();
