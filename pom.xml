@@ -302,6 +302,7 @@
 						<manifestEntries>
 							<Implementation-Build>${buildNumber}</Implementation-Build>
 							<Build-Timestamp>${timestamp}</Build-Timestamp>
+							<SplashScreen-Image>img/logo/logo_323x210_gwaspi.png</SplashScreen-Image>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -350,6 +351,7 @@
 						<manifestEntries>
 							<Implementation-Build>${buildNumber}</Implementation-Build>
 							<Build-Timestamp>${timestamp}</Build-Timestamp>
+							<SplashScreen-Image>img/logo/logo_323x210_gwaspi.png</SplashScreen-Image>
 						</manifestEntries>
 					</archive>
 				</configuration>
