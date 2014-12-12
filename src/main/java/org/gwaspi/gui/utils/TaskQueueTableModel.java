@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.Identifier;
 import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.Task;
 import org.gwaspi.threadbox.TaskQueue;
@@ -72,9 +73,9 @@ public class TaskQueueTableModel extends AbstractTableModel implements TaskQueue
 	private static String extractParticipatingStudyIds(final Task task) {
 
 		final StringBuilder studyIdsStr = new StringBuilder();
-		for (final Integer studyId : task.getTaskLockProperties().getRequiredStudies()) {
+		for (final Identifier<?> studyIdentifiers : task.getTaskLockProperties().getRequiredStudies()) {
 			studyIdsStr.append(", ");
-			studyIdsStr.append(studyId.toString());
+			studyIdsStr.append(studyIdentifiers.toRawIdString());
 		}
 		if (studyIdsStr.length() == 0) {
 			studyIdsStr.append(" - ");

@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -87,11 +88,11 @@ public class Threaded_Test extends CommonRunnable {
 		this.progressSource = new SuperProgressSource(fullTestProcessInfo, subProgressSourcesAndWeights);
 
 		final MatrixKey matrixKey = censusOpKey.getParentMatrixKey();
-		this.taskLockProperties = new TaskLockProperties();
-		this.taskLockProperties.getRequiredStudies().add(matrixKey.getStudyId());
-		this.taskLockProperties.getRequiredMatrices().add(matrixKey.getMatrixId());
-		this.taskLockProperties.getRequiredOperations().add(censusOpKey.getId());
-		this.taskLockProperties.getRequiredOperations().add(hwOpKey.getId());
+		final TaskLockProperties tmpTaskLockProperties = new TaskLockProperties();
+		tmpTaskLockProperties.addRequired(new DataSetKey(matrixKey));
+		tmpTaskLockProperties.addRequired(new DataSetKey(censusOpKey));
+		tmpTaskLockProperties.addRequired(new DataSetKey(hwOpKey));
+		this.taskLockProperties = tmpTaskLockProperties;
 	}
 
 	@Override

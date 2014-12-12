@@ -70,7 +70,7 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 		this.params = params;
 		this.progressSource = new SuperProgressSource(fullMergeMatricesProcessInfo, subProgressSourcesAndWeights);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
-		MultiOperations.addDataSet(taskLockProperties, params.getSource2());
+		this.taskLockProperties.addRequired(params.getSource2());
 	}
 
 	@Override

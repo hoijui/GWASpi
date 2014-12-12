@@ -19,6 +19,10 @@ package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.Identifier;
+import org.gwaspi.model.StudyKey;
 
 /**
  * Contains all the info that defines what things might be locked by a task.
@@ -28,26 +32,74 @@ import java.util.Collection;
  */
 public class TaskLockProperties {
 
-	private final Collection<Integer> requiredStudies;
-	private final Collection<Integer> requiredMatrices;
-	private final Collection<Integer> requiredOperations;
+	private final Collection<Identifier<StudyKey>> requiredStudies;
+	private final Collection<Identifier<DataSetKey>> requiredDataSets;
+	private final Collection<Identifier<StudyKey>> removingStudies;
+	private final Collection<Identifier<DataSetKey>> removingDataSets;
+	private final Collection<Identifier<StudyKey>> introducingStudies;
+	private final Collection<Identifier<DataSetKey>> introducingDataSets;
 
 	public TaskLockProperties() {
 
-		this.requiredStudies = new ArrayList<Integer>();
-		this.requiredMatrices = new ArrayList<Integer>();
-		this.requiredOperations = new ArrayList<Integer>();
+		this.requiredStudies = new ArrayList<Identifier<StudyKey>>();
+		this.requiredDataSets = new ArrayList<Identifier<DataSetKey>>();
+		this.removingStudies = new ArrayList<Identifier<StudyKey>>();
+		this.removingDataSets = new ArrayList<Identifier<DataSetKey>>();
+		this.introducingStudies = new ArrayList<Identifier<StudyKey>>();
+		this.introducingDataSets = new ArrayList<Identifier<DataSetKey>>();
 	}
 
-	public Collection<Integer> getRequiredMatrices() {
-		return requiredMatrices;
+	public Collection<Identifier<StudyKey>> getRequiredStudies() {
+		return Collections.unmodifiableCollection(requiredStudies);
 	}
 
-	public Collection<Integer> getRequiredOperations() {
-		return requiredOperations;
+	public Collection<Identifier<DataSetKey>> getRequiredDataSets() {
+		return Collections.unmodifiableCollection(requiredDataSets);
 	}
 
-	public Collection<Integer> getRequiredStudies() {
-		return requiredStudies;
+	public void addRequired(final StudyKey studyKey) {
+		requiredStudies.add(studyKey);
+	}
+
+	public void addRequired(final DataSetKey dataSetKey) {
+
+		requiredStudies.add(dataSetKey.getOrigin().getStudyKey());
+		requiredDataSets.add(dataSetKey);
+		if (dataSetKey.isOperation()) {
+			// also add the origin matrix, if it is an operation
+			requiredDataSets.add(new DataSetKey(dataSetKey.getOrigin()));
+		}
+	}
+
+	public Collection<Identifier<StudyKey>> getRemovingStudies() {
+		return Collections.unmodifiableCollection(removingStudies);
+	}
+
+	public Collection<Identifier<DataSetKey>> getRemovingDataSets() {
+		return Collections.unmodifiableCollection(removingDataSets);
+	}
+
+	public void addRemoving(final StudyKey studyKey) {
+		removingStudies.add(studyKey);
+	}
+
+	public void addRemoving(final DataSetKey dataSetKey) {
+		removingDataSets.add(dataSetKey);
+	}
+
+	public Collection<Identifier<StudyKey>> getIntroducingStudies() {
+		return Collections.unmodifiableCollection(introducingStudies);
+	}
+
+	public Collection<Identifier<DataSetKey>> getIntroducingDataSets() {
+		return Collections.unmodifiableCollection(introducingDataSets);
+	}
+
+	public void addIntroducing(final StudyKey studyKey) {
+		introducingStudies.add(studyKey);
+	}
+
+	public void addIntroducing(final DataSetKey dataSetKey) {
+		introducingDataSets.add(dataSetKey);
 	}
 }

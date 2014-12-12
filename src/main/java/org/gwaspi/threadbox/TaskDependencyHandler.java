@@ -22,23 +22,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.Identifier;
 import org.gwaspi.model.StudyKey;
 
 public class TaskDependencyHandler {
 
 	private final Lock addRemoveLock;
-	private final List<Integer> lockedStudiesIds;
-	private final List<Integer> lockedMatricesIds;
-	private final List<Integer> lockedOperationsIds;
+	private final List<Identifier<StudyKey>> lockedStudies;
+	private final List<Identifier<DataSetKey>> lockedDataSets;
 
 	public TaskDependencyHandler() {
 
 		this.addRemoveLock = new ReentrantLock();
-		this.lockedStudiesIds = new ArrayList<Integer>();
-		this.lockedMatricesIds = new ArrayList<Integer>();
-		this.lockedOperationsIds = new ArrayList<Integer>();
+		this.lockedStudies = new ArrayList<Identifier<StudyKey>>();
+		this.lockedDataSets = new ArrayList<Identifier<DataSetKey>>();
 	}
 
 	/**
@@ -50,9 +50,8 @@ public class TaskDependencyHandler {
 		addRemoveLock.lock();
 		try {
 			final TaskLockProperties taskLockProperties = task.getTaskLockProperties();
-			lockedStudiesIds.addAll(taskLockProperties.getRequiredStudies());
-			lockedMatricesIds.addAll(taskLockProperties.getRequiredMatrices());
-			lockedOperationsIds.addAll(taskLockProperties.getRequiredOperations());
+			lockedStudies.addAll(taskLockProperties.getRequiredStudies());
+			lockedDataSets.addAll(taskLockProperties.getRequiredDataSets());
 		} finally {
 			addRemoveLock.unlock();
 		}
@@ -81,26 +80,28 @@ public class TaskDependencyHandler {
 			//   because it removes all instances of all elements,
 			//   though we want to remove each ID only as many times as it is locked by the task,
 			//   which will be once, in practise.
-//			lockedStudiesIds.removeAll(taskLockProperties.getStudyIds());
-//			lockedMatricesIds.removeAll(taskLockProperties.getMatricesIds());
-//			lockedOperationsIds.removeAll(taskLockProperties.getOperationsIds());
-			removeAllExactlyOnce(lockedStudiesIds, taskLockProperties.getRequiredStudies());
-			removeAllExactlyOnce(lockedMatricesIds, taskLockProperties.getRequiredMatrices());
-			removeAllExactlyOnce(lockedOperationsIds, taskLockProperties.getRequiredOperations());
+//			lockedStudies.removeAll(taskLockProperties.getRequiredStudies());
+//			lockedDataSets.removeAll(taskLockProperties.getRequiredDataSets());
+			removeAllExactlyOnce(lockedStudies, taskLockProperties.getRequiredStudies());
+			removeAllExactlyOnce(lockedDataSets, taskLockProperties.getRequiredDataSets());
 		} finally {
 			addRemoveLock.unlock();
 		}
 	}
 
-	public boolean permitsDeletionOf(StudyKey studyKey) {
-		return !lockedStudiesIds.contains(studyKey.getId());
+	public boolean permitsDeletionOf(final StudyKey studyKey) {
+		return !lockedStudies.contains(studyKey);
 	}
 
-	public boolean permitsDeletionOf(MatrixKey matrixKey) {
-		return !lockedMatricesIds.contains(matrixKey.getMatrixId());
+	public boolean permitsDeletionOf(final DataSetKey dataSetKey) {
+		return !lockedDataSets.contains(dataSetKey);
 	}
 
-	public boolean permitsDeletionOf(OperationKey operationKey) {
-		return !lockedOperationsIds.contains(operationKey.getId());
+	public boolean permitsDeletionOf(final MatrixKey matrixKey) {
+		return permitsDeletionOf(new DataSetKey(matrixKey));
+	}
+
+	public boolean permitsDeletionOf(final OperationKey operationKey) {
+		return permitsDeletionOf(new DataSetKey(operationKey));
 	}
 }

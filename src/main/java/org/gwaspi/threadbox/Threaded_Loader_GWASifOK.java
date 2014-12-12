@@ -111,7 +111,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			this.progressSource = new SuperProgressSource(loadOnlyProcessInfo, subProgressSourcesAndWeightsLoadOnly);
 		}
 		this.taskLockProperties = new TaskLockProperties();
-		this.taskLockProperties.getRequiredStudies().add(loadDescription.getStudyKey().getId());
+		this.taskLockProperties.addRequired(loadDescription.getStudyKey());
 		this.resultMatrixKey = null;
 	}
 

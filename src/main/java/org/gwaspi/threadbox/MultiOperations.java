@@ -36,16 +36,6 @@ public class MultiOperations {
 		TaskQueue.getInstance().queueTask(task);
 	}
 
-	public static void addDataSet(final TaskLockProperties lockProperties, final DataSetKey dataSet) {
-
-		lockProperties.getRequiredStudies().add(dataSet.getOrigin().getStudyId());
-		lockProperties.getRequiredMatrices().add(dataSet.getOrigin().getMatrixId());
-
-		if (dataSet.isOperation()) {
-			lockProperties.getRequiredOperations().add(dataSet.getOperationParent().getId());
-		}
-	}
-
 	public static TaskLockProperties createTaskLockProperties(
 			final DataSetKey parent,
 			final Set<MatrixKey> participatingMatrices)
@@ -60,12 +50,11 @@ public class MultiOperations {
 //		}
 
 		for (MatrixKey participatingMatrix : participatingMatrices) {
-			lockProperties.getRequiredStudies().add(participatingMatrix.getStudyId());
-			lockProperties.getRequiredMatrices().add(participatingMatrix.getMatrixId());
+			lockProperties.addRequired(new DataSetKey(participatingMatrix));
 		}
 
 		if (parent.isOperation()) {
-			lockProperties.getRequiredOperations().add(parent.getOperationParent().getId());
+			lockProperties.addRequired(new DataSetKey(parent.getOperationParent()));
 		}
 
 		return lockProperties;
