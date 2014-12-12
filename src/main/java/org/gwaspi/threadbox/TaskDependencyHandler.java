@@ -41,6 +41,10 @@ public class TaskDependencyHandler {
 		this.lockedOperationsIds = new ArrayList<Integer>();
 	}
 
+	/**
+	 * Adds a task to the list of to-be-done tasks.
+	 * @param task to be done
+	 */
 	public void add(final Task task) {
 
 		addRemoveLock.lock();
@@ -63,6 +67,11 @@ public class TaskDependencyHandler {
 		}
 	}
 
+	/**
+	 * Removes a task to the list of to-be-done tasks.
+	 * Either because it was done or aborted.
+	 * @param task no longer to be done
+	 */
 	public void remove(final Task task) {
 
 		addRemoveLock.lock();
