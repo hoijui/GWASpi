@@ -18,12 +18,12 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
-import java.io.Serializable;
+import javax.persistence.Transient;
 
 /**
- * Uniquely identifies a study.
+ * Uniquely identifies an existing study.
  */
-public class StudyKey implements Comparable<StudyKey>, Serializable {
+public class StudyKey implements Identifier<StudyKey> {
 
 	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
@@ -39,20 +39,26 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 		this(NULL_ID);
 	}
 
+	@Transient
 	@Override
-	public boolean equals(Object obj) {
+	public boolean isVirtual() {
+		return false;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
 
 		if (obj == null) {
 			return false;
+		}
+		if (obj.getClass() == VirtualStudyIdentifier.class) {
+			return obj.equals(this);
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		final StudyKey other = (StudyKey) obj;
-		if (this.getId() != other.getId()) {
-			return false;
-		}
-		return true;
+		return (this.getId() == other.getId());
 	}
 
 	@Override
@@ -63,11 +69,16 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 	}
 
 	@Override
-	public int compareTo(StudyKey other) {
+	public int compareTo(final Identifier<StudyKey> other) {
 
-		return this.getId() - other.getId();
+		if (other instanceof StudyKey) {
+			return this.getId() - ((StudyKey) other).getId();
+		} else {
+			return - other.compareTo(this);
+		}
 	}
 
+	@Override
 	public String toRawIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -77,6 +88,7 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 		return strRep.toString();
 	}
 
+	@Override
 	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
@@ -94,6 +106,7 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 	 * but guarantees to also work if the study is not available there,
 	 * or an other problem occurs.
 	 */
+	@Override
 	public String fetchName() {
 
 		String studyName;
