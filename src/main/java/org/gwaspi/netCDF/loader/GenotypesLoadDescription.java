@@ -71,14 +71,14 @@ public class GenotypesLoadDescription {
 		this.format = format;
 		this.friendlyName = friendlyName;
 		this.description = description;
-		if (format == ImportFormat.Affymetrix_GenomeWide6) { // HACK
+		if (format == ImportFormat.Affymetrix_GenomeWide6) {
 			this.gtCode = GenotypeEncoding.AB0;
-		} else if (format == ImportFormat.Illumina_LGEN) { // HACK
+		} else if (format == ImportFormat.Illumina_LGEN) {
 			this.gtCode = GenotypeEncoding.ACGT0;
-		} else if (format == ImportFormat.Sequenom) { // HACK
+		} else if (format == ImportFormat.Sequenom) {
 			this.gtCode = GenotypeEncoding.ACGT0;
 		} else {
-			this.gtCode = gtCode;
+			this.gtCode = gtCode; // NOTE this will usually be GenotypeEncoding.UNKNOWN
 		}
 		this.strand = strand;
 		this.chromosome = chromosome;
