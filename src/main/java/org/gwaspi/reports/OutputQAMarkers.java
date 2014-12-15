@@ -248,9 +248,9 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 //		}
 //		sortedMarkerAlleles = Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
-		List<Byte> knownMinorAlleles = (List) qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1); // HACK might not be a List!
-		List<Byte> knownMajorAlleles = (List) qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1); // HACK might not be a List!
-		List<String> sortedMarkerAlleles = new ArrayList<String>(sortedMarkerOrigIndices.size());
+		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
+		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
+		final List<String> sortedMarkerAlleles = new ArrayList<String>(sortedMarkerOrigIndices.size());
 		for (Integer origIndices : sortedMarkerOrigIndices) {
 			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
 			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
@@ -304,9 +304,9 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		List<Byte> knownMinorAlleles = (List) qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1); // HACK might not be a List!
-		List<Byte> knownMajorAlleles = (List) qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1); // HACK might not be a List!
-		List<String> sortedMarkerAlleles = new ArrayList<String>(unsortedOrigIndices.size());
+		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
+		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
+		final List<String> sortedMarkerAlleles = new ArrayList<String>(unsortedOrigIndices.size());
 		for (Integer origIndices : unsortedOrigIndices) {
 			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
 			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
