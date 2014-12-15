@@ -72,8 +72,6 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET extends OperationDat
 				ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
 			}
 		}
-		if (opType == OPType.COMBI_ASSOC_TEST) {
-			// TODO FIXME What is stored for the combi test?
-		}
+		// NOTE this method is overriden for the COMBI test
 	}
 }
