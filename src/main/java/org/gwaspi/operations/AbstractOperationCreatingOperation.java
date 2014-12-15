@@ -71,7 +71,6 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		final int numItems;
 
 		final DataSetSource parentDataSetSource = getParentDataSetSource();
-//		if (((OperationDataSet) parentDataSetSource).isMarkersOperationSet()) { // HACK
 		if (OperationManager.getOperationTypeInfo(this.getClass()).isMarkersOriented()) {
 			numItems = parentDataSetSource.getNumMarkers();
 		} else {

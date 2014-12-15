@@ -363,7 +363,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //		}
 
 		List<List<Float>> encodedAndWhitenedValuesLists = createWhitenedValuesLists(encodedValuesLists, genotypesCountsAccumulated, numSamples, numFeatures);
-//		List<List<Float>> encodedAndWhitenedValuesLists = encodedValuesLists; // HACK
 
 //		Map<Integer, List<Float>> encodingTable = stitchTogether(genotypesHashes, encodedAndWhitenedValuesLists, genotypesCountsAccumulated);
 		Map<Integer, List<Float>> encodingTable = stitchTogether(genotypesHashes, encodedAndWhitenedValuesLists, perHashGenotypesCounts);

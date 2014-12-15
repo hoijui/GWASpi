@@ -128,10 +128,6 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		dataSet.setNumSamples(filteredOperationDataSet.getNumSamples());
 		dataSet.setNumChromosomes(filteredOperationDataSet.getNumChromosomes());
 
-//		dataSet.setMarkerCensusOPKey(getParams().getMarkerCensus()); // HACK
-//		dataSet.setTestType(getParams().getType()); // HACK
-//		dataSet.setTestName(getParams().getName()); // HACK
-
 		Map<Integer, MarkerKey> censusOpMarkers = markerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
 		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filteredOperationDataSet.getMarkersKeysSource().getIndicesMap();
 
