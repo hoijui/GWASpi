@@ -104,10 +104,6 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 				this.qqPlotDof = 2;
 				this.header = headerBase + "\tX²\tPval\t?OR-AA/aa?\t?OR-Aa/aa?\n";
 				break;
-			case COMBI_ASSOC_TEST:
-				this.qqPlotDof = 2; // FIXME for COMBI test
-				this.header = headerBase + "\tX²\tPval\tOR-AA/aa\tOR-Aa/aa\n"; // FIXME for COMBI test
-				break;
 			case TRENDTEST:
 				this.qqPlotDof = 1;
 				this.header = headerBase + "\tTrend-Test\tPval\n";
@@ -371,9 +367,9 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		// WRITE DATA TO REPORT
 		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_T));
 		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
-		if (getParams().getTestType() != OPType.TRENDTEST) { // FIXME for COMBI test
+		if (getParams().getTestType() != OPType.TRENDTEST) {
 			ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(AllelicAssociationTestOperationEntry.TO_OR));
-			if (getParams().getTestType() != OPType.ALLELICTEST) { // FIXME for COMBI test
+			if (getParams().getTestType() != OPType.ALLELICTEST) {
 				ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
 			}
 		}
