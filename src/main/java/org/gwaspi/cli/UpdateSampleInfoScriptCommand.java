@@ -27,6 +27,8 @@ import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
 
 class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
+	private static final String PARAM_SAMPLE_INFO_FILE = "sample-info-file";
+
 	UpdateSampleInfoScriptCommand() {
 		super("update_sample_info");
 	}
@@ -48,18 +50,21 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 		//</editor-fold>
 
 		// checking study
-		StudyKey studyKey = prepareStudy(args.get("study-id"), true);
-		boolean studyExists = checkStudy(studyKey);
-
-		File sampleInfoFile = new File(args.get("sample-info-file"));
-		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) { // FIXME instead of this null-check, check if arg is given in the above line!
-			final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
-			MultiOperations.queueTask(updateSampleInfoTask);
-			return true;
+		final StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+		final boolean studyExists = checkStudy(studyKey);
+		if (!studyExists) {
+			return false;
 		}
 
-		// FIXME implement me!
+		final String sampleInfoFilePath = fetchRequired(args, PARAM_SAMPLE_INFO_FILE);
+		final File sampleInfoFile = new File(sampleInfoFilePath);
+		if (!sampleInfoFile.exists()) {
+			System.err.println("Sample-info file does not exist: \"" + sampleInfoFile.getAbsolutePath() + "\"");
+			return false;
+		}
 
-		return false;
+		final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+		MultiOperations.queueTask(updateSampleInfoTask);
+		return true;
 	}
 }
