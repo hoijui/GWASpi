@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -251,8 +252,16 @@ public class Utils {
 
 		if (log.isDebugEnabled()) {
 			File parent = folder.getParentFile();
-			while (!parent.getAbsolutePath().equals("/") && !parent.exists()) { // HACK only works on unix file systems
+			List<File> systemRoots = null;
+			while (!parent.exists()) {
 				log.debug("parent folder does not exist: {}", parent.getAbsolutePath());
+				if (systemRoots == null) {
+					systemRoots = Arrays.asList(File.listRoots());
+				}
+				if (systemRoots.contains(parent)) {
+					log.debug("given file-system-root does not exist: {}", parent.getAbsolutePath());
+					break;
+				}
 				parent = parent.getParentFile();
 			}
 		}
