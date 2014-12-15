@@ -186,6 +186,15 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		return studyExists;
 	}
 
+	protected static String fetchRequired(final Map<String, String> args, final String argName) throws IOException {
+
+		final String value = args.get(argName);
+		if (value == null) {
+			throw new IOException("Script is missing required parameter \"" + argName + "\"");
+		}
+		return value;
+	}
+
 	protected static Double fetchDouble(Map<String, String> args, String argName, Double defaultValue) throws IOException {
 
 		Double value;
