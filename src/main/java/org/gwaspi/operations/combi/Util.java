@@ -372,7 +372,17 @@ public class Util {
 
 
 
-	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
+	private static final File TMP_RAW_DATA_FILE;
+	static {
+		File tmpSerializeFile;
+		try {
+			tmpSerializeFile = File.createTempFile("gwaspiRawDataTmp", ".ser");
+		} catch (final IOException ex) {
+			ex.printStackTrace();
+			tmpSerializeFile = null;
+		}
+		TMP_RAW_DATA_FILE = tmpSerializeFile;
+	}
 
 	public static void storeForEncoding(
 			List<MarkerKey> markers,
