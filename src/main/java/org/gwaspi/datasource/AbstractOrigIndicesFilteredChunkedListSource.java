@@ -47,6 +47,8 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 		// ... as we do not, we extract it from the origin
 		// HACK This will be very inefficient, for example if we use
 		//   many small intervalls to get the whole range.
+		//   maybe see java.util.RandomAccess for a possible solution;
+		//   it is implemented by ArrayList, but not LinkedList, for example.
 
 //		final List<Integer> toExtractSampleOrigIndices = getSampleOrigIndices(from, to);
 //		final SamplesInfosSource origSource = getOrigSource();
