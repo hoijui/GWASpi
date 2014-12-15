@@ -242,8 +242,7 @@ public class Util {
 			transposed.add(new ArrayList<Double>(matrix.size()));
 		}
 
-		for (int r = 0; r < matrix.size(); r++) {
-			List<Double> row = matrix.get(r);
+		for (final List<Double> row : matrix) {
 			for (int c = 0; c < row.size(); c++) {
 				transposed.get(c).add(row.get(c));
 			}
@@ -254,8 +253,7 @@ public class Util {
 
 	public static void abs(List<List<Double>> matrix) {
 
-		for (int r = 0; r < matrix.size(); r++) {
-			List<Double> row = matrix.get(r);
+		for (final List<Double> row : matrix) {
 			for (int c = 0; c < row.size(); c++) {
 				row.set(c, Math.abs(row.get(c)));
 			}
