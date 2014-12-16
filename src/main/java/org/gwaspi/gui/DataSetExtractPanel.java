@@ -140,7 +140,41 @@ public class DataSetExtractPanel extends JPanel {
 		final DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
 
 		this.markerPickerTable = new ArrayList<PickMethod<SetMarkerPickCase>>();
+		markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
+				"All Markers",
+				SetMarkerPickCase.ALL_MARKERS,
+				null));
+		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
+				"Exclude by " + pickableMarkerField,
+				SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA,
+				pickableMarkerField));
+		}
+		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
+				"Include by " + pickableMarkerField,
+				SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA,
+				pickableMarkerField));
+		}
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Position Window", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Strand", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Position Window", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Strand", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
+
 		this.samplePickerTable = new ArrayList<PickMethod<SetSamplePickCase>>();
+		samplePickerTable.add(new PickMethod<SetSamplePickCase>("All Samples", SetSamplePickCase.ALL_SAMPLES, null));
+		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
+				"Exclude by " + pickableSampleField,
+				SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD,
+				pickableSampleField));
+		}
+		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
+				"Include by " + pickableSampleField,
+				SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD,
+				pickableSampleField));
+		}
 
 		final JPanel pnl_NameAndDesc = new JPanel();
 		final JLabel lbl_ParentMatrix = new JLabel();
@@ -173,42 +207,6 @@ public class DataSetExtractPanel extends JPanel {
 		final JButton btn_Go = new JButton();
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.extractData)); // NOI18N
-
-		markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
-				"All Markers",
-				SetMarkerPickCase.ALL_MARKERS,
-				null));
-		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
-			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
-				"Exclude by " + pickableMarkerField,
-				SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA,
-				pickableMarkerField));
-		}
-		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
-			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
-				"Include by " + pickableMarkerField,
-				SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA,
-				pickableMarkerField));
-		}
-		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Position Window", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
-		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Strand", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
-		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Position Window", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
-		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Strand", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
-
-
-		samplePickerTable.add(new PickMethod<SetSamplePickCase>("All Samples", SetSamplePickCase.ALL_SAMPLES, null));
-		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
-			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
-				"Exclude by " + pickableSampleField,
-				SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD,
-				pickableSampleField));
-		}
-		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
-			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
-				"Include by " + pickableSampleField,
-				SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD,
-				pickableSampleField));
-		}
 
 		pnl_NameAndDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.extratedMatrixDetails)); // NOI18N
 		pnl_MarkerZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.markerSelectZone)); // NOI18N
