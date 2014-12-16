@@ -51,24 +51,12 @@ import org.slf4j.LoggerFactory;
 
 public class MatrixMarkerQAPanel extends JPanel {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
+	private static final Logger log = LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
 
-	// Variables declaration - do not modify
-	private final MatrixKey parentMatrixKey;
 	private final OperationKey currentOPKey;
-	private final JButton btn_Back;
-	private final JButton btn_DeleteOperation;
-	private final JButton btn_Help;
-	private final JPanel pnl_Footer;
-	private final JPanel pnl_MatrixDesc;
-	private final JScrollPane scrl_MatrixDesc;
-	private final JTextArea txtA_Description;
-	// End of variables declaration
 
-	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int opId) throws IOException {
+	public MatrixMarkerQAPanel(final MatrixKey parentMatrixKey, final int opId) throws IOException {
 
-		this.parentMatrixKey = parentMatrixKey;
 		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 		final OperationMetadata currentOP;
@@ -80,14 +68,14 @@ public class MatrixMarkerQAPanel extends JPanel {
 			currentOP = null;
 		}
 
-		pnl_MatrixDesc = new JPanel();
-		scrl_MatrixDesc = new JScrollPane();
-		txtA_Description = new JTextArea();
+		final JPanel pnl_MatrixDesc = new JPanel();
+		final JScrollPane scrl_MatrixDesc = new JScrollPane();
+		final JTextArea txtA_Description = new JTextArea();
 
-		btn_DeleteOperation = new JButton();
-		pnl_Footer = new JPanel();
-		btn_Back = new JButton();
-		btn_Help = new JButton();
+		final JButton btn_DeleteOperation = new JButton();
+		final JPanel pnl_Footer = new JPanel();
+		final JButton btn_Back = new JButton();
+		final JButton btn_Help = new JButton();
 
 		setBorder(BorderFactory.createTitledBorder(null,
 				Text.Operation.operation + ": "
