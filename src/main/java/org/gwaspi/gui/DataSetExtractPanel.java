@@ -91,8 +91,8 @@ public class DataSetExtractPanel extends JPanel {
 	};
 
 	private final DataSetKey parentDataSetKey;
-	private final List<Object[]> markerPickerTable;
-	private final List<Object[]> samplePickerTable;
+	private final List<PickMethod<SetMarkerPickCase>> markerPickerTable;
+	private final List<PickMethod<SetSamplePickCase>> samplePickerTable;
 	private final JButton btn_Back;
 	private final JButton btn_Go;
 	private final JButton btn_Help;
@@ -123,13 +123,44 @@ public class DataSetExtractPanel extends JPanel {
 	private final JTextField txt_NewMatrixName;
 	private final JTextField txt_SamplesCriteriaFile;
 
+	private static class PickMethod<PCT> {
+
+		private final String name;
+		private final PCT pickCase;
+		private final String var;
+
+		PickMethod(final String name, final PCT pickCase, final String var) {
+
+			this.name = name;
+			this.pickCase = pickCase;
+			this.var = var;
+		}
+
+		@Override
+		public String toString() {
+			return getName();
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public PCT getPickCase() {
+			return pickCase;
+		}
+
+		public String getVar() {
+			return var;
+		}
+	}
+
 	public DataSetExtractPanel(final DataSetKey parentDataSetKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
 		this.parentDataSetKey = parentDataSetKey;
 		final DataSetMetadata dataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
 
-		this.markerPickerTable = new ArrayList<Object[]>();
-		this.samplePickerTable = new ArrayList<Object[]>();
+		this.markerPickerTable = new ArrayList<PickMethod<SetMarkerPickCase>>();
+		this.samplePickerTable = new ArrayList<PickMethod<SetSamplePickCase>>();
 		this.pnl_NameAndDesc = new JPanel();
 		this.lbl_ParentMatrix = new JLabel();
 		this.lbl_ParentMatrixName = new JLabel();
@@ -162,37 +193,40 @@ public class DataSetExtractPanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.extractData)); // NOI18N
 
-		markerPickerTable.add(new Object[] {"All Markers", SetMarkerPickCase.ALL_MARKERS, null});
-		for (String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
-			markerPickerTable.add(new Object[] {
+		markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
+				"All Markers",
+				SetMarkerPickCase.ALL_MARKERS,
+				null));
+		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
 				"Exclude by " + pickableMarkerField,
 				SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA,
-				pickableMarkerField});
+				pickableMarkerField));
 		}
-		for (String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
-			markerPickerTable.add(new Object[] {
+		for (final String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new PickMethod<SetMarkerPickCase>(
 				"Include by " + pickableMarkerField,
 				SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA,
-				pickableMarkerField});
+				pickableMarkerField));
 		}
-		//markerPickerTable.add(new Object[]{"Exclude by Position Window", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
-		//markerPickerTable.add(new Object[]{"Exclude by Strand", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
-		//markerPickerTable.add(new Object[]{"Include by Position Window", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
-		//markerPickerTable.add(new Object[]{"Include by Strand", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Position Window", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Exclude by Strand", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Position Window", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS));
+		//markerPickerTable.add(new PickMethod<SetMarkerPickCase>("Include by Strand", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND));
 
 
-		samplePickerTable.add(new Object[] {"All Samples", SetSamplePickCase.ALL_SAMPLES, null});
-		for (String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
-			samplePickerTable.add(new Object[] {
+		samplePickerTable.add(new PickMethod<SetSamplePickCase>("All Samples", SetSamplePickCase.ALL_SAMPLES, null));
+		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
 				"Exclude by " + pickableSampleField,
 				SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD,
-				pickableSampleField});
+				pickableSampleField));
 		}
-		for (String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
-			samplePickerTable.add(new Object[] {
+		for (final String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new PickMethod<SetSamplePickCase>(
 				"Include by " + pickableSampleField,
 				SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD,
-				pickableSampleField});
+				pickableSampleField));
 		}
 
 		pnl_NameAndDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.extratedMatrixDetails)); // NOI18N
@@ -247,15 +281,7 @@ public class DataSetExtractPanel extends JPanel {
 
 
 		lbl_MarkersVariable.setText(Text.Trafo.variable);
-		String[] markerPickerVars = new String[] {
-			markerPickerTable.get(0)[0].toString(),
-			markerPickerTable.get(1)[0].toString(),
-			markerPickerTable.get(2)[0].toString(),
-			markerPickerTable.get(3)[0].toString(),
-			markerPickerTable.get(4)[0].toString(),
-			markerPickerTable.get(5)[0].toString(),
-			markerPickerTable.get(6)[0].toString()};
-		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
+		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerTable.toArray()));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
 		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentDataSetKey, txtA_MarkersCriteria));
 
@@ -317,24 +343,7 @@ public class DataSetExtractPanel extends JPanel {
 		//</editor-fold>
 
 		lbl_SamplesVariable.setText(Text.Trafo.variable);
-		String[] samplePickerVars = new String[]{samplePickerTable.get(0)[0].toString(),
-			samplePickerTable.get(1)[0].toString(),
-			samplePickerTable.get(2)[0].toString(),
-			samplePickerTable.get(3)[0].toString(),
-			samplePickerTable.get(4)[0].toString(),
-			samplePickerTable.get(5)[0].toString(),
-			samplePickerTable.get(6)[0].toString(),
-			samplePickerTable.get(7)[0].toString(),
-			samplePickerTable.get(8)[0].toString(),
-			samplePickerTable.get(9)[0].toString(),
-			samplePickerTable.get(10)[0].toString(),
-			samplePickerTable.get(11)[0].toString(),
-			samplePickerTable.get(12)[0].toString(),
-			samplePickerTable.get(13)[0].toString(),
-			samplePickerTable.get(14)[0].toString(),
-			samplePickerTable.get(15)[0].toString(),
-			samplePickerTable.get(16)[0].toString()};
-		cmb_SamplesVariable.setModel(new DefaultComboBoxModel(samplePickerVars));
+		cmb_SamplesVariable.setModel(new DefaultComboBoxModel(samplePickerTable.toArray()));
 
 		lbl_SamplesCriteria.setText(Text.Trafo.criteria);
 		txtA_SamplesCriteria.setColumns(20);
@@ -506,8 +515,13 @@ public class DataSetExtractPanel extends JPanel {
 				if (!newMatrixName.isEmpty()) {
 					ProcessTab.getSingleton().showTab();
 
-					SetMarkerPickCase markerPickCase = (SetMarkerPickCase) markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[1];
-					SetSamplePickCase samplePickCase = (SetSamplePickCase) samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[1];
+					final PickMethod<SetMarkerPickCase> markerPickMethod
+							= (PickMethod<SetMarkerPickCase>) cmb_MarkersVariable.getSelectedItem();
+					final PickMethod<SetSamplePickCase> samplePickMethod
+							= (PickMethod<SetSamplePickCase>) cmb_SamplesVariable.getSelectedItem();
+
+					final SetMarkerPickCase markerPickCase = markerPickMethod.getPickCase();
+					final SetSamplePickCase samplePickCase = samplePickMethod.getPickCase();
 
 					String mi_marker_criteria_file = txt_MarkersCriteriaFile.getText();
 					if (mi_marker_criteria_file.equals(Text.All.optional)) {
@@ -572,12 +586,12 @@ public class DataSetExtractPanel extends JPanel {
 
 					String markerPickVar = "";
 					if (!markerPickCase.equals(SetMarkerPickCase.ALL_MARKERS)) {
-						markerPickVar = markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[2].toString();
+						markerPickVar = markerPickMethod.getVar();
 					}
 
 					String samplePickVar = "";
 					if (!samplePickCase.equals(SetSamplePickCase.ALL_SAMPLES)) {
-						samplePickVar = samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[2].toString();
+						samplePickVar = samplePickMethod.getVar();
 					}
 
 					String description = txtA_NewMatrixDescription.getText();
