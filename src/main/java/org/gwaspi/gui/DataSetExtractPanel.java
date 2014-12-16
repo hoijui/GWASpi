@@ -20,8 +20,8 @@ package org.gwaspi.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetSamplePickCase;
@@ -208,29 +209,7 @@ public class DataSetExtractPanel extends JPanel {
 		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
-		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
-							txtA_NewMatrixDescription.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_NewMatrixDescription.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_NewMatrixDescription.addFocusListener(new OnFocusTextSelector(Text.All.optional));
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NAME&DESC">
@@ -285,54 +264,12 @@ public class DataSetExtractPanel extends JPanel {
 		txtA_MarkersCriteria.setRows(5);
 		txtA_MarkersCriteria.setText(Text.All.optional);
 		txtA_MarkersCriteria.setDocument(new LimitedLengthDocument(999));
-		txtA_MarkersCriteria.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_MarkersCriteria.getText().equals(Text.All.optional)) {
-							txtA_MarkersCriteria.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_MarkersCriteria.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_MarkersCriteria.addFocusListener(new OnFocusTextSelector(Text.All.optional));
 		scrl_MarkersCriteria.setViewportView(txtA_MarkersCriteria);
 
 		lbl_MarkersCriteriaFile.setText(Text.Trafo.criteriaFile);
 		txt_MarkersCriteriaFile.setText(Text.All.optional);
-		txt_MarkersCriteriaFile.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_MarkersCriteriaFile.selectAll();
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_MarkersCriteriaFile.select(0, 0);
-					}
-				});
-			}
-		});
+		txt_MarkersCriteriaFile.addFocusListener(new OnFocusTextSelector());
 
 		btn_MarkersCriteriaBrowse.setAction(new MarkersCriteriaBrowseAction());
 
@@ -404,54 +341,12 @@ public class DataSetExtractPanel extends JPanel {
 		txtA_SamplesCriteria.setRows(5);
 		txtA_SamplesCriteria.setText(Text.All.optional);
 		txtA_SamplesCriteria.setDocument(new LimitedLengthDocument(999));
-		txtA_SamplesCriteria.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_SamplesCriteria.getText().equals(Text.All.optional)) {
-							txtA_SamplesCriteria.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_SamplesCriteria.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_SamplesCriteria.addFocusListener(new OnFocusTextSelector(Text.All.optional));
 		scrl_SamplesCriteria.setViewportView(txtA_SamplesCriteria);
 
 		lbl_SamplesCriteriaFile.setText(Text.Trafo.criteriaFile);
 		txt_SamplesCriteriaFile.setText(Text.All.optional);
-		txt_SamplesCriteriaFile.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_SamplesCriteriaFile.selectAll();
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_SamplesCriteriaFile.select(0, 0);
-					}
-				});
-			}
-		});
+		txt_SamplesCriteriaFile.addFocusListener(new OnFocusTextSelector());
 
 		btn_SamplesCriteriaBrowse.setAction(new SamplesCriteriaBrowseAction());
 
@@ -549,6 +444,52 @@ public class DataSetExtractPanel extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(44, Short.MAX_VALUE)));
 		//</editor-fold>
+	}
+
+	private static class OnFocusTextSelector implements FocusListener {
+
+		private final String defaultText;
+
+		/**
+		 * Only select text on focus gained if it equals defaultText.
+		 */
+		OnFocusTextSelector(final String defaultText) {
+
+			this.defaultText = defaultText;
+		}
+
+		/**
+		 * Always select text on focus gained.
+		 */
+		OnFocusTextSelector() {
+			this(null);
+		}
+
+		@Override
+		public void focusGained(final FocusEvent evt) {
+
+			final JTextComponent comp = (JTextComponent) evt.getSource();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					if ((defaultText == null) || comp.getText().equals(defaultText)) {
+						comp.selectAll();
+					}
+				}
+			});
+		}
+
+		@Override
+		public void focusLost(final FocusEvent evt) {
+
+			final JTextComponent comp = (JTextComponent) evt.getSource();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					comp.select(0, 0);
+				}
+			});
+		}
 	}
 
 	private class ExtractAction extends AbstractAction { // FIXME make static
