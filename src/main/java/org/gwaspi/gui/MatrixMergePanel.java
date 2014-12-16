@@ -42,7 +42,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -120,9 +119,9 @@ public class MatrixMergePanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeMatrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.mergeMatrices)); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName())); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
@@ -147,7 +146,7 @@ public class MatrixMergePanel extends JPanel {
 
 		//</editor-fold>
 
-		pnl_addedMatrix.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeWithMatrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 12))); // NOI18N
+		pnl_addedMatrix.setBorder(BorderFactory.createTitledBorder(Text.Trafo.mergeWithMatrix)); // NOI18N
 
 		String[] matricesNames = new String[matrixItems.size()];
 		for (int i = 0; i < matrixItems.size(); i++) {
@@ -176,7 +175,7 @@ public class MatrixMergePanel extends JPanel {
 		txtA_Notes.setColumns(20);
 		txtA_Notes.setRows(5);
 		txtA_Notes.setFont(new Font("DejaVu Sans", 0, 12));
-		txtA_Notes.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6)); //Top, left, bottom, right
+		txtA_Notes.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6)); // Top, left, bottom, right
 		txtA_Notes.setEditable(false);
 		scrl_Notes.setViewportView(txtA_Notes);
 
@@ -221,7 +220,7 @@ public class MatrixMergePanel extends JPanel {
 				.addGap(15, 15, 15)));
 		//</editor-fold>
 
-		pnl_TrafoMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.trafoMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_TrafoMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.trafoMatrixDetails)); // NOI18N
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
