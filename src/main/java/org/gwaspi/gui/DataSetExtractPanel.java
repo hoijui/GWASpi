@@ -642,7 +642,7 @@ public class DataSetExtractPanel extends JPanel {
 		}
 	}
 
-	private static class MarkersVariableAction extends AbstractAction { // FIXME make static
+	private static class MarkersVariableAction extends AbstractAction {
 
 		private final DataSetKey parentDataSetKey;
 		private final JTextArea txtA_MarkersCriteria;
