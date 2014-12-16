@@ -62,8 +62,7 @@ import org.slf4j.LoggerFactory;
 
 public class MatrixMergePanel extends JPanel {
 
-	private static final Logger log
-			= LoggerFactory.getLogger(MatrixMergePanel.class);
+	private static final Logger log = LoggerFactory.getLogger(MatrixMergePanel.class);
 
 	// Variables declaration - do not modify
 	private final MatrixKey parentMatrixKey;
@@ -253,7 +252,15 @@ public class MatrixMergePanel extends JPanel {
 			}
 		});
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
-		btn_Merge.setAction(new MergeAction(parentMatrixKey, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItems, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
+		btn_Merge.setAction(new MergeAction(
+				parentMatrixKey,
+				txtA_NewMatrixDescription,
+				txt_NewMatrixName,
+				matrixItems,
+				cmb_SelectMatrix,
+				rdio_MergeMarkers,
+				rdio_MergeSamples,
+				rdio_MergeAll));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">
 		GroupLayout pnl_TrafoMatrixDescLayout = new GroupLayout(pnl_TrafoMatrixDesc);
