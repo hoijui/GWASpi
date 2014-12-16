@@ -18,7 +18,8 @@
 package org.gwaspi.gui;
 
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -38,8 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 import org.gwaspi.constants.ImportConstants;
@@ -212,6 +210,20 @@ public class DataSetExtractPanel extends JPanel {
 		pnl_MarkerZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.markerSelectZone)); // NOI18N
 		pnl_SampleZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.sampleSelectZone)); // NOI18N
 
+		final GridBagLayout layout = new GridBagLayout();
+		final int gapSpace = 5;
+		// we use every second row and column as a spacer
+		layout.columnWidths = new int[] {0};
+		layout.rowHeights = new int[] {0, gapSpace, 0, gapSpace, 0, gapSpace, 0};
+		setLayout(layout);
+
+		final GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 0.3;
+
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
 		lbl_ParentMatrix.setLabelFor(lbl_ParentMatrixName);
 		lbl_ParentMatrixName.setText(dataSetMetadata.getFriendlyName());
@@ -228,38 +240,53 @@ public class DataSetExtractPanel extends JPanel {
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NAME&DESC">
-		GroupLayout pnl_NameAndDescLayout = new GroupLayout(pnl_NameAndDesc);
-		pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
-		pnl_NameAndDescLayout.setHorizontalGroup(
-				pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_NewMatrixDescription, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
-				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
-				.addComponent(lbl_NewMatrixName)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(txt_NewMatrixName, GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE))
-				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
-				.addComponent(lbl_ParentMatrix)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(lbl_ParentMatrixName)))
-				.addContainerGap()));
-		pnl_NameAndDescLayout.setVerticalGroup(
-				pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(lbl_ParentMatrix)
-				.addComponent(lbl_ParentMatrixName))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(lbl_NewMatrixName)
-				.addComponent(txt_NewMatrixName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scrl_NewMatrixDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-		//</editor-fold>
+		GridBagLayout subLayout = new GridBagLayout();
+		// we use every second row and column as a spacer
+		subLayout.columnWidths = new int[] {0, gapSpace, 0};
+		subLayout.rowHeights = new int[] {0, gapSpace, 0, gapSpace, 0};
+		pnl_NameAndDesc.setLayout(subLayout);
 
+		GridBagConstraints subGridBagConstraints = new GridBagConstraints();
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.gridheight = 1;
+		subGridBagConstraints.anchor = GridBagConstraints.CENTER;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		subGridBagConstraints.weighty = 0.0;
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		pnl_NameAndDesc.add(lbl_ParentMatrix, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 2;
+		pnl_NameAndDesc.add(lbl_NewMatrixName, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.anchor = GridBagConstraints.WEST;
+		subGridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		subGridBagConstraints.weightx = 1.0;
+		pnl_NameAndDesc.add(lbl_ParentMatrixName, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 2;
+		pnl_NameAndDesc.add(txt_NewMatrixName, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 4;
+		subGridBagConstraints.gridwidth = 3;
+		subGridBagConstraints.fill = GridBagConstraints.BOTH;
+		subGridBagConstraints.weightx = 1.0;
+		subGridBagConstraints.weighty = 1.0;
+		pnl_NameAndDesc.add(scrl_NewMatrixDescription, subGridBagConstraints);
+		//</editor-fold>
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		add(pnl_NameAndDesc, gridBagConstraints);
 
 		lbl_MarkersVariable.setText(Text.Trafo.variable);
 		lbl_MarkersVariable.setLabelFor(cmb_MarkersVariable);
@@ -285,45 +312,63 @@ public class DataSetExtractPanel extends JPanel {
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixExtract));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MARKERZONE">
-		GroupLayout pnl_MarkerZoneLayout = new GroupLayout(pnl_MarkerZone);
-		pnl_MarkerZone.setLayout(pnl_MarkerZoneLayout);
-		pnl_MarkerZoneLayout.setHorizontalGroup(
-				pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_MarkerZoneLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_MarkersCriteriaFile)
-				.addComponent(lbl_MarkersCriteria)
-				.addComponent(lbl_MarkersVariable))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(cmb_MarkersVariable, GroupLayout.PREFERRED_SIZE, 464, GroupLayout.PREFERRED_SIZE)
-				.addComponent(scrl_MarkersCriteria, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
-				.addComponent(txt_MarkersCriteriaFile, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_MarkersCriteriaBrowse, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap()));
+		subLayout = new GridBagLayout();
+		// we use every second row and column as a spacer
+		subLayout.columnWidths = new int[] {0, gapSpace, 0, gapSpace, 0};
+		subLayout.rowHeights = new int[] {0, gapSpace, 0, gapSpace, 0};
+		pnl_MarkerZone.setLayout(subLayout);
 
+		subGridBagConstraints = new GridBagConstraints();
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.gridheight = 1;
+		subGridBagConstraints.anchor = GridBagConstraints.CENTER;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		subGridBagConstraints.weighty = 0.0;
 
-		pnl_MarkerZoneLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{cmb_MarkersVariable, scrl_MarkersCriteria, txt_MarkersCriteriaFile});
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		pnl_MarkerZone.add(lbl_MarkersCriteriaFile, subGridBagConstraints);
 
-		pnl_MarkerZoneLayout.setVerticalGroup(
-				pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MarkerZoneLayout.createSequentialGroup()
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(lbl_MarkersVariable)
-				.addComponent(cmb_MarkersVariable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_MarkersCriteria)
-				.addComponent(scrl_MarkersCriteria, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(lbl_MarkersCriteriaFile)
-				.addComponent(txt_MarkersCriteriaFile)
-				.addComponent(btn_MarkersCriteriaBrowse))
-				.addContainerGap()));
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 2;
+		pnl_MarkerZone.add(lbl_MarkersCriteria, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 4;
+		pnl_MarkerZone.add(lbl_MarkersVariable, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.gridwidth = 3;
+		subGridBagConstraints.anchor = GridBagConstraints.WEST;
+		subGridBagConstraints.weightx = 1.0;
+		pnl_MarkerZone.add(cmb_MarkersVariable, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 2;
+		subGridBagConstraints.fill = GridBagConstraints.BOTH;
+		subGridBagConstraints.weighty = 1.0;
+		pnl_MarkerZone.add(scrl_MarkersCriteria, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 4;
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		subGridBagConstraints.weighty = 0.0;
+		pnl_MarkerZone.add(txt_MarkersCriteriaFile, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 4;
+		subGridBagConstraints.gridy = 4;
+		subGridBagConstraints.weightx = 0.0;
+		pnl_MarkerZone.add(btn_MarkersCriteriaBrowse, subGridBagConstraints);
 		//</editor-fold>
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 2;
+		add(pnl_MarkerZone, gridBagConstraints);
 
 		lbl_SamplesVariable.setText(Text.Trafo.variable);
 		lbl_SamplesVariable.setLabelFor(cmb_SamplesVariable);
@@ -346,99 +391,99 @@ public class DataSetExtractPanel extends JPanel {
 		btn_SamplesCriteriaBrowse.setAction(new SamplesCriteriaBrowseAction());
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT SAMPLEZONE">
-		GroupLayout pnl_SampleZoneLayout = new GroupLayout(pnl_SampleZone);
-		pnl_SampleZone.setLayout(pnl_SampleZoneLayout);
-		pnl_SampleZoneLayout.setHorizontalGroup(
-				pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_SampleZoneLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_SamplesVariable)
-				.addComponent(lbl_SamplesCriteria)
-				.addComponent(lbl_SamplesCriteriaFile))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(cmb_SamplesVariable, 0, 461, Short.MAX_VALUE)
-				.addComponent(scrl_SamplesCriteria, GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-				.addComponent(txt_SamplesCriteriaFile, GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_SamplesCriteriaBrowse, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(15, Short.MAX_VALUE)));
+		subLayout = new GridBagLayout();
+		// we use every second row and column as a spacer
+		subLayout.columnWidths = new int[] {0, gapSpace, 0, gapSpace, 0};
+		subLayout.rowHeights = new int[] {0, gapSpace, 0, gapSpace, 0};
+		pnl_SampleZone.setLayout(subLayout);
 
-		pnl_SampleZoneLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{cmb_SamplesVariable, scrl_SamplesCriteria, txt_SamplesCriteriaFile});
+		subGridBagConstraints = new GridBagConstraints();
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.gridheight = 1;
+		subGridBagConstraints.anchor = GridBagConstraints.CENTER;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		subGridBagConstraints.weighty = 0.0;
 
-		pnl_SampleZoneLayout.setVerticalGroup(
-				pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_SampleZoneLayout.createSequentialGroup()
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(lbl_SamplesVariable)
-				.addComponent(cmb_SamplesVariable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_SamplesCriteria)
-				.addComponent(scrl_SamplesCriteria, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(txt_SamplesCriteriaFile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_SamplesCriteriaBrowse)
-				.addComponent(lbl_SamplesCriteriaFile))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.anchor = GridBagConstraints.NORTHEAST;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		pnl_SampleZone.add(lbl_SamplesCriteriaFile, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 2;
+		pnl_SampleZone.add(lbl_SamplesCriteria, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 0;
+		subGridBagConstraints.gridy = 4;
+		pnl_SampleZone.add(lbl_SamplesVariable, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 0;
+		subGridBagConstraints.gridwidth = 3;
+		subGridBagConstraints.anchor = GridBagConstraints.WEST;
+		subGridBagConstraints.weightx = 1.0;
+		pnl_SampleZone.add(cmb_SamplesVariable, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 2;
+		subGridBagConstraints.fill = GridBagConstraints.BOTH;
+		subGridBagConstraints.weighty = 1.0;
+		pnl_SampleZone.add(scrl_SamplesCriteria, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.gridy = 4;
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+		subGridBagConstraints.weighty = 0.0;
+		pnl_SampleZone.add(txt_SamplesCriteriaFile, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 4;
+		subGridBagConstraints.gridy = 4;
+		subGridBagConstraints.weightx = 0.0;
+		pnl_SampleZone.add(btn_SamplesCriteriaBrowse, subGridBagConstraints);
 		//</editor-fold>
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 4;
+		add(pnl_SampleZone, gridBagConstraints);
 
 		btn_Back.setAction(new BackAction(parentDataSetKey));
 
 		btn_Go.setAction(new ExtractAction());
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
-		pnl_Footer.setLayout(pnl_FooterLayout);
-		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
-				.addGap(18, 18, 18)
-				.addComponent(btn_Help, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 331, Short.MAX_VALUE)
-				.addComponent(btn_Go, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap()));
-		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addGap(0, 0, 0)
-				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Go, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_Back)
-				.addComponent(btn_Help))));
-		//</editor-fold>
+		subLayout = new GridBagLayout();
+		// we use every second row and column as a spacer
+		subLayout.columnWidths = new int[] {0, gapSpace, 0, gapSpace, 0};
+		subLayout.rowHeights = new int[] {0};
+		pnl_Footer.setLayout(subLayout);
 
-		//<editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_NameAndDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MarkerZone, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_SampleZone, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGap(45, 45, 45)))
-				.addContainerGap()));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_NameAndDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_MarkerZone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_SampleZone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(44, Short.MAX_VALUE)));
+		subGridBagConstraints = new GridBagConstraints();
+		subGridBagConstraints.gridwidth = 1;
+		subGridBagConstraints.gridheight = 1;
+		subGridBagConstraints.anchor = GridBagConstraints.CENTER;
+		subGridBagConstraints.fill = GridBagConstraints.NONE;
+		subGridBagConstraints.weightx = 0.0;
+		subGridBagConstraints.weighty = 0.0;
+
+		subGridBagConstraints.gridx = 0;
+		pnl_Footer.add(btn_Back, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 2;
+		subGridBagConstraints.weightx = 0.5;
+		subGridBagConstraints.anchor = GridBagConstraints.WEST;
+		pnl_Footer.add(btn_Help, subGridBagConstraints);
+
+		subGridBagConstraints.gridx = 4;
+		subGridBagConstraints.anchor = GridBagConstraints.EAST;
+		pnl_Footer.add(btn_Go, subGridBagConstraints);
 		//</editor-fold>
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 6;
+		gridBagConstraints.weighty = 0.0;
+		add(pnl_Footer, gridBagConstraints);
 	}
 
 	private static class OnFocusTextSelector implements FocusListener {
