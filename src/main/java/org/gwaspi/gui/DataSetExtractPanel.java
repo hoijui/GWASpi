@@ -213,8 +213,10 @@ public class DataSetExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Trafo.sampleSelectZone)); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
+		lbl_ParentMatrix.setLabelFor(lbl_ParentMatrixName);
 		lbl_ParentMatrixName.setText(dataSetMetadata.getFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
+		lbl_NewMatrixName.setLabelFor(txt_NewMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
@@ -260,11 +262,13 @@ public class DataSetExtractPanel extends JPanel {
 
 
 		lbl_MarkersVariable.setText(Text.Trafo.variable);
+		lbl_MarkersVariable.setLabelFor(cmb_MarkersVariable);
 		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerTable.toArray()));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
 		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentDataSetKey, txtA_MarkersCriteria));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
+		lbl_MarkersVariable.setLabelFor(txtA_MarkersCriteria);
 		txtA_MarkersCriteria.setColumns(20);
 		txtA_MarkersCriteria.setRows(5);
 		txtA_MarkersCriteria.setText(Text.All.optional);
@@ -322,9 +326,11 @@ public class DataSetExtractPanel extends JPanel {
 		//</editor-fold>
 
 		lbl_SamplesVariable.setText(Text.Trafo.variable);
+		lbl_SamplesVariable.setLabelFor(cmb_SamplesVariable);
 		cmb_SamplesVariable.setModel(new DefaultComboBoxModel(samplePickerTable.toArray()));
 
 		lbl_SamplesCriteria.setText(Text.Trafo.criteria);
+		lbl_SamplesCriteria.setLabelFor(txtA_SamplesCriteria);
 		txtA_SamplesCriteria.setColumns(20);
 		txtA_SamplesCriteria.setRows(5);
 		txtA_SamplesCriteria.setText(Text.All.optional);
@@ -333,6 +339,7 @@ public class DataSetExtractPanel extends JPanel {
 		scrl_SamplesCriteria.setViewportView(txtA_SamplesCriteria);
 
 		lbl_SamplesCriteriaFile.setText(Text.Trafo.criteriaFile);
+		lbl_SamplesCriteriaFile.setLabelFor(txt_SamplesCriteriaFile);
 		txt_SamplesCriteriaFile.setText(Text.All.optional);
 		txt_SamplesCriteriaFile.addFocusListener(new OnFocusTextSelector());
 
