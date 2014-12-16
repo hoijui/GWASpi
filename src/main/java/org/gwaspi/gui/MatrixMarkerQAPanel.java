@@ -17,6 +17,7 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -24,14 +25,11 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -114,24 +112,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOPKey, this));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
-		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
-		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
-		pnl_MatrixDescLayout.setHorizontalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_MatrixDesc, GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
-				.addComponent(btn_DeleteOperation, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap()));
-		pnl_MatrixDescLayout.setVerticalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(scrl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_DeleteOperation)
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
+		final int gapSpace = 5;
+		pnl_MatrixDesc.setLayout(new BorderLayout(gapSpace, gapSpace));
+		pnl_MatrixDesc.add(scrl_MatrixDesc, BorderLayout.CENTER);
+		final JPanel pnl_MatrixDescFooter = new JPanel();
+		pnl_MatrixDescFooter.setLayout(new BorderLayout(gapSpace, gapSpace));
+		pnl_MatrixDescFooter.add(btn_DeleteOperation, BorderLayout.WEST);
+		pnl_MatrixDesc.add(pnl_MatrixDescFooter, BorderLayout.SOUTH);
 		//</editor-fold>
 
 		Action backAction = new BackAction(new DataSetKey(parentMatrixKey));
@@ -139,45 +126,15 @@ public class MatrixMarkerQAPanel extends JPanel {
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
-		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
-		pnl_Footer.setLayout(pnl_FooterLayout);
-		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 664, Short.MAX_VALUE)
-				.addComponent(btn_Help)
-				.addContainerGap()));
-
-		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
-		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Back)
-				.addComponent(btn_Help))));
+		pnl_Footer.setLayout(new BorderLayout(gapSpace, gapSpace));
+		pnl_Footer.add(btn_Back, BorderLayout.WEST);
+		pnl_Footer.add(btn_Help, BorderLayout.EAST);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixDesc, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		setLayout(new BorderLayout(gapSpace, gapSpace));
+		add(pnl_MatrixDesc, BorderLayout.NORTH);
+		add(pnl_Footer, BorderLayout.SOUTH);
 		//</editor-fold>
 	}
 
