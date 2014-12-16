@@ -17,9 +17,10 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -112,12 +113,9 @@ public class MainFrame extends JFrame {
 		tabs.addTab(Text.App.Tab0, panel0);
 		tabs.addTab(Text.App.Tab1, panel1);
 
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(tabs, GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
-		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(tabs, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
-
-		getContentPane().add(tabs);
+		setPreferredSize(new Dimension(1000, 750));
+		setLayout(new BorderLayout());
+		add(tabs, BorderLayout.CENTER);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
