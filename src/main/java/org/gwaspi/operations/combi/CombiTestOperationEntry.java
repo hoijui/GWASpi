@@ -17,14 +17,14 @@
 
 package org.gwaspi.operations.combi;
 
+import java.io.Serializable;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
 public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	class MissingRatioExtractor
-			implements Extractor<CombiTestOperationEntry, Double>
+	class MissingRatioExtractor implements Extractor<CombiTestOperationEntry, Double>, Serializable
 	{
 		@Override
 		public Double extract(CombiTestOperationEntry from) {

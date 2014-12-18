@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.trendtest;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
@@ -24,7 +25,7 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	class PValueComparator implements Comparator<TrendTestOperationEntry> {
+	class PValueComparator implements Comparator<TrendTestOperationEntry>, Serializable {
 
 		@Override
 		public int compare(TrendTestOperationEntry entry1, TrendTestOperationEntry entry2) {

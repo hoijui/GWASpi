@@ -17,13 +17,14 @@
 
 package org.gwaspi.operations.qasamples;
 
+import java.io.Serializable;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.operations.OperationDataEntry;
 import org.gwaspi.model.SampleKey;
 
 public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
-	class MissingRatioExtractor implements Extractor<QASamplesOperationEntry, Double>
+	class MissingRatioExtractor implements Extractor<QASamplesOperationEntry, Double>, Serializable
 	{
 		@Override
 		public Double extract(QASamplesOperationEntry from) {
@@ -32,7 +33,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 	};
 	final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO = new MissingRatioExtractor();
 
-	class MissingCountExtractor implements Extractor<QASamplesOperationEntry, Integer>
+	class MissingCountExtractor implements Extractor<QASamplesOperationEntry, Integer>, Serializable
 	{
 		@Override
 		public Integer extract(QASamplesOperationEntry from) {
@@ -42,7 +43,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 	final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
 			= new MissingCountExtractor();
 
-	class HetzyRatioExtractor implements Extractor<QASamplesOperationEntry, Double>
+	class HetzyRatioExtractor implements Extractor<QASamplesOperationEntry, Double>, Serializable
 	{
 		@Override
 		public Double extract(QASamplesOperationEntry from) {

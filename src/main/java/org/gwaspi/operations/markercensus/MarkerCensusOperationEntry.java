@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.markercensus;
 
+import java.io.Serializable;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
@@ -26,8 +27,9 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 
 public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	class KnownAllelesExtractor implements Extractor<MarkerCensusOperationEntry, byte[]> {
-
+	class KnownAllelesExtractor implements Extractor<MarkerCensusOperationEntry, byte[]>,
+			Serializable
+	{
 		@Override
 		public byte[] extract(MarkerCensusOperationEntry from) {
 			return from.getKnownAlleles();
@@ -36,8 +38,9 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
 			= new KnownAllelesExtractor();
 
-	class CensusFullExtractor implements Extractor<MarkerCensusOperationEntry, CensusFull> {
-
+	class CensusFullExtractor implements Extractor<MarkerCensusOperationEntry, CensusFull>,
+			Serializable
+	{
 		@Override
 		public CensusFull extract(MarkerCensusOperationEntry from) {
 			return from.getCensus();
@@ -46,7 +49,7 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
 			= new CensusFullExtractor();
 
-	class CensusExtractor implements Extractor<MarkerCensusOperationEntry, Census> {
+	class CensusExtractor implements Extractor<MarkerCensusOperationEntry, Census>, Serializable {
 
 		private final Category category;
 
