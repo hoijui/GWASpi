@@ -53,9 +53,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(LoadGTFromGWASpiFiles.class);
 
-	public LoadGTFromGWASpiFiles() {
-	}
-
 //	@Override
 //	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
 //		super.addAdditionalBigDescriptionProperties(description, loadDescription); // XXX uncomment!

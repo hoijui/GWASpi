@@ -55,8 +55,6 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 
 	public static class NullConstrainer implements Extractor<Number, Number> {
 
-		public NullConstrainer() {}
-
 		@Override
 		public Number extract(Number object) {
 			return object;

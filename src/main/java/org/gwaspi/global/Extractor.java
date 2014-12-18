@@ -26,9 +26,6 @@ public interface Extractor<IV, OV> {
 
 	class ToStringExtractor<IV> implements Extractor<IV, String> {
 
-		public ToStringExtractor() {
-		}
-
 		@Override
 		public String extract(IV object) {
 			return object.toString();
@@ -50,9 +47,6 @@ public interface Extractor<IV, OV> {
 	}
 
 	class EnumToIntExtractor<IV extends Enum> implements Extractor<IV, Integer> {
-
-		public EnumToIntExtractor() {
-		}
 
 		@Override
 		public Integer extract(IV object) {

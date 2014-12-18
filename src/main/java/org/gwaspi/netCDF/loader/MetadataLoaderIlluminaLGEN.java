@@ -37,9 +37,6 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderIlluminaLGEN.class);
 
-	public MetadataLoaderIlluminaLGEN() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;

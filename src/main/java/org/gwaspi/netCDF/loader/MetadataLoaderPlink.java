@@ -39,9 +39,6 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlink.class);
 
-	public MetadataLoaderPlink() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;

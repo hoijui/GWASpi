@@ -39,9 +39,6 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
 
-	public MetadataLoaderPlinkBinary() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;

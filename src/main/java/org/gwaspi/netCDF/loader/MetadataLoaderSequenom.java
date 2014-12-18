@@ -37,9 +37,6 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderSequenom.class);
 
-	public MetadataLoaderSequenom() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;

@@ -43,9 +43,6 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHapmap.class);
 
-	public MetadataLoaderHapmap() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return true;

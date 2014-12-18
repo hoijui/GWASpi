@@ -28,9 +28,6 @@ public class DoubleInputVerifier extends InputVerifier {
 
 	private final Logger log = LoggerFactory.getLogger(DoubleInputVerifier.class);
 
-	public DoubleInputVerifier() {
-	}
-
 	public boolean verify(JComponent input) {
 		boolean correct = true;
 		try {

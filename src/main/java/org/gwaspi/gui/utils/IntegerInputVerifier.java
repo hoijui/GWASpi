@@ -28,9 +28,6 @@ public class IntegerInputVerifier extends InputVerifier {
 
 	private final Logger log = LoggerFactory.getLogger(IntegerInputVerifier.class);
 
-	public IntegerInputVerifier() {
-	}
-
 	public boolean verify(JComponent input) {
 		boolean correct = true;
 		try {

@@ -37,9 +37,6 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHGDP1.class);
 
-	public MetadataLoaderHGDP1() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;

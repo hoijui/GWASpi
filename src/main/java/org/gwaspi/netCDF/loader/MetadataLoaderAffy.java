@@ -40,9 +40,6 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	/** Duplicate SNPs to be removed */
 	private static final SNPBlacklist snpBlackList = new SNPBlacklist();
 
-	public MetadataLoaderAffy() {
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return true;
