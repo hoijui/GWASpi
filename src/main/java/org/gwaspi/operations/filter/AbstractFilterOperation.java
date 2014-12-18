@@ -42,15 +42,15 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractFilterOperation<PT extends OperationParams> extends AbstractOperationCreatingOperation<SimpleOperationDataSet, PT> {
-
-	private static final Logger LOG
-			= LoggerFactory.getLogger(AbstractFilterOperation.class);
+public abstract class AbstractFilterOperation<P extends OperationParams>
+		extends AbstractOperationCreatingOperation<SimpleOperationDataSet, P>
+{
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFilterOperation.class);
 
 	private ProgressHandler storePH;
 	private SuperProgressSource progressSource;
 
-	protected AbstractFilterOperation(PT params) {
+	protected AbstractFilterOperation(P params) {
 		super(params);
 	}
 

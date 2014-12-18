@@ -64,8 +64,8 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfOperationDataSet<ET extends OperationDataEntry>
-		extends AbstractOperationDataSet<ET>
+public abstract class AbstractNetCdfOperationDataSet<E extends OperationDataEntry>
+		extends AbstractOperationDataSet<E>
 {
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 

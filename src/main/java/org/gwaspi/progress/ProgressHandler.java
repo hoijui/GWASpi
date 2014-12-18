@@ -19,9 +19,9 @@ package org.gwaspi.progress;
 
 /**
  * TODO
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public interface ProgressHandler<ST> extends ProgressSource<ST> {
+public interface ProgressHandler<S> extends ProgressSource<S> {
 
 	/**
 	 * @see ProgressListener#statusChanged(ProcessStatusChangeEvent)
@@ -33,5 +33,5 @@ public interface ProgressHandler<ST> extends ProgressSource<ST> {
 	 * @see ProgressListener#progressHappened(ProgressEvent)
 	 * @param currentProgress the current/new state of progress
 	 */
-	void setProgress(ST currentProgress);
+	void setProgress(S currentProgress);
 }

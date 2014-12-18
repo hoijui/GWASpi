@@ -21,18 +21,18 @@ package org.gwaspi.progress;
  * Forwards all events to the inner progress listener.
  * It makes no sense to use this as-is.
  * Only classes derived from this one should actually be used.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public class ForwardingProgressListener<ST> implements ProgressListener<ST> {
+public class ForwardingProgressListener<S> implements ProgressListener<S> {
 
-	private final ProgressListener<ST> innerListener;
+	private final ProgressListener<S> innerListener;
 
-	protected ForwardingProgressListener(final ProgressListener<ST> innerListener) {
+	protected ForwardingProgressListener(final ProgressListener<S> innerListener) {
 
 		this.innerListener = innerListener;
 	}
 
-	protected ProgressListener<ST> getInnerListener() {
+	protected ProgressListener<S> getInnerListener() {
 		return innerListener;
 	}
 
@@ -47,7 +47,7 @@ public class ForwardingProgressListener<ST> implements ProgressListener<ST> {
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 		innerListener.progressHappened(evt);
 	}
 }

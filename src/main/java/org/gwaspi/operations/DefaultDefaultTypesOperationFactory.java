@@ -25,8 +25,8 @@ import org.gwaspi.model.OperationKey;
 /**
  * The default implementation of an operation factory supporting the default types.
  */
-public abstract class DefaultDefaultTypesOperationFactory<DST extends OperationDataSet, PT extends OperationParams>
-		extends AbstractDefaultTypesOperationFactory<DST, PT>
+public abstract class DefaultDefaultTypesOperationFactory<D extends OperationDataSet, P extends OperationParams>
+		extends AbstractDefaultTypesOperationFactory<D, P>
 {
 
 	protected DefaultDefaultTypesOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
@@ -34,17 +34,17 @@ public abstract class DefaultDefaultTypesOperationFactory<DST extends OperationD
 	}
 
 	@Override
-	protected DST generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_NETCDF + "\" is not supported (yet).");
 	}
 
 	@Override
-	protected DST generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
 		return generateReadOperationDataSetNetCdf(null, parent, properties);
 	}
 
 	@Override
-	protected DST generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
 		throw new UnsupportedOperationException("Factory type \"" + PROPERTY_VALUE_TYPE_MEMORY + "\" is not supported (yet).");
 	}
 }

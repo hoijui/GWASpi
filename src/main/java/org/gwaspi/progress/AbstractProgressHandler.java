@@ -17,8 +17,9 @@
 
 package org.gwaspi.progress;
 
-public abstract class AbstractProgressHandler<ST> extends AbstractProgressSource<ST> implements ProgressHandler<ST> {
-
+public abstract class AbstractProgressHandler<S> extends AbstractProgressSource<S>
+		implements ProgressHandler<S>
+{
 	protected AbstractProgressHandler(ProcessInfo processInfo, Integer numIntervals) {
 		super(processInfo, numIntervals);
 	}

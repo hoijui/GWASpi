@@ -20,28 +20,28 @@ package org.gwaspi.operations.combi;
 import java.lang.reflect.Array;
 import java.util.Map;
 
-class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
+class InMemorySamplesFeaturesStorage<S> extends AbstractSamplesFeaturesStorage<S> {
 
 	private static final int NO_INDEX = -1;
 
-	private final ST[][] storage;
+	private final S[][] storage;
 	private int curSampleIndex;
 	private int curFeatureIndex;
 
-	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures, Map<String, Object> cache) {
+	InMemorySamplesFeaturesStorage(Class<S> storageTypeClass, int numSamples, int numFeatures, Map<String, Object> cache) {
 		super(numSamples, numFeatures, cache);
 
 //		this.storage = (ST[][]) new Object[numSamples][numFeatures]; // NOTE This would be (partly) fail, because the actual arrays type is still Object[][], not really ST[][]
-		this.storage = (ST[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
+		this.storage = (S[][]) Array.newInstance(storageTypeClass, numSamples, numFeatures);
 		this.curSampleIndex = NO_INDEX;
 		this.curFeatureIndex = NO_INDEX;
 	}
 
-	InMemorySamplesFeaturesStorage(Class<ST> storageTypeClass, int numSamples, int numFeatures) {
+	InMemorySamplesFeaturesStorage(Class<S> storageTypeClass, int numSamples, int numFeatures) {
 		this(storageTypeClass, numSamples, numFeatures, null);
 	}
 
-	public ST[][] getStorage() {
+	public S[][] getStorage() {
 		return storage;
 	}
 
@@ -51,7 +51,7 @@ class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<
 	}
 
 	@Override
-	public void setFeatureValue(int featuresIndex, ST value) {
+	public void setFeatureValue(int featuresIndex, S value) {
 		storage[curSampleIndex][featuresIndex] = value;
 	}
 
@@ -66,7 +66,7 @@ class InMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<
 	}
 
 	@Override
-	public void setSampleValue(int sampleIndex, ST value) {
+	public void setSampleValue(int sampleIndex, S value) {
 		storage[sampleIndex][curFeatureIndex] = value;
 	}
 

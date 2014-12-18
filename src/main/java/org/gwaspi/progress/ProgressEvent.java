@@ -21,9 +21,9 @@ import java.util.EventObject;
 
 /**
  * Signals a progression in progress.
- * The
+ * The TODO
  */
-public class ProgressEvent<ST> extends EventObject {
+public class ProgressEvent<S> extends EventObject {
 
 	/**
 	 * Wall Clock Time passed since the start of the process.
@@ -45,14 +45,14 @@ public class ProgressEvent<ST> extends EventObject {
 	 * This will usually be an Integer, Long or a Double,
 	 * but could also be an <code>enum</code>, for example.
 	 */
-	private final ST currentState;
+	private final S currentState;
 
 	public ProgressEvent(
 			ProgressSource source,
 			long time,
 			int intervalIndex,
 			double completionFraction,
-			ST currentState)
+			S currentState)
 	{
 		super(source);
 
@@ -100,7 +100,7 @@ public class ProgressEvent<ST> extends EventObject {
 	 * but could also be an <code>enum</code>, for example.
 	 * @return the currentState
 	 */
-	public ST getCurrentState() {
+	public S getCurrentState() {
 		return currentState;
 	}
 }

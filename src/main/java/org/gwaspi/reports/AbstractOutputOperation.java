@@ -20,17 +20,18 @@ package org.gwaspi.reports;
 import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationParams;
 
-public abstract class AbstractOutputOperation<PT extends OperationParams> extends AbstractOperation<PT> {
+public abstract class AbstractOutputOperation<P extends OperationParams>
+		extends AbstractOperation<P>
+{
+	private final P params;
 
-	private final PT params;
-
-	protected AbstractOutputOperation(PT params) {
+	protected AbstractOutputOperation(P params) {
 
 		this.params = params;
 	}
 
 	@Override
-	public PT getParams() {
+	public P getParams() {
 		return params;
 	}
 }

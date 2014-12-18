@@ -24,9 +24,9 @@ import org.gwaspi.datasource.ListSource;
 
 /**
  * TODO add class description
- * @param <VT> value type
+ * @param <V> value type
  */
-public interface AbstractKeysSource<VT> extends ListSource<VT> {
+public interface AbstractKeysSource<V> extends ListSource<V> {
 
 	/**
 	 * Returns the indices of the elements in the original matrix
@@ -44,7 +44,7 @@ public interface AbstractKeysSource<VT> extends ListSource<VT> {
 	 */
 	List<Integer> getIndices(int from, int to) throws IOException;
 
-	Map<Integer, VT> getIndicesMap() throws IOException;
+	Map<Integer, V> getIndicesMap() throws IOException;
 
-	Map<Integer, VT> getIndicesMap(int from, int to) throws IOException;
+	Map<Integer, V> getIndicesMap(int from, int to) throws IOException;
 }

@@ -27,11 +27,11 @@ import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.NetCdfUtils;
 
-public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryListSource<KT> {
+public abstract class AbstractInMemoryKeysSource<K> extends AbstractInMemoryListSource<K> {
 
-	private final Map<Integer, KT> indicesMap;
+	private final Map<Integer, K> indicesMap;
 
-	public AbstractInMemoryKeysSource(MatrixKey origin, List<KT> items, List<Integer> originalIndices) {
+	public AbstractInMemoryKeysSource(MatrixKey origin, List<K> items, List<Integer> originalIndices) {
 		super(origin, items, originalIndices);
 
 		this.indicesMap = mergeListsIntoMap(getOriginalIndices(), items);
@@ -50,7 +50,7 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 		return mergedMap;
 	}
 
-	protected abstract KeyFactory<KT> createKeyFactory();
+	protected abstract KeyFactory<K> createKeyFactory();
 
 	public List<Integer> getIndices(int from, int to) throws IOException {
 
@@ -86,11 +86,11 @@ public abstract class AbstractInMemoryKeysSource<KT> extends AbstractInMemoryLis
 //		return getItems().subList(from, to). ???;
 //	}
 
-	public Map<Integer, KT> getIndicesMap() throws IOException {
+	public Map<Integer, K> getIndicesMap() throws IOException {
 		return indicesMap;
 	}
 
-	public Map<Integer, KT> getIndicesMap(int from, int to) throws IOException {
+	public Map<Integer, K> getIndicesMap(int from, int to) throws IOException {
 		return mergeListsIntoMap(getIndices(from, to), getRange(from, to));
 	}
 }

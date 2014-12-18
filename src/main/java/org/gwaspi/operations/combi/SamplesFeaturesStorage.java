@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * TODO
  */
-public interface SamplesFeaturesStorage<ST> {
+public interface SamplesFeaturesStorage<S> {
 
 	/**
 	 * This can be used to store data associated with the data-set.
@@ -37,10 +37,10 @@ public interface SamplesFeaturesStorage<ST> {
 	int getNumFeatures();
 
 	void startStoringSample(int sampleIndex);
-	void setFeatureValue(int featureIndex, ST value);
+	void setFeatureValue(int featureIndex, S value);
 	void endStoringSample();
 
 	void startStoringFeature(int featureIndex);
-	void setSampleValue(int sampleIndex, ST value);
+	void setSampleValue(int sampleIndex, S value);
 	void endStoringFeature();
 }

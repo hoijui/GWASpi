@@ -28,11 +28,11 @@ import javax.swing.JPanel;
 /**
  * Tries to show pretty much all information that is available
  * about a given process and its sub-processes, if there are any.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public class SuperSwingProgressListener<ST>
-		extends SimpleSwingProgressListener<ST>
-		implements SuperProgressListener<ST>
+public class SuperSwingProgressListener<S>
+		extends SimpleSwingProgressListener<S>
+		implements SuperProgressListener<S>
 {
 	private final Map<ProgressSource, SubTaskProgressListener> subProgressSourcesToContainer;
 	private final JPanel activeSubDisplays;
@@ -107,7 +107,7 @@ public class SuperSwingProgressListener<ST>
 		subProgressSourcesToContainer.remove(subProgressSource);
 	}
 
-	private class SubTaskProgressListener extends AbstractProgressListener<ST> {
+	private class SubTaskProgressListener extends AbstractProgressListener<S> {
 
 		private final ProgressSource progressSource;
 		private final SwingProgressListener gui;

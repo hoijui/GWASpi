@@ -17,17 +17,17 @@
 
 package org.gwaspi.progress;
 
-public class ProgressForwarder<ST> extends AbstractProgressSource<ST> implements ProgressListener<ST> {
+public class ProgressForwarder<S> extends AbstractProgressSource<S> implements ProgressListener<S> {
 
-	private ProgressSource<ST> progressSource;
+	private ProgressSource<S> progressSource;
 
 	public ProgressForwarder(ProcessInfo processInfo) {
 		super(processInfo, -1);
 
-		this.progressSource = new NullProgressHandler<ST>(processInfo);
+		this.progressSource = new NullProgressHandler<S>(processInfo);
 	}
 
-	public void setInnerProgressSource(ProgressSource<ST> progressSource) {
+	public void setInnerProgressSource(ProgressSource<S> progressSource) {
 
 		if (this.progressSource != null) {
 			this.progressSource.removeProgressListener(this);
@@ -49,7 +49,7 @@ public class ProgressForwarder<ST> extends AbstractProgressSource<ST> implements
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 		fireProgressHappened(evt);
 	}
 }

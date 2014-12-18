@@ -41,7 +41,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> implements OperationDataSet<ET> {
+public abstract class AbstractOperationDataSet<E extends OperationDataEntry> implements OperationDataSet<E> {
 
 	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_MARKERS = 10;
 	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_SAMPLES = 1;
@@ -59,7 +59,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 //	private Boolean useAllChromosomesFromParent;
 	private OperationMetadata operationMetadata;
 	private OperationKey operationKey;
-	private final Queue<ET> writeBuffer;
+	private final Queue<E> writeBuffer;
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
 	private final List<OperationKeyListener> operationKeyListeners;
@@ -85,7 +85,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 //		this.useAllSamplesFromParent = null;
 //		this.useAllChromosomesFromParent = null;
 		this.operationMetadata = null;
-		this.writeBuffer = new LinkedList<ET>();
+		this.writeBuffer = new LinkedList<E>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
 		this.operationKeyListeners = new ArrayList<OperationKeyListener>();
@@ -441,7 +441,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 	}
 
 //	@Override
-	public void addEntry(ET entry) throws IOException {
+	public void addEntry(E entry) throws IOException {
 
 		writeBuffer.add(entry);
 
@@ -454,7 +454,7 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 		alreadyWritten = writeEntriesBuffer(alreadyWritten, writeBuffer, "");
 	}
 
-	protected int writeEntriesBuffer(final int alreadyWritten, final Queue<ET> writeBuffer, String additionalWriteLogSpecifier) throws IOException {
+	protected int writeEntriesBuffer(final int alreadyWritten, final Queue<E> writeBuffer, String additionalWriteLogSpecifier) throws IOException {
 
 		if (writeBuffer.isEmpty()) { // this should not be required
 //			throw new IllegalStateException("We have already written all entries (already written: " + alreadyWritten + ", num entries: " + getNumEntries() + ", write buffer size: " + writeBuffer.size() + ")");
@@ -493,10 +493,10 @@ public abstract class AbstractOperationDataSet<ET extends OperationDataEntry> im
 		getOperationMetadata();
 	}
 
-	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
+	protected abstract void writeEntries(int alreadyWritten, Queue<E> writeBuffer) throws IOException;
 
 	@Override
-	public List<ET> getEntries() throws IOException {
+	public List<E> getEntries() throws IOException {
 		return getEntries(-1, -1);
 	}
 }

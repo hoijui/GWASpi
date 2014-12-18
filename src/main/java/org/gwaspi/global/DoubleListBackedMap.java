@@ -24,15 +24,15 @@ import java.util.Set;
 /**
  * TODO add class description
  * @deprecated this class is currently unused, and also not implemented; delete it?
- * @param <KT>
- * @param <VT>
+ * @param <K>
+ * @param <V>
  */
-public class DoubleListBackedMap<KT, VT> extends AbstractMap<KT, VT> {
+public class DoubleListBackedMap<K, V> extends AbstractMap<K, V> {
 
-	private final List<KT> keys;
-	private final List<VT> values;
+	private final List<K> keys;
+	private final List<V> values;
 
-	public DoubleListBackedMap(final List<KT> keys, final List<VT> values) {
+	public DoubleListBackedMap(final List<K> keys, final List<V> values) {
 
 		if (keys.size() != values.size()) {
 			throw new IllegalArgumentException("We need the same amount of keys and values");
@@ -48,7 +48,7 @@ public class DoubleListBackedMap<KT, VT> extends AbstractMap<KT, VT> {
 	}
 
 	@Override
-	public Set<Entry<KT, VT>> entrySet() {
+	public Set<Entry<K, V>> entrySet() {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO implement this!
 	}
 }

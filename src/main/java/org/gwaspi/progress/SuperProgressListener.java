@@ -19,9 +19,9 @@ package org.gwaspi.progress;
 
 /**
  * Is interested in {@link ProgressEvent}'s of (a) processes(es) with sub-processes.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public interface SuperProgressListener<ST> extends ProgressListener<ST> {
+public interface SuperProgressListener<S> extends ProgressListener<S> {
 
 	/**
 	 * Signals that a sub process has been added.

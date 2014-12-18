@@ -23,15 +23,15 @@ import org.gwaspi.global.Extractor;
 /**
  * TODO
  *
- * @param <OK> operation key type, this is the main/primary key type
+ * @param <K> operation key type, this is the main/primary key type
  */
-public interface OperationDataEntry<OK> extends Serializable {
+public interface OperationDataEntry<K> extends Serializable {
 
-	class KeyExtractor<KT>
-			implements Extractor<OperationDataEntry<KT>, KT>
+	class KeyExtractor<K>
+			implements Extractor<OperationDataEntry<K>, K>
 	{
 		@Override
-		public KT extract(OperationDataEntry<KT> from) {
+		public K extract(OperationDataEntry<K> from) {
 			return from.getKey();
 		}
 	};
@@ -49,7 +49,7 @@ public interface OperationDataEntry<OK> extends Serializable {
 	/**
 	 * @return the (operation/main-)key of this data entry
 	 */
-	OK getKey();
+	K getKey();
 
 	/**
 	 * @return the index of this entry in the original data-set

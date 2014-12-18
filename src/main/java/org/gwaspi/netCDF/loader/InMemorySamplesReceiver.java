@@ -42,11 +42,11 @@ import org.gwaspi.operations.MatrixMetadataFactory;
 /**
  * TODO
  */
-public class InMemorySamplesReceiver<PT extends MatrixCreatingOperationParams>
+public class InMemorySamplesReceiver<P extends MatrixCreatingOperationParams>
 		extends AbstractDataSetDestination
 {
-	private final PT params;
-	private final MatrixMetadataFactory<DataSet, PT> metadataFactory;
+	private final P params;
+	private final MatrixMetadataFactory<DataSet, P> metadataFactory;
 	private MatrixKey resultMatrixKey;
 	private List<GenotypesList> markerGenotypes;
 	private List<GenotypesList> sampleGenotypes;
@@ -54,8 +54,8 @@ public class InMemorySamplesReceiver<PT extends MatrixCreatingOperationParams>
 	private Boolean loadAllelesPerSample;
 
 	public InMemorySamplesReceiver(
-			PT params,
-			MatrixMetadataFactory<DataSet, PT> metadataFactory)
+			P params,
+			MatrixMetadataFactory<DataSet, P> metadataFactory)
 	{
 		this.params = params;
 		this.metadataFactory = metadataFactory;

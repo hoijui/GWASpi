@@ -28,22 +28,22 @@ import java.util.List;
  * - costs extraction process each time the list is accessed,
  *   instead of only once
  * + uses no additional memory (or just a very small, constant amount)
- * @param <IT> input/original type
- * @param <OT> output/result type
+ * @param <I> input/original type
+ * @param <O> output/result type
  */
-public class ExtractorList<IT, OT> extends AbstractList<OT> implements Serializable {
+public class ExtractorList<I, O> extends AbstractList<O> implements Serializable {
 
-	private final List<? extends IT> originalItems;
-	private final Extractor<IT, OT> extractor;
+	private final List<? extends I> originalItems;
+	private final Extractor<I, O> extractor;
 
-	public ExtractorList(List<? extends IT> originalItems, Extractor<IT, OT> extractor) {
+	public ExtractorList(List<? extends I> originalItems, Extractor<I, O> extractor) {
 
 		this.originalItems = originalItems;
 		this.extractor = extractor;
 	}
 
 	@Override
-	public OT get(int index) {
+	public O get(int index) {
 		return extractor.extract(originalItems.get(index));
 	}
 

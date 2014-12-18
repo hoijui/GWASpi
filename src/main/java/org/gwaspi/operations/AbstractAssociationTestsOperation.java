@@ -28,15 +28,15 @@ import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 
-public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOperationDataSet>
-		extends AbstractTestMatrixOperation<DST, AssociationTestOperationParams>
+public abstract class AbstractAssociationTestsOperation<D extends CommonTestOperationDataSet>
+		extends AbstractTestMatrixOperation<D, AssociationTestOperationParams>
 {
 	public AbstractAssociationTestsOperation(final AssociationTestOperationParams params) {
 		super(params);
 	}
 
 	protected abstract void associationTest(
-			final DST dataSet,
+			final D dataSet,
 			final Integer markerOrigIndex,
 			final MarkerKey markerKey,
 			final int caseAA,
@@ -86,7 +86,7 @@ public abstract class AbstractAssociationTestsOperation<DST extends CommonTestOp
 			final int ctrlaa = ctrlCensus.getaa();
 
 			// XXX Genotypic is about 10 times faster then allelic, and the only difference between the two is the code here, so... find out why!!!
-			associationTest((DST) dataSet, origIndex, markerKey, caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa);
+			associationTest((D) dataSet, origIndex, markerKey, caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa);
 			rawTestPH.setProgress(localMarkerIndex);
 			localMarkerIndex++;
 		}

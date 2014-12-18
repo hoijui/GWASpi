@@ -26,7 +26,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 
-public interface OperationDataSet<ET extends OperationDataEntry> extends DataSetSource {
+public interface OperationDataSet<E extends OperationDataEntry> extends DataSetSource {
 
 	void addOperationKeyListener(OperationKeyListener lst);
 	void removeOperationKeyListener(OperationKeyListener lst);
@@ -102,7 +102,7 @@ public interface OperationDataSet<ET extends OperationDataEntry> extends DataSet
 	 * @return
 	 * @throws IOException
 	 */
-	List<ET> getEntries(int from, int to) throws IOException;
+	List<E> getEntries(int from, int to) throws IOException;
 
-	List<ET> getEntries() throws IOException;
+	List<E> getEntries() throws IOException;
 }

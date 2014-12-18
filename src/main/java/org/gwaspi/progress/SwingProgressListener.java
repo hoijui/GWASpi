@@ -20,7 +20,7 @@ package org.gwaspi.progress;
 import javax.swing.JComponent;
 import javax.swing.JProgressBar;
 
-public interface SwingProgressListener<ST> extends ProgressListener<ST> {
+public interface SwingProgressListener<S> extends ProgressListener<S> {
 
 	/**
 	 * Returns the component where the progress is visualized.

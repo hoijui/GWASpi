@@ -20,7 +20,7 @@ package org.gwaspi.operations;
 import java.io.IOException;
 import org.gwaspi.progress.ProgressSource;
 
-public interface MatrixOperation<PT extends OperationParams> {
+public interface MatrixOperation<P extends OperationParams> {
 
 //	/**
 //	 * Every operation is in one of these states at any time.
@@ -74,7 +74,7 @@ public interface MatrixOperation<PT extends OperationParams> {
 	/**
 	 * @return this operations parameters; may be <code>null</code>
 	 */
-	PT getParams();
+	P getParams();
 
 	/**
 	 * Execute this operation.

@@ -21,7 +21,7 @@ package org.gwaspi.model;
  * Uniquely identifies an object with key type KT that may not exist.
  * It may not have been created, or has already been deleted.
  */
-public interface VirtualIdentifier<KT extends Identifier<KT>> extends Identifier<KT> {
+public interface VirtualIdentifier<K extends Identifier<K>> extends Identifier<K> {
 
-	void setKey(final KT key);
+	void setKey(final K key);
 }

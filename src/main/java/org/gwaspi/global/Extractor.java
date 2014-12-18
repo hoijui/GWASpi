@@ -19,69 +19,69 @@ package org.gwaspi.global;
 
 /**
  * Allows to extract one or multiple values out of an object
- * @param <IV> input/container value type
- * @param <OV> output/extracted value type
+ * @param <I> input/container value type
+ * @param <O> output/extracted value type
  */
-public interface Extractor<IV, OV> {
+public interface Extractor<I, O> {
 
-	class ToStringExtractor<IV> implements Extractor<IV, String> {
+	class ToStringExtractor<I> implements Extractor<I, String> {
 
 		@Override
-		public String extract(IV object) {
+		public String extract(I object) {
 			return object.toString();
 		}
 	}
 
-	class ToStringMetaExtractor<IV, M> implements Extractor<IV, String> {
+	class ToStringMetaExtractor<I, M> implements Extractor<I, String> {
 
-		private final Extractor<IV, M> preExtractor;
+		private final Extractor<I, M> preExtractor;
 
-		public ToStringMetaExtractor(Extractor<IV, M> preExtractor) {
+		public ToStringMetaExtractor(Extractor<I, M> preExtractor) {
 			this.preExtractor = preExtractor;
 		}
 
 		@Override
-		public String extract(IV object) {
+		public String extract(I object) {
 			return preExtractor.extract(object).toString();
 		}
 	}
 
-	class EnumToIntExtractor<IV extends Enum> implements Extractor<IV, Integer> {
+	class EnumToIntExtractor<I extends Enum> implements Extractor<I, Integer> {
 
 		@Override
-		public Integer extract(IV object) {
+		public Integer extract(I object) {
 			return object.ordinal();
 		}
 	}
 
-	class EnumToIntMetaExtractor<IV, M extends Enum> implements Extractor<IV, Integer> {
+	class EnumToIntMetaExtractor<I, M extends Enum> implements Extractor<I, Integer> {
 
-		private final Extractor<IV, M> preExtractor;
+		private final Extractor<I, M> preExtractor;
 
-		public EnumToIntMetaExtractor(Extractor<IV, M> preExtractor) {
+		public EnumToIntMetaExtractor(Extractor<I, M> preExtractor) {
 			this.preExtractor = preExtractor;
 		}
 
 		@Override
-		public Integer extract(IV object) {
+		public Integer extract(I object) {
 			return preExtractor.extract(object).ordinal();
 		}
 	}
 
-	class IntToEnumExtractor<OV extends Enum> implements Extractor<Integer, OV> {
+	class IntToEnumExtractor<O extends Enum> implements Extractor<Integer, O> {
 
-		private final OV[] enumValues;
+		private final O[] enumValues;
 
-		public IntToEnumExtractor(OV[] enumValues) {
+		public IntToEnumExtractor(O[] enumValues) {
 
 			this.enumValues = enumValues;
 		}
 
 		@Override
-		public OV extract(Integer object) {
+		public O extract(Integer object) {
 			return enumValues[object];
 		}
 	}
 
-	OV extract(IV object);
+	O extract(I object);
 }

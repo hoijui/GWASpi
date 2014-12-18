@@ -23,8 +23,9 @@ import org.gwaspi.operations.OperationMetadataFactory;
 import org.gwaspi.operations.OperationParams;
 import org.gwaspi.operations.OperationTypeInfo;
 
-public class SimpleFilterOperationMetadataFactory<PT extends OperationParams> implements OperationMetadataFactory<SimpleOperationDataSet, PT> {
-
+public class SimpleFilterOperationMetadataFactory<P extends OperationParams>
+		implements OperationMetadataFactory<SimpleOperationDataSet, P>
+{
 	private final OperationTypeInfo typeInfo;
 	private final String filterDescription;
 
@@ -40,7 +41,7 @@ public class SimpleFilterOperationMetadataFactory<PT extends OperationParams> im
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(SimpleOperationDataSet operationDataSet, PT params) throws IOException {
+	public OperationMetadata generateMetadata(SimpleOperationDataSet operationDataSet, P params) throws IOException {
 
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set

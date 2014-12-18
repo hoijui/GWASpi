@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface CommonTestOperationDataSet<ET extends TrendTestOperationEntry> extends OperationDataSet<ET> {
-
+public interface CommonTestOperationDataSet<E extends TrendTestOperationEntry>
+		extends OperationDataSet<E>
+{
 	List<Double> getTs(int from, int to) throws IOException;
 	List<Double> getPs(int from, int to) throws IOException;
 
-	void addEntry(ET entry) throws IOException;
+	void addEntry(E entry) throws IOException;
 }

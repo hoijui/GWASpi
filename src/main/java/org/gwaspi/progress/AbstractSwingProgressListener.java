@@ -26,11 +26,11 @@ import javax.swing.JPanel;
 /**
  * Tries to show pretty much all information that is available
  * about a given process (excluding info about possible children).
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public abstract class AbstractSwingProgressListener<ST>
-		extends AbstractProgressListener<ST>
-		implements SwingProgressListener<ST>
+public abstract class AbstractSwingProgressListener<S>
+		extends AbstractProgressListener<S>
+		implements SwingProgressListener<S>
 {
 	private final JPanel main;
 	private final JPanel infoContainer;

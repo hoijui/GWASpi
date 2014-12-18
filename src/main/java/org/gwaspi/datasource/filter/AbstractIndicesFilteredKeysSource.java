@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.AbstractKeysSource;
 
-public class AbstractIndicesFilteredKeysSource<KT> extends IndicesFilteredListSource<KT> {
+public class AbstractIndicesFilteredKeysSource<K> extends IndicesFilteredListSource<K> {
 
-	private final AbstractKeysSource<KT> wrapped;
+	private final AbstractKeysSource<K> wrapped;
 
-	public AbstractIndicesFilteredKeysSource(final AbstractKeysSource<KT> wrapped, final List<Integer> includeIndices) {
+	public AbstractIndicesFilteredKeysSource(final AbstractKeysSource<K> wrapped, final List<Integer> includeIndices) {
 		super(wrapped, includeIndices);
 
 		this.wrapped = wrapped;
@@ -40,11 +40,11 @@ public class AbstractIndicesFilteredKeysSource<KT> extends IndicesFilteredListSo
 		return IndicesFilteredList.getWrappedRange(wrapped.getIndices(), getIncludeIndices(), from, to);
 	}
 
-	public Map<Integer, KT> getIndicesMap() throws IOException {
-		return new IndicesFilteredMap<Integer, KT>(wrapped.getIndicesMap(), getIncludeIndices());
+	public Map<Integer, K> getIndicesMap() throws IOException {
+		return new IndicesFilteredMap<Integer, K>(wrapped.getIndicesMap(), getIncludeIndices());
 	}
 
-	public Map<Integer, KT> getIndicesMap(int from, int to) throws IOException {
+	public Map<Integer, K> getIndicesMap(int from, int to) throws IOException {
 		return IndicesFilteredMap.getWrappedRange(wrapped.getIndicesMap(), getIncludeIndices(), from, to);
 	}
 }

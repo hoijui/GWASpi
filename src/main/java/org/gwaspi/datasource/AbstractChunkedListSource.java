@@ -23,13 +23,13 @@ import java.util.List;
 
 /**
  * TODO add class description
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> implements ListSource<VT> {
+public abstract class AbstractChunkedListSource<V> extends AbstractList<V> implements ListSource<V> {
 
 	private final int chunkSize;
 	private int loadedChunkNumber;
-	private List<VT> loadedChunk;
+	private List<V> loadedChunk;
 
 	protected AbstractChunkedListSource(int chunkSize) {
 
@@ -39,7 +39,7 @@ public abstract class AbstractChunkedListSource<VT> extends AbstractList<VT> imp
 	}
 
 	@Override
-	public VT get(int index) {
+	public V get(int index) {
 
 		final int chunkNumber = index / chunkSize;
 		final int inChunkPosition = index % chunkSize;

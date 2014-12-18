@@ -20,7 +20,7 @@ package org.gwaspi.progress;
 import java.util.Collections;
 import java.util.List;
 
-public final class NullProgressHandler<ST> extends AbstractProgressHandler<ST> {
+public final class NullProgressHandler<S> extends AbstractProgressHandler<S> {
 
 	public NullProgressHandler(ProcessInfo processInfo) {
 		super(processInfo, 1);
@@ -41,5 +41,5 @@ public final class NullProgressHandler<ST> extends AbstractProgressHandler<ST> {
 	public void setNewStatus(ProcessStatus newStatus) {}
 
 	@Override
-	public void setProgress(ST currentProgress) {}
+	public void setProgress(S currentProgress) {}
 }

@@ -31,8 +31,9 @@ import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfTestOperationDataSet<ET extends OperationDataEntry> extends AbstractNetCdfOperationDataSet<ET> {
-
+public abstract class AbstractNetCdfTestOperationDataSet<E extends OperationDataEntry>
+		extends AbstractNetCdfOperationDataSet<E>
+{
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
 	// - Variables.VAR_IMPLICITSET: "implicit set", rdSampleSetMap.keySet(), original sample keys [Collection<SampleKey>]

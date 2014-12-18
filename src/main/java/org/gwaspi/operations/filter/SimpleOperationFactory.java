@@ -26,11 +26,11 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.OperationMetadataFactory;
 import org.gwaspi.operations.OperationParams;
 
-public class SimpleOperationFactory<PT extends OperationParams> extends AbstractDefaultTypesOperationFactory<SimpleOperationDataSet, PT> {
+public class SimpleOperationFactory<P extends OperationParams> extends AbstractDefaultTypesOperationFactory<SimpleOperationDataSet, P> {
 
-	private final OperationMetadataFactory<SimpleOperationDataSet, PT> operationMetadataFactory;
+	private final OperationMetadataFactory<SimpleOperationDataSet, P> operationMetadataFactory;
 
-	public SimpleOperationFactory(Class<? extends MatrixOperation> type, OperationMetadataFactory<SimpleOperationDataSet, PT> operationMetadataFactory) {
+	public SimpleOperationFactory(Class<? extends MatrixOperation> type, OperationMetadataFactory<SimpleOperationDataSet, P> operationMetadataFactory) {
 		super(type, operationMetadataFactory.getTypeInfo());
 
 		this.operationMetadataFactory = operationMetadataFactory;
@@ -47,7 +47,7 @@ public class SimpleOperationFactory<PT extends OperationParams> extends Abstract
 	}
 
 	@Override
-	public OperationMetadataFactory<SimpleOperationDataSet, PT> getOperationMetadataFactory() {
+	public OperationMetadataFactory<SimpleOperationDataSet, P> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

@@ -19,11 +19,11 @@ package org.gwaspi.operations;
 
 import org.gwaspi.global.Extractor;
 
-public abstract class AbstractOperationDataEntry<OK> implements OperationDataEntry<OK> {
+public abstract class AbstractOperationDataEntry<O> implements OperationDataEntry<O> {
 
-	public static class KeyExtractor<OK> implements Extractor<OperationDataEntry<OK>, OK> {
+	public static class KeyExtractor<O> implements Extractor<OperationDataEntry<O>, O> {
 		@Override
-		public OK extract(OperationDataEntry<OK> from) {
+		public O extract(OperationDataEntry<O> from) {
 			return from.getKey();
 		}
 	};
@@ -36,17 +36,17 @@ public abstract class AbstractOperationDataEntry<OK> implements OperationDataEnt
 	};
 	public static final Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
 
-	private final OK key;
+	private final O key;
 	private final int index;
 
-	public AbstractOperationDataEntry(OK key, int index) {
+	public AbstractOperationDataEntry(O key, int index) {
 
 		this.key = key;
 		this.index = index;
 	}
 
 	@Override
-	public OK getKey() {
+	public O getKey() {
 		return key;
 	}
 

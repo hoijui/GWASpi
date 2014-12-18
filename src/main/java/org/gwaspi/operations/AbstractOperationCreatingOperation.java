@@ -28,11 +28,11 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProgressHandler;
 
-public abstract class AbstractOperationCreatingOperation<DST extends OperationDataSet, PT extends OperationParams> extends AbstractOperation<PT> {
+public abstract class AbstractOperationCreatingOperation<D extends OperationDataSet, P extends OperationParams> extends AbstractOperation<P> {
 
 	/** @params deprecated */
 	private final DataSetKey parent;
-	private final PT params;
+	private final P params;
 	private ProgressHandler operationPH;
 
 	protected AbstractOperationCreatingOperation(DataSetKey parent) {
@@ -56,7 +56,7 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		this.operationPH = null;
 	}
 
-	protected AbstractOperationCreatingOperation(PT params) {
+	protected AbstractOperationCreatingOperation(P params) {
 
 		this.parent = params.getParent();
 		this.params = params;
@@ -95,7 +95,7 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 	}
 
 	@Override
-	public PT getParams() {
+	public P getParams() {
 		return params;
 	}
 
@@ -134,9 +134,9 @@ public abstract class AbstractOperationCreatingOperation<DST extends OperationDa
 		return parentMatrixMetadata;
 	}
 
-	protected DST generateFreshOperationDataSet() throws IOException {
+	protected D generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet = (DST) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent, getParams());
+		final D operationDataSet = (D) OperationManager.generateOperationDataSet(getClass(), getParentMatrixKey(), parent, getParams());
 
 		return operationDataSet;
 	}

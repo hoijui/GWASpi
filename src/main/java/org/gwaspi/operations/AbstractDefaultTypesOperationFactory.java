@@ -23,28 +23,28 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public abstract class AbstractDefaultTypesOperationFactory<DST extends OperationDataSet, PT extends OperationParams>
-		extends AbstractOperationFactory<DST, PT>
+public abstract class AbstractDefaultTypesOperationFactory<D extends OperationDataSet, P extends OperationParams>
+		extends AbstractOperationFactory<D, P>
 {
 
 	public static final String PROPERTY_VALUE_TYPE_NETCDF = "netcdf";
 	public static final String PROPERTY_VALUE_TYPE_MEMORY = "memory";
 
 	private final OperationKeyListener operationKeyRegisterer;
-	private final Map<OperationKey, DST> operationKeyToDataSet;
+	private final Map<OperationKey, D> operationKeyToDataSet;
 
 	protected AbstractDefaultTypesOperationFactory(Class<? extends MatrixOperation> type, OperationTypeInfo typeInfo) {
 		super(type, typeInfo);
 
 		this.operationKeyRegisterer = new InMemoryOperationKeyListener();
-		this.operationKeyToDataSet = new HashMap<OperationKey, DST>();
+		this.operationKeyToDataSet = new HashMap<OperationKey, D>();
 	}
 
-	protected abstract DST generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
+	protected abstract D generateReadOperationDataSetNetCdf(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
 
-	protected DST generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateReadOperationDataSetMemory(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 
-		final DST fetchedDataSet = operationKeyToDataSet.get(operationKey);
+		final D fetchedDataSet = operationKeyToDataSet.get(operationKey);
 		if (fetchedDataSet == null) {
 			throw new IOException("There is no data in memory for operation " + operationKey.toString());
 		}
@@ -52,7 +52,7 @@ public abstract class AbstractDefaultTypesOperationFactory<DST extends Operation
 	}
 
 	@Override
-	public final DST generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
+	public final D generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException {
 
 		final Object type = properties.get(OperationFactory.PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {
@@ -64,7 +64,7 @@ public abstract class AbstractDefaultTypesOperationFactory<DST extends Operation
 		}
 	}
 
-	protected DST generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateWriteOperationDataSetNetCdf(DataSetKey parent, Map<String, Object> properties) throws IOException {
 		return generateReadOperationDataSetNetCdf(null, parent, properties);
 	}
 
@@ -74,21 +74,21 @@ public abstract class AbstractDefaultTypesOperationFactory<DST extends Operation
 
 		@Override
 		public void operationKeySet(OperationKeySetEvent evt) {
-			operationKeyToDataSet.put(evt.getSource().getOperationKey(), (DST) evt.getSource());
+			operationKeyToDataSet.put(evt.getSource().getOperationKey(), (D) evt.getSource());
 		}
 	}
 
-	protected abstract DST generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException;
+	protected abstract D generateSpecificWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException;
 
-	protected DST generateWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	protected D generateWriteOperationDataSetMemory(DataSetKey parent, Map<String, Object> properties) throws IOException {
 
-		final DST specificWriteDS = generateSpecificWriteOperationDataSetMemory(parent, properties);
+		final D specificWriteDS = generateSpecificWriteOperationDataSetMemory(parent, properties);
 		specificWriteDS.addOperationKeyListener(operationKeyRegisterer);
 		return specificWriteDS;
 	}
 
 	@Override
-	public final DST generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException {
+	public final D generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException {
 
 		final Object type = properties.get(OperationFactory.PROPERTY_NAME_TYPE);
 		if ((type == null) || type.equals(PROPERTY_VALUE_TYPE_NETCDF)) {

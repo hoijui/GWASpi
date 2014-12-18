@@ -23,7 +23,7 @@ import java.util.List;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.progress.ProcessInfo;
 
-public abstract class AbstractOperation<PT extends OperationParams> implements MatrixOperation<PT> {
+public abstract class AbstractOperation<P extends OperationParams> implements MatrixOperation<P> {
 
 	private final List<OperationListener> operationListeners;
 	private final DataSetDestination dataSetDestination;
@@ -68,7 +68,7 @@ public abstract class AbstractOperation<PT extends OperationParams> implements M
 	}
 
 	@Override
-	public PT getParams() {
+	public P getParams() {
 		throw new UnsupportedOperationException("Not supported yet for all operations (only for those creating operations as a result).");
 	}
 

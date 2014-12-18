@@ -22,7 +22,7 @@ import java.util.Map;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 
-public interface OperationFactory<DST extends OperationDataSet, PT extends OperationParams> {
+public interface OperationFactory<D extends OperationDataSet, P extends OperationParams> {
 
 	/**
 	 * Property name for the main type of OperationDataSet to generate.
@@ -34,9 +34,9 @@ public interface OperationFactory<DST extends OperationDataSet, PT extends Opera
 
 	OperationTypeInfo getTypeInfo();
 
-	OperationMetadataFactory<DST, PT> getOperationMetadataFactory();
+	OperationMetadataFactory<D, P> getOperationMetadataFactory();
 
-	DST generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
+	D generateReadOperationDataSet(OperationKey operationKey, DataSetKey parent, Map<String, Object> properties) throws IOException;
 
-	DST generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException;
+	D generateWriteOperationDataSet(DataSetKey parent, Map<String, Object> properties) throws IOException;
 }

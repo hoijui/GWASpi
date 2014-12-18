@@ -22,11 +22,11 @@ import java.util.List;
 
 /**
  * TODO
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public interface ListSource<VT> extends List<VT> {
+public interface ListSource<V> extends List<V> {
 
-	ListSource<VT> getOrigSource() throws IOException;
+	ListSource<V> getOrigSource() throws IOException;
 
-	List<VT> getRange(int from, int to) throws IOException;
+	List<V> getRange(int from, int to) throws IOException;
 }

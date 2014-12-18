@@ -19,13 +19,13 @@ package org.gwaspi.operations.combi;
 
 import java.util.Map;
 
-class PartialFeaturesInMemorySamplesFeaturesStorage<ST> extends AbstractSamplesFeaturesStorage<ST> {
+class PartialFeaturesInMemorySamplesFeaturesStorage<S> extends AbstractSamplesFeaturesStorage<S> {
 
 	private final int firstFeature;
 //	private final int maxFeatures;
-	private final SamplesFeaturesStorage<ST> backEndStorage;
+	private final SamplesFeaturesStorage<S> backEndStorage;
 
-	PartialFeaturesInMemorySamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache, int firstFeature, SamplesFeaturesStorage<ST> backEndStorage) {
+	PartialFeaturesInMemorySamplesFeaturesStorage(int numSamples, int numFeatures, Map<String, Object> cache, int firstFeature, SamplesFeaturesStorage<S> backEndStorage) {
 		super(numSamples, numFeatures, cache);
 
 		this.firstFeature = firstFeature;
@@ -41,7 +41,7 @@ class PartialFeaturesInMemorySamplesFeaturesStorage<ST> extends AbstractSamplesF
 //		return maxFeatures;
 //	}
 
-	public SamplesFeaturesStorage<ST> getBackEndStorage() {
+	public SamplesFeaturesStorage<S> getBackEndStorage() {
 		return backEndStorage;
 	}
 
@@ -51,7 +51,7 @@ class PartialFeaturesInMemorySamplesFeaturesStorage<ST> extends AbstractSamplesF
 	}
 
 	@Override
-	public void setFeatureValue(int featureIndex, ST value) {
+	public void setFeatureValue(int featureIndex, S value) {
 
 		final int backEndFeatureIndex = featureIndex - firstFeature;
 		// no need to check this here, as in case of bad parameters,
@@ -75,7 +75,7 @@ class PartialFeaturesInMemorySamplesFeaturesStorage<ST> extends AbstractSamplesF
 	}
 
 	@Override
-	public void setSampleValue(int sampleIndex, ST value) {
+	public void setSampleValue(int sampleIndex, S value) {
 		backEndStorage.setSampleValue(sampleIndex, value);
 	}
 

@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * Uniquely identifies a study.
  */
-public interface Identifier<KT extends Identifier<KT>> extends Comparable<Identifier<KT>>, Serializable {
+public interface Identifier<K extends Identifier<K>> extends Comparable<Identifier<K>>, Serializable {
 
 	boolean isVirtual();
 

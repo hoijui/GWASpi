@@ -22,19 +22,19 @@ import org.gwaspi.operations.AbstractDefaultTypesOperationFactory;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public abstract class AbstractTestOperationFactory<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams>
-		extends AbstractDefaultTypesOperationFactory<DST, PT>
+public abstract class AbstractTestOperationFactory<D extends CommonTestOperationDataSet, P extends TrendTestOperationParams>
+		extends AbstractDefaultTypesOperationFactory<D, P>
 {
-	private final OperationMetadataFactory<DST, PT> operationMetadataFactory;
+	private final OperationMetadataFactory<D, P> operationMetadataFactory;
 
 	public AbstractTestOperationFactory(final Class<? extends MatrixOperation> type, final OperationTypeInfo typeInfo) {
 		super(type, typeInfo);
 
-		this.operationMetadataFactory = new TestOperationMetadataFactory<DST, PT>(typeInfo);
+		this.operationMetadataFactory = new TestOperationMetadataFactory<D, P>(typeInfo);
 	}
 
 	@Override
-	public OperationMetadataFactory<DST, PT> getOperationMetadataFactory() {
+	public OperationMetadataFactory<D, P> getOperationMetadataFactory() {
 		return operationMetadataFactory;
 	}
 }

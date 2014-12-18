@@ -56,8 +56,8 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 
-public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataEntry>
-		extends AbstractOperationDataSet<ET>
+public abstract class AbstractInMemoryOperationDataSet<E extends OperationDataEntry>
+		extends AbstractOperationDataSet<E>
 {
 	private Integer numMarkers;
 	private Integer numSamples;
@@ -69,7 +69,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	private SamplesKeysSource samplesKeysSource;
 	private ChromosomesKeysSource chromosomesKeysSource;
 	private ChromosomesInfosSource chromosomesInfosSource;
-	private final List<ET> elements;
+	private final List<E> elements;
 
 	public AbstractInMemoryOperationDataSet(
 			MatrixKey origin,
@@ -88,7 +88,7 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 		this.samplesKeysSource = null;
 		this.chromosomesKeysSource = null;
 		this.chromosomesInfosSource = null;
-		this.elements = new ArrayList<ET>();
+		this.elements = new ArrayList<E>();
 	}
 
 	public AbstractInMemoryOperationDataSet(
@@ -236,17 +236,17 @@ public abstract class AbstractInMemoryOperationDataSet<ET extends OperationDataE
 	}
 
 	@Override
-	public void addEntry(ET entry) throws IOException {
+	public void addEntry(E entry) throws IOException {
 		elements.add(entry);
 	}
 
 	@Override
-	public List<ET> getEntries(int from, int to) throws IOException {
+	public List<E> getEntries(int from, int to) throws IOException {
 		return Collections.unmodifiableList(elements);
 	}
 
 	@Override
-	protected void writeEntries(int alreadyWritten, Queue<ET> writeBuffer)
+	protected void writeEntries(int alreadyWritten, Queue<E> writeBuffer)
 			throws IOException
 	{
 	}

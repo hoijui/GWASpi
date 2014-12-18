@@ -24,9 +24,9 @@ import javax.swing.ProgressMonitor;
  * It forwards events to {@link javax.swing.ProgressMonitor}.
  * Only supports integer based progress sources.
  * See {@link GeneralSwingProgressListener} for a more general and elegant solution.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public class SwingMonitorProgressListener<ST> extends AbstractProgressListener<ST> {
+public class SwingMonitorProgressListener<S> extends AbstractProgressListener<S> {
 
 	private final ProgressMonitor progressMonitor;
 
@@ -42,7 +42,7 @@ public class SwingMonitorProgressListener<ST> extends AbstractProgressListener<S
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 		progressMonitor.setProgress((Integer) evt.getCurrentState());
 	}
 }

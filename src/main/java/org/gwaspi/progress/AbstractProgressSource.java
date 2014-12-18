@@ -20,7 +20,7 @@ package org.gwaspi.progress;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractProgressSource<ST> implements ProgressSource<ST> {
+public abstract class AbstractProgressSource<S> implements ProgressSource<S> {
 
 	private final List<ProgressListener> progressListeners;
 	private ProcessInfo processInfo;
@@ -123,7 +123,7 @@ public abstract class AbstractProgressSource<ST> implements ProgressSource<ST> {
 		fireStatusChanged(new ProcessStatusChangeEvent(this, newStatus));
 	}
 
-	protected void fireProgressHappened(Double completionFraction, ST currentState) {
+	protected void fireProgressHappened(Double completionFraction, S currentState) {
 
 		final long time = System.currentTimeMillis() - startTime;
 		fireProgressHappened(new ProgressEvent(

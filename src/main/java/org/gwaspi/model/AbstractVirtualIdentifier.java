@@ -22,22 +22,22 @@ import java.util.UUID;
 /**
  * Uniquely identifies an object that may not exist.
  */
-public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements VirtualIdentifier<KT> {
+public class AbstractVirtualIdentifier<K extends Identifier<K>> implements VirtualIdentifier<K> {
 
 	private static final String NAME_DEFAULT = "pure-virtual";
 
 	private final UUID virtualId;
 	private final String name;
-	private KT key;
+	private K key;
 
-	public AbstractVirtualIdentifier(final KT key, final String name) {
+	public AbstractVirtualIdentifier(final K key, final String name) {
 
 		this.key = key;
 		this.virtualId = UUID.randomUUID();
 		this.name = name;
 	}
 
-	public AbstractVirtualIdentifier(final KT key) {
+	public AbstractVirtualIdentifier(final K key) {
 		this(key, NAME_DEFAULT);
 	}
 
@@ -84,12 +84,12 @@ public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements Vir
 	}
 
 	@Override
-	public int compareTo(final Identifier<KT> other) {
+	public int compareTo(final Identifier<K> other) {
 
 		if (!(other instanceof VirtualIdentifier)) {
 			return - other.compareTo(this);
 		}
-		final AbstractVirtualIdentifier<KT> otherCasted = (AbstractVirtualIdentifier<KT>) other;
+		final AbstractVirtualIdentifier<K> otherCasted = (AbstractVirtualIdentifier<K>) other;
 		if (!this.isVirtual() && !otherCasted.isVirtual()) {
 			return this.getKey().compareTo(otherCasted.getKey());
 		}
@@ -155,11 +155,11 @@ public class AbstractVirtualIdentifier<KT extends Identifier<KT>> implements Vir
 	}
 
 	@Override
-	public void setKey(final KT key) {
+	public void setKey(final K key) {
 		this.key = key;
 	}
 
-	public KT getKey() {
+	public K getKey() {
 		return key;
 	}
 

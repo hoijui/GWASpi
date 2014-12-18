@@ -17,18 +17,18 @@
 
 package org.gwaspi.progress;
 
-public class ProgressHandlerForwarder<ST> extends ProgressForwarder<ST>
-		implements ProgressHandler<ST>
+public class ProgressHandlerForwarder<S> extends ProgressForwarder<S>
+		implements ProgressHandler<S>
 {
-	private ProgressHandler<ST> innerProgressHandler;
+	private ProgressHandler<S> innerProgressHandler;
 
 	public ProgressHandlerForwarder(ProcessInfo processInfo) {
 		super(processInfo);
 
-		this.innerProgressHandler = new NullProgressHandler<ST>(processInfo);
+		this.innerProgressHandler = new NullProgressHandler<S>(processInfo);
 	}
 
-	public void setInnerProgressHandler(ProgressHandler<ST> innerProgressHandler) {
+	public void setInnerProgressHandler(ProgressHandler<S> innerProgressHandler) {
 
 		this.innerProgressHandler = innerProgressHandler;
 		setInnerProgressSource(innerProgressHandler);
@@ -40,7 +40,7 @@ public class ProgressHandlerForwarder<ST> extends ProgressForwarder<ST>
 	}
 
 	@Override
-	public void setProgress(ST currentProgress) {
+	public void setProgress(S currentProgress) {
 		innerProgressHandler.setProgress(currentProgress);
 	}
 }

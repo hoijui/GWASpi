@@ -24,9 +24,9 @@ import org.slf4j.Logger;
 
 /**
  * Logs all progress events to SLF4J.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public class Slf4jProgressListener<ST> extends AbstractProgressListener<ST> {
+public class Slf4jProgressListener<S> extends AbstractProgressListener<S> {
 
 	private static final NumberFormat PERCENTAGE_FORMAT = new DecimalFormat("##0.00%");
 
@@ -54,7 +54,7 @@ public class Slf4jProgressListener<ST> extends AbstractProgressListener<ST> {
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 
 		if (firstCompleetedEventTime == null) {
 			firstCompleetedEventTime = System.currentTimeMillis();

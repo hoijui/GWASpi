@@ -20,9 +20,9 @@ package org.gwaspi.operations;
 import java.io.IOException;
 import org.gwaspi.model.OperationMetadata;
 
-public interface OperationMetadataFactory<DST extends OperationDataSet, PT extends OperationParams> {
+public interface OperationMetadataFactory<D extends OperationDataSet, P extends OperationParams> {
 
 	OperationTypeInfo getTypeInfo();
 
-	OperationMetadata generateMetadata(DST operationDataSet, PT params) throws IOException;
+	OperationMetadata generateMetadata(D operationDataSet, P params) throws IOException;
 }

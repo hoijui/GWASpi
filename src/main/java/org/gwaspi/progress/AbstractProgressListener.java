@@ -17,7 +17,7 @@
 
 package org.gwaspi.progress;
 
-public abstract class AbstractProgressListener<ST> implements ProgressListener<ST> {
+public abstract class AbstractProgressListener<S> implements ProgressListener<S> {
 
 	protected AbstractProgressListener() {
 	}
@@ -31,6 +31,6 @@ public abstract class AbstractProgressListener<ST> implements ProgressListener<S
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 	}
 }

@@ -26,23 +26,23 @@ import org.gwaspi.model.MatrixKey;
 
 /**
  * TODO add class description
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<VT> {
+public abstract class AbstractInMemoryListSource<V> extends AbstractListSource<V> {
 
-	private final List<VT> items;
+	private final List<V> items;
 
-	protected AbstractInMemoryListSource(MatrixKey origin, List<VT> items, List<Integer> originalIndices) {
+	protected AbstractInMemoryListSource(MatrixKey origin, List<V> items, List<Integer> originalIndices) {
 		super(origin, Integer.MAX_VALUE, originalIndices);
 
 		this.items = items;
 	}
 
-	protected AbstractInMemoryListSource(MatrixKey origin, final List<VT> items) {
+	protected AbstractInMemoryListSource(MatrixKey origin, final List<V> items) {
 		this(origin, items, null);
 	}
 
-	protected List<VT> getItems() {
+	protected List<V> getItems() {
 		return items;
 	}
 
@@ -58,7 +58,7 @@ public abstract class AbstractInMemoryListSource<VT> extends AbstractListSource<
 	}
 
 	@Override
-	public List<VT> getRange(int from, int to) throws IOException {
+	public List<V> getRange(int from, int to) throws IOException {
 		return getItems().subList(from, to + 1);
 	}
 

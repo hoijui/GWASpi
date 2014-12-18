@@ -25,9 +25,9 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 /**
  * TODO add class description
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public abstract class AbstractListSource<VT> extends AbstractOrigIndicesFilteredChunkedListSource<VT> {
+public abstract class AbstractListSource<V> extends AbstractOrigIndicesFilteredChunkedListSource<V> {
 
 	private final MatrixKey origin;
 	private DataSetSource originDataSetSource;

@@ -25,9 +25,9 @@ import org.gwaspi.global.IndicesList;
 
 /**
  * TODO
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends AbstractChunkedListSource<VT> {
+public abstract class AbstractOrigIndicesFilteredChunkedListSource<V> extends AbstractChunkedListSource<V> {
 
 	private final List<Integer> originalIndices;
 	private Integer sizeFiltered;
@@ -88,7 +88,7 @@ public abstract class AbstractOrigIndicesFilteredChunkedListSource<VT> extends A
 	}
 
 	@Override
-	public VT get(int index) {
+	public V get(int index) {
 
 		final int rawIndex;
 		if (originalIndices == null) {

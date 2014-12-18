@@ -22,13 +22,13 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatrixMetadata;
 
-public interface MatrixMetadataFactory<DST extends DataSet, PT extends MatrixCreatingOperationParams> {
+public interface MatrixMetadataFactory<D extends DataSet, P extends MatrixCreatingOperationParams> {
 
 //	OperationTypeInfo getTypeInfo();
 
-	MatrixMetadata generateMetadata(DST dataSet, PT params) throws IOException;
+	MatrixMetadata generateMetadata(D dataSet, P params) throws IOException;
 
 	String getStrandFlag();
 
-	GenotypeEncoding getGuessedGTCode(PT params);
+	GenotypeEncoding getGuessedGTCode(P params);
 }

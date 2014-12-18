@@ -23,8 +23,8 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.OperationTypeInfo;
 import org.gwaspi.operations.OperationMetadataFactory;
 
-public class TestOperationMetadataFactory<DST extends CommonTestOperationDataSet, PT extends TrendTestOperationParams>
-		implements OperationMetadataFactory<DST, PT>
+public class TestOperationMetadataFactory<D extends CommonTestOperationDataSet, P extends TrendTestOperationParams>
+		implements OperationMetadataFactory<D, P>
 {
 
 	private final OperationTypeInfo typeInfo;
@@ -39,7 +39,7 @@ public class TestOperationMetadataFactory<DST extends CommonTestOperationDataSet
 	}
 
 	@Override
-	public OperationMetadata generateMetadata(DST operationDataSet, PT params) throws IOException {
+	public OperationMetadata generateMetadata(D operationDataSet, P params) throws IOException {
 
 		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(params.getMarkerCensus());
 

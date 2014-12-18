@@ -23,15 +23,15 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 
-public class MatrixCreatingNetCDFDataSetDestination<PT extends MatrixCreatingOperationParams>
+public class MatrixCreatingNetCDFDataSetDestination<P extends MatrixCreatingOperationParams>
 		extends AbstractNetCDFDataSetDestination
 {
-	private final PT params;
-	private final MatrixMetadataFactory<DataSet, PT> metadataFactory;
+	private final P params;
+	private final MatrixMetadataFactory<DataSet, P> metadataFactory;
 
 	public MatrixCreatingNetCDFDataSetDestination(
-			PT params,
-			MatrixMetadataFactory<DataSet, PT> metadataFactory)
+			P params,
+			MatrixMetadataFactory<DataSet, P> metadataFactory)
 	{
 		this.params = params;
 		this.metadataFactory = metadataFactory;

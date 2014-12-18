@@ -30,7 +30,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.NetCdfUtils;
 import ucar.nc2.NetcdfFile;
 
-public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSource<KT> {
+public abstract class AbstractNetCdfKeysSource<K> extends AbstractNetCdfListSource<K> {
 
 	private final String varOriginalIndices;
 	private final String varKeys;
@@ -42,7 +42,7 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 		this.varKeys = varKeys;
 	}
 
-	protected abstract KeyFactory<KT> createKeyFactory();
+	protected abstract KeyFactory<K> createKeyFactory();
 
 	public List<Integer> getIndices(int from, int to) throws IOException {
 
@@ -67,14 +67,14 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 	}
 
 	@Override
-	public List<KT> getRange(int from, int to) throws IOException {
+	public List<K> getRange(int from, int to) throws IOException {
 
-		List<KT> entries;
+		List<K> entries;
 
 		List<String> keys = readVar(varKeys, from, to);
 
-		entries = new ArrayList<KT>(keys.size());
-		KeyFactory<KT> keyFactory = createKeyFactory();
+		entries = new ArrayList<K>(keys.size());
+		KeyFactory<K> keyFactory = createKeyFactory();
 		for (String encodedKey : keys) {
 			entries.add(keyFactory.decode(encodedKey));
 		}
@@ -82,18 +82,18 @@ public abstract class AbstractNetCdfKeysSource<KT> extends AbstractNetCdfListSou
 		return entries;
 	}
 
-	public Map<Integer, KT> getIndicesMap() throws IOException {
+	public Map<Integer, K> getIndicesMap() throws IOException {
 		return getIndicesMap(-1, -1);
 	}
 
-	public Map<Integer, KT> getIndicesMap(int from, int to) throws IOException {
+	public Map<Integer, K> getIndicesMap(int from, int to) throws IOException {
 
-		Map<Integer, KT> entries;
+		Map<Integer, K> entries;
 
 		List<String> keys = readVar(varKeys, from, to);
 
-		entries = new LinkedHashMap<Integer, KT>(keys.size());
-		KeyFactory<KT> keyFactory = createKeyFactory();
+		entries = new LinkedHashMap<Integer, K>(keys.size());
+		KeyFactory<K> keyFactory = createKeyFactory();
 		if (varOriginalIndices == null) {
 			int index = (from >= 0) ? from : 0;
 			for (String encodedKey : keys) {

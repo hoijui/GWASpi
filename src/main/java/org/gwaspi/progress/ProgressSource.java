@@ -22,9 +22,9 @@ import java.util.List;
 /**
  * Produces {@link ProgressEvent}'s.
  * This is basically a process/task which can be run.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public interface ProgressSource<ST> {
+public interface ProgressSource<S> {
 
 	/**
 	 * Returns basic, immutable info about the process this source covers.

@@ -29,9 +29,9 @@ import ucar.nc2.NetcdfFile;
 
 /**
  * TODO add class description
- * @param <VT> list value type
+ * @param <V> list value type
  */
-public abstract class AbstractNetCdfListSource<VT> extends AbstractListSource<VT> {
+public abstract class AbstractNetCdfListSource<V> extends AbstractListSource<V> {
 
 	private final String varNameDimension;
 	private Integer size;

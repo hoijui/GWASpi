@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * TODO
  */
-abstract class AbstractSamplesFeaturesStorage<ST> implements SamplesFeaturesStorage<ST> {
+abstract class AbstractSamplesFeaturesStorage<S> implements SamplesFeaturesStorage<S> {
 
 	private final Map<String, Object> cache;
 	private final int numSamples;

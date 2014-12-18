@@ -19,14 +19,14 @@ package org.gwaspi.progress;
 
 /**
  * Lets through only one progress happened event per X milliseconds; forwards all other events.
- * @param <ST> the status type
+ * @param <S> the status type
  */
-public class PerTimeIntervalFilteredProgressListener<ST> extends ForwardingProgressListener<ST> {
+public class PerTimeIntervalFilteredProgressListener<S> extends ForwardingProgressListener<S> {
 
 	private final long reportIntervalMillis;
 	private long lastReportedProgressMillis;
 
-	public PerTimeIntervalFilteredProgressListener(final ProgressListener<ST> innerListener, final long reportIntervalMillis) {
+	public PerTimeIntervalFilteredProgressListener(final ProgressListener<S> innerListener, final long reportIntervalMillis) {
 		super(innerListener);
 
 		this.reportIntervalMillis = reportIntervalMillis;
@@ -34,7 +34,7 @@ public class PerTimeIntervalFilteredProgressListener<ST> extends ForwardingProgr
 	}
 
 	@Override
-	public void progressHappened(ProgressEvent<ST> evt) {
+	public void progressHappened(ProgressEvent<S> evt) {
 
 		final long currentMillis = System.currentTimeMillis();
 		if ((currentMillis - lastReportedProgressMillis) >= reportIntervalMillis) {
