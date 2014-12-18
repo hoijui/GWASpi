@@ -43,12 +43,12 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	interface Standard {
 		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
 
-		final int markerId = 0;
-		final int alleles = 1; // Caution, using normal Call, not Forced Call!
-		final String missing = "NoCall";
-		final int score = 2;
-		final int intensity_A = 3;
-		final int intensity_B = 4;
+		int markerId = 0;
+		int alleles = 1; // Caution, using normal Call, not Forced Call!
+		String missing = "NoCall";
+		int score = 2;
+		int intensity_A = 3;
+		int intensity_B = 4;
 	}
 
 	public LoadGTFromAffyFiles() {

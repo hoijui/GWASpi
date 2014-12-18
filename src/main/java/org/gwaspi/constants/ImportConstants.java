@@ -152,18 +152,18 @@ public class ImportConstants {
 			}
 		}
 
-		public static interface GWASpi {
+		public interface GWASpi {
 
-			final int sampleId = 1;
-			final int familyId = 0;
-			final int fatherId = 2;
-			final int motherId = 3;
-			final int sex = 4;
-			final int affection = 5;
-			final int category = 6;
-			final int disease = 7;
-			final int population = 8;
-			final int age = 9;
+			int sampleId = 1;
+			int familyId = 0;
+			int fatherId = 2;
+			int motherId = 3;
+			int sex = 4;
+			int affection = 5;
+			int category = 6;
+			int disease = 7;
+			int population = 8;
+			int age = 9;
 		}
 
 		/**
@@ -385,29 +385,29 @@ public class ImportConstants {
 
 	public interface SampleInfo {
 
-		final int familyId = 0;
-		final int sampleId = 1;
-		final int fatherId = 2;
-		final int motherId = 3;
-		final int sex = 4;
-		final int affection = 5;
-		final int category = 6;
-		final int disease = 7;
-		final int population = 8;
-		final int age = 9;
+		int familyId = 0;
+		int sampleId = 1;
+		int fatherId = 2;
+		int motherId = 3;
+		int sex = 4;
+		int affection = 5;
+		int category = 6;
+		int disease = 7;
+		int population = 8;
+		int age = 9;
 	}
 
 	public interface Separators {
 
-		final String separators_Spaces_rgxp = "[ +]";
-		final String separators_CommaSpaceTab_rgxp = "[, \t]+";
-		final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
-		final String separators_CommaTab_rgxp = "[,\t]+";
-		final String separators_SpaceTab_rgxp = "[ \t]+";
-		final String separators_Tab_rgxp = "[\t]+";
-		final String ops = " "; // separator used in output file
-		final String separator_PLINK = " ";
-		final String separator_BEAGLE = " ";
-		final String separator_REPORTS = "\t";
+		String separators_Spaces_rgxp = "[ +]";
+		String separators_CommaSpaceTab_rgxp = "[, \t]+";
+		String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
+		String separators_CommaTab_rgxp = "[,\t]+";
+		String separators_SpaceTab_rgxp = "[ \t]+";
+		String separators_Tab_rgxp = "[\t]+";
+		String ops = " "; // separator used in output file
+		String separator_PLINK = " ";
+		String separator_BEAGLE = " ";
+		String separator_REPORTS = "\t";
 	}
 }

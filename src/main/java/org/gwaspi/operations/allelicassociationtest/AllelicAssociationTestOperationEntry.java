@@ -22,7 +22,7 @@ import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 
 public interface AllelicAssociationTestOperationEntry extends TrendTestOperationEntry {
 
-	final Extractor<AllelicAssociationTestOperationEntry, Double> TO_OR
+	Extractor<AllelicAssociationTestOperationEntry, Double> TO_OR
 			= new Extractor<AllelicAssociationTestOperationEntry, Double>()
 	{
 		@Override

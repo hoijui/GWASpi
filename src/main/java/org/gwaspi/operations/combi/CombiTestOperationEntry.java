@@ -31,7 +31,7 @@ public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getWeight();
 		}
 	};
-	final Extractor<CombiTestOperationEntry, Double> TO_WEIGHTS = new MissingRatioExtractor();
+	Extractor<CombiTestOperationEntry, Double> TO_WEIGHTS = new MissingRatioExtractor();
 
 	/**
 	 * @return the (SVM) weight for this marker

@@ -31,7 +31,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getMissingRatio();
 		}
 	};
-	final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO = new MissingRatioExtractor();
+	Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO = new MissingRatioExtractor();
 
 	class MissingCountExtractor implements Extractor<QASamplesOperationEntry, Integer>, Serializable
 	{
@@ -40,8 +40,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getMissingCount();
 		}
 	};
-	final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
-			= new MissingCountExtractor();
+	Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT = new MissingCountExtractor();
 
 	class HetzyRatioExtractor implements Extractor<QASamplesOperationEntry, Double>, Serializable
 	{
@@ -50,7 +49,7 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 			return from.getHetzyRatio();
 		}
 	};
-	final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO = new HetzyRatioExtractor();
+	Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO = new HetzyRatioExtractor();
 
 	/**
 	 * @return the missing ratio of this sample

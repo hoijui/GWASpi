@@ -33,7 +33,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 		}
 	}
 
-	final Extractor<TrendTestOperationEntry, Double> TO_T
+	Extractor<TrendTestOperationEntry, Double> TO_T
 			= new Extractor<TrendTestOperationEntry, Double>()
 	{
 		@Override
@@ -42,7 +42,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 		}
 	};
 
-	final Extractor<TrendTestOperationEntry, Double> TO_P
+	Extractor<TrendTestOperationEntry, Double> TO_P
 			= new Extractor<TrendTestOperationEntry, Double>()
 	{
 		@Override

@@ -44,7 +44,7 @@ public interface OperationDataEntry<OK> extends Serializable {
 			return from.getIndex();
 		}
 	};
-	final Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
+	Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
 
 	/**
 	 * @return the (operation/main-)key of this data entry

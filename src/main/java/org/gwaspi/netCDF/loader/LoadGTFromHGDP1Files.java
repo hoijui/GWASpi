@@ -47,9 +47,9 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 
 	private interface Standard {
 
-		final int markerId = 0;
-		final int genotypes = 1;
-		final String missing = "--";
+		int markerId = 0;
+		int genotypes = 1;
+		String missing = "--";
 	}
 
 	public LoadGTFromHGDP1Files() {

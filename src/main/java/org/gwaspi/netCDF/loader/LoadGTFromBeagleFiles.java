@@ -42,9 +42,9 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 	private interface Standard {
 
-		final int markerId = 1;
-		final int genotypes = 2;
-		final String missing = "0";
+		int markerId = 1;
+		int genotypes = 2;
+		String missing = "0";
 	}
 
 	public LoadGTFromBeagleFiles() {

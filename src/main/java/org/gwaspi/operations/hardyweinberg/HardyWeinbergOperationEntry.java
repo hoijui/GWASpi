@@ -38,9 +38,9 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 			return Double.compare(e1.getP(), e2.getP());
 		}
 	}
-	final Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
+	Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
 
-	final Extractor<HardyWeinbergOperationEntry, Category> CATEGORY_EXTRACTOR
+	Extractor<HardyWeinbergOperationEntry, Category> CATEGORY_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Category>() {
 
 				@Override
@@ -49,7 +49,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	final Extractor<HardyWeinbergOperationEntry, Double> P_VALUE_EXTRACTOR
+	Extractor<HardyWeinbergOperationEntry, Double> P_VALUE_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override
@@ -58,7 +58,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	final Extractor<HardyWeinbergOperationEntry, Double> HETZY_OBSERVED_EXTRACTOR
+	Extractor<HardyWeinbergOperationEntry, Double> HETZY_OBSERVED_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override
@@ -67,7 +67,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	final Extractor<HardyWeinbergOperationEntry, Double> HETZY_EXPECTED_EXTRACTOR
+	Extractor<HardyWeinbergOperationEntry, Double> HETZY_EXPECTED_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override

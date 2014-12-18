@@ -35,7 +35,7 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 			return from.getKnownAlleles();
 		}
 	};
-	final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
+	Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
 			= new KnownAllelesExtractor();
 
 	class CensusFullExtractor implements Extractor<MarkerCensusOperationEntry, CensusFull>,
@@ -46,7 +46,7 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 			return from.getCensus();
 		}
 	};
-	final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
+	Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
 			= new CensusFullExtractor();
 
 	class CensusExtractor implements Extractor<MarkerCensusOperationEntry, Census>, Serializable {
