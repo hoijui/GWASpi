@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class MachFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
-	private static final String SEP = ExportConstants.separator_MACH;
+	private static final String SEP = ExportConstants.SEPARATOR_MACH;
 
 	@Override
 	public void export(

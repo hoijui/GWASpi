@@ -114,7 +114,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = ExportConstants.separator_PLINK;
+		String sep = ExportConstants.SEPARATOR_PLINK;
 
 		final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
 

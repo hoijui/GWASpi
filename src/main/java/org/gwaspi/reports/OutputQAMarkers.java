@@ -183,7 +183,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
@@ -285,7 +285,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(unsortedOrigIndices, markersMetadatas);

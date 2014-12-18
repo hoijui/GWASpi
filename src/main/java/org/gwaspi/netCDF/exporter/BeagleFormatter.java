@@ -92,7 +92,7 @@ class BeagleFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = ExportConstants.separator_BEAGLE;
+		String sep = ExportConstants.SEPARATOR_BEAGLE;
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		BufferedWriter beagleBW = null;

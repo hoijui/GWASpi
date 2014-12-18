@@ -173,7 +173,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 
 	private static void createSortedSampleMissingnessReport(OperationKey samplesQAopKey, final File sampleMissOutFile) throws IOException {
 
-		final String sep = ExportConstants.separator_REPORTS;
+		final String sep = ExportConstants.SEPARATOR_REPORTS;
 
 		final QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(samplesQAopKey);
 		final List<QASamplesOperationEntry> qaSamplesOperationEntries = new ArrayList<QASamplesOperationEntry>(qaSamplesOperationDataSet.getEntries());

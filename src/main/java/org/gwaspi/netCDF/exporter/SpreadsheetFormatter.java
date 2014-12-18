@@ -77,7 +77,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 
 		//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
 		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);

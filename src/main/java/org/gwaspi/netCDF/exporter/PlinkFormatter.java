@@ -74,8 +74,8 @@ public class PlinkFormatter implements Formatter {
 
 		final File exportDir = Utils.checkDirPath(exportPath);
 
-		String sep = ExportConstants.separator_PLINK;
-		String sepBig = ExportConstants.separator_PLINK_big;
+		String sep = ExportConstants.SEPARATOR_PLINK;
+		String sepBig = ExportConstants.SEPARATOR_PLINK_big;
 
 		//<editor-fold defaultstate="expanded" desc="PED FILE">
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);

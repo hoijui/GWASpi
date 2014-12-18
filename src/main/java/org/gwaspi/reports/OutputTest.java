@@ -326,7 +326,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			sortedOrigIndices.add(trendTestOperationEntry.getIndex());
 		}
 
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(getParams().getTestOperationKey().getParentMatrixKey());
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();

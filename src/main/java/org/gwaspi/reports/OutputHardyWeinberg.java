@@ -143,7 +143,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 		}
 
 		// GET MARKER INFO
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
 		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());

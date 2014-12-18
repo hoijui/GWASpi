@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class ReportWriter {
 
-	private static final String SEP = ExportConstants.separator_REPORTS;
+	private static final String SEP = ExportConstants.SEPARATOR_REPORTS;
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReportWriter.class);
 
@@ -139,7 +139,7 @@ public class ReportWriter {
 
 		final boolean withKey = (keyExtractor != null);
 
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		outputBW.append(header);
 
 		for (S entry : readContent) {
@@ -215,7 +215,7 @@ public class ReportWriter {
 
 		String l;
 		int count = 0;
-		String sep = ExportConstants.separator_REPORTS;
+		String sep = ExportConstants.SEPARATOR_REPORTS;
 		Iterator<S> readContentIt = readContent.iterator();
 		while ((l = inputBR.readLine()) != null) {
 			if (count == 0) {

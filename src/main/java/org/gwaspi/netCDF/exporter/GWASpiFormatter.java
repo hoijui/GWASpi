@@ -70,7 +70,7 @@ public class GWASpiFormatter implements Formatter {
 		final File exportDir = Utils.checkDirPath(exportPath);
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
-		String sep = ExportConstants.separator_SAMPLE_INFO;
+		String sep = ExportConstants.SEPARATOR_SAMPLE_INFO;
 		BufferedWriter sampleInfoBW = null;
 		try {
 			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">

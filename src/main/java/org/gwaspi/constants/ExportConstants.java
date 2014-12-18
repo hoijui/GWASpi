@@ -19,12 +19,12 @@ package org.gwaspi.constants;
 
 public class ExportConstants {
 
-	public static final String separator_PLINK = " ";
-	public static final String separator_PLINK_big = "\t";
-	public static final String separator_BEAGLE = " ";
-	public static final String separator_MACH = " ";
-	public static final String separator_REPORTS = "\t";
-	public static final String separator_SAMPLE_INFO = "\t";
+	public static final String SEPARATOR_PLINK = " ";
+	public static final String SEPARATOR_PLINK_big = "\t";
+	public static final String SEPARATOR_BEAGLE = " ";
+	public static final String SEPARATOR_MACH = " ";
+	public static final String SEPARATOR_REPORTS = "\t";
+	public static final String SEPARATOR_SAMPLE_INFO = "\t";
 
 	public static enum ExportFormat {
 
