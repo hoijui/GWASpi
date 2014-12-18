@@ -85,10 +85,10 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	public int processMatrix() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
+		final OperationMetadata qaMarkersOperation = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
 
-		String prefix = ReportsList.getReportNamePrefix(op);
-		Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
+		String prefix = ReportsList.getReportNamePrefix(qaMarkersOperation);
+		Utils.createFolder(new File(Study.constructReportsPath(qaMarkersOperation.getStudyKey())));
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		String markMissOutName = prefix + "markmissing.txt";
@@ -102,7 +102,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				OPType.MARKER_QA,
 				getParams().getMarkersQAOpKey(),
 				"Marker Missingness Table",
-				op.getStudyKey()));
+				qaMarkersOperation.getStudyKey()));
 		Utils.sysoutCompleted("Marker Missingness QA Report");
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.COMPLEETED);
 
@@ -117,7 +117,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				OPType.MARKER_QA,
 				getParams().getMarkersQAOpKey(),
 				"Marker Mismatch State Table",
-				op.getStudyKey()));
+				qaMarkersOperation.getStudyKey()));
 		Utils.sysoutCompleted("Marker Mismatch QA Report");
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.COMPLEETED);
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);

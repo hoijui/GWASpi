@@ -84,11 +84,11 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 	public int processMatrix() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
+		final OperationMetadata qaSamplesOperation = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
 
-		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
-		final String reportPath = Study.constructReportsPath(op.getStudyKey());
-		final String prefix = ReportsList.getReportNamePrefix(op);
+		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(qaSamplesOperation.getStudyKey())));
+		final String reportPath = Study.constructReportsPath(qaSamplesOperation.getStudyKey());
+		final String prefix = ReportsList.getReportNamePrefix(qaSamplesOperation);
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		final String sampleMissOutName = prefix + "samplmissing.txt";
@@ -104,7 +104,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 					OPType.SAMPLE_QA,
 					getParams().getSampleQAOpKey(),
 					"Sample Missingness Table",
-					op.getStudyKey()));
+					qaSamplesOperation.getStudyKey()));
 			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 		}
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.COMPLEETED);
@@ -122,7 +122,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 				OPType.SAMPLE_HTZYPLOT,
 				getParams().getSampleQAOpKey(),
 				"Sample Heterozygosity vs Missingness Plot",
-				op.getStudyKey()));
+				qaSamplesOperation.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Heterozygosity QA Report");
 //			}
 //		}

@@ -24,11 +24,11 @@ import java.util.Map;
 class ComparatorPvalAsc implements Comparator<Map.Entry>, Serializable {
 
 	@Override
-	public int compare(Map.Entry e1, Map.Entry e2) {
-		int cf = ((Comparable) e1.getValue()).compareTo(e2.getValue());
-		if (cf == 0) {
-			cf = ((Comparable) e1.getKey()).compareTo(e2.getKey());
+	public int compare(Map.Entry entry1, Map.Entry entry2) {
+		int diff = ((Comparable) entry1.getValue()).compareTo(entry2.getValue());
+		if (diff == 0) {
+			diff = ((Comparable) entry1.getKey()).compareTo(entry2.getKey());
 		}
-		return cf;
+		return diff;
 	}
 }

@@ -30,7 +30,7 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
  */
 public class CliExecutor {
 
-	private static final Map<String, ScriptCommand> scriptCommands;
+	private static final Map<String, ScriptCommand> SCRIPT_COMMANDS;
 	static {
 		Map<String, ScriptCommand> tmpScriptCommands = new HashMap<String, ScriptCommand>();
 
@@ -45,7 +45,7 @@ public class CliExecutor {
 		addScriptCommand(tmpScriptCommands, new TestScriptCommand(OPType.TRENDTEST));
 		addScriptCommand(tmpScriptCommands, new UpdateSampleInfoScriptCommand());
 
-		scriptCommands = Collections.unmodifiableMap(tmpScriptCommands);
+		SCRIPT_COMMANDS = Collections.unmodifiableMap(tmpScriptCommands);
 	}
 	private static void addScriptCommand(Map<String, ScriptCommand> commands, ScriptCommand scriptCommand) {
 		commands.put(scriptCommand.getCommandName(), scriptCommand);
@@ -79,7 +79,7 @@ public class CliExecutor {
 
 			System.out.println("Script " + i + ": " + command);
 
-			ScriptCommand scriptCommand = scriptCommands.get(command);
+			ScriptCommand scriptCommand = SCRIPT_COMMANDS.get(command);
 
 			if (scriptCommand == null) {
 				throw new IOException("Not a valid script command name: \"" + command + "\"");

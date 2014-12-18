@@ -87,11 +87,11 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 	public int processMatrix() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getHardyWeinbergOpKey());
+		final OperationMetadata hwOperation = OperationsList.getOperationMetadata(getParams().getHardyWeinbergOpKey());
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
-		String prefix = ReportsList.getReportNamePrefix(op);
-		Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
+		String prefix = ReportsList.getReportNamePrefix(hwOperation);
+		Utils.createFolder(new File(Study.constructReportsPath(hwOperation.getStudyKey())));
 
 		String hwOutName = prefix + "hardy-weinberg.txt";
 		operationPH.setNewStatus(ProcessStatus.RUNNING);
@@ -103,7 +103,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 				OPType.HARDY_WEINBERG,
 				getParams().getHardyWeinbergOpKey(),
 				"Hardy Weinberg Table",
-				op.getStudyKey()));
+				hwOperation.getStudyKey()));
 		Utils.sysoutCompleted("Hardy-Weinberg Report");
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
