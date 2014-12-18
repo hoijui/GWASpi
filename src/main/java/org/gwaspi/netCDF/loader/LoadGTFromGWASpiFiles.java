@@ -50,8 +50,7 @@ import ucar.nc2.NetcdfFile;
  */
 public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(LoadGTFromGWASpiFiles.class);
+	private final Logger log = LoggerFactory.getLogger(LoadGTFromGWASpiFiles.class);
 
 //	@Override
 //	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {

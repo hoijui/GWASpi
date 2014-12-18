@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetadataLoaderSequenom implements MetadataLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(MetadataLoaderSequenom.class);
+	private final Logger log = LoggerFactory.getLogger(MetadataLoaderSequenom.class);
 
 	@Override
 	public boolean isHasStrandInfo() {

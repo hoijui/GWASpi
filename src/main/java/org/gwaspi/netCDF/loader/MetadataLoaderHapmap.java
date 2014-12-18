@@ -40,8 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetadataLoaderHapmap implements MetadataLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(MetadataLoaderHapmap.class);
+	private final Logger log = LoggerFactory.getLogger(MetadataLoaderHapmap.class);
 
 	@Override
 	public boolean isHasStrandInfo() {

@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(MetadataLoaderIlluminaLGEN.class);
+	private final Logger log = LoggerFactory.getLogger(MetadataLoaderIlluminaLGEN.class);
 
 	@Override
 	public boolean isHasStrandInfo() {

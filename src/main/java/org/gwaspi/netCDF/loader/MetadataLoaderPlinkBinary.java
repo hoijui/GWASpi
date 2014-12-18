@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
-	private final Logger log
-			= LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
+	private final Logger log = LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
 
 	@Override
 	public boolean isHasStrandInfo() {
