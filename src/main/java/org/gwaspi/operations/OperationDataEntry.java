@@ -27,7 +27,7 @@ import org.gwaspi.global.Extractor;
  */
 public interface OperationDataEntry<OK> extends Serializable {
 
-	static class KeyExtractor<KT>
+	class KeyExtractor<KT>
 			implements Extractor<OperationDataEntry<KT>, KT>
 	{
 		@Override
@@ -36,7 +36,7 @@ public interface OperationDataEntry<OK> extends Serializable {
 		}
 	};
 
-	static class IndexExtractor
+	class IndexExtractor
 			implements Extractor<OperationDataEntry, Integer>
 	{
 		@Override
@@ -44,8 +44,7 @@ public interface OperationDataEntry<OK> extends Serializable {
 			return from.getIndex();
 		}
 	};
-	static final Extractor<OperationDataEntry, Integer> TO_INDEX
-			= new IndexExtractor();
+	final Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
 
 	/**
 	 * @return the (operation/main-)key of this data entry

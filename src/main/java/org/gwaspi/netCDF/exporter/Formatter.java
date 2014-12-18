@@ -27,7 +27,7 @@ import org.gwaspi.progress.SuperProgressSource;
 
 interface Formatter {
 
-	static final ProgressSource PLACEHOLDER_PS_EXPORT = new NullProgressHandler(
+	final ProgressSource PLACEHOLDER_PS_EXPORT = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_EXPORT", null));
 
 	/**

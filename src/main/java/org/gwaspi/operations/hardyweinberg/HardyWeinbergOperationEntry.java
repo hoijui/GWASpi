@@ -24,23 +24,23 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	public static enum Category {
+	enum Category {
 		ALL,
 		CASE,
 		CONTROL,
 		ALTERNATE;
 	}
 
-	static class PValueComparator implements Comparator<HardyWeinbergOperationEntry> {
+	class PValueComparator implements Comparator<HardyWeinbergOperationEntry> {
 
 		@Override
 		public int compare(HardyWeinbergOperationEntry e1, HardyWeinbergOperationEntry e2) {
 			return Double.compare(e1.getP(), e2.getP());
 		}
 	}
-	public static final Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
+	final Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
 
-	public static final Extractor<HardyWeinbergOperationEntry, Category> CATEGORY_EXTRACTOR
+	final Extractor<HardyWeinbergOperationEntry, Category> CATEGORY_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Category>() {
 
 				@Override
@@ -49,7 +49,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	public static final Extractor<HardyWeinbergOperationEntry, Double> P_VALUE_EXTRACTOR
+	final Extractor<HardyWeinbergOperationEntry, Double> P_VALUE_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override
@@ -58,7 +58,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	public static final Extractor<HardyWeinbergOperationEntry, Double> HETZY_OBSERVED_EXTRACTOR
+	final Extractor<HardyWeinbergOperationEntry, Double> HETZY_OBSERVED_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override
@@ -67,7 +67,7 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 				}
 			};
 
-	public static final Extractor<HardyWeinbergOperationEntry, Double> HETZY_EXPECTED_EXTRACTOR
+	final Extractor<HardyWeinbergOperationEntry, Double> HETZY_EXPECTED_EXTRACTOR
 			= new Extractor<HardyWeinbergOperationEntry, Double>() {
 
 				@Override

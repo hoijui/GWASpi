@@ -26,31 +26,28 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 
 public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	public static class KnownAllelesExtractor
-			implements Extractor<MarkerCensusOperationEntry, byte[]>
-	{
+	class KnownAllelesExtractor implements Extractor<MarkerCensusOperationEntry, byte[]> {
+
 		@Override
 		public byte[] extract(MarkerCensusOperationEntry from) {
 			return from.getKnownAlleles();
 		}
 	};
-	public static final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
+	final Extractor<MarkerCensusOperationEntry, byte[]> TO_KNOWN_ALLELES
 			= new KnownAllelesExtractor();
 
-	public static class CensusFullExtractor
-			implements Extractor<MarkerCensusOperationEntry, CensusFull>
-	{
+	class CensusFullExtractor implements Extractor<MarkerCensusOperationEntry, CensusFull> {
+
 		@Override
 		public CensusFull extract(MarkerCensusOperationEntry from) {
 			return from.getCensus();
 		}
 	};
-	public static final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
+	final Extractor<MarkerCensusOperationEntry, CensusFull> TO_CENSUS_FULL
 			= new CensusFullExtractor();
 
-	public static class CensusExtractor
-			implements Extractor<MarkerCensusOperationEntry, Census>
-	{
+	class CensusExtractor implements Extractor<MarkerCensusOperationEntry, Census> {
+
 		private final Category category;
 
 		public CensusExtractor(final Category category) {

@@ -42,12 +42,12 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 
 	private interface Standard {
 
-		static final int familyId = 0;
-		static final int sampleId = 1;
-		static final int markerId = 2;
-		static final int allele1 = 3;
-		static final int allele2 = 4;
-		static final String missing = "-";
+		final int familyId = 0;
+		final int sampleId = 1;
+		final int markerId = 2;
+		final int allele1 = 3;
+		final int allele2 = 4;
+		final String missing = "-";
 	}
 
 	public LoadGTFromIlluminaLGENFiles() {

@@ -43,11 +43,11 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 
 	private interface Standard {
 
-		static final int sampleId = 0;
-		static final int alleles = 1;
-		static final int markerId = 2;
-		static final int well = 3;
-		static final int qa_desc = 4;
+		final int sampleId = 0;
+		final int alleles = 1;
+		final int markerId = 2;
+		final int well = 3;
+		final int qa_desc = 4;
 	}
 
 	public LoadGTFromSequenomFiles() {

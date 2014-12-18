@@ -28,7 +28,7 @@ public interface OperationFactory<DST extends OperationDataSet, PT extends Opera
 	 * Property name for the main type of OperationDataSet to generate.
 	 * This will be used in the properties parameter in {@link #generateReadOperationDataSet}.
 	 */
-	static final String PROPERTY_NAME_TYPE = "type";
+	final String PROPERTY_NAME_TYPE = "type";
 
 	Class<? extends MatrixOperation> getType();
 

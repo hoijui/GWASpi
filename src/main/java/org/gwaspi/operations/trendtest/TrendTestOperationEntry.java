@@ -24,7 +24,7 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	static class PValueComparator implements Comparator<TrendTestOperationEntry> {
+	class PValueComparator implements Comparator<TrendTestOperationEntry> {
 
 		@Override
 		public int compare(TrendTestOperationEntry entry1, TrendTestOperationEntry entry2) {
@@ -32,7 +32,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 		}
 	}
 
-	static final Extractor<TrendTestOperationEntry, Double> TO_T
+	final Extractor<TrendTestOperationEntry, Double> TO_T
 			= new Extractor<TrendTestOperationEntry, Double>()
 	{
 		@Override
@@ -41,7 +41,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 		}
 	};
 
-	static final Extractor<TrendTestOperationEntry, Double> TO_P
+	final Extractor<TrendTestOperationEntry, Double> TO_P
 			= new Extractor<TrendTestOperationEntry, Double>()
 	{
 		@Override

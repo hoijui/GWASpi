@@ -50,15 +50,15 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 	public interface Standard {
 
-		static final int dataStartRow = 1;
-		static final int sampleId = 11;
-		static final int markerId = 0;
-		static final int alleles = 1;
-		static final int chr = 2;
-		static final int pos = 3;
-		static final int strand = 4;
-		static final String missing = "NN";
-		static final int score = 10;
+		final int dataStartRow = 1;
+		final int sampleId = 11;
+		final int markerId = 0;
+		final int alleles = 1;
+		final int chr = 2;
+		final int pos = 3;
+		final int strand = 4;
+		final String missing = "NN";
+		final int score = 10;
 	}
 
 	public LoadGTFromHapmapFiles() {

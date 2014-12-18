@@ -23,38 +23,33 @@ import org.gwaspi.model.SampleKey;
 
 public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
-	static class MissingRatioExtractor
-			implements Extractor<QASamplesOperationEntry, Double>
+	class MissingRatioExtractor implements Extractor<QASamplesOperationEntry, Double>
 	{
 		@Override
 		public Double extract(QASamplesOperationEntry from) {
 			return from.getMissingRatio();
 		}
 	};
-	static final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO
-			= new MissingRatioExtractor();
+	final Extractor<QASamplesOperationEntry, Double> TO_MISSING_RATIO = new MissingRatioExtractor();
 
-	static class MissingCountExtractor
-			implements Extractor<QASamplesOperationEntry, Integer>
+	class MissingCountExtractor implements Extractor<QASamplesOperationEntry, Integer>
 	{
 		@Override
 		public Integer extract(QASamplesOperationEntry from) {
 			return from.getMissingCount();
 		}
 	};
-	static final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
+	final Extractor<QASamplesOperationEntry, Integer> TO_MISSING_COUNT
 			= new MissingCountExtractor();
 
-	static class HetzyRatioExtractor
-			implements Extractor<QASamplesOperationEntry, Double>
+	class HetzyRatioExtractor implements Extractor<QASamplesOperationEntry, Double>
 	{
 		@Override
 		public Double extract(QASamplesOperationEntry from) {
 			return from.getHetzyRatio();
 		}
 	};
-	static final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO
-			= new HetzyRatioExtractor();
+	final Extractor<QASamplesOperationEntry, Double> TO_HETZY_RATIO = new HetzyRatioExtractor();
 
 	/**
 	 * @return the missing ratio of this sample

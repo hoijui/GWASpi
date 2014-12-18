@@ -23,7 +23,7 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
-	static class MissingRatioExtractor
+	class MissingRatioExtractor
 			implements Extractor<CombiTestOperationEntry, Double>
 	{
 		@Override
@@ -31,8 +31,7 @@ public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
 			return from.getWeight();
 		}
 	};
-	static final Extractor<CombiTestOperationEntry, Double> TO_WEIGHTS
-			= new MissingRatioExtractor();
+	final Extractor<CombiTestOperationEntry, Double> TO_WEIGHTS = new MissingRatioExtractor();
 
 	/**
 	 * @return the (SVM) weight for this marker

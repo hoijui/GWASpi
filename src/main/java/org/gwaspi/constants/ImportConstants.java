@@ -154,23 +154,23 @@ public class ImportConstants {
 
 		public static interface GWASpi {
 
-			static final int sampleId = 1;
-			static final int familyId = 0;
-			static final int fatherId = 2;
-			static final int motherId = 3;
-			static final int sex = 4;
-			static final int affection = 5;
-			static final int category = 6;
-			static final int disease = 7;
-			static final int population = 8;
-			static final int age = 9;
+			final int sampleId = 1;
+			final int familyId = 0;
+			final int fatherId = 2;
+			final int motherId = 3;
+			final int sex = 4;
+			final int affection = 5;
+			final int category = 6;
+			final int disease = 7;
+			final int population = 8;
+			final int age = 9;
 		}
 
 		/**
 		 * Returns the column indices for different marker properties,
 		 * when parsed from a (format specific) file.
 		 */
-		public static interface MarkerParseStandard {
+		public interface MarkerParseStandard {
 
 			int getChrIndex();
 			int getMarkerIdIndex();
@@ -383,31 +383,31 @@ public class ImportConstants {
 		}
 	}
 
-	public static interface SampleInfo {
+	public interface SampleInfo {
 
-		static final int familyId = 0;
-		static final int sampleId = 1;
-		static final int fatherId = 2;
-		static final int motherId = 3;
-		static final int sex = 4;
-		static final int affection = 5;
-		static final int category = 6;
-		static final int disease = 7;
-		static final int population = 8;
-		static final int age = 9;
+		final int familyId = 0;
+		final int sampleId = 1;
+		final int fatherId = 2;
+		final int motherId = 3;
+		final int sex = 4;
+		final int affection = 5;
+		final int category = 6;
+		final int disease = 7;
+		final int population = 8;
+		final int age = 9;
 	}
 
-	public static interface Separators {
+	public interface Separators {
 
-		static final String separators_Spaces_rgxp = "[ +]";
-		static final String separators_CommaSpaceTab_rgxp = "[, \t]+";
-		static final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
-		static final String separators_CommaTab_rgxp = "[,\t]+";
-		static final String separators_SpaceTab_rgxp = "[ \t]+";
-		static final String separators_Tab_rgxp = "[\t]+";
-		static final String ops = " "; // separator used in output file
-		static final String separator_PLINK = " ";
-		static final String separator_BEAGLE = " ";
-		static final String separator_REPORTS = "\t";
+		final String separators_Spaces_rgxp = "[ +]";
+		final String separators_CommaSpaceTab_rgxp = "[, \t]+";
+		final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
+		final String separators_CommaTab_rgxp = "[,\t]+";
+		final String separators_SpaceTab_rgxp = "[ \t]+";
+		final String separators_Tab_rgxp = "[\t]+";
+		final String ops = " "; // separator used in output file
+		final String separator_PLINK = " ";
+		final String separator_BEAGLE = " ";
+		final String separator_REPORTS = "\t";
 	}
 }
