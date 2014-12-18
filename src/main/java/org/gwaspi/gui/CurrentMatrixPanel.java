@@ -242,7 +242,7 @@ public class CurrentMatrixPanel extends JPanel {
 				return;
 			}
 
-			String expPhenotype = DBSamplesConstants.f_AFFECTION;
+			String expPhenotype = DBSamplesConstants.F_AFFECTION;
 			if (format.equals(ExportFormat.PLINK_Binary)
 					|| format.equals(ExportFormat.Eigensoft_Eigenstrat))
 			{

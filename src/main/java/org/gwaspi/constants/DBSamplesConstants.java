@@ -26,54 +26,54 @@ import org.gwaspi.model.SampleInfo.Sex;
 public class DBSamplesConstants {
 
 	// * ALL SAMPLES INFO *
-	public static final String f_ID = "order_id";
-	public static final String f_SAMPLE_ID = "sample_id";
-	public static final String f_FAMILY_ID = "family_id";
-	public static final String f_FATHER_ID = "father_id";
-	public static final String f_MOTHER_ID = "mother_id";
-	public static final String f_SEX = "sex";
-	public static final String f_AFFECTION = "affection";
-	public static final String f_CATEGORY = "category";
-	public static final String f_DISEASE = "disease";
-	public static final String f_POPULATION = "population";
-	public static final String f_AGE = "age";
-	public static final String f_FILTER = "filter";
-	public static final String f_POOL_ID = "pool_id";
-	public static final String f_APPROVED = "approved";
-	public static final String f_STATUS_ID_FK = "status_id_fk";
-	public static final List<String> f_PHENOTYPES_COLUMNS;
+	public static final String F_ID = "order_id";
+	public static final String F_SAMPLE_ID = "sample_id";
+	public static final String F_FAMILY_ID = "family_id";
+	public static final String F_FATHER_ID = "father_id";
+	public static final String F_MOTHER_ID = "mother_id";
+	public static final String F_SEX = "sex";
+	public static final String F_AFFECTION = "affection";
+	public static final String F_CATEGORY = "category";
+	public static final String F_DISEASE = "disease";
+	public static final String F_POPULATION = "population";
+	public static final String F_AGE = "age";
+	public static final String F_FILTER = "filter";
+	public static final String F_POOL_ID = "pool_id";
+	public static final String F_APPROVED = "approved";
+	public static final String F_STATUS_ID_FK = "status_id_fk";
+	public static final List<String> F_PHENOTYPES_COLUMNS;
 	static {
 		final ArrayList<String> tmpPhenotypesColumns = new ArrayList<String>();
-		tmpPhenotypesColumns.add(f_AFFECTION);
-		tmpPhenotypesColumns.add(f_AGE);
-		tmpPhenotypesColumns.add(f_CATEGORY);
-		tmpPhenotypesColumns.add(f_DISEASE);
-		tmpPhenotypesColumns.add(f_FAMILY_ID);
-		tmpPhenotypesColumns.add(f_FATHER_ID);
-		tmpPhenotypesColumns.add(f_MOTHER_ID);
-		tmpPhenotypesColumns.add(f_POPULATION);
-		tmpPhenotypesColumns.add(f_SEX);
+		tmpPhenotypesColumns.add(F_AFFECTION);
+		tmpPhenotypesColumns.add(F_AGE);
+		tmpPhenotypesColumns.add(F_CATEGORY);
+		tmpPhenotypesColumns.add(F_DISEASE);
+		tmpPhenotypesColumns.add(F_FAMILY_ID);
+		tmpPhenotypesColumns.add(F_FATHER_ID);
+		tmpPhenotypesColumns.add(F_MOTHER_ID);
+		tmpPhenotypesColumns.add(F_POPULATION);
+		tmpPhenotypesColumns.add(F_SEX);
 		tmpPhenotypesColumns.trimToSize();
-		f_PHENOTYPES_COLUMNS = Collections.unmodifiableList(tmpPhenotypesColumns);
+		F_PHENOTYPES_COLUMNS = Collections.unmodifiableList(tmpPhenotypesColumns);
 	}
 
 	public static Object parseFromField(String fieldName, String value) {
 
-		if (fieldName.equals(DBSamplesConstants.f_SAMPLE_ID)) {
+		if (fieldName.equals(DBSamplesConstants.F_SAMPLE_ID)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(DBSamplesConstants.f_FAMILY_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_FAMILY_ID)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(DBSamplesConstants.f_SEX)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_SEX)) {
 			return Sex.parse(value);
-		} else if (fieldName.equals(DBSamplesConstants.f_AFFECTION)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_AFFECTION)) {
 			return Affection.parse(value);
-		} else if (fieldName.equals(DBSamplesConstants.f_CATEGORY)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_CATEGORY)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(DBSamplesConstants.f_DISEASE)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_DISEASE)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(DBSamplesConstants.f_POPULATION)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_POPULATION)) {
 			return value.toCharArray();
-		} else if (fieldName.equals(DBSamplesConstants.f_AGE)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_AGE)) {
 			return Integer.parseInt(value);
 		} else {
 			throw new IllegalArgumentException("Can not parse to type of sample field \"" + fieldName + "\"");

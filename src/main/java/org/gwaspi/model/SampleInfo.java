@@ -788,40 +788,40 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	/**
 	 * @deprecated
-	 * @param fieldName see org.gwaspi.constants.cDBSamples#f_*
+	 * @param fieldName see org.gwaspi.constants.cDBSamples#F_*
 	 * @return String, Integer, Boolean or null
 	 */
 	public Object getField(String fieldName) {
 
-		if (fieldName.equals(DBSamplesConstants.f_ID)) {
+		if (fieldName.equals(DBSamplesConstants.F_ID)) {
 			return getOrderId();
-		} else if (fieldName.equals(DBSamplesConstants.f_SAMPLE_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_SAMPLE_ID)) {
 			return getSampleId();
-		} else if (fieldName.equals(DBSamplesConstants.f_FAMILY_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_FAMILY_ID)) {
 			return getFamilyId();
-		} else if (fieldName.equals(DBSamplesConstants.f_FATHER_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_FATHER_ID)) {
 			return getFatherId();
-		} else if (fieldName.equals(DBSamplesConstants.f_MOTHER_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_MOTHER_ID)) {
 			return getMotherId();
-		} else if (fieldName.equals(DBSamplesConstants.f_SEX)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_SEX)) {
 			return getSexStr();
-		} else if (fieldName.equals(DBSamplesConstants.f_AFFECTION)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_AFFECTION)) {
 			return getAffectionStr();
-		} else if (fieldName.equals(DBSamplesConstants.f_CATEGORY)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_CATEGORY)) {
 			return getCategory();
-		} else if (fieldName.equals(DBSamplesConstants.f_DISEASE)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_DISEASE)) {
 			return getDisease();
-		} else if (fieldName.equals(DBSamplesConstants.f_POPULATION)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_POPULATION)) {
 			return getPopulation();
-		} else if (fieldName.equals(DBSamplesConstants.f_AGE)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_AGE)) {
 			return getAge();
-		} else if (fieldName.equals(DBSamplesConstants.f_FILTER)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_FILTER)) {
 			return getFilter();
-		} else if (fieldName.equals(DBSamplesConstants.f_POOL_ID)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_POOL_ID)) {
 			return getStudyId();
-		} else if (fieldName.equals(DBSamplesConstants.f_APPROVED)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_APPROVED)) {
 			return getApproved();
-		} else if (fieldName.equals(DBSamplesConstants.f_STATUS_ID_FK)) {
+		} else if (fieldName.equals(DBSamplesConstants.F_STATUS_ID_FK)) {
 			return getStatus();
 		} else {
 			return null;

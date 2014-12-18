@@ -74,7 +74,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 		if (studyExists) {
 			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
-					dataSetKey, format, DBSamplesConstants.f_AFFECTION);
+					dataSetKey, format, DBSamplesConstants.F_AFFECTION);
 			final CommonRunnable exportTask = new Threaded_ExportMatrix(matrixExporterParams);
 			MultiOperations.queueTask(exportTask);
 			return true;

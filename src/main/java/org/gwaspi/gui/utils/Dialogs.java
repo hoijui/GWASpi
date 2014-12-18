@@ -195,7 +195,7 @@ public class Dialogs {
 	}
 
 	public static String showPhenotypeColumnsSelectCombo() {
-		final List<String> phenotype = DBSamplesConstants.f_PHENOTYPES_COLUMNS;
+		final List<String> phenotype = DBSamplesConstants.F_PHENOTYPES_COLUMNS;
 
 		String expPhenotype = (String) JOptionPane.showInputDialog(
 				null,
