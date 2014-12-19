@@ -307,27 +307,24 @@ public class NetCdfMarkerCensusOperationDataSet
 			netCdfCensusAlls.setInt(indexObj.set(index, 2), censusAll.getaa());
 			netCdfCensusAlls.setInt(indexObj.set(index, 3), censusAll.getMissingCount());
 
-			{
-				final Census census = entry.getCensus().getCategoryCensus().get(Category.CASE);
-				indexObj = netCdfCensusCase.getIndex().set(index);
-				netCdfCensusCase.setInt(indexObj.set(index, 0), census.getAA());
-				netCdfCensusCase.setInt(indexObj.set(index, 1), census.getAa());
-				netCdfCensusCase.setInt(indexObj.set(index, 2), census.getaa());
-			}
-			{
-				final Census census = entry.getCensus().getCategoryCensus().get(Category.CONTROL);
-				indexObj = netCdfCensusCtrl.getIndex().set(index);
-				netCdfCensusCtrl.setInt(indexObj.set(index, 0), census.getAA());
-				netCdfCensusCtrl.setInt(indexObj.set(index, 1), census.getAa());
-				netCdfCensusCtrl.setInt(indexObj.set(index, 2), census.getaa());
-			}
-			{
-				final Census census = entry.getCensus().getCategoryCensus().get(Category.ALTERNATE);
-				indexObj = netCdfCensusAlt.getIndex().set(index);
-				netCdfCensusAlt.setInt(indexObj.set(index, 0), census.getAA());
-				netCdfCensusAlt.setInt(indexObj.set(index, 1), census.getAa());
-				netCdfCensusAlt.setInt(indexObj.set(index, 2), census.getaa());
-			}
+			final Census censusCase = entry.getCensus().getCategoryCensus().get(Category.CASE);
+			indexObj = netCdfCensusCase.getIndex().set(index);
+			netCdfCensusCase.setInt(indexObj.set(index, 0), censusCase.getAA());
+			netCdfCensusCase.setInt(indexObj.set(index, 1), censusCase.getAa());
+			netCdfCensusCase.setInt(indexObj.set(index, 2), censusCase.getaa());
+
+			final Census censusCtrl = entry.getCensus().getCategoryCensus().get(Category.CONTROL);
+			indexObj = netCdfCensusCtrl.getIndex().set(index);
+			netCdfCensusCtrl.setInt(indexObj.set(index, 0), censusCtrl.getAA());
+			netCdfCensusCtrl.setInt(indexObj.set(index, 1), censusCtrl.getAa());
+			netCdfCensusCtrl.setInt(indexObj.set(index, 2), censusCtrl.getaa());
+
+			final Census censusAlt = entry.getCensus().getCategoryCensus().get(Category.ALTERNATE);
+			indexObj = netCdfCensusAlt.getIndex().set(index);
+			netCdfCensusAlt.setInt(indexObj.set(index, 0), censusAlt.getAA());
+			netCdfCensusAlt.setInt(indexObj.set(index, 1), censusAlt.getAa());
+			netCdfCensusAlt.setInt(indexObj.set(index, 2), censusAlt.getaa());
+
 			index++;
 		}
 		try {

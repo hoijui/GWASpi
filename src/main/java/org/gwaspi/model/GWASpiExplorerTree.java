@@ -256,25 +256,25 @@ public class GWASpiExplorerTree {
 			try {
 				JPanel newContent = null;
 				switch (currentElementInfo.getNodeType()) {
-					case STUDY_MANAGEMENT: {
+					case STUDY_MANAGEMENT:
 						newContent = new StudyManagementPanel();
-					} break;
-					case STUDY: {
+						break;
+					case STUDY:
 						newContent = new CurrentStudyPanel((StudyKey) currentElementInfo.getContentKey());
-					} break;
-					case SAMPLE_INFO: {
+						break;
+					case SAMPLE_INFO:
 						newContent = new Report_SampleInfoPanel((StudyKey) parentElementInfo.getContentKey());
-					} break;
-					case MATRIX: {
+						break;
+					case MATRIX:
 						tree.expandPath(treePath);
 						newContent = new CurrentMatrixPanel((MatrixKey) currentElementInfo.getContentKey());
-					} break;
-					case OPERATION: {
+						break;
+					case OPERATION:
 						tree.expandPath(treePath);
 						final OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
 						final OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
 						switch (currentOP.getType()) {
-							case HARDY_WEINBERG: {
+							case HARDY_WEINBERG:
 								// Display HW Report
 								List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
 								if (!reportsList.isEmpty()) {
@@ -282,24 +282,24 @@ public class GWASpiExplorerTree {
 									String reportFile = hwReport.getFileName();
 									newContent = new Report_HardyWeinbergSummary(hwReport.getParentOperationKey(), reportFile);
 								}
-							} break;
-							case ALLELICTEST: {
+								break;
+							case ALLELICTEST:
 								// Display Association Report
 								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
-							} break;
-							case GENOTYPICTEST: {
+								break;
+							case GENOTYPICTEST:
 								// Display Association Report
 								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
-							} break;
-							case TRENDTEST: {
+								break;
+							case TRENDTEST:
 								// Display Trend Test Report
 								newContent = new Report_AnalysisPanel(currentOPKey.getParentMatrixKey(), currentOPKey, null);
-							} break;
-							case MARKER_QA: {
+								break;
+							case MARKER_QA:
 								// Display MarkerQA panel
 								newContent = new MatrixMarkerQAPanel(new MatrixKey(currentOP.getStudyKey(), currentOP.getParentMatrixId()), currentOP.getId());
-							} break;
-							case SAMPLE_QA: {
+								break;
+							case SAMPLE_QA:
 								// Display SampleQA Report
 //								final List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
 //								if (reportsList.isEmpty()) {
@@ -313,55 +313,52 @@ public class GWASpiExplorerTree {
 								emptyPanel.setLayout(new FlowLayout());
 								emptyPanel.add(new JLabel("Please select the report instead")); // HACK We do this, because we do not want to show the above (Report_QASamplesSummary), because it is already shown when selecting that report in the tree directly
 								newContent = emptyPanel;
-							} break;
-							default: {
+								break;
+							default:
 								newContent = new DataSetAnalysePanel(new DataSetKey(currentOPKey)); // XXX this does not make much sense, does it?
-							}
 						}
-					} break;
-					case REPORT: {
+						break;
+					case REPORT:
 						// Display report summary
 						tree.expandPath(treePath);
 						final Report rp = ReportsList.getReport((ReportKey) currentElementInfo.getContentKey());
 						final String reportFile = rp.getFileName();
 						switch (rp.getReportType()) {
-							case SAMPLE_HTZYPLOT: {
+							case SAMPLE_HTZYPLOT:
 								newContent = new SampleQAHetzygPlotZoom(rp.getParentOperationKey());
-							} break;
-							case ALLELICTEST: {
+								break;
+							case ALLELICTEST:
 								newContent = new Report_AnalysisAllelicTestImpl(rp.getParentOperationKey(), reportFile, null);
-							} break;
-							case GENOTYPICTEST: {
+								break;
+							case GENOTYPICTEST:
 								newContent = new Report_AnalysisGenotypicTestImpl(rp.getParentOperationKey(), reportFile, null);
-							} break;
-							case TRENDTEST: {
+								break;
+							case TRENDTEST:
 								newContent = new Report_AnalysisTrendTestImpl(rp.getParentOperationKey(), reportFile, null);
-							} break;
-							case QQPLOT: {
+								break;
+							case QQPLOT:
 								newContent = new ChartDefaultDisplay(reportFile, rp.getParentOperationKey());
-							} break;
-							case MANHATTANPLOT: {
+								break;
+							case MANHATTANPLOT:
 								newContent = new ManhattanChartDisplay(reportFile, rp.getParentOperationKey());
-							} break;
-							case MARKER_QA: {
+								break;
+							case MARKER_QA:
 								newContent = new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationKey());
-							} break;
-							case SAMPLE_QA: {
+								break;
+							case SAMPLE_QA:
 								newContent = new Report_QASamplesSummary(rp.getParentOperationKey(), reportFile);
-							} break;
-							case HARDY_WEINBERG: {
+								break;
+							case HARDY_WEINBERG:
 								newContent = new Report_HardyWeinbergSummary(rp.getParentOperationKey(), reportFile);
-							} break;
-							default: {
+								break;
+							default:
 								log.warn("Not directly supported report type: " + rp.getReportType().name() + " - showing generic report info");
 								newContent = new Report_AnalysisPanel(rp.getParentMatrixKey(), rp.getParentOperationKey(), null);
 //								newContent = newErrorContent("Unsupported report type: " + rp.getReportType().name());
-							}
 						}
-					} break;
-					default: {
+						break;
+					default:
 						newContent = new IntroPanel();
-					}
 				}
 				if (newContent == null) {
 					newContent = newErrorContent("No idea what I should show!");

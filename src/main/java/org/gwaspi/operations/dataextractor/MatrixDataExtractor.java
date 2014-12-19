@@ -328,18 +328,14 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		final List<Integer> pickedMarkersOrigIndices;
 		dataSetDestination.startLoadingMarkerMetadatas(true);
 		switch (markerPickCase) {
-			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA: {
-				// Pick by netCDF field value and criteria
+			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA:
+			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA:
+				final boolean include = (markerPickCase == SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA);
+				// Pick/Exclude by netCDF field value and criteria
 				NetCdfVariableMarkerValuePicker variableMarkerValuePicker
-						= new NetCdfVariableMarkerValuePicker(markerCriteria, markerPickerVar, true);
+						= new NetCdfVariableMarkerValuePicker(markerCriteria, markerPickerVar, include);
 				pickedMarkersOrigIndices = variableMarkerValuePicker.pick(dataSetDestination, dataSetSource);
-			} break;
-			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA: {
-				// Exclude by netCDF field value and criteria
-				NetCdfVariableMarkerValuePicker variableMarkerValuePicker
-						= new NetCdfVariableMarkerValuePicker(markerCriteria, markerPickerVar, false);
-				pickedMarkersOrigIndices = variableMarkerValuePicker.pick(dataSetDestination, dataSetSource);
-			} break;
+				break;
 			case MARKERS_INCLUDE_BY_ID:
 				pickedMarkersOrigIndices = pickValidMarkerSetItemsByKey(dataSetDestination, dataSetSource, (Set<MarkerKey>) markerCriteria, true);
 				break;
