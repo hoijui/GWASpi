@@ -295,7 +295,7 @@ public class Report_QAMarkersSummary extends JPanel {
 			row[3] = position;
 			row[4] = minAllele;
 			row[5] = majAllele;
-//			row[6] = missingnessOrMismatch; // FIXME XXX this was not here before, why not do this?
+			row[6] = missingnessOrMismatch;
 
 			return row;
 		}
