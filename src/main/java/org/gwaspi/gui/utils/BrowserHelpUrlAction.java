@@ -31,7 +31,7 @@ public class BrowserHelpUrlAction extends AbstractAction {
 	private static final Logger log
 			= LoggerFactory.getLogger(BrowserHelpUrlAction.class);
 
-	private String helpUrlPostfix;
+	private final String helpUrlPostfix;
 
 	public BrowserHelpUrlAction(String helpUrlPostfix) {
 
