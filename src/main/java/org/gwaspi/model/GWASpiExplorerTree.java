@@ -343,7 +343,7 @@ public class GWASpiExplorerTree {
 								newContent = new ManhattanChartDisplay(reportFile, rp.getParentOperationKey());
 								break;
 							case MARKER_QA:
-								newContent = new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationKey());
+								newContent = new Report_QAMarkersSummary(rp.getParentOperationKey(), reportFile);
 								break;
 							case SAMPLE_QA:
 								newContent = new Report_QASamplesSummary(rp.getParentOperationKey(), reportFile);

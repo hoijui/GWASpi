@@ -56,7 +56,6 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +80,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QAMarkersSummary(final StudyKey studyKey, final String qaFileName, OperationKey operationKey) throws IOException {
+	public Report_QAMarkersSummary(final OperationKey operationKey, final String qaFileName) {
 
 		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
@@ -98,7 +97,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(studyKey);
+			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -221,8 +220,6 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
 
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, qaFileName, tbl_ReportTable, txt_NRows));
-
 		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 		txt_NRows.addKeyListener(new KeyAdapter() {
@@ -235,6 +232,11 @@ public class Report_QAMarkersSummary extends JPanel {
 			}
 		});
 		btn_Get.setAction(loadReportAction);
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(
+				operationKey.getParentMatrixKey().getStudyKey(),
+				qaFileName,
+				tbl_ReportTable,
+				txt_NRows));
 
 		loadReportAction.actionPerformed(null);
 	}
