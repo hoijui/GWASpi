@@ -27,7 +27,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.GroupLayout;
@@ -84,8 +86,8 @@ public class Report_QASamplesSummary extends JPanel {
 	private final JButton btn_Back;
 	private final JButton btn_Help;
 	private final JPanel pnl_Footer;
-	private final JLabel lbl_suffix1;
 	private final JPanel pnl_Summary;
+	private final JLabel lbl_suffix1;
 	private final JScrollPane scrl_ReportTable;
 	private final JTable tbl_ReportTable;
 	private final JFormattedTextField txt_NRows;
@@ -106,6 +108,7 @@ public class Report_QASamplesSummary extends JPanel {
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
+		txt_NRows.setValue(100);
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -211,24 +214,25 @@ public class Report_QASamplesSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
+		tbl_ReportTable.setModel(new DefaultTableModel(
+				new Object[][] {
+					{null, null, null, "Go!"}
+				},
+				new String[] {"", "", "", ""}));
 
-		txt_NRows.setText("100");
+		final Action loadReportAction = new LoadReportAction(
+				reportFile, tbl_ReportTable, txt_NRows);
+
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
+				final int key = e.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
 					loadReportAction.actionPerformed(null);
 				}
 			}
 		});
 		btn_Get.setAction(loadReportAction);
-		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
-					{null, null, null, "Go!"}
-				},
-				new String[]{"", "", "", ""}));
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(
 				operationKey.getParentMatrixKey().getStudyKey(),
 				qaFileName,
@@ -245,13 +249,55 @@ public class Report_QASamplesSummary extends JPanel {
 		private final File reportFile;
 		private final JTable reportTable;
 		private final JFormattedTextField nRows;
+		private final String[] columns;
 
-		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
+		private LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String[] columns) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
+			this.columns = columns;
 			putValue(NAME, Text.All.get);
+		}
+
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
+			this(reportFile, reportTable, nRows, COLUMNS);
+		}
+
+		private Object[] parseReportFileRow(final String[] cVals) {
+
+			final Object[] row = new Object[columns.length];
+
+			String familyId = cVals[0];
+			String sampleId = cVals[1];
+			String fatherId = cVals[2];
+			String motherId = cVals[3];
+			String sex = cVals[4];
+			String affection = cVals[5];
+			String age = cVals[6];
+			String category = cVals[7];
+			String disease = cVals[8];
+			String population = cVals[9];
+			Double missRat = cVals[10] != null ? Double.parseDouble(cVals[10]) : Double.NaN;
+			Double hetzyRat = Double.NaN;
+			if (cVals.length > 11) {
+				hetzyRat = cVals[11] != null ? Double.parseDouble(cVals[11]) : Double.NaN;
+			}
+
+			row[0] = familyId;
+			row[1] = sampleId;
+			row[2] = fatherId;
+			row[3] = motherId;
+			row[4] = sex;
+			row[5] = affection;
+			row[6] = age;
+			row[7] = category;
+			row[8] = disease;
+			row[9] = population;
+			row[10] = missRat;
+			row[11] = hetzyRat;
+
+			return row;
 		}
 
 		@Override
@@ -261,56 +307,33 @@ public class Report_QASamplesSummary extends JPanel {
 			BufferedReader inputBufferReader = null;
 			try {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
-					final int getRowsNb = Integer.parseInt(nRows.getText());
+					final int fetchedRowsNb = Integer.parseInt(nRows.getText());
 
 					inputFileReader = new FileReader(reportFile);
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					Object[][] tableMatrix = new Object[getRowsNb][COLUMNS.length];
+					final List<Object[]> tableRows = new ArrayList<Object[]>();
 					// read but ignore the header
 					/*String header = */inputBufferReader.readLine();
 					int rowIndex = 0;
-					while (rowIndex < getRowsNb) {
-						String l = inputBufferReader.readLine();
-						if (l == null) {
+					while (rowIndex < fetchedRowsNb) {
+						String line = inputBufferReader.readLine();
+						if (line == null) {
 							break;
 						}
-						String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
-
-						String familyId = cVals[0];
-						String sampleId = cVals[1];
-						String fatherId = cVals[2];
-						String motherId = cVals[3];
-						String sex = cVals[4];
-						String affection = cVals[5];
-						String age = cVals[6];
-						String category = cVals[7];
-						String disease = cVals[8];
-						String population = cVals[9];
-						Double missRat = cVals[10] != null ? Double.parseDouble(cVals[10]) : Double.NaN;
-						Double hetzyRat = Double.NaN;
-						if (cVals.length > 11) {
-							hetzyRat = cVals[11] != null ? Double.parseDouble(cVals[11]) : Double.NaN;
-						}
-
-						tableMatrix[rowIndex][0] = familyId;
-						tableMatrix[rowIndex][1] = sampleId;
-						tableMatrix[rowIndex][2] = fatherId;
-						tableMatrix[rowIndex][3] = motherId;
-						tableMatrix[rowIndex][4] = sex;
-						tableMatrix[rowIndex][5] = affection;
-						tableMatrix[rowIndex][6] = age;
-						tableMatrix[rowIndex][7] = category;
-						tableMatrix[rowIndex][8] = disease;
-						tableMatrix[rowIndex][9] = population;
-						tableMatrix[rowIndex][10] = missRat;
-						tableMatrix[rowIndex][11] = hetzyRat;
-
+						String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+						final Object[] row = parseReportFileRow(cVals);
+						tableRows.add(row);
 						rowIndex++;
 					}
 
-					TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
+					final Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
+					for (int i = 0; i < tableRows.size(); i++) {
+						tableMatrix[i] = tableRows.get(i);
+					}
+
+					TableModel model = new DefaultTableModel(tableMatrix, columns);
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
@@ -330,7 +353,7 @@ public class Report_QASamplesSummary extends JPanel {
 										Integer i1 = Integer.parseInt(o1.toString());
 										Integer i2 = Integer.parseInt(o2.toString());
 										return i1.compareTo(i2);
-									} catch (Exception ex1) {
+									} catch (NumberFormatException ex1) {
 										log.warn(null, ex1);
 										return o1.toString().compareTo(o2.toString());
 									}
@@ -354,6 +377,8 @@ public class Report_QASamplesSummary extends JPanel {
 					//</editor-fold>
 				}
 			} catch (IOException ex) {
+				log.error(null, ex);
+			} catch (Exception ex) {
 				log.error(null, ex);
 			} finally {
 				try {

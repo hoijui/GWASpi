@@ -67,7 +67,6 @@ public class Report_QAMarkersSummary extends JPanel {
 	// Variables declaration - do not modify
 	private final File reportFile;
 	private final OperationKey operationKey;
-	private final String qaValue;
 	private final JButton btn_Get;
 	private final JButton btn_Save;
 	private final JButton btn_Back;
@@ -87,13 +86,10 @@ public class Report_QAMarkersSummary extends JPanel {
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		final boolean missingness = reportName.contains("Missingness");
 
-		String tmpQaValue = "Mismatching";
 		String nRowsSuffix = "Markers";
 		if (missingness) {
-			tmpQaValue = "Missing Ratio";
 			nRowsSuffix = "Markers by most significant Missing Ratios";
 		}
-		this.qaValue = tmpQaValue;
 
 		String reportPath = "";
 		try {
@@ -105,6 +101,8 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
+		txt_NRows.setInputVerifier(new IntegerInputVerifier());
+		txt_NRows.setValue(100);
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -132,7 +130,8 @@ public class Report_QAMarkersSummary extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Reports.report + ": " + reportName)); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
+				Text.Reports.report + ": " + reportName)); // NOI18N
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
@@ -209,19 +208,15 @@ public class Report_QAMarkersSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		txt_NRows.setInputVerifier(new IntegerInputVerifier());
-		txt_NRows.setValue(Integer.valueOf(100));
-
 		tbl_ReportTable.setModel(new DefaultTableModel(
 				new Object[][] {
 					{null, null, null, "Go!"}
 				},
 				new String[] {"", "", "", ""}));
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
+		final Action loadReportAction = new LoadReportAction(
+				reportFile, tbl_ReportTable, txt_NRows, missingness);
 
-		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -237,6 +232,8 @@ public class Report_QAMarkersSummary extends JPanel {
 				qaFileName,
 				tbl_ReportTable,
 				txt_NRows));
+		btn_Back.setAction(new BackAction(new DataSetKey(this.operationKey)));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
 		loadReportAction.actionPerformed(null);
 	}
@@ -247,21 +244,65 @@ public class Report_QAMarkersSummary extends JPanel {
 		private final JTable reportTable;
 		private final JFormattedTextField nRows;
 		private final String[] columns;
+		private boolean missingness;
 
-		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String qaValue) {
+		private LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String[] columns) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
-			this.columns = new String[] {
+			this.columns = columns;
+			putValue(NAME, Text.All.get);
+		}
+
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, boolean missingness) {
+			this(reportFile, reportTable, nRows, new String[] {
 					Text.Reports.markerId,
 					Text.Reports.rsId,
 					Text.Reports.chr,
 					Text.Reports.pos,
 					Text.Reports.minAallele,
 					Text.Reports.majAallele,
-					qaValue};
-			putValue(NAME, Text.All.get);
+					missingness ? "Missing Ratio" : "Mismatching"});
+
+			this.missingness = missingness;
+		}
+
+		private Object[] parseReportFileRow(final String[] cVals) {
+
+			final Object[] row = new Object[columns.length];
+
+			String markerId = cVals[0];
+			String rsId = cVals[1];
+			String chr = cVals[2];
+			int position = Integer.parseInt(cVals[3]);
+			String minAllele = cVals[4];
+			String majAllele = cVals[5];
+			final Object missingnessOrMismatch;
+			if (missingness) {
+				Double missRat = cVals[6] == null ? Double.NaN : Double.parseDouble(cVals[6]);
+				Double missRat_f;
+				try {
+					missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
+				} catch (NumberFormatException ex) {
+					missRat_f = missRat;
+					log.warn(null, ex);
+				}
+				missingnessOrMismatch = missRat_f;
+			} else {
+				Boolean mismatchState = cVals[6] == null ? null : Boolean.valueOf(cVals[6]);
+				missingnessOrMismatch = mismatchState;
+			}
+
+			row[0] = markerId;
+			row[1] = rsId;
+			row[2] = chr;
+			row[3] = position;
+			row[4] = minAllele;
+			row[5] = majAllele;
+//			row[6] = missingnessOrMismatch; // FIXME XXX this was not here before, why not do this?
+
+			return row;
 		}
 
 		@Override
@@ -271,57 +312,28 @@ public class Report_QAMarkersSummary extends JPanel {
 			BufferedReader inputBufferReader = null;
 			try {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
-					int getRowsNb = Integer.parseInt(nRows.getText());
+					final int fetchedRowsNb = Integer.parseInt(nRows.getText());
 
 					inputFileReader = new FileReader(reportFile);
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRows = new ArrayList<Object[]>();
+					final List<Object[]> tableRows = new ArrayList<Object[]>();
 					// read but ignore the header
 					/*String header = */inputBufferReader.readLine();
-					int count = 0;
-					while (count < getRowsNb) {
-						String l = inputBufferReader.readLine();
-						if (l == null) {
+					int rowIndex = 0;
+					while (rowIndex < fetchedRowsNb) {
+						String line = inputBufferReader.readLine();
+						if (line == null) {
 							break;
 						}
-						String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
-						Object[] row = new Object[columns.length];
-
-						String markerId = cVals[0];
-						String rsId = cVals[1];
-						String chr = cVals[2];
-						int position = Integer.parseInt(cVals[3]);
-						String minAllele = cVals[4];
-						String majAllele = cVals[5];
-						Double missRat = cVals[6] != null ? Double.parseDouble(cVals[6]) : Double.NaN;
-
-						row[0] = markerId;
-						row[1] = rsId;
-						row[2] = chr;
-						row[3] = position;
-						row[4] = minAllele;
-						row[5] = majAllele;
-
-//						if (!cGlobal.OSNAME.contains("Windows")) {
-						Double missRat_f;
-						try {
-							missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
-						} catch (NumberFormatException ex) {
-							missRat_f = missRat;
-							log.warn(null, ex);
-						}
-						row[6] = missRat_f;
-//						} else {
-//							row[6] = dfRound.format(missRat);
-//						}
-
+						String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+						final Object[] row = parseReportFileRow(cVals);
 						tableRows.add(row);
-						count++;
+						rowIndex++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
+					final Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
 					for (int i = 0; i < tableRows.size(); i++) {
 						tableMatrix[i] = tableRows.get(i);
 					}
