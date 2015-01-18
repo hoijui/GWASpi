@@ -27,7 +27,6 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import javax.swing.AbstractAction;
@@ -35,32 +34,27 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.ImportConstants;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +89,7 @@ public class Report_QASamplesSummary extends JPanel {
 	private final JPanel pnl_Summary;
 	private final JScrollPane scrl_ReportTable;
 	private final JTable tbl_ReportTable;
-	private final JTextField txt_NRows;
+	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
 	public Report_QASamplesSummary(final OperationKey operationKey, final String qaFileName) {
@@ -111,7 +105,7 @@ public class Report_QASamplesSummary extends JPanel {
 		reportFile = new File(reportPath + qaFileName);
 
 		pnl_Summary = new JPanel();
-		txt_NRows = new JTextField();
+		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
@@ -144,8 +138,8 @@ public class Report_QASamplesSummary extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		txt_NRows.setHorizontalAlignment(JTextField.TRAILING);
 
+		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText("Samples by most significant Missing Ratios");
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT1">
@@ -236,7 +230,11 @@ public class Report_QASamplesSummary extends JPanel {
 					{null, null, null, "Go!"}
 				},
 				new String[]{"", "", "", ""}));
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(
+				operationKey.getParentMatrixKey().getStudyKey(),
+				qaFileName,
+				tbl_ReportTable,
+				txt_NRows));
 		btn_Back.setAction(new BackAction(new DataSetKey(this.operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
@@ -247,9 +245,9 @@ public class Report_QASamplesSummary extends JPanel {
 
 		private final File reportFile;
 		private final JTable reportTable;
-		private final JTextField nRows;
+		private final JFormattedTextField nRows;
 
-		LoadReportAction(File reportFile, JTable reportTable, JTextField nRows) {
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
@@ -368,118 +366,6 @@ public class Report_QASamplesSummary extends JPanel {
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
-			}
-		}
-	}
-
-	private static class SaveAsAction extends AbstractAction {
-
-		private final StudyKey studyKey;
-		private final String chartPath;
-		private final JTable reportTable;
-		private final JTextField nRows;
-
-		SaveAsAction(StudyKey studyKey, String chartPath, JTable reportTable, JTextField nRows) {
-
-			this.studyKey = studyKey;
-			this.chartPath = chartPath;
-			this.reportTable = reportTable;
-			this.nRows = nRows;
-			putValue(NAME, Text.All.save);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			int decision = Dialogs.showOptionDialogue(Text.All.save, Text.Reports.selectSaveMode, Text.Reports.currentReportView, Text.Reports.completeReport, Text.All.cancel);
-
-			switch (decision) {
-				case JOptionPane.YES_OPTION:
-					actionSaveReportViewAs(nRows);
-					break;
-				case JOptionPane.NO_OPTION:
-					actionSaveCompleteReportAs(nRows);
-					break;
-				default: // JOptionPane.CANCEL_OPTION
-					break;
-			}
-		}
-
-		private void actionSaveReportViewAs(final Component dialogParent) {
-
-			FileWriter writer = null;
-			try {
-				final String newFileName = nRows.getText() + "rows_" + chartPath;
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + newFileName, dialogParent);
-				final File newFile = new File(newDir, newFileName);
-				writer = new FileWriter(newFile);
-
-				StringBuilder tableData = new StringBuilder();
-				// HEADER
-				for (int k = 0; k < reportTable.getColumnCount(); k++) {
-					tableData.append(reportTable.getColumnName(k));
-					if (k != reportTable.getColumnCount() - 1) {
-						tableData.append("\t");
-					}
-				}
-				tableData.append("\n");
-				writer.write(tableData.toString());
-
-				// TABLE CONTENT
-				for (int rowNb = 0; rowNb < reportTable.getModel().getRowCount(); rowNb++) {
-					tableData = new StringBuilder();
-
-					for (int colNb = 0; colNb < reportTable.getModel().getColumnCount(); colNb++) {
-						String curVal = (String) reportTable.getValueAt(rowNb, colNb);
-
-						if (curVal == null) {
-							curVal = "";
-						}
-
-						tableData.append(curVal);
-						if (colNb != reportTable.getModel().getColumnCount() - 1) {
-							tableData.append("\t");
-						}
-					}
-					tableData.append("\n");
-					writer.write(tableData.toString());
-				}
-
-				writer.flush();
-			} catch (NullPointerException ex) {
-				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
-			} catch (IOException ex) {
-				Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
-			} finally {
-				if (writer != null) {
-					try {
-						writer.close();
-					} catch (IOException ex) {
-						log.warn(null, ex);
-					}
-				}
-			}
-		}
-
-		private void actionSaveCompleteReportAs(final Component dialogParent) {
-			try {
-				final String reportPath = Study.constructReportsPath(studyKey);
-				final File origFile = new File(reportPath, chartPath);
-				final File newDir = Dialogs.selectDirectoryDialog(Config.PROPERTY_EXPORT_DIR, "Choose the new directory for " + chartPath, dialogParent);
-				final File newFile = new File(newDir, chartPath);
-				if (origFile.exists()) {
-					org.gwaspi.global.Utils.copyFile(origFile, newFile);
-				}
-			} catch (IOException ex) {
-				Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
-			} catch (NullPointerException ex) {
-				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
-			} catch (Exception ex) {
-				Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
 			}
 		}
 	}
