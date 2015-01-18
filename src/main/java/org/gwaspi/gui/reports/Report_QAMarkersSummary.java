@@ -56,6 +56,7 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
+import org.gwaspi.reports.OutputQAMarkers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,14 +257,8 @@ public class Report_QAMarkersSummary extends JPanel {
 		}
 
 		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, boolean missingness) {
-			this(reportFile, reportTable, nRows, new String[] {
-					Text.Reports.markerId,
-					Text.Reports.rsId,
-					Text.Reports.chr,
-					Text.Reports.pos,
-					Text.Reports.minAallele,
-					Text.Reports.majAallele,
-					missingness ? "Missing Ratio" : "Mismatching"});
+			this(reportFile, reportTable, nRows,
+					missingness ? OutputQAMarkers.COLUMNS_MISSING : OutputQAMarkers.COLUMNS_MISMATCH);
 
 			this.missingness = missingness;
 		}
