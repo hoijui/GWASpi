@@ -18,7 +18,6 @@
 package org.gwaspi.gui.reports;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -48,6 +46,7 @@ import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
@@ -134,10 +133,10 @@ public class Report_QASamplesSummary extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": Sample Info & Missing Ratios", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
+				Text.Reports.report + ": Sample Info & Missing Ratios")); // NOI18N
 
-		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
-
+		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText("Samples by most significant Missing Ratios");
