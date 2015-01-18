@@ -28,6 +28,7 @@ import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
@@ -67,12 +68,38 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 					false,
 					false);
 
+	public static final String[] COLUMNS_MISSING = createColumnHeaders(true);
+	public static final String[] COLUMNS_MISMATCH = createColumnHeaders(false);
+
 	private ProgressHandler operationPH;
 	private ProgressHandler creatingMissingnessTablePH;
 	private ProgressHandler creatingMismatchTablePH;
 
 	public OutputQAMarkers(QAMarkersOutputParams params) {
 		super(params);
+	}
+
+	private static String[] createColumnHeaders(final boolean missingness) {
+
+		return new String[] {
+				Text.Reports.markerId,
+				Text.Reports.rsId,
+				Text.Reports.chr,
+				Text.Reports.pos,
+				Text.Reports.minAallele,
+				Text.Reports.majAallele,
+				missingness ? Text.Reports.missRatio : Text.Reports.mismatchState};
+	}
+
+	private static String createReportHeaderLine(final String[] columnHeaders) {
+
+		final StringBuilder headerLine = new StringBuilder();
+		for (final String columnHeader : columnHeaders) {
+			headerLine.append(columnHeader).append('\t');
+		}
+		headerLine.deleteCharAt(headerLine.length() - 1);
+		headerLine.append('\n');
+		return headerLine.toString();
 	}
 
 	@Override
@@ -191,7 +218,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedMarkerOrigIndices, markersMetadatas);
 
 		// WRITE HEADER OF FILE
-		String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tMissing Ratio\n";
+		final String header = createReportHeaderLine(COLUMNS_MISSING);
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERS ID & RSID
@@ -291,7 +318,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(unsortedOrigIndices, markersMetadatas);
 
 		// WRITE HEADER OF FILE
-		String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tMismatching\n";
+		final String header = createReportHeaderLine(COLUMNS_MISMATCH);
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERSET RSID

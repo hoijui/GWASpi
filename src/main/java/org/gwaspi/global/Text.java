@@ -227,6 +227,7 @@ public class Text {
 		public static final String ORAAaa = "OR AA/aa";
 		public static final String ORAaaa = "OR Aa/aa";
 		public static final String missRatio = "Missing-Ratio";
+		public static final String mismatchState = "Mismatch-State";
 		public static final String genQA = "QA";
 		public static final String hwObsHetzy = "OBS_HETZY_";
 		public static final String hwExpHetzy = "EXP_HETZY_";
