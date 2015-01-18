@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -65,6 +66,20 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 					null,
 					false,
 					false);
+
+	public static final String[] COLUMNS = new String[] {
+			Text.Reports.familyId,
+			Text.Reports.sampleId,
+			Text.Reports.fatherId,
+			Text.Reports.motherId,
+			Text.Reports.sex,
+			Text.Reports.affection,
+			Text.Reports.age,
+			Text.Reports.category,
+			Text.Reports.disease,
+			Text.Reports.population,
+			Text.Reports.missRatio,
+			Text.Reports.smplHetzyRat};
 
 	private ProgressHandler operationPH;
 	private ProgressHandler creatingMissingnessTablePH;
@@ -186,7 +201,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		final FileWriter tempFW = new FileWriter(sampleMissOutFile);
 		final BufferedWriter tempBW = new BufferedWriter(tempFW);
 
-		final String header = "FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tAge\tCategory\tDisease\tPopulation\tMissing Ratio\n";
+		final String header = OutputQAMarkers.createReportHeaderLine(COLUMNS);
 		tempBW.append(header);
 
 		// GET SAMPLE INFO FROM DB

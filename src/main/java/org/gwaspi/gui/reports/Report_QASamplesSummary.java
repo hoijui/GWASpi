@@ -56,6 +56,7 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
+import org.gwaspi.reports.OutputQASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,20 +64,6 @@ public class Report_QASamplesSummary extends JPanel {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_QASamplesSummary.class);
-
-	private static final String[] COLUMNS = new String[] {
-			Text.Reports.familyId,
-			Text.Reports.sampleId,
-			Text.Reports.fatherId,
-			Text.Reports.motherId,
-			Text.Reports.sex,
-			Text.Reports.affection,
-			Text.Reports.age,
-			Text.Reports.category,
-			Text.Reports.disease,
-			Text.Reports.population,
-			Text.Reports.missRatio,
-			Text.Reports.smplHetzyRat};
 
 	// Variables declaration - do not modify
 	private final File reportFile;
@@ -261,7 +248,7 @@ public class Report_QASamplesSummary extends JPanel {
 		}
 
 		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
-			this(reportFile, reportTable, nRows, COLUMNS);
+			this(reportFile, reportTable, nRows, OutputQASamples.COLUMNS);
 		}
 
 		private Object[] parseReportFileRow(final String[] cVals) {

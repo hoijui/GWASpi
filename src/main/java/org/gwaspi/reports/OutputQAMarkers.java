@@ -91,7 +91,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				missingness ? Text.Reports.missRatio : Text.Reports.mismatchState};
 	}
 
-	private static String createReportHeaderLine(final String[] columnHeaders) {
+	static String createReportHeaderLine(final String[] columnHeaders) {
 
 		final StringBuilder headerLine = new StringBuilder();
 		for (final String columnHeader : columnHeaders) {
