@@ -488,11 +488,11 @@ public abstract class Report_Analysis extends JPanel {
 
 	public static class SaveAsAction extends AbstractAction {
 
-		private StudyKey studyKey;
-		private String reportFileName;
-		private JTable reportTable;
-		private JFormattedTextField nRows;
-		private List<Integer> colIndToSave;
+		private final StudyKey studyKey;
+		private final String reportFileName;
+		private final JTable reportTable;
+		private final JFormattedTextField nRows;
+		private final List<Integer> colIndToSave;
 
 		public SaveAsAction(StudyKey studyKey, String reportFileName, JTable reportTable, JFormattedTextField nRows, int trailingColsNotToSave) {
 
@@ -512,19 +512,19 @@ public abstract class Report_Analysis extends JPanel {
 			this(studyKey, reportFileName, reportTable, nRows, 0);
 		}
 
-		private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath, final Component dialogParent) {
+		private void actionSaveCompleteReportAs(final Component dialogParent) {
 			try {
-				String reportPath = Study.constructReportsPath(studyKey);
-				File origFile = new File(reportPath + chartPath);
-				File newDir = Dialogs.selectDirectoryDialog(
+				final String reportPath = Study.constructReportsPath(studyKey);
+				final File origFile = new File(reportPath, reportFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
-						"Choose a new directory for " + chartPath,
+						"Choose the new directory for " + reportFileName,
 						dialogParent);
 				if (newDir == null) {
 					// the user has not choosen a directory to save to
 					return;
 				}
-				File newFile = new File(newDir, chartPath);
+				final File newFile = new File(newDir, reportFileName);
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}
@@ -540,11 +540,11 @@ public abstract class Report_Analysis extends JPanel {
 			}
 		}
 
-		private void actionSaveReportViewAs(String chartPath, final Component dialogParent) {
+		private void actionSaveReportViewAs(final Component dialogParent) {
 
 			FileWriter writer = null;
 			try {
-				final String newFileName = nRows.getText() + "rows_" + chartPath;
+				final String newFileName = nRows.getText() + "rows_" + reportFileName;
 				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
 						"Choose the new directory for " + newFileName,
@@ -584,7 +584,6 @@ public abstract class Report_Analysis extends JPanel {
 				}
 
 				writer.flush();
-				writer.close();
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
@@ -608,10 +607,10 @@ public abstract class Report_Analysis extends JPanel {
 
 			switch (decision) {
 				case JOptionPane.YES_OPTION:
-					actionSaveReportViewAs(reportFileName, nRows);
+					actionSaveReportViewAs(nRows);
 					break;
 				case JOptionPane.NO_OPTION:
-					actionSaveCompleteReportAs(studyKey, reportFileName, nRows);
+					actionSaveCompleteReportAs(nRows);
 					break;
 				default: // JOptionPane.CANCEL_OPTION
 					break;
