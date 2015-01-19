@@ -131,7 +131,9 @@ public class ReportWriter {
 	{
 		boolean appendResult = false;
 
-		FileWriter outputFW = new FileWriter(reportPath + reportName);
+		final File reportFile = new File(reportPath, reportName);
+
+		FileWriter outputFW = new FileWriter(reportFile);
 		BufferedWriter outputBW = new BufferedWriter(outputFW);
 
 		final boolean withKey = (keyExtractor != null);
