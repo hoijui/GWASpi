@@ -19,15 +19,14 @@ package org.gwaspi.reports;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.global.Filter;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.model.DataSetSource;
@@ -183,37 +182,114 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		return operationPH;
 	}
 
-	private static void createSortedMarkerMissingnessReport(OperationKey markersQAopKey, String reportName) throws IOException {
+	private static <V> Map<Integer, V> createOrigIndicesMap(final DataSetSource dataSet, final List<V> values) throws IOException {
 
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
-		List<Double> missingRatios = qaMarkersOperationDataSet.getMissingRatio();
-		Map<Integer, Double> unsortedOrigIndexMissingRatios = new LinkedHashMap<Integer, Double>(missingRatios.size());
-		Iterator<Double> missingRatiosIt = missingRatios.iterator();
-		for (int origIndex = 0; origIndex < missingRatios.size(); origIndex++) {
-			unsortedOrigIndexMissingRatios.put(origIndex, missingRatiosIt.next());
+		final Map<Integer, V> origIndicesValues = new LinkedHashMap<Integer, V>(
+				values.size());
+		final Iterator<V> valuesIt = values.iterator();
+		for (final Integer origIndex : dataSet.getMarkersKeysSource().getIndices()) {
+			origIndicesValues.put(origIndex, valuesIt.next());
 		}
-		Map<Integer, Double> sortedOrigIndexMissingRatios = Utils.createMapSortedByValueDescending(unsortedOrigIndexMissingRatios);
-		unsortedOrigIndexMissingRatios.clear(); // "garbage collection"
 
-		// FILTER THE SORTED MAP
-		Iterator<Map.Entry<Integer, Double>> sortedOrigIndexMissingRatioIt = sortedOrigIndexMissingRatios.entrySet().iterator();
-		while (sortedOrigIndexMissingRatioIt.hasNext()) {
-			if (sortedOrigIndexMissingRatioIt.next().getValue() <= 0.0) {
-				sortedOrigIndexMissingRatioIt.remove();
+		return origIndicesValues;
+	}
+
+	private static <V> Map<Integer, V> createValueSortedMarkersOrigIndicesMap(final DataSetSource dataSet, final List<V> values) throws IOException {
+
+		final Map<Integer, V> unsortedOrigIndicesValues = createOrigIndicesMap(dataSet, values);
+		final Map<Integer, V> sortedOrigIndicesValues
+				= Utils.createMapSortedByValueDescending(unsortedOrigIndicesValues);
+
+		return sortedOrigIndicesValues;
+	}
+
+	/**
+	 * Removes all entries from the map where the value was not accepted by the filter.
+	 * @param <K>
+	 * @param <V>
+	 * @param map
+	 * @param filter
+	 * @throws IOException
+	 */
+	private static <K, V> void filterMap(final Map<K, V> map, final Filter<V> filter) throws IOException {
+
+		final Iterator<Map.Entry<K, V>> mapIt = map.entrySet().iterator();
+		while (mapIt.hasNext()) {
+			final V mismatching = mapIt.next().getValue();
+			if (!filter.accept(mismatching)) {
+				mapIt.remove();
 			}
 		}
-		Collection<Integer> sortedMarkerOrigIndices = sortedOrigIndexMissingRatios.keySet(); // XXX maybe put into a List? (cause it needs to be ordered anyway)
+	}
 
-		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
+	private static void createSortedMarkerMissingnessReport(OperationKey markersQAopKey, String reportName) throws IOException {
 
-		String sep = ExportConstants.SEPARATOR_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
-		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
-		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedMarkerOrigIndices, markersMetadatas);
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet)
+				OperationManager.generateOperationDataSet(markersQAopKey);
+		final List<Double> missingRatios = qaMarkersOperationDataSet.getMissingRatio();
+		final Map<Integer, Double> sortedOrigIndexMissingRatios
+				= createValueSortedMarkersOrigIndicesMap(qaMarkersOperationDataSet, missingRatios);
+
+		// FILTER THE SORTED MAP
+		filterMap(sortedOrigIndexMissingRatios, new Filter.DoubleGreaterThenFilter(0.0));
+		final Collection<Integer> sortedMarkerOrigIndices = sortedOrigIndexMissingRatios.keySet(); // XXX maybe put into a List? (cause it needs to be ordered anyway)
+		final Collection<Integer> orderedMarkerOrigIndices = sortedMarkerOrigIndices;
+		final String[] columns = COLUMNS_MISSING;
+		final Map<Integer, ?> orderedOrigIndexMissingnessRatioOrMismatchStates
+				= sortedOrigIndexMissingRatios;
+
+		createQAMarkerReport(
+				qaMarkersOperationDataSet,
+				orderedMarkerOrigIndices,
+				columns,
+				orderedOrigIndexMissingnessRatioOrMismatchStates,
+				markersQAopKey,
+				reportName);
+	}
+
+	private static void createMarkerMismatchReport(OperationKey markersQAopKey, String reportName) throws IOException {
+
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet)
+				OperationManager.generateOperationDataSet(markersQAopKey);
+		final List<Boolean> mismatchStates = qaMarkersOperationDataSet.getMismatchStates();
+		final Map<Integer, Boolean> unsortedOrigIndexMismatchStates
+				= createOrigIndicesMap(qaMarkersOperationDataSet, mismatchStates);
+
+		// FILTER THE UNSORTED MAP
+		filterMap(unsortedOrigIndexMismatchStates, new Filter.BooleanFilter());
+		final Collection<Integer> unsortedOrigIndices = unsortedOrigIndexMismatchStates.keySet();
+		final Collection<Integer> orderedMarkerOrigIndices = unsortedOrigIndices;
+		final String[] columns = COLUMNS_MISMATCH;
+		final Map<Integer, ?> orderedOrigIndexMissingnessRatioOrMismatchStates
+				= unsortedOrigIndexMismatchStates;
+
+		createQAMarkerReport(
+				qaMarkersOperationDataSet,
+				orderedMarkerOrigIndices,
+				columns,
+				orderedOrigIndexMissingnessRatioOrMismatchStates,
+				markersQAopKey,
+				reportName);
+	}
+
+	private static void createQAMarkerReport(
+			final QAMarkersOperationDataSet qaMarkersOperationDataSet,
+			final Collection<Integer> orderedMarkerOrigIndices, // XXX maybe put into a List? (cause it needs to be ordered anyway)
+			final String[] columns,
+			final Map<Integer, ?> orderedOrigIndexMissingnessRatioOrMismatchStates,
+			OperationKey markersQAopKey,
+			String reportName)
+			throws IOException
+	{
+		final DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
+
+		final OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
+		final MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
+		final List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, markersMetadatas);
 
 		// WRITE HEADER OF FILE
-		final String header = createReportHeaderLine(COLUMNS_MISSING);
-		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
+		final String header = createReportHeaderLine(columns);
+		final String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERS ID & RSID
 		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
@@ -226,74 +302,15 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
-		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
-		final List<String> sortedMarkerAlleles = new ArrayList<String>(sortedMarkerOrigIndices.size());
-		for (Integer origIndices : sortedMarkerOrigIndices) {
-			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
-			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
-			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
-			sortedMarkerAlleles.add(concatenatedValue);
-		}
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
+		final List<Byte> unsortedKnownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
+		final List<Byte> sortedKnownMinorAlleles = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, unsortedKnownMinorAlleles);
+		ReportWriter.appendColumnToReport(reportPath, reportName, sortedKnownMinorAlleles, null, new Extractor.ByteToStringExtractor());
 
-		// WRITE QA MISSINGNESS RATIO
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedOrigIndexMissingRatios, false, false);
-	}
+		final List<Byte> unsortedKnownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
+		final List<Byte> sortedKnownMajorAlleles = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, unsortedKnownMajorAlleles);
+		ReportWriter.appendColumnToReport(reportPath, reportName, sortedKnownMajorAlleles, null, new Extractor.ByteToStringExtractor());
 
-	private static void createMarkerMismatchReport(OperationKey markersQAopKey, String reportName) throws IOException {
-
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAopKey);
-		Collection<Boolean> mismatchStates = qaMarkersOperationDataSet.getMismatchStates();
-		Map<Integer, Boolean> unsortedOrigIndexMismatchStates = new LinkedHashMap<Integer, Boolean>(mismatchStates.size());
-		Iterator<Boolean> mismatchStatesIt = mismatchStates.iterator();
-		for (int origIndex = 0; origIndex < mismatchStates.size(); origIndex++) {
-			unsortedOrigIndexMismatchStates.put(origIndex, mismatchStatesIt.next());
-		}
-
-		// FILTER THE UNSORTED MAP
-		Iterator<Map.Entry<Integer, Boolean>> unsortedOrigIndexMismatchStatesIt = unsortedOrigIndexMismatchStates.entrySet().iterator();
-		while (unsortedOrigIndexMismatchStatesIt.hasNext()) {
-			Boolean mismatching = unsortedOrigIndexMismatchStatesIt.next().getValue();
-			if (!mismatching) {
-				unsortedOrigIndexMismatchStatesIt.remove();
-			}
-		}
-		Collection<Integer> unsortedOrigIndices = unsortedOrigIndexMismatchStates.keySet();
-
-		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
-
-		String sep = ExportConstants.SEPARATOR_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
-		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
-		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(unsortedOrigIndices, markersMetadatas);
-
-		// WRITE HEADER OF FILE
-		final String header = createReportHeaderLine(COLUMNS_MISMATCH);
-		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
-
-		// WRITE MARKERSET RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
-
-		// WRITE MARKERSET CHROMOSOME
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
-
-		// WRITE MARKERSET POS
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
-
-		// WRITE KNOWN ALLELES FROM QA
-		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
-		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
-		final List<String> sortedMarkerAlleles = new ArrayList<String>(unsortedOrigIndices.size());
-		for (Integer origIndices : unsortedOrigIndices) {
-			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
-			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
-			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
-			sortedMarkerAlleles.add(concatenatedValue);
-		}
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
-
-		// WRITE QA MISMATCH STATE
-		ReportWriter.appendColumnToReport(reportPath, reportName, unsortedOrigIndexMismatchStates, false, false);
+		// WRITE QA MISSINGNESS RATIO OR MISMATCH STATE
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedOrigIndexMissingnessRatioOrMismatchStates, false, false);
 	}
 }
