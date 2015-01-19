@@ -20,19 +20,16 @@ package org.gwaspi.reports;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.global.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,8 +199,8 @@ public class ReportWriter {
 	{
 		boolean appendResult = false;
 
-		String tempFile = reportPath + "tmp.rep";
-		String inputFile = reportPath + reportName;
+		final File tempFile = new File(reportPath, "tmp.rep");
+		final File inputFile = new File(reportPath, reportName);
 
 		FileReader inputFR = new FileReader(inputFile);
 		BufferedReader inputBR = new BufferedReader(inputFR);
@@ -246,70 +243,8 @@ public class ReportWriter {
 		inputFR.close();
 		tempBW.close();
 		tempFW.close();
-		copyFile(tempFile, inputFile);
-		deleteFile(tempFile);
+		Utils.move(tempFile, inputFile);
 
 		return appendResult;
-	}
-
-	private static void copyFile(String srFile, String dtFile) throws IOException {
-
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			in = new FileInputStream(new File(srFile));
-			final boolean append = false;
-			out = new FileOutputStream(new File(dtFile), append);
-
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = in.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException ex) {
-					LOG.warn("Failed to close source stream when copying file", ex);
-				}
-			}
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException ex) {
-					LOG.warn("Failed to close destination stream when copying file", ex);
-				}
-			}
-		}
-	}
-
-	private static void deleteFile(String tempFile) { // TODO merge with org.gwaspi.global.Utils.tryToDeleteFile()
-		File f = new File(tempFile);
-
-		// Make sure the file or directory exists and isn't write protected
-		if (!f.exists()) {
-			throw new IllegalArgumentException("Delete: no such file or directory: " + tempFile);
-		}
-
-		if (!f.canWrite()) {
-			throw new IllegalArgumentException("Delete: write protected: " + tempFile);
-		}
-
-		// If it is a directory, make sure it is empty
-		if (f.isDirectory()) {
-			String[] files = f.list();
-			if (files.length > 0) {
-				throw new IllegalArgumentException("Delete: directory not empty: " + tempFile);
-			}
-		}
-
-		// Attempt to delete it
-		boolean success = f.delete();
-
-		if (!success) {
-			throw new IllegalArgumentException("Delete: deletion failed");
-		}
-
 	}
 }
