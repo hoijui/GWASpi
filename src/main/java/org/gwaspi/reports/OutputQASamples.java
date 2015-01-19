@@ -205,7 +205,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		reportBW.append(header);
 
 		// GET SAMPLE INFO FROM DB
-		for (QASamplesOperationEntry entry : qaSamplesOperationEntries) {
+		for (final QASamplesOperationEntry entry : qaSamplesOperationEntries) {
 			final SampleKey tempSampleKey = entry.getKey();
 //			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey); // read from DB
 			final SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.formatSampleInfo(sampleKeyToInfo.get(tempSampleKey)); // read from backend storage
