@@ -252,25 +252,4 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		tempBW.close();
 		tempFW.close();
 	}
-//	public static boolean createSampleHetzygPlot(int opId, String outName, int width, int height) throws IOException {
-//		boolean result = false;
-//		//Generating XY scatter plot with loaded data
-//		XYDataset hetZygDataset = GenericReportGenerator_opt.getSampleHetzygDataset(opId);
-//
-//		JFreeChart chart = new JFreeChart("Sample Heterozygosity vs. Missingness", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
-//
-//		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-//		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
-//		try {
-//			ChartUtilities.saveChartAsPNG(new File(imagePath),
-//										   chart,
-//										   width,
-//										   height);
-//			result = true;
-//		} catch (IOException ex) {
-//			log.error("Problem occurred creating chart", ex);
-//		}
-//
-//		return result;
-//	}
 }
