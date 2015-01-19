@@ -141,7 +141,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
+		btn_Save.setAction(new ChartDefaultDisplay.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
 
 		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 
@@ -310,40 +310,5 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	public void setFired(boolean fired) {
 		this.fired = fired;
-	}
-
-	private static class SaveAsAction extends AbstractAction {
-
-		private final StudyKey studyKey;
-		private final String chartPath;
-		private final Component dialogParent;
-
-		SaveAsAction(StudyKey studyKey, String chartPath, final Component dialogParent) {
-
-			this.studyKey = studyKey;
-			this.chartPath = chartPath;
-			this.dialogParent = dialogParent;
-			putValue(NAME, Text.All.save);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				final String reportPath = Study.constructReportsPath(studyKey);
-				final File origFile = new File(reportPath, chartPath);
-				final File newChartDir = Dialogs.selectDirectoryDialog(
-						Config.PROPERTY_EXPORT_DIR,
-						"Choose the new directory for " + chartPath,
-						dialogParent);
-				final File newFile = new File(newChartDir, chartPath);
-				if (origFile.exists()) {
-					Utils.copyFile(origFile, newFile);
-				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (Exception ex) {
-				log.error(null, ex);
-			}
-		}
 	}
 }

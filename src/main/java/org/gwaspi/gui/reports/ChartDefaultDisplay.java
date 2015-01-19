@@ -148,13 +148,13 @@ public class ChartDefaultDisplay extends JPanel {
 		}
 	}
 
-	private static class SaveAsAction extends AbstractAction {
+	static class SaveAsAction extends AbstractAction {
 
 		private final StudyKey studyKey;
 		private final String chartPath;
 		private final Component dialogParent;
 
-		SaveAsAction(StudyKey studyKey, String chartPath, final Component dialogParent) {
+		public SaveAsAction(StudyKey studyKey, String chartPath, final Component dialogParent) {
 
 			this.studyKey = studyKey;
 			this.chartPath = chartPath;
