@@ -29,6 +29,7 @@ import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Filter;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -312,5 +313,62 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		// WRITE QA MISSINGNESS RATIO OR MISMATCH STATE
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedOrigIndexMissingnessRatioOrMismatchStates, false, false);
+	}
+
+	public static List<Object[]> parseQAMarkersReport(
+			final File reportFile,
+			final boolean missingness,
+			final int numRowsToFetch)
+			throws IOException
+	{
+		return ReportWriter.parseReport(reportFile, new QAMarkersReportLineParser(missingness), numRowsToFetch);
+	}
+
+	private static class QAMarkersReportLineParser implements Extractor<String[], Object[]> {
+
+		private final boolean missingness;
+
+		public QAMarkersReportLineParser(final boolean missingness) {
+			this.missingness = missingness;
+		}
+
+		@Override
+		public Object[] extract(final String[] cVals) {
+
+			final String[] columns = missingness ? COLUMNS_MISSING : COLUMNS_MISMATCH;
+			final Object[] row = new Object[columns.length];
+
+			final String markerId = cVals[0];
+			final String rsId = cVals[1];
+			final String chr = cVals[2];
+			final int position = Integer.parseInt(cVals[3]);
+			final String minAllele = cVals[4];
+			final String majAllele = cVals[5];
+			final Object missingnessOrMismatch;
+			if (missingness) {
+				final Double missRat = cVals[6] == null ? Double.NaN : Double.parseDouble(cVals[6]);
+				Double missRat_f;
+				try {
+					missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
+				} catch (final NumberFormatException ex) {
+					missRat_f = missRat;
+//					log.warn(null, ex);
+				}
+				missingnessOrMismatch = missRat_f;
+			} else {
+				final Boolean mismatchState = cVals[6] == null ? null : Boolean.valueOf(cVals[6]);
+				missingnessOrMismatch = mismatchState;
+			}
+
+			row[0] = markerId;
+			row[1] = rsId;
+			row[2] = chr;
+			row[3] = position;
+			row[4] = minAllele;
+			row[5] = majAllele;
+			row[6] = missingnessOrMismatch;
+
+			return row;
+		}
 	}
 }

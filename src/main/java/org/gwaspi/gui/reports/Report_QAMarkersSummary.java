@@ -23,11 +23,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -45,7 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -263,133 +259,64 @@ public class Report_QAMarkersSummary extends JPanel {
 			this.missingness = missingness;
 		}
 
-		private Object[] parseReportFileRow(final String[] cVals) {
-
-			final Object[] row = new Object[columns.length];
-
-			String markerId = cVals[0];
-			String rsId = cVals[1];
-			String chr = cVals[2];
-			int position = Integer.parseInt(cVals[3]);
-			String minAllele = cVals[4];
-			String majAllele = cVals[5];
-			final Object missingnessOrMismatch;
-			if (missingness) {
-				Double missRat = cVals[6] == null ? Double.NaN : Double.parseDouble(cVals[6]);
-				Double missRat_f;
-				try {
-					missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
-				} catch (NumberFormatException ex) {
-					missRat_f = missRat;
-					log.warn(null, ex);
-				}
-				missingnessOrMismatch = missRat_f;
-			} else {
-				Boolean mismatchState = cVals[6] == null ? null : Boolean.valueOf(cVals[6]);
-				missingnessOrMismatch = mismatchState;
-			}
-
-			row[0] = markerId;
-			row[1] = rsId;
-			row[2] = chr;
-			row[3] = position;
-			row[4] = minAllele;
-			row[5] = majAllele;
-			row[6] = missingnessOrMismatch;
-
-			return row;
-		}
-
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
-			FileReader inputFileReader = null;
-			BufferedReader inputBufferReader = null;
-			try {
-				if (reportFile.exists() && !reportFile.isDirectory()) {
-					final int fetchedRowsNb = Integer.parseInt(nRows.getText());
+			if (reportFile.exists() && !reportFile.isDirectory()) {
+				final int numRowsToFetch = Integer.parseInt(nRows.getText());
 
-					inputFileReader = new FileReader(reportFile);
-					inputBufferReader = new BufferedReader(inputFileReader);
+				final List<Object[]> tableRows;
+				try {
+					tableRows = OutputQAMarkers.parseQAMarkersReport(
+							reportFile, missingness, numRowsToFetch);
+				} catch (final IOException ex) {
+					log.error(null, ex);
+					// TODO maybe inform the user through a dialog?
+					return;
+				}
 
-					// Getting data from file and subdividing to series all points by chromosome
-					final List<Object[]> tableRows = new ArrayList<Object[]>();
-					// read but ignore the header
-					/*String header = */inputBufferReader.readLine();
-					int rowIndex = 0;
-					while (rowIndex < fetchedRowsNb) {
-						String line = inputBufferReader.readLine();
-						if (line == null) {
-							break;
-						}
-						String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
-						final Object[] row = parseReportFileRow(cVals);
-						tableRows.add(row);
-						rowIndex++;
-					}
+				final Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
+				for (int i = 0; i < tableRows.size(); i++) {
+					tableMatrix[i] = tableRows.get(i);
+				}
 
-					final Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
-					for (int i = 0; i < tableRows.size(); i++) {
-						tableMatrix[i] = tableRows.get(i);
-					}
+				TableModel model = new DefaultTableModel(tableMatrix, columns);
+				reportTable.setModel(model);
 
-					TableModel model = new DefaultTableModel(tableMatrix, columns);
-					reportTable.setModel(model);
-
-					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-//					if (!cGlobal.OSNAME.contains("Windows")) {
-//						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-					TableRowSorter sorter = new TableRowSorter(model) {
-						Comparator<Object> comparator = new Comparator<Object>() {
-							@Override
-							public int compare(Object o1, Object o2) {
+				TableRowSorter sorter = new TableRowSorter(model) {
+					Comparator<Object> comparator = new Comparator<Object>() {
+						@Override
+						public int compare(Object o1, Object o2) {
+							try {
+								Double d1 = Double.parseDouble(o1.toString());
+								Double d2 = Double.parseDouble(o2.toString());
+								return d1.compareTo(d2);
+							} catch (NumberFormatException ex) {
+								log.warn(null, ex);
 								try {
-									Double d1 = Double.parseDouble(o1.toString());
-									Double d2 = Double.parseDouble(o2.toString());
-									return d1.compareTo(d2);
-								} catch (NumberFormatException ex) {
-									log.warn(null, ex);
-									try {
-										Integer i1 = Integer.parseInt(o1.toString());
-										Integer i2 = Integer.parseInt(o2.toString());
-										return i1.compareTo(i2);
-									} catch (NumberFormatException ex1) {
-										log.warn(null, ex1);
-										return o1.toString().compareTo(o2.toString());
-									}
+									Integer i1 = Integer.parseInt(o1.toString());
+									Integer i2 = Integer.parseInt(o2.toString());
+									return i1.compareTo(i2);
+								} catch (NumberFormatException ex1) {
+									log.warn(null, ex1);
+									return o1.toString().compareTo(o2.toString());
 								}
 							}
-						};
-
-						@Override
-						public Comparator getComparator(int column) {
-							return comparator;
-						}
-
-						@Override
-						public boolean useToString(int column) {
-							return false;
 						}
 					};
 
-					reportTable.setRowSorter(sorter);
-//					}
-					//</editor-fold>
-				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (Exception ex) {
-				log.error(null, ex);
-			} finally {
-				try {
-					if (inputBufferReader != null) {
-						inputBufferReader.close();
-					} else if (inputFileReader != null) {
-						inputFileReader.close();
+					@Override
+					public Comparator getComparator(int column) {
+						return comparator;
 					}
-				} catch (IOException ex) {
-					log.warn(null, ex);
-				}
+
+					@Override
+					public boolean useToString(int column) {
+						return false;
+					}
+				};
+
+				reportTable.setRowSorter(sorter);
 			}
 		}
 	}
