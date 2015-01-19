@@ -198,11 +198,11 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 				= org.gwaspi.netCDF.exporter.Utils.createSampleKeyToInfoMap(qaSamplesOperationDataSet.getSamplesInfosSource());
 
 		// WRITE HEADER OF FILE
-		final FileWriter tempFW = new FileWriter(sampleMissOutFile);
-		final BufferedWriter tempBW = new BufferedWriter(tempFW);
+		final FileWriter reportFW = new FileWriter(sampleMissOutFile);
+		final BufferedWriter reportBW = new BufferedWriter(reportFW);
 
 		final String header = OutputQAMarkers.createReportHeaderLine(COLUMNS);
-		tempBW.append(header);
+		reportBW.append(header);
 
 		// GET SAMPLE INFO FROM DB
 		for (QASamplesOperationEntry entry : qaSamplesOperationEntries) {
@@ -246,10 +246,10 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 			sb.append(sep);
 			sb.append(entry.getHetzyRatio());
 			sb.append("\n");
-			tempBW.append(sb.toString());
+			reportBW.append(sb.toString());
 		}
 
-		tempBW.close();
-		tempFW.close();
+		reportBW.close();
+		reportFW.close();
 	}
 }
