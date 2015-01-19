@@ -427,6 +427,12 @@ public class Utils {
 			}
 		}
 	}
+
+	public static void move(final File source, final File destination) throws IOException {
+
+		Utils.copyFile(source, destination);
+		Utils.tryToDeleteFile(source);
+	}
 	// </editor-fold>
 
 	// <editor-fold defaultstate="expanded" desc="Date Time methods">
