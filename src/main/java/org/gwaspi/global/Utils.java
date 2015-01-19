@@ -413,6 +413,14 @@ public class Utils {
 				throw new IOException("Failed to delete file; write protected: " + toDelete.getPath());
 			}
 
+			// If it is a directory, make sure it is empty
+			if (toDelete.isDirectory()) {
+				final String[] files = toDelete.list();
+				if (files.length > 0) {
+					throw new IllegalArgumentException("Failed to delete file; directory not empty: " + toDelete);
+				}
+			}
+
 			boolean success = toDelete.delete();
 			if (!success) {
 				throw new IOException("Failed to delete file; reason unknown: " + toDelete.getPath());
