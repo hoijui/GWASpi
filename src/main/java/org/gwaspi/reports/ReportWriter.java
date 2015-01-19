@@ -101,25 +101,6 @@ public class ReportWriter {
 	private ReportWriter() {
 	}
 
-	protected static <K, V> boolean writeFirstColumnToReport(
-			String reportPath,
-			String reportName,
-			String header,
-			Map<K, V> map,
-			boolean withKey) throws IOException
-	{
-		Extractor<Entry<K, V>, String> valueExtractor = new MapValueExtractor<K, V>(false);
-
-		Extractor<Entry<K, V>, String> keyExtractor;
-		if (withKey) {
-			keyExtractor = new MapKeyExtractor<K, V>();
-		} else {
-			keyExtractor = null;
-		}
-
-		return writeFirstColumnToReport(reportPath, reportName, header, map.entrySet(), keyExtractor, valueExtractor);
-	}
-
 	protected static <S> boolean writeFirstColumnToReport(
 			String reportPath,
 			String reportName,
