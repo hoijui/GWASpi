@@ -195,10 +195,6 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		Map<Integer, Double> sortedOrigIndexMissingRatios = Utils.createMapSortedByValueDescending(unsortedOrigIndexMissingRatios);
 		unsortedOrigIndexMissingRatios.clear(); // "garbage collection"
 
-//		Map<MarkerKey, Double> unsortedMarkerMissingRatios = GatherQAMarkersData.loadMarkerQAMissingRatio(operationKey);
-//		Map<MarkerKey, Double> sortedMarkerKeyMissingRatio = Utils.createMapSortedByValueDescending(unsortedMarkerMissingRatios);
-//		unsortedMarkerMissingRatios.clear(); // "garbage collection"
-
 		// FILTER THE SORTED MAP
 		Iterator<Map.Entry<Integer, Double>> sortedOrigIndexMissingRatioIt = sortedOrigIndexMissingRatios.entrySet().iterator();
 		while (sortedOrigIndexMissingRatioIt.hasNext()) {
@@ -212,8 +208,6 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 
 		String sep = ExportConstants.SEPARATOR_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
-//		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-//		rdInfoMarkerSet.initFullMarkerIdSetMap();
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedMarkerOrigIndices, markersMetadatas);
 
@@ -222,59 +216,16 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERS ID & RSID
-//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-//		Map<MarkerKey, char[]> sortedMarkerRSIDs = Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-//		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 
 		// WRITE MARKERSET CHROMOSOME
-//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-//		Map<MarkerKey, char[]> sortedMarkerCHRs = Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 
 		// WRITE MARKERSET POS
-//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-//		Map<MarkerKey, Integer> sortedMarkerPos = Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		// get MARKER_QA Operation
-//		List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
-//		OperationKey markersQAopKey = null;
-//		for (int i = 0; i < operations.size(); i++) {
-//			OperationMetadata op = operations.get(i);
-//			if (op.getType().equals(OPType.MARKER_QA)) {
-//				markersQAopKey = OperationKey.valueOf(op);
-//			}
-//		}
-//		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerOrigIndices.size());
-//		if (markersQAopKey != null) {
-//			OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
-//			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-//
-//			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-//			Map<MarkerKey, byte[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
-//
-//			// MINOR ALLELE
-//			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-//			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-//				byte[] minorAllele = opMarkerSetMap.get(key);
-//				sortedMarkerAlleles.put(key, new String(minorAllele));
-//			}
-//
-//			// MAJOR ALLELE
-//			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new byte[0]);
-//			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-//			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
-//				String minorAllele = entry.getValue();
-//				entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
-//			}
-//		}
-//		sortedMarkerAlleles = Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
 		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
 		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
 		final List<String> sortedMarkerAlleles = new ArrayList<String>(sortedMarkerOrigIndices.size());
