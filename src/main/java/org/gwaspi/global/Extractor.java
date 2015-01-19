@@ -83,5 +83,13 @@ public interface Extractor<I, O> {
 		}
 	}
 
+	class ByteToStringExtractor implements Extractor<Byte, String> {
+
+		@Override
+		public String extract(final Byte object) {
+			return String.valueOf((char) (byte) object);
+		}
+	}
+
 	O extract(I object);
 }
