@@ -211,17 +211,12 @@ public final class ManhattanChartDisplay extends JPanel {
 			File testF = new File(reportPath + chartPath);
 			if (testF.exists()) {
 				ImageIcon image = new ImageIcon(testF.getPath());
-
 				label.setIcon(image);
-				//label.setHorizontalAlignment(SwingConstants.CENTER);
-
 				chartWidth = image.getIconWidth() - padLeft; // Get width of loaded manhattan plot and remove 62 pixels for Y axis labels
-
 				// Creating a Scroll pane component
 				scrl_Chart.getViewport().add(label);
 				pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 				pnl_Chart.doLayout();
-
 			}
 		} catch (IOException ex) {
 			log.warn(Text.Reports.warnCantOpenFile, ex);
@@ -334,7 +329,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				String reportPath = Study.constructReportsPath(studyKey);
+				final String reportPath = Study.constructReportsPath(studyKey);
 				final File origFile = new File(reportPath, chartPath);
 				final File newChartDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,

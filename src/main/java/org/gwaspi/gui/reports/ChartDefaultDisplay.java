@@ -172,7 +172,6 @@ public class ChartDefaultDisplay extends JPanel {
 						"Choose the new directory for " + chartPath,
 						dialogParent);
 				final File newFile = new File(newChartDir, chartPath);
-
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}
