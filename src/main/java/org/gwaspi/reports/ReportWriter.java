@@ -23,11 +23,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.ExportConstants;
+import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
 import org.slf4j.Logger;
@@ -229,5 +232,43 @@ public class ReportWriter {
 		Utils.move(tempFile, inputFile);
 
 		return appendResult;
+	}
+
+	protected static <S> List<S> parseReport(
+			final File reportFile,
+			final Extractor<String[], S> keyExtractor,
+			final int numRowsToFetch)
+			throws IOException
+	{
+		final List<S> parsedRows = new ArrayList<S>(numRowsToFetch);
+
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		try {
+			inputFileReader = new FileReader(reportFile);
+			inputBufferReader = new BufferedReader(inputFileReader);
+
+			// read but ignore the header
+			/*String header = */inputBufferReader.readLine();
+			int rowIndex = 0;
+			while (rowIndex < numRowsToFetch) {
+				String line = inputBufferReader.readLine();
+				if (line == null) {
+					break;
+				}
+				String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+				final S parsedRow = keyExtractor.extract(cVals);
+				parsedRows.add(parsedRow);
+				rowIndex++;
+			}
+		} finally {
+			if (inputBufferReader != null) {
+				inputBufferReader.close();
+			} else if (inputFileReader != null) {
+				inputFileReader.close();
+			}
+		}
+
+		return parsedRows;
 	}
 }
