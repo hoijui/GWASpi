@@ -59,24 +59,18 @@ public class MoreGWASinOneGoInfo extends JDialog {
 	private JCheckBox chkB_geno;
 	private JCheckBox chkB_trend;
 	private JCheckBox chkB_MMM;
-	private JCheckBox chkB_MMS;
 	private JCheckBox chkB_MHZ;
 	private JCheckBox chkB_SMS;
 	private JCheckBox chkB_SHZ;
 	private JRadioButton rdioB_HW_Calc;
-	private JLabel lbl_HW;
 	private JRadioButton rdioB_HW_free;
 	private JTextField txtF_MMS;
 	private JTextField txtF_MHZ;
 	private JTextField txtF_HW_free;
 	private JTextField txtF_SMS;
 	private JTextField txtF_SHZ;
-	private ButtonGroup rdiogrp_HW;
-	private JLabel lbl_Chromosome;
 	private JComboBox cmb_Chromosome;
-	private JLabel lbl_Strand;
 	private JComboBox cmb_Strand;
-	private JLabel lbl_GTCode;
 	private JComboBox cmb_GTCode;
 	private final GWASinOneGOParams gwasParams;
 	private final ImportFormat format;
@@ -155,15 +149,15 @@ public class MoreGWASinOneGoInfo extends JDialog {
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
 
 		chkB_MMM = new JCheckBox();
-		chkB_MMS = new JCheckBox();
+		final JCheckBox chkB_MMS = new JCheckBox();
 		chkB_MHZ = new JCheckBox();
 		chkB_SMS = new JCheckBox();
 		chkB_SHZ = new JCheckBox();
 		rdioB_HW_Calc = new JRadioButton();
-		lbl_HW = new JLabel();
-		lbl_Chromosome = new JLabel();
-		lbl_Strand = new JLabel();
-		lbl_GTCode = new JLabel();
+		final JLabel lbl_HW = new JLabel();
+		final JLabel lbl_Chromosome = new JLabel();
+		final JLabel lbl_Strand = new JLabel();
+		final JLabel lbl_GTCode = new JLabel();
 		rdioB_HW_free = new JRadioButton();
 		txtF_MMS = new JTextField();
 		txtF_MMS.setInputVerifier(new DoubleInputVerifier());
@@ -175,7 +169,7 @@ public class MoreGWASinOneGoInfo extends JDialog {
 		txtF_SMS.setInputVerifier(new DoubleInputVerifier());
 		txtF_SHZ = new JTextField();
 		txtF_SHZ.setInputVerifier(new DoubleInputVerifier());
-		rdiogrp_HW = new ButtonGroup();
+		final ButtonGroup rdiogrp_HW = new ButtonGroup();
 
 		cmb_Chromosome = new JComboBox();
 		cmb_Strand = new JComboBox();
@@ -346,7 +340,10 @@ public class MoreGWASinOneGoInfo extends JDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			if (!txtF_MMS.getText().isEmpty() && !txtF_HW_free.getText().isEmpty() && !txtF_SMS.getText().isEmpty()) {
+			if (!txtF_MMS.getText().isEmpty()
+					&& !txtF_HW_free.getText().isEmpty()
+					&& !txtF_SMS.getText().isEmpty())
+			{
 				try {
 
 					gwasParams.setPerformAllelicTests(chkB_allelic.isSelected());

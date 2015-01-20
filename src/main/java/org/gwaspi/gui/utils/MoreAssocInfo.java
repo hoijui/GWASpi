@@ -49,9 +49,7 @@ public class MoreAssocInfo extends JFrame {
 	private JRadioButton rdioB_2;
 	private JTextField txtF_1;
 	private JTextField txtF_2;
-	private JTextField txtF_3;
 	private ButtonGroup rdiogrp_HW;
-	private JFrame myFrame = new JFrame("GridBagLayout Test");
 	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private JDialog dialog;
 	// End of variables declaration
@@ -59,7 +57,7 @@ public class MoreAssocInfo extends JFrame {
 	public GWASinOneGOParams showMoreInfo() {
 		gwasParams.setProceed(false);
 		// Create a modal dialog
-		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
+		dialog = new JDialog((JFrame) null, Text.Operation.gwasInOneGo, true);
 
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension screenSize = tk.getScreenSize();
@@ -93,7 +91,7 @@ public class MoreAssocInfo extends JFrame {
 		txtF_1.setInputVerifier(new DoubleInputVerifier());
 		txtF_2 = new JTextField();
 		txtF_2.setInputVerifier(new DoubleInputVerifier());
-		txtF_3 = new JTextField();
+		final JTextField txtF_3 = new JTextField();
 		txtF_3.setInputVerifier(new DoubleInputVerifier());
 		rdiogrp_HW = new ButtonGroup();
 
