@@ -280,14 +280,13 @@ public class Report_HardyWeinbergSummary extends JPanel {
 								Double d1 = Double.parseDouble(o1.toString());
 								Double d2 = Double.parseDouble(o2.toString());
 								return d1.compareTo(d2);
-							} catch (NumberFormatException ex) {
-								log.warn(null, ex);
+							} catch (final NumberFormatException exDouble) {
 								try {
 									Integer i1 = Integer.parseInt(o1.toString());
 									Integer i2 = Integer.parseInt(o2.toString());
 									return i1.compareTo(i2);
-								} catch (final NumberFormatException ex1) {
-									log.warn(null, ex1);
+								} catch (final NumberFormatException exInteger) {
+									log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
 									return o1.toString().compareTo(o2.toString());
 								}
 							}

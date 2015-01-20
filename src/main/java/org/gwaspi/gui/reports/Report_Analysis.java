@@ -114,6 +114,7 @@ public abstract class Report_Analysis extends JPanel {
 
 	protected Report_Analysis(final OperationKey testOpKey, final String analysisFileName, final Integer nRows) {
 
+		final String helpUrlSuffix = HelpURLs.QryURL.assocReport;
 		final ReportParser reportParser
 				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
 
@@ -304,9 +305,14 @@ public abstract class Report_Analysis extends JPanel {
 			}
 		});
 		btn_Get.setAction(loadReportAction);
-		btn_Save.setAction(new SaveAsAction(testOpKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
+		btn_Save.setAction(new SaveAsAction(
+				testOpKey.getParentMatrixKey().getStudyKey(),
+				analysisFileName,
+				tbl_ReportTable,
+				txt_NRows,
+				3));
 		btn_Back.setAction(new BackAction(new DataSetKey(testOpKey)));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
+		btn_Help.setAction(new BrowserHelpUrlAction(helpUrlSuffix));
 
 		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -434,7 +440,7 @@ public abstract class Report_Analysis extends JPanel {
 								Double d1 = Double.parseDouble(o1.toString());
 								Double d2 = Double.parseDouble(o2.toString());
 								return d1.compareTo(d2);
-							} catch (NumberFormatException exDouble) {
+							} catch (final NumberFormatException exDouble) {
 								try {
 									Integer i1 = Integer.parseInt(o1.toString());
 									Integer i2 = Integer.parseInt(o2.toString());
