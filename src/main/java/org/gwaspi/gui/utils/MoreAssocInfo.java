@@ -24,6 +24,7 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -43,9 +44,6 @@ public class MoreAssocInfo extends JFrame {
 	private final Logger log = LoggerFactory.getLogger(MoreAssocInfo.class);
 
 	// Variables declaration - do not modify
-	private JButton btn_Go;
-	private JButton btn_Help;
-	private JButton btn_Cancel;
 	private JRadioButton rdioB_1;
 	private JLabel lbl_1;
 	private JRadioButton rdioB_2;
@@ -76,7 +74,7 @@ public class MoreAssocInfo extends JFrame {
 		setConstraints(c, 0, 0, GridBagConstraints.CENTER);
 		myPane.add(getQuestionsPanel(), c);
 		setConstraints(c, 0, 1, GridBagConstraints.CENTER);
-		myPane.add(getFooterPanel(), c);
+		myPane.add(createFooterPanel(new GoAction(), new CancelAction()), c);
 		dialog.pack();
 		dialog.setVisible(true);
 
@@ -129,19 +127,19 @@ public class MoreAssocInfo extends JFrame {
 		return pnl_Questions;
 	}
 
-	private JPanel getFooterPanel() {
+	static JPanel createFooterPanel(final Action goAction, final Action cancelAction) {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
-		btn_Go = new JButton();
-		btn_Help = new JButton();
-		btn_Cancel = new JButton();
+		final JButton btn_Go = new JButton();
+		final JButton btn_Help = new JButton();
+		final JButton btn_Cancel = new JButton();
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.GWASinOneGo));
 
-		btn_Go.setAction(new GoAction());
+		btn_Go.setAction(goAction);
 
-		btn_Cancel.setAction(new CancelAction());
+		btn_Cancel.setAction(cancelAction);
 
 		GridBagConstraints c = new GridBagConstraints();
 		setConstraints(c, 0, 0, GridBagConstraints.LINE_START);
@@ -198,7 +196,8 @@ public class MoreAssocInfo extends JFrame {
 		}
 	}
 
-	private void setConstraints(GridBagConstraints c,
+	private static void setConstraints(
+			GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)

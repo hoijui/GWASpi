@@ -30,7 +30,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -56,9 +55,6 @@ public class MoreGWASinOneGoInfo extends JDialog {
 	private final Logger log = LoggerFactory.getLogger(MoreGWASinOneGoInfo.class);
 
 	// Variables declaration - do not modify
-	private JButton btn_Go;
-	private JButton btn_Help;
-	private JButton btn_Cancel;
 	private JCheckBox chkB_allelic;
 	private JCheckBox chkB_geno;
 	private JCheckBox chkB_trend;
@@ -109,7 +105,7 @@ public class MoreGWASinOneGoInfo extends JDialog {
 		setConstraints(c, 0, 1, GridBagConstraints.CENTER);
 		myPane.add(getQuestionsPanel(), c);
 		setConstraints(c, 0, 2, GridBagConstraints.CENTER);
-		myPane.add(getFooterPanel(), c);
+		myPane.add(MoreAssocInfo.createFooterPanel(new GoAction(), new CancelAction()), c);
 	}
 
 	public static void showMoreInfo(final Frame dialogParent, final GWASinOneGOParams gwasParams, final ImportFormat format) {
@@ -339,37 +335,6 @@ public class MoreGWASinOneGoInfo extends JDialog {
 		pnl_Questions.setVisible(true);
 
 		return pnl_Questions;
-	}
-
-	private JPanel getFooterPanel() {
-
-		JPanel pnl_Footer = new JPanel(new GridBagLayout());
-
-		btn_Go = new JButton();
-		btn_Help = new JButton();
-		btn_Cancel = new JButton();
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.GWASinOneGo));
-
-		btn_Go.setAction(new GoAction());
-
-		btn_Cancel.setAction(new CancelAction());
-
-		GridBagConstraints c = new GridBagConstraints();
-		setConstraints(c, 0, 0, GridBagConstraints.LINE_START);
-		pnl_Footer.add(btn_Cancel, c);
-		setConstraints(c, 1, 0, GridBagConstraints.LINE_END);
-		pnl_Footer.add(new JLabel("    "), c);
-		setConstraints(c, 2, 0, GridBagConstraints.LINE_START);
-		pnl_Footer.add(btn_Help, c);
-		setConstraints(c, 3, 0, GridBagConstraints.LINE_END);
-		pnl_Footer.add(new JLabel("    "), c);
-		setConstraints(c, 4, 0, GridBagConstraints.LINE_END);
-		pnl_Footer.add(btn_Go, c);
-
-		pnl_Footer.setVisible(true);
-
-		return pnl_Footer;
 	}
 
 	private class GoAction extends AbstractAction {
