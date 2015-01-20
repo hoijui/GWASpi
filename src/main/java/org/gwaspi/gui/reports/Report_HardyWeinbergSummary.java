@@ -78,10 +78,12 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String reportFileName) {
 
-		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
-		String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
+		final String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
+		final String helpUrlSuffix = HelpURLs.QryURL.hwReport;
+
+		this.operationKey = operationKey;
 
 		String reportPath = "";
 		try {
@@ -225,7 +227,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				tbl_ReportTable,
 				txt_NRows));
 		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
+		btn_Help.setAction(new BrowserHelpUrlAction(helpUrlSuffix));
 
 		loadReportAction.actionPerformed(null);
 	}

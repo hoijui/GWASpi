@@ -78,15 +78,16 @@ public class Report_QAMarkersSummary extends JPanel {
 
 	public Report_QAMarkersSummary(final OperationKey operationKey, final String reportFileName) {
 
-		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		final boolean missingness = reportName.contains("Missingness");
-
 		String nRowsSuffix = "Markers";
 		if (missingness) {
 			nRowsSuffix = "Markers by most significant Missing Ratios";
 		}
+		final String helpUrlSuffix = HelpURLs.QryURL.markerQAreport;
+
+		this.operationKey = operationKey;
 
 		String reportPath = "";
 		try {
@@ -135,6 +136,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		final Action loadReportAction = new LoadReportAction(
 				reportFile, tbl_ReportTable, txt_NRows, missingness);
 
+		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText(nRowsSuffix);
 
@@ -229,8 +231,8 @@ public class Report_QAMarkersSummary extends JPanel {
 				reportFileName,
 				tbl_ReportTable,
 				txt_NRows));
-		btn_Back.setAction(new BackAction(new DataSetKey(this.operationKey)));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
+		btn_Help.setAction(new BrowserHelpUrlAction(helpUrlSuffix));
 
 		loadReportAction.actionPerformed(null);
 	}

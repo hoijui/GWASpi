@@ -78,9 +78,11 @@ public class Report_QASamplesSummary extends JPanel {
 
 	public Report_QASamplesSummary(final OperationKey operationKey, final String reportFileName) {
 
+		final String reportName = "Sample Info & Missing Ratios";
+		final String nRowsSuffix = "Samples by most significant Missing Ratios";
+		final String helpUrlSuffix = HelpURLs.QryURL.sampleQAreport;
+
 		this.operationKey = operationKey;
-		String reportName = "Sample Info & Missing Ratios";
-		String nRowsSuffix = "Samples by most significant Missing Ratios";
 
 		String reportPath = "";
 		try {
@@ -129,6 +131,7 @@ public class Report_QASamplesSummary extends JPanel {
 		final Action loadReportAction = new LoadReportAction(
 				reportFile, tbl_ReportTable, txt_NRows);
 
+		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText(nRowsSuffix);
 
@@ -223,8 +226,8 @@ public class Report_QASamplesSummary extends JPanel {
 				reportFileName,
 				tbl_ReportTable,
 				txt_NRows));
-		btn_Back.setAction(new BackAction(new DataSetKey(this.operationKey)));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
+		btn_Help.setAction(new BrowserHelpUrlAction(helpUrlSuffix));
 
 		loadReportAction.actionPerformed(null);
 	}
