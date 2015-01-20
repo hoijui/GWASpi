@@ -242,12 +242,6 @@ public abstract class Report_Analysis extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(testOpKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
-
-		btn_Back.setAction(new BackAction(new DataSetKey(testOpKey)));
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
-
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -260,9 +254,7 @@ public abstract class Report_Analysis extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
 				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
 		pnl_FooterLayout.setVerticalGroup(
 				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -302,6 +294,10 @@ public abstract class Report_Analysis extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
+		btn_Save.setAction(new SaveAsAction(testOpKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
+		btn_Back.setAction(new BackAction(new DataSetKey(testOpKey)));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
 
 		tbl_ReportTable.setDefaultRenderer(Object.class, createRowRenderer());
 		tbl_ReportTable.addMouseListener(new MouseAdapter() {
