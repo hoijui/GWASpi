@@ -29,7 +29,6 @@ import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Filter;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
-import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -318,17 +317,23 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	public static List<Object[]> parseQAMarkersReport(
 			final File reportFile,
 			final boolean missingness,
-			final int numRowsToFetch)
+			final int numRowsToFetch,
+			final boolean exactValues)
 			throws IOException
 	{
-		return ReportWriter.parseReport(reportFile, new QAMarkersReportLineParser(missingness), numRowsToFetch);
+		return ReportWriter.parseReport(
+				reportFile,
+				new QAMarkersReportLineParser(exactValues, missingness),
+				numRowsToFetch);
 	}
 
-	private static class QAMarkersReportLineParser implements Extractor<String[], Object[]> {
+	private static class QAMarkersReportLineParser extends AbstractReportLineParser {
 
 		private final boolean missingness;
 
-		public QAMarkersReportLineParser(final boolean missingness) {
+		public QAMarkersReportLineParser(final boolean exactValues, final boolean missingness) {
+			super(exactValues);
+
 			this.missingness = missingness;
 		}
 
@@ -346,14 +351,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 			final String majAllele = cVals[5];
 			final Object missingnessOrMismatch;
 			if (missingness) {
-				final Double missRat = cVals[6] == null ? Double.NaN : Double.parseDouble(cVals[6]);
-				Double missRat_f;
-				try {
-					missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
-				} catch (final NumberFormatException ex) {
-					missRat_f = missRat;
-//					log.warn(null, ex);
-				}
+				final Double missRat_f = maybeTryToRoundNicely(tryToParseDouble(cVals[6]));
 				missingnessOrMismatch = missRat_f;
 			} else {
 				final Boolean mismatchState = cVals[6] == null ? null : Boolean.valueOf(cVals[6]);

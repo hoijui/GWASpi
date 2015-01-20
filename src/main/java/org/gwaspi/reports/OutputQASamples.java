@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
-import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -256,34 +255,39 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 
 	public static List<Object[]> parseQASamplesReport(
 			final File reportFile,
-			final int numRowsToFetch)
+			final int numRowsToFetch,
+			final boolean exactValues)
 			throws IOException
 	{
-		return ReportWriter.parseReport(reportFile, new QASamplesReportLineParser(), numRowsToFetch);
+		return ReportWriter.parseReport(
+				reportFile,
+				new QASamplesReportLineParser(exactValues),
+				numRowsToFetch);
 	}
 
-	private static class QASamplesReportLineParser implements Extractor<String[], Object[]> {
+	private static class QASamplesReportLineParser extends AbstractReportLineParser {
+
+		public QASamplesReportLineParser(final boolean exactValues) {
+			super(exactValues);
+		}
 
 		@Override
 		public Object[] extract(final String[] cVals) {
 
 			final Object[] row = new Object[COLUMNS.length];
 
-			String familyId = cVals[0];
-			String sampleId = cVals[1];
-			String fatherId = cVals[2];
-			String motherId = cVals[3];
-			String sex = cVals[4];
-			String affection = cVals[5];
-			String age = cVals[6];
-			String category = cVals[7];
-			String disease = cVals[8];
-			String population = cVals[9];
-			Double missRat = cVals[10] != null ? Double.parseDouble(cVals[10]) : Double.NaN;
-			Double hetzyRat = Double.NaN;
-			if (cVals.length > 11) {
-				hetzyRat = cVals[11] != null ? Double.parseDouble(cVals[11]) : Double.NaN;
-			}
+			final String familyId = cVals[0];
+			final String sampleId = cVals[1];
+			final String fatherId = cVals[2];
+			final String motherId = cVals[3];
+			final String sex = cVals[4];
+			final String affection = cVals[5];
+			final String age = cVals[6];
+			final String category = cVals[7];
+			final String disease = cVals[8];
+			final String population = cVals[9];
+			final Double missRat = tryToParseDouble(cVals[10]);
+			final Double hetzyRat = (cVals.length > 11) ? tryToParseDouble(cVals[11]) : Double.NaN;
 
 			row[0] = familyId;
 			row[1] = sampleId;

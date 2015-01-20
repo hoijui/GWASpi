@@ -268,7 +268,7 @@ public class Report_QAMarkersSummary extends JPanel {
 				final List<Object[]> tableRows;
 				try {
 					tableRows = OutputQAMarkers.parseQAMarkersReport(
-							reportFile, missingness, numRowsToFetch);
+							reportFile, missingness, numRowsToFetch, false);
 				} catch (final IOException ex) {
 					log.error(null, ex);
 					// TODO maybe inform the user through a dialog?
