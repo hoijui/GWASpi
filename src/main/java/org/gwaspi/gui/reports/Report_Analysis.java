@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -113,6 +114,9 @@ public abstract class Report_Analysis extends JPanel {
 
 	protected Report_Analysis(final OperationKey testOpKey, final String analysisFileName, final Integer nRows) {
 
+		final ReportParser reportParser
+				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
+
 		this.testOpKey = testOpKey;
 		this.chrSetInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 
@@ -126,6 +130,16 @@ public abstract class Report_Analysis extends JPanel {
 			log.error(null, ex);
 		}
 		reportFile = new File(reportPath + analysisFileName);
+
+//		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
+//		reportName = reportName.substring(reportName.indexOf('-') + 2);
+//		String reportPath = "";
+//		try {
+//			reportPath = Study.constructReportsPath(studyKey);
+//		} catch (IOException ex) {
+//			log.error(null, ex);
+//		}
+//		reportFile = new File(reportPath + analysisFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
@@ -158,12 +172,6 @@ public abstract class Report_Analysis extends JPanel {
 				return false;
 			}
 		};
-		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent me) {
-				displayColumnCursor(me);
-			}
-		});
 
 		// TO DISABLE COLUMN MOVING (DON'T WANT TO MOVE BEHIND COLUMN 9)
 		tbl_ReportTable.getTableHeader().setReorderingAllowed(false);
@@ -177,23 +185,15 @@ public abstract class Report_Analysis extends JPanel {
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
+		final Action loadReportAction = new LoadReportAction(
+				reportFile, tbl_ReportTable, txt_NRows, reportParser);
+
 		Integer actualNRows = (nRows == null) ? 100 : nRows;
 		txt_NRows.setValue(actualNRows);
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
-		txt_NRows.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
-				if (key == KeyEvent.VK_ENTER) {
-					actionLoadReport();
-				}
-			}
-		});
 		lbl_suffix1.setText(Text.Reports.radio1Suffix_pVal);
 		txt_PvalThreshold.setEnabled(false);
-
-		btn_Get.setAction(new LoadReportAction());
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT SUMMARY">
 		GroupLayout pnl_SearchDBLayout = new GroupLayout(pnl_SearchDB);
@@ -231,12 +231,6 @@ public abstract class Report_Analysis extends JPanel {
 				.addComponent(btn_Get))
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
-
-		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
-					{null, null, null, "Go!"}
-				},
-				new String[]{"", "", "", ""}));
 
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
@@ -294,9 +288,32 @@ public abstract class Report_Analysis extends JPanel {
 			log.error(null, ex);
 		}
 
+		tbl_ReportTable.setModel(new DefaultTableModel(
+				new Object[][] {
+					{null, null, null, "Go!"}
+				},
+				new String[] {"", "", "", ""}));
+
+		txt_NRows.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int key = e.getKeyChar();
+				if (key == KeyEvent.VK_ENTER) {
+					loadReportAction.actionPerformed(null);
+				}
+			}
+		});
+		btn_Get.setAction(loadReportAction);
 		btn_Save.setAction(new SaveAsAction(testOpKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
 		btn_Back.setAction(new BackAction(new DataSetKey(testOpKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
+
+		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent me) {
+				displayColumnCursor(me);
+			}
+		});
 
 		tbl_ReportTable.setDefaultRenderer(Object.class, createRowRenderer());
 		tbl_ReportTable.addMouseListener(new MouseAdapter() {
@@ -345,17 +362,7 @@ public abstract class Report_Analysis extends JPanel {
 			}
 		});
 
-//		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
-//		reportName = reportName.substring(reportName.indexOf('-') + 2);
-//		String reportPath = "";
-//		try {
-//			reportPath = Study.constructReportsPath(studyKey);
-//		} catch (IOException ex) {
-//			log.error(null, ex);
-//		}
-//		reportFile = new File(reportPath + analysisFileName);
-
-		actionLoadReport();
+		loadReportAction.actionPerformed(null);
 	}
 
 	protected abstract OPType getAssociationTestType();
@@ -383,74 +390,76 @@ public abstract class Report_Analysis extends JPanel {
 		chrSetInfoMap = OperationManager.extractChromosomeKeysAndInfos(testOpKey);
 	}
 
-	private void actionLoadReport() {
+	private static class LoadReportAction extends AbstractAction {
 
-		final ReportParser reportParser
-				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
+		private final File reportFile;
+		private final JTable reportTable;
+		private final JFormattedTextField nRows;
+		private final ReportParser reportParser;
 
-		if (reportFile.exists() && !reportFile.isDirectory()) {
-			final int numRowsToFetch = Integer.parseInt(txt_NRows.getText());
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, final ReportParser reportParser) {
 
-			final List<Object[]> tableRows;
-			try {
-					tableRows = reportParser.parseReport(reportFile, numRowsToFetch, false);
-			} catch (IOException ex) {
-				log.error(null, ex);
-					// TODO maybe inform the user through a dialog?
-				return;
-			}
-
-			final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
-
-			TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
-			tbl_ReportTable.setModel(model);
-
-			TableRowSorter sorter = new TableRowSorter(model) {
-				private Comparator<Object> comparator = new Comparator<Object>() {
-					@Override
-					public int compare(Object o1, Object o2) {
-						try {
-							Double d1 = Double.parseDouble(o1.toString());
-							Double d2 = Double.parseDouble(o2.toString());
-							return d1.compareTo(d2);
-						} catch (NumberFormatException exDouble) {
-							try {
-								Integer i1 = Integer.parseInt(o1.toString());
-								Integer i2 = Integer.parseInt(o2.toString());
-								return i1.compareTo(i2);
-							} catch (NumberFormatException exInteger) {
-								log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
-								return o1.toString().compareTo(o2.toString());
-							}
-						}
-					}
-				};
-
-				@Override
-				public Comparator getComparator(int column) {
-					return comparator;
-				}
-
-				@Override
-				public boolean useToString(int column) {
-					return false;
-				}
-			};
-
-			tbl_ReportTable.setRowSorter(sorter);
-		}
-	}
-
-	private class LoadReportAction extends AbstractAction { // FIXME make static
-
-		LoadReportAction() {
-
+			this.reportFile = reportFile;
+			this.reportTable = reportTable;
+			this.nRows = nRows;
+			this.reportParser = reportParser;
 			putValue(NAME, Text.All.get);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			actionLoadReport();
+
+			if (reportFile.exists() && !reportFile.isDirectory()) {
+				final int numRowsToFetch = Integer.parseInt(nRows.getText());
+
+				final List<Object[]> tableRows;
+				try {
+					tableRows = reportParser.parseReport(reportFile, numRowsToFetch, false);
+				} catch (final IOException ex) {
+					log.error(null, ex);
+					// TODO maybe inform the user through a dialog?
+					return;
+				}
+
+				final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
+
+				TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
+				reportTable.setModel(model);
+
+				TableRowSorter sorter = new TableRowSorter(model) {
+					Comparator<Object> comparator = new Comparator<Object>() {
+						@Override
+						public int compare(Object o1, Object o2) {
+							try {
+								Double d1 = Double.parseDouble(o1.toString());
+								Double d2 = Double.parseDouble(o2.toString());
+								return d1.compareTo(d2);
+							} catch (NumberFormatException exDouble) {
+								try {
+									Integer i1 = Integer.parseInt(o1.toString());
+									Integer i2 = Integer.parseInt(o2.toString());
+									return i1.compareTo(i2);
+								} catch (final NumberFormatException exInteger) {
+									log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
+									return o1.toString().compareTo(o2.toString());
+								}
+							}
+						}
+					};
+
+					@Override
+					public Comparator getComparator(int column) {
+						return comparator;
+					}
+
+					@Override
+					public boolean useToString(int column) {
+						return false;
+					}
+				};
+
+				reportTable.setRowSorter(sorter);
+			}
 		}
 	}
 
