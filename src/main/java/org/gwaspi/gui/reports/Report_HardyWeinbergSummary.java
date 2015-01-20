@@ -23,11 +23,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -45,7 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -56,6 +52,7 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
+import org.gwaspi.reports.OutputHardyWeinberg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,17 +60,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_HardyWeinbergSummary.class);
-
-	private static final String[] COLUMNS = new String[] {
-			Text.Reports.markerId,
-			Text.Reports.rsId,
-			Text.Reports.chr,
-			Text.Reports.pos,
-			Text.Reports.minAallele,
-			Text.Reports.majAallele,
-			Text.Reports.hwPval + Text.Reports.CTRL,
-			Text.Reports.hwObsHetzy + Text.Reports.CTRL,
-			Text.Reports.hwExpHetzy + Text.Reports.CTRL};
 
 	// Variables declaration - do not modify
 	private final File reportFile;
@@ -265,142 +251,58 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			FileReader inputFileReader = null;
-			BufferedReader inputBufferReader = null;
-			try {
-				if (reportFile.exists() && !reportFile.isDirectory()) {
-					int getRowsNb = Integer.parseInt(nRows.getText());
 
-					inputFileReader = new FileReader(reportFile);
-					inputBufferReader = new BufferedReader(inputFileReader);
+			if (reportFile.exists() && !reportFile.isDirectory()) {
+				final int numRowsToFetch = Integer.parseInt(nRows.getText());
 
-					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRows = new ArrayList<Object[]>();
-					// read but ignore the header
-					/*String header = */inputBufferReader.readLine();
-					int count = 0;
-					while (count < getRowsNb) {
-						String l = inputBufferReader.readLine();
-						if (l == null) {
-							break;
-						}
-						String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
-						Object[] row = new Object[COLUMNS.length];
+				final List<Object[]> tableRows;
+				try {
+					tableRows = OutputHardyWeinberg.parseHWReport(reportFile, numRowsToFetch, false);
+				} catch (final IOException ex) {
+					log.error(null, ex);
+					// TODO maybe inform the user through a dialog?
+					return;
+				}
 
-						String markerId = cVals[0];
-						String rsId = cVals[1];
-						String chr = cVals[2];
-						int position = Integer.parseInt(cVals[3]);
-						String minAllele = cVals[4];
-						String majAllele = cVals[5];
-						Double hwPvalCtrl = cVals[6] != null ? Double.parseDouble(cVals[6]) : Double.NaN;
-						Double obsHetzyCtrl = cVals[7] != null ? Double.parseDouble(cVals[7]) : Double.NaN;
-						Double expHetzyCtrl = cVals[8] != null ? Double.parseDouble(cVals[8]) : Double.NaN;
+				final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
-						row[0] = markerId;
-						row[1] = rsId;
-						row[2] = chr;
-						row[3] = position;
-						row[4] = minAllele;
-						row[5] = majAllele;
+				TableModel model = new DefaultTableModel(tableMatrix, OutputHardyWeinberg.COLUMNS);
+				reportTable.setModel(model);
 
-//						if (!cGlobal.OSNAME.contains("Windows")) {
-						Double hwPvalCtrl_f;
-						Double obsHetzyCtrl_f;
-						Double expHetzyCtrl_f;
-						try {
-							hwPvalCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_SCIENTIFIC.format(hwPvalCtrl));
-						} catch (NumberFormatException ex) {
-							hwPvalCtrl_f = hwPvalCtrl;
-							log.warn(null, ex);
-						}
-						try {
-							obsHetzyCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(obsHetzyCtrl));
-						} catch (NumberFormatException ex) {
-							obsHetzyCtrl_f = obsHetzyCtrl;
-							log.warn(null, ex);
-						}
-						try {
-							expHetzyCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(expHetzyCtrl));
-						} catch (NumberFormatException ex) {
-							expHetzyCtrl_f = expHetzyCtrl;
-							log.warn(null, ex);
-						}
-						row[6] = hwPvalCtrl_f;
-						row[7] = obsHetzyCtrl_f;
-						row[8] = expHetzyCtrl_f;
-//						} else {
-//							row[6] = dfRound.format(hwPvalCtrl);
-//							row[7] = dfSci.format(obsHetzyCtrl);
-//							row[8] = dfRound.format(expHetzyCtrl);
-//						}
-
-						tableRows.add(row);
-						count++;
-					}
-
-					Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
-					for (int i = 0; i < tableRows.size(); i++) {
-						tableMatrix[i] = tableRows.get(i);
-					}
-
-					TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
-					reportTable.setModel(model);
-
-					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-//					if (!cGlobal.OSNAME.contains("Windows")) {
-//						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-					TableRowSorter sorter = new TableRowSorter(model) {
-						Comparator<Object> comparator = new Comparator<Object>() {
-							@Override
-							public int compare(Object o1, Object o2) {
+				TableRowSorter sorter = new TableRowSorter(model) {
+					Comparator<Object> comparator = new Comparator<Object>() {
+						@Override
+						public int compare(Object o1, Object o2) {
+							try {
+								Double d1 = Double.parseDouble(o1.toString());
+								Double d2 = Double.parseDouble(o2.toString());
+								return d1.compareTo(d2);
+							} catch (NumberFormatException ex) {
+								log.warn(null, ex);
 								try {
-									Double d1 = Double.parseDouble(o1.toString());
-									Double d2 = Double.parseDouble(o2.toString());
-									return d1.compareTo(d2);
-								} catch (NumberFormatException ex) {
-									log.warn(null, ex);
-									try {
-										Integer i1 = Integer.parseInt(o1.toString());
-										Integer i2 = Integer.parseInt(o2.toString());
-										return i1.compareTo(i2);
-									} catch (Exception ex1) {
-										log.warn(null, ex1);
-										return o1.toString().compareTo(o2.toString());
-									}
+									Integer i1 = Integer.parseInt(o1.toString());
+									Integer i2 = Integer.parseInt(o2.toString());
+									return i1.compareTo(i2);
+								} catch (final NumberFormatException ex1) {
+									log.warn(null, ex1);
+									return o1.toString().compareTo(o2.toString());
 								}
 							}
-						};
-
-						@Override
-						public Comparator getComparator(int column) {
-							return comparator;
-						}
-
-						@Override
-						public boolean useToString(int column) {
-							return false;
 						}
 					};
 
-					reportTable.setRowSorter(sorter);
-	//				}
-					//</editor-fold>
-				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (Exception ex) {
-				log.error(null, ex);
-			} finally {
-				try {
-					if (inputBufferReader != null) {
-						inputBufferReader.close();
-					} else if (inputFileReader != null) {
-						inputFileReader.close();
+					@Override
+					public Comparator getComparator(int column) {
+						return comparator;
 					}
-				} catch (Exception ex) {
-					log.warn(null, ex);
-				}
+
+					@Override
+					public boolean useToString(int column) {
+						return false;
+					}
+				};
+
+				reportTable.setRowSorter(sorter);
 			}
 		}
 	}

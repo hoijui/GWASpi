@@ -71,6 +71,17 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 					false,
 					false);
 
+	public static final String[] COLUMNS = new String[] {
+			Text.Reports.markerId,
+			Text.Reports.rsId,
+			Text.Reports.chr,
+			Text.Reports.pos,
+			Text.Reports.minAallele,
+			Text.Reports.majAallele,
+			Text.Reports.hwPval + Text.Reports.CTRL,
+			Text.Reports.hwObsHetzy + Text.Reports.CTRL,
+			Text.Reports.hwExpHetzy + Text.Reports.CTRL};
+
 	private ProgressHandler operationPH;
 
 	public OutputHardyWeinberg(final HardyWeinbergOutputParams params) {
@@ -150,7 +161,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 		// WRITE HEADER OF FILE
-		String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
+		final String header = OutputQAMarkers.createReportHeaderLine(COLUMNS);
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		final MarkersMetadataSource markersMetadatas = dataSetSource.getMarkersMetadatasSource();
@@ -240,5 +251,52 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 //		Map<MarkerKey, Double> markerIdHWHETZY_CTRLMap = GatherHardyWeinbergData.loadHWHETZY_ALT(operationKey);
 //		Map<MarkerKey, Double> sortedHWHETZYCTRLs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, markerIdHWHETZY_CTRLMap);
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedHWHETZYCTRLs, true, false);
+	}
+
+	public static List<Object[]> parseHWReport(
+			final File reportFile,
+			final int numRowsToFetch,
+			final boolean exactValues)
+			throws IOException
+	{
+		return ReportWriter.parseReport(
+				reportFile,
+				new HWReportLineParser(exactValues),
+				numRowsToFetch);
+	}
+
+	private static class HWReportLineParser extends AbstractReportLineParser {
+
+		public HWReportLineParser(final boolean exactValues) {
+			super(exactValues);
+		}
+
+		@Override
+		public Object[] extract(final String[] cVals) {
+
+			final Object[] row = new Object[COLUMNS.length];
+
+			final String markerId = cVals[0];
+			final String rsId = cVals[1];
+			final String chr = cVals[2];
+			final int position = Integer.parseInt(cVals[3]);
+			final String minAllele = cVals[4];
+			final String majAllele = cVals[5];
+			final Double hwPvalCtrl_f = maybeTryToRoundNicely(tryToParseDouble(cVals[6]));
+			final Double obsHetzyCtrl_f = maybeTryToRoundNicely(tryToParseDouble(cVals[7]));
+			final Double expHetzyCtrl_f = maybeTryToRoundNicely(tryToParseDouble(cVals[8]));
+
+			row[0] = markerId;
+			row[1] = rsId;
+			row[2] = chr;
+			row[3] = position;
+			row[4] = minAllele;
+			row[5] = majAllele;
+			row[6] = hwPvalCtrl_f;
+			row[7] = obsHetzyCtrl_f;
+			row[8] = expHetzyCtrl_f;
+
+			return row;
+		}
 	}
 }
