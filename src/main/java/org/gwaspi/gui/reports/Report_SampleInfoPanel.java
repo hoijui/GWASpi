@@ -91,6 +91,8 @@ public class Report_SampleInfoPanel extends JPanel {
 				return false;
 			}
 		};
+		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+
 		pnl_Footer = new JPanel();
 		btn_Save = new JButton();
 		btn_Back = new JButton();
@@ -103,7 +105,6 @@ public class Report_SampleInfoPanel extends JPanel {
 					{null, null, null, "Go!"}
 				},
 				new String[] {"", "", "", "", ""}));
-		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
