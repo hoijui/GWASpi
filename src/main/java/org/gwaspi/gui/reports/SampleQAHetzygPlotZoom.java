@@ -37,7 +37,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -180,7 +179,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		String titlePlot = Text.Reports.smplHetzyVsMissingRat;
 
-		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		pnl_ChartNavigator.setBorder(GWASpiExplorerPanel.createMainTitledBorder(titlePlot)); // NOI18N
 
 		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 

@@ -19,7 +19,6 @@ package org.gwaspi.gui.reports;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -39,7 +38,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -53,7 +51,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -148,7 +145,8 @@ public abstract class Report_Analysis extends JPanel {
 		btn_Get = new JButton();
 
 		pnl_SearchDB = new JPanel();
-		pnl_SearchDB.setBorder(BorderFactory.createTitledBorder(Text.Reports.externalResourceDB));
+		pnl_SearchDB.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Reports.externalResourceDB));
 		cmb_SearchDB = new JComboBox();
 		cmb_SearchDB.setModel(new DefaultComboBoxModel(LinksExternalResouces.getLinkNames()));
 
@@ -174,9 +172,9 @@ public abstract class Report_Analysis extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + reportName, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Reports.report + ": " + reportName)); // NOI18N
 
-		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
+		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		Integer actualNRows = (nRows == null) ? 100 : nRows;
 		txt_NRows.setValue(actualNRows);

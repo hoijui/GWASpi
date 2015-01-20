@@ -18,12 +18,10 @@
 package org.gwaspi.gui.reports;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -31,10 +29,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetKey;
@@ -78,18 +76,18 @@ public class Report_AnalysisPanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
+		final String title;
 		if (currentOP != null) {
-			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + currentOP.getFriendlyName() + ", OperationID: " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+			title = Text.Reports.report + ": " + currentOP.getFriendlyName() + ", OperationID: " + currentOP.getId(); // NOI18N
 		} else {
-			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + "<NONE>", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+			title = Text.Reports.report + ": " + "<NONE>"; // NOI18N
 		}
-
-		//pnl_OperationDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation+": "+ tata, OperationID: ", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(title));
 
 		txtA_OpDesc.setColumns(20);
 		txtA_OpDesc.setRows(5);
 		txtA_OpDesc.setEditable(false);
-		txtA_OpDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_OpDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
 		txtA_OpDesc.setText((currentOP == null) ? "<NONE>" : currentOP.getDescription());
 		scrl_OpDesc.setViewportView(txtA_OpDesc);
 
@@ -131,7 +129,7 @@ public class Report_AnalysisPanel extends JPanel {
 			pnl_ReportTmp = new JPanel();
 		}
 		pnl_Report = pnl_ReportTmp;
-		pnl_Report.setBorder(BorderFactory.createTitledBorder("Report"));
+		pnl_Report.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("Report"));
 
 		btn_Back.setAction(new BackAction(parent));
 

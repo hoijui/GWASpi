@@ -40,7 +40,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
@@ -287,7 +286,8 @@ public final class ManhattanPlotZoom extends JPanel {
 			titlePlot = ": " + origMarkerKey.toString() + " - Chr" + currentChr;
 		}
 
-		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, "Manhattan Plot Navigator" + titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		pnl_ChartNavigator.setBorder(GWASpiExplorerPanel.createMainTitledBorder(
+				"Manhattan Plot Navigator" + titlePlot)); // NOI18N
 
 		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
@@ -330,7 +330,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		}
 
 		//<editor-fold defaultstate="expanded" desc="TRACKER">
-//		pnl_Tracker.setBorder(BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
+//		pnl_Tracker.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("Marker Nº on "+lblChr));
 //
 //
 //		slid_Tracker.setMaximum(max);
@@ -361,7 +361,8 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		//<editor-fold defaultstate="expanded" desc="EXTERNAL RESOURCE DBs">
 		pnl_SearchDB = new JPanel();
-		pnl_SearchDB.setBorder(BorderFactory.createTitledBorder(Text.Reports.externalResourceDB));
+		pnl_SearchDB.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Reports.externalResourceDB));
 		cmb_SearchDB = new JComboBox();
 		cmb_SearchDB.setModel(new DefaultComboBoxModel(LinksExternalResouces.getLinkNames()));
 
