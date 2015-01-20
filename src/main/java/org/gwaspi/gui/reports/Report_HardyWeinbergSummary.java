@@ -140,7 +140,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
 
-		txt_NRows.setValue(Integer.valueOf(100));
+		txt_NRows.setValue(100);
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		txt_NRows.addKeyListener(new KeyAdapter() {
@@ -180,10 +180,10 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		//</editor-fold>
 
 		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
+				new Object[][] {
 					{null, null, null, "Go!"}
 				},
-				new String[]{"", "", "", ""}));
+				new String[] {"", "", "", ""}));
 //		tbl_ReportTable.addMouseListener(new MouseAdapter() {
 //			public void mouseClicked(MouseEvent e) {
 //				try {
@@ -198,12 +198,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
-
-		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
-
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -216,9 +210,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
 				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
 		pnl_FooterLayout.setVerticalGroup(
 				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -249,6 +241,10 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		//</editor-fold>
+
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 
 		loadReportAction.actionPerformed(null);
 	}
