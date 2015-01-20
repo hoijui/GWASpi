@@ -253,16 +253,25 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 //		ReportWriter.appendColumnToReport(reportPath, reportName, sortedHWHETZYCTRLs, true, false);
 	}
 
-	public static List<Object[]> parseHWReport(
-			final File reportFile,
-			final int numRowsToFetch,
-			final boolean exactValues)
-			throws IOException
-	{
-		return ReportWriter.parseReport(
-				reportFile,
-				new HWReportLineParser(exactValues),
-				numRowsToFetch);
+	public static class HWReportParser implements ReportParser {
+
+		@Override
+		public String[] getColumnHeaders() {
+			return COLUMNS;
+		}
+
+		@Override
+		public List<Object[]> parseReport(
+				final File reportFile,
+				final int numRowsToFetch,
+				final boolean exactValues)
+				throws IOException
+		{
+			return ReportWriter.parseReport(
+					reportFile,
+					new HWReportLineParser(exactValues),
+					numRowsToFetch);
+		}
 	}
 
 	private static class HWReportLineParser extends AbstractReportLineParser {

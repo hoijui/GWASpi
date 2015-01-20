@@ -314,17 +314,31 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedOrigIndexMissingnessRatioOrMismatchStates, false, false);
 	}
 
-	public static List<Object[]> parseQAMarkersReport(
-			final File reportFile,
-			final boolean missingness,
-			final int numRowsToFetch,
-			final boolean exactValues)
-			throws IOException
-	{
-		return ReportWriter.parseReport(
-				reportFile,
-				new QAMarkersReportLineParser(exactValues, missingness),
-				numRowsToFetch);
+	public static class QAMarkersReportParser implements ReportParser {
+
+		private final boolean missingness;
+
+		public QAMarkersReportParser(final boolean missingness) {
+			this.missingness = missingness;
+		}
+
+		@Override
+		public String[] getColumnHeaders() {
+			return missingness ? COLUMNS_MISSING : COLUMNS_MISMATCH;
+		}
+
+		@Override
+		public List<Object[]> parseReport(
+				final File reportFile,
+				final int numRowsToFetch,
+				final boolean exactValues)
+				throws IOException
+		{
+			return ReportWriter.parseReport(
+					reportFile,
+					new QAMarkersReportLineParser(exactValues, missingness),
+					numRowsToFetch);
+		}
 	}
 
 	private static class QAMarkersReportLineParser extends AbstractReportLineParser {

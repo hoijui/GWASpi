@@ -78,6 +78,7 @@ import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.reports.OutputTest;
+import org.gwaspi.reports.ReportParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -384,13 +385,15 @@ public abstract class Report_Analysis extends JPanel {
 
 	private void actionLoadReport() {
 
+		final ReportParser reportParser
+				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
+
 		if (reportFile.exists() && !reportFile.isDirectory()) {
 			final int numRowsToFetch = Integer.parseInt(txt_NRows.getText());
 
 			final List<Object[]> tableRows;
 			try {
-				tableRows = OutputTest.parseAssociationTestReport(
-					reportFile, getAssociationTestType(), numRowsToFetch, false);
+					tableRows = reportParser.parseReport(reportFile, numRowsToFetch, false);
 			} catch (IOException ex) {
 				log.error(null, ex);
 					// TODO maybe inform the user through a dialog?
@@ -399,7 +402,7 @@ public abstract class Report_Analysis extends JPanel {
 
 			final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
-			TableModel model = new DefaultTableModel(tableMatrix, getColumns());
+			TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 			tbl_ReportTable.setModel(model);
 
 			TableRowSorter sorter = new TableRowSorter(model) {

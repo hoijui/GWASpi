@@ -253,16 +253,25 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		reportFW.close();
 	}
 
-	public static List<Object[]> parseQASamplesReport(
-			final File reportFile,
-			final int numRowsToFetch,
-			final boolean exactValues)
-			throws IOException
-	{
-		return ReportWriter.parseReport(
-				reportFile,
-				new QASamplesReportLineParser(exactValues),
-				numRowsToFetch);
+	public static class QASamplesReportParser implements ReportParser {
+
+		@Override
+		public String[] getColumnHeaders() {
+			return COLUMNS;
+		}
+
+		@Override
+		public List<Object[]> parseReport(
+				final File reportFile,
+				final int numRowsToFetch,
+				final boolean exactValues)
+				throws IOException
+		{
+			return ReportWriter.parseReport(
+					reportFile,
+					new QASamplesReportLineParser(exactValues),
+					numRowsToFetch);
+		}
 	}
 
 	private static class QASamplesReportLineParser extends AbstractReportLineParser {

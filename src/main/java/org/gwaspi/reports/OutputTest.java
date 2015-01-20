@@ -413,15 +413,32 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		}
 	}
 
-	public static List<Object[]> parseAssociationTestReport(
-			final File reportFile,
-			final OPType associationTestType,
-			final int numRowsToFetch,
-			final boolean exactValues)
-			throws IOException
-	{
-		final int numColumns = createColumnHeaders(associationTestType).length;
-		return ReportWriter.parseReport(reportFile, new AssociationTestReportLineParser(exactValues, numColumns), numRowsToFetch);
+	public static class AssociationTestReportParser implements ReportParser {
+
+		private final String[] columnHeaders;
+
+		public AssociationTestReportParser(final OPType associationTestType) {
+			this.columnHeaders = createColumnHeaders(associationTestType);
+		}
+
+		@Override
+		public String[] getColumnHeaders() {
+			return columnHeaders;
+		}
+
+		@Override
+		public List<Object[]> parseReport(
+				final File reportFile,
+				final int numRowsToFetch,
+				final boolean exactValues)
+				throws IOException
+		{
+			final int numColumns = getColumnHeaders().length;
+			return ReportWriter.parseReport(
+					reportFile,
+					new AssociationTestReportLineParser(exactValues, numColumns),
+					numRowsToFetch);
+		}
 	}
 
 	private static class AssociationTestReportLineParser extends AbstractReportLineParser {

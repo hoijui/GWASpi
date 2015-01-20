@@ -53,6 +53,7 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.reports.OutputQAMarkers;
+import org.gwaspi.reports.ReportParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	private final JTable tbl_ReportTable;
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
+	private final ReportParser reportParser;
 
 	public Report_QAMarkersSummary(final OperationKey operationKey, final String reportFileName) {
 
@@ -86,6 +88,7 @@ public class Report_QAMarkersSummary extends JPanel {
 			nRowsSuffix = "Markers by most significant Missing Ratios";
 		}
 		final String helpUrlSuffix = HelpURLs.QryURL.markerQAreport;
+		this.reportParser = new OutputQAMarkers.QAMarkersReportParser(missingness);
 
 		this.operationKey = operationKey;
 
@@ -134,7 +137,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		final Action loadReportAction = new LoadReportAction(
-				reportFile, tbl_ReportTable, txt_NRows, missingness);
+				reportFile, tbl_ReportTable, txt_NRows, reportParser);
 
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
@@ -242,23 +245,15 @@ public class Report_QAMarkersSummary extends JPanel {
 		private final File reportFile;
 		private final JTable reportTable;
 		private final JFormattedTextField nRows;
-		private final String[] columns;
-		private boolean missingness;
+		private final ReportParser reportParser;
 
-		private LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String[] columns) {
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, final ReportParser reportParser) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
-			this.columns = columns;
+			this.reportParser = reportParser;
 			putValue(NAME, Text.All.get);
-		}
-
-		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, boolean missingness) {
-			this(reportFile, reportTable, nRows,
-					missingness ? OutputQAMarkers.COLUMNS_MISSING : OutputQAMarkers.COLUMNS_MISMATCH);
-
-			this.missingness = missingness;
 		}
 
 		@Override
@@ -269,8 +264,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 				final List<Object[]> tableRows;
 				try {
-					tableRows = OutputQAMarkers.parseQAMarkersReport(
-							reportFile, missingness, numRowsToFetch, false);
+					tableRows = reportParser.parseReport(reportFile, numRowsToFetch, false);
 				} catch (final IOException ex) {
 					log.error(null, ex);
 					// TODO maybe inform the user through a dialog?
@@ -279,7 +273,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 				final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
-				TableModel model = new DefaultTableModel(tableMatrix, columns);
+				TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 				reportTable.setModel(model);
 
 				TableRowSorter sorter = new TableRowSorter(model) {

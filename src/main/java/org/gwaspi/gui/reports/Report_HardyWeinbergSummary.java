@@ -53,6 +53,7 @@ import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.reports.OutputHardyWeinberg;
+import org.gwaspi.reports.ReportParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	private final JTable tbl_ReportTable;
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
+	private final ReportParser reportParser;
 
 	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String reportFileName) {
 
@@ -82,6 +84,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		final String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
 		final String helpUrlSuffix = HelpURLs.QryURL.hwReport;
+		this.reportParser = new OutputHardyWeinberg.HWReportParser();
 
 		this.operationKey = operationKey;
 
@@ -129,7 +132,8 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
+		final Action loadReportAction = new LoadReportAction(
+				reportFile, tbl_ReportTable, txt_NRows, reportParser);
 
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
@@ -237,12 +241,14 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		private final File reportFile;
 		private final JTable reportTable;
 		private final JFormattedTextField nRows;
+		private final ReportParser reportParser;
 
-		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, final ReportParser reportParser) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
+			this.reportParser = reportParser;
 			putValue(NAME, Text.All.get);
 		}
 
@@ -254,8 +260,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 				final List<Object[]> tableRows;
 				try {
-					tableRows = OutputHardyWeinberg.parseHWReport(
-							reportFile, numRowsToFetch, false);
+					tableRows = reportParser.parseReport(reportFile, numRowsToFetch, false);
 				} catch (final IOException ex) {
 					log.error(null, ex);
 					// TODO maybe inform the user through a dialog?
@@ -264,7 +269,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 				final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
-				TableModel model = new DefaultTableModel(tableMatrix, OutputHardyWeinberg.COLUMNS);
+				TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 				reportTable.setModel(model);
 
 				TableRowSorter sorter = new TableRowSorter(model) {
