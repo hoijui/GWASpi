@@ -29,9 +29,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -59,7 +57,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.gwaspi.constants.ImportConstants;
+import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -71,6 +69,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.LinksExternalResouces;
+import org.gwaspi.gui.utils.RowRendererAssociationTestWithZoomAndQueryDB;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.ChromosomeInfo;
@@ -81,6 +80,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.OperationManager;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -359,17 +359,26 @@ public abstract class Report_Analysis extends JPanel {
 		actionLoadReport();
 	}
 
-	protected abstract String[] getColumns();
+	protected abstract OPType getAssociationTestType();
 
-	protected abstract int getZoomColumnIndex();
+	private String[] getColumns() {
+		return OutputTest.createColumnHeaders(getAssociationTestType());
+	}
+
+	private int getZoomColumnIndex() {
+		return getColumns().length - 2;
+	}
 
 	protected int getExternalResourceColumnIndex() {
 		return getZoomColumnIndex() + 1;
 	}
 
-	protected abstract RowRendererDefault createRowRenderer();
+	private RowRendererDefault createRowRenderer() {
 
-	protected abstract Object[] parseRow(String[] cVals);
+		return new RowRendererAssociationTestWithZoomAndQueryDB(
+				getZoomColumnIndex(),
+				getExternalResourceColumnIndex());
+	}
 
 	protected final void initChrSetInfo() throws IOException {
 		chrSetInfoMap = OperationManager.extractChromosomeKeysAndInfos(testOpKey);
@@ -377,95 +386,60 @@ public abstract class Report_Analysis extends JPanel {
 
 	private void actionLoadReport() {
 
-		FileReader inputFileReader = null;
-		BufferedReader inputBufferReader = null;
-		try {
-			if (reportFile.exists() && !reportFile.isDirectory()) {
-				final int getRowsNb = Integer.parseInt(txt_NRows.getText());
+		if (reportFile.exists() && !reportFile.isDirectory()) {
+			final int numRowsToFetch = Integer.parseInt(txt_NRows.getText());
 
-				inputFileReader = new FileReader(reportFile);
-				inputBufferReader = new BufferedReader(inputFileReader);
+			final List<Object[]> tableRows;
+			try {
+				tableRows = OutputTest.parseAssociationTestReport(
+					reportFile, getAssociationTestType(), numRowsToFetch);
+			} catch (IOException ex) {
+				log.error(null, ex);
+					// TODO maybe inform the user through a dialog?
+				return;
+			}
 
-				// Getting data from file and subdividing to series all points by chromosome
-				final List<Object[]> tableRows = new ArrayList<Object[]>();
-				String header = inputBufferReader.readLine();
-				int count = 0;
-				while (count < getRowsNb) {
-					String l = inputBufferReader.readLine();
-					if (l == null) {
-						break;
-					}
+			Object[][] tableMatrix = new Object[tableRows.size()][11];
+			for (int i = 0; i < tableRows.size(); i++) {
+				tableMatrix[i] = tableRows.get(i);
+			}
 
-					String[] cVals = l.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+			TableModel model = new DefaultTableModel(tableMatrix, getColumns());
+			tbl_ReportTable.setModel(model);
 
-					Object[] row = parseRow(cVals);
-
-					tableRows.add(row);
-					count++;
-				}
-				inputBufferReader.close();
-
-				Object[][] tableMatrix = new Object[tableRows.size()][11];
-				for (int i = 0; i < tableRows.size(); i++) {
-					tableMatrix[i] = tableRows.get(i);
-				}
-
-				TableModel model = new DefaultTableModel(tableMatrix, getColumns());
-				tbl_ReportTable.setModel(model);
-
-				//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-//				if (!cGlobal.OSNAME.contains("Windows")) {
-//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-				TableRowSorter sorter = new TableRowSorter(model) {
-					private Comparator<Object> comparator = new Comparator<Object>() {
-						@Override
-						public int compare(Object o1, Object o2) {
+			TableRowSorter sorter = new TableRowSorter(model) {
+				private Comparator<Object> comparator = new Comparator<Object>() {
+					@Override
+					public int compare(Object o1, Object o2) {
+						try {
+							Double d1 = Double.parseDouble(o1.toString());
+							Double d2 = Double.parseDouble(o2.toString());
+							return d1.compareTo(d2);
+						} catch (NumberFormatException exDouble) {
 							try {
-								Double d1 = Double.parseDouble(o1.toString());
-								Double d2 = Double.parseDouble(o2.toString());
-								return d1.compareTo(d2);
-							} catch (NumberFormatException exDouble) {
-								try {
-									Integer i1 = Integer.parseInt(o1.toString());
-									Integer i2 = Integer.parseInt(o2.toString());
-									return i1.compareTo(i2);
-								} catch (NumberFormatException exInteger) {
-									log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
-									return o1.toString().compareTo(o2.toString());
-								}
+								Integer i1 = Integer.parseInt(o1.toString());
+								Integer i2 = Integer.parseInt(o2.toString());
+								return i1.compareTo(i2);
+							} catch (NumberFormatException exInteger) {
+								log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
+								return o1.toString().compareTo(o2.toString());
 							}
 						}
-					};
-
-					@Override
-					public Comparator getComparator(int column) {
-						return comparator;
-					}
-
-					@Override
-					public boolean useToString(int column) {
-						return false;
 					}
 				};
 
-				tbl_ReportTable.setRowSorter(sorter);
-//				}
-				//</editor-fold>
-			}
-		} catch (IOException ex) {
-			log.error(null, ex);
-		} catch (Exception ex) {
-			log.error(null, ex);
-		} finally {
-			try {
-				if (inputBufferReader != null) {
-					inputBufferReader.close();
-				} else if (inputFileReader != null) {
-					inputFileReader.close();
+				@Override
+				public Comparator getComparator(int column) {
+					return comparator;
 				}
-			} catch (IOException ex) {
-				log.warn(null, ex);
-			}
+
+				@Override
+				public boolean useToString(int column) {
+					return false;
+				}
+			};
+
+			tbl_ReportTable.setRowSorter(sorter);
 		}
 	}
 

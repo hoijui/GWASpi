@@ -17,17 +17,25 @@
 
 package org.gwaspi.gui.utils;
 
-
 import java.awt.Component;
 import javax.swing.JTable;
 
-public class RowRendererTrendTestWithZoomQueryDB extends RowRendererDefault {
+public class RowRendererAssociationTestWithZoomAndQueryDB extends RowRendererDefault {
+
+	private final int zoomColumn;
+	private final int queryDbColumn;
+
+	public RowRendererAssociationTestWithZoomAndQueryDB(int zoomColumn, int queryDbColumn) {
+
+		this.zoomColumn = zoomColumn;
+		this.queryDbColumn = queryDbColumn;
+	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
 		super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 
-		setZoomAndQueryDbIcons(this, table, column, 8, 9);
+		setZoomAndQueryDbIcons(this, table, column, zoomColumn, queryDbColumn);
 
 		return this;
 	}

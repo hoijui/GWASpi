@@ -24,13 +24,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Extractor;
+import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.reports.Report_Analysis;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationMetadata;
@@ -94,24 +99,58 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	public OutputTest(TestOutputParams params) {
 		super(params);
 
-		final String headerBase = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele";
 		switch (getParams().getTestType()) {
 			case ALLELICTEST:
 				this.qqPlotDof = 1;
-				this.header = headerBase + "\tX²\tPval\tOR\n";
 				break;
 			case GENOTYPICTEST:
 				this.qqPlotDof = 2;
-				this.header = headerBase + "\tX²\tPval\t?OR-AA/aa?\t?OR-Aa/aa?\n";
 				break;
 			case TRENDTEST:
 				this.qqPlotDof = 1;
-				this.header = headerBase + "\tTrend-Test\tPval\n";
 				break;
 			default:
-				throw new IllegalArgumentException("Not a supported test type: " + getParams().getTestType().toString());
+				throw new IllegalArgumentException("Not a supported test type: "
+						+ getParams().getTestType().toString());
 		}
+		this.header = OutputQAMarkers.createReportHeaderLine(
+				createColumnHeaders(getParams().getTestType()));
 		this.testName = createTestName(getParams().getTestType());
+	}
+
+	public static String[] createColumnHeaders(final OPType associationTestType) {
+
+		final List<String> columns = new LinkedList<String>();
+		columns.add(Text.Reports.markerId);
+		columns.add(Text.Reports.rsId);
+		columns.add(Text.Reports.chr);
+		columns.add(Text.Reports.pos);
+		columns.add(Text.Reports.minAallele);
+		columns.add(Text.Reports.majAallele);
+		if (associationTestType == OPType.TRENDTEST) {
+			columns.add(Text.Reports.trendTest);
+		} else {
+			columns.add(Text.Reports.chiSqr);
+		}
+		columns.add(Text.Reports.pVal);
+		switch (associationTestType) {
+			case TRENDTEST:
+				break;
+			case ALLELICTEST:
+				columns.add(Text.Reports.oddsRatio);
+				break;
+			case GENOTYPICTEST:
+				columns.add(Text.Reports.ORAAaa);
+				columns.add(Text.Reports.ORAaaa);
+				break;
+			default:
+				throw new IllegalArgumentException("Not a supported test type: "
+						+ associationTestType.toString());
+		}
+		columns.add(Text.Reports.zoom);
+		columns.add(Text.Reports.externalResource);
+
+		return columns.toArray(new String[columns.size()]);
 	}
 
 	@Override
@@ -372,6 +411,97 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			if (getParams().getTestType() != OPType.ALLELICTEST) {
 				ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
 			}
+		}
+	}
+
+	public static List<Object[]> parseAssociationTestReport(
+			final File reportFile,
+			final OPType associationTestType,
+			final int numRowsToFetch)
+			throws IOException
+	{
+		final int numColumns = createColumnHeaders(associationTestType).length;
+		return ReportWriter.parseReport(reportFile, new AssociationTestReportLineParser(numColumns), numRowsToFetch);
+	}
+
+	private static class AssociationTestReportLineParser implements Extractor<String[], Object[]> {
+
+		private final int numColumns;
+		private final boolean hasOr;
+		private final boolean hasOr2;
+
+		public AssociationTestReportLineParser(final int numColumns, final boolean hasOr, final boolean hasOr2) {
+
+			this.numColumns = numColumns;
+			this.hasOr = hasOr;
+			this.hasOr2 = hasOr2;
+		}
+
+		public AssociationTestReportLineParser(final int numColumns) {
+			this(numColumns, numColumns > 10, numColumns > 11);
+		}
+
+		private static Double tryToRoundNicely(final Double exactValue) {
+
+			Double roundedValue;
+			try {
+				roundedValue = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(exactValue));
+			} catch (final NumberFormatException ex) {
+				roundedValue = exactValue;
+			}
+
+			return roundedValue;
+		}
+
+		private static Double tryToParseDouble(final String parsedValue) {
+			return (parsedValue != null) ? Double.parseDouble(parsedValue) : Double.NaN;
+		}
+
+		@Override
+		public Object[] extract(final String[] cVals) {
+
+			final Object[] row = new Object[numColumns];
+
+			final MarkerKey markerKey = new MarkerKey(cVals[0]);
+			final String rsId = cVals[1];
+			final ChromosomeKey chr = new ChromosomeKey(cVals[2]);
+			final long position = Long.parseLong(cVals[3]);
+			final String minAllele = cVals[4];
+			final String majAllele = cVals[5];
+			final Double chiSqr_f = tryToRoundNicely(tryToParseDouble(cVals[6]));
+			final Double pVal_f = tryToRoundNicely(tryToParseDouble(cVals[7]));
+			final Double or_f;
+			if (hasOr) {
+				or_f = tryToRoundNicely(tryToParseDouble(cVals[8]));
+			} else {
+				or_f = null;
+			}
+			final Double or2_f;
+			if (hasOr2) {
+				or2_f = tryToRoundNicely(tryToParseDouble(cVals[9]));
+			} else {
+				or2_f = null;
+			}
+
+			int col = 0;
+			row[col++] = markerKey;
+			row[col++] = rsId;
+			row[col++] = chr;
+			row[col++] = position;
+			row[col++] = minAllele;
+			row[col++] = majAllele;
+			row[col++] = chiSqr_f;
+			row[col++] = pVal_f;
+			if (hasOr) {
+				row[col++] = or_f;
+			}
+			if (hasOr2) {
+				row[col++] = or2_f;
+			}
+			row[col++] = "";
+			row[col++] = Text.Reports.queryDB;
+
+			return row;
 		}
 	}
 }
