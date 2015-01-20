@@ -32,7 +32,6 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
-import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
@@ -417,44 +416,30 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	public static List<Object[]> parseAssociationTestReport(
 			final File reportFile,
 			final OPType associationTestType,
-			final int numRowsToFetch)
+			final int numRowsToFetch,
+			final boolean exactValues)
 			throws IOException
 	{
 		final int numColumns = createColumnHeaders(associationTestType).length;
-		return ReportWriter.parseReport(reportFile, new AssociationTestReportLineParser(numColumns), numRowsToFetch);
+		return ReportWriter.parseReport(reportFile, new AssociationTestReportLineParser(exactValues, numColumns), numRowsToFetch);
 	}
 
-	private static class AssociationTestReportLineParser implements Extractor<String[], Object[]> {
+	private static class AssociationTestReportLineParser extends AbstractReportLineParser {
 
 		private final int numColumns;
 		private final boolean hasOr;
 		private final boolean hasOr2;
 
-		public AssociationTestReportLineParser(final int numColumns, final boolean hasOr, final boolean hasOr2) {
+		public AssociationTestReportLineParser(final boolean exactValues, final int numColumns, final boolean hasOr, final boolean hasOr2) {
+			super(exactValues);
 
 			this.numColumns = numColumns;
 			this.hasOr = hasOr;
 			this.hasOr2 = hasOr2;
 		}
 
-		public AssociationTestReportLineParser(final int numColumns) {
-			this(numColumns, numColumns > 10, numColumns > 11);
-		}
-
-		private static Double tryToRoundNicely(final Double exactValue) {
-
-			Double roundedValue;
-			try {
-				roundedValue = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(exactValue));
-			} catch (final NumberFormatException ex) {
-				roundedValue = exactValue;
-			}
-
-			return roundedValue;
-		}
-
-		private static Double tryToParseDouble(final String parsedValue) {
-			return (parsedValue != null) ? Double.parseDouble(parsedValue) : Double.NaN;
+		public AssociationTestReportLineParser(final boolean exactValues, final int numColumns) {
+			this(exactValues, numColumns, numColumns > 10, numColumns > 11);
 		}
 
 		@Override
@@ -468,17 +453,17 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			final long position = Long.parseLong(cVals[3]);
 			final String minAllele = cVals[4];
 			final String majAllele = cVals[5];
-			final Double chiSqr_f = tryToRoundNicely(tryToParseDouble(cVals[6]));
-			final Double pVal_f = tryToRoundNicely(tryToParseDouble(cVals[7]));
+			final Double chiSqr_f = maybeTryToRoundNicely(tryToParseDouble(cVals[6]));
+			final Double pVal_f = maybeTryToRoundNicely(tryToParseDouble(cVals[7]));
 			final Double or_f;
 			if (hasOr) {
-				or_f = tryToRoundNicely(tryToParseDouble(cVals[8]));
+				or_f = maybeTryToRoundNicely(tryToParseDouble(cVals[8]));
 			} else {
 				or_f = null;
 			}
 			final Double or2_f;
 			if (hasOr2) {
-				or2_f = tryToRoundNicely(tryToParseDouble(cVals[9]));
+				or2_f = maybeTryToRoundNicely(tryToParseDouble(cVals[9]));
 			} else {
 				or2_f = null;
 			}

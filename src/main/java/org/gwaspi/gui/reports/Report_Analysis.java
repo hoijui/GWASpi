@@ -390,7 +390,7 @@ public abstract class Report_Analysis extends JPanel {
 			final List<Object[]> tableRows;
 			try {
 				tableRows = OutputTest.parseAssociationTestReport(
-					reportFile, getAssociationTestType(), numRowsToFetch);
+					reportFile, getAssociationTestType(), numRowsToFetch, false);
 			} catch (IOException ex) {
 				log.error(null, ex);
 					// TODO maybe inform the user through a dialog?
