@@ -69,18 +69,19 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	private final JButton btn_Back;
 	private final JButton btn_Help;
 	private final JPanel pnl_Footer;
-	private final JLabel lbl_suffix1;
 	private final JPanel pnl_Summary;
+	private final JLabel lbl_suffix1;
 	private final JScrollPane scrl_ReportTable;
 	private final JTable tbl_ReportTable;
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String _hwFileName) {
+	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String reportFileName) {
 
 		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
+		String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
 
 		String reportPath = "";
 		try {
@@ -88,11 +89,12 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + _hwFileName);
+		reportFile = new File(reportPath + reportFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
+		txt_NRows.setValue(100);
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -120,27 +122,16 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Reports.report + ": " + reportName)); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
+				Text.Reports.report + ": " + reportName)); // NOI18N
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
 
-		txt_NRows.setValue(100);
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
-		txt_NRows.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
-				if (key == KeyEvent.VK_ENTER) {
-					loadReportAction.actionPerformed(null);
-				}
-			}
-		});
-		lbl_suffix1.setText(Text.Reports.radio1Suffix_pVal);
-
-		btn_Get.setAction(loadReportAction);
+		lbl_suffix1.setText(nRowsSuffix);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_SummaryLayout = new GroupLayout(pnl_Summary);
@@ -165,22 +156,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, "Go!"}
-				},
-				new String[] {"", "", "", ""}));
-//		tbl_ReportTable.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				try {
-//					int rowIndex = tbl_ReportTable.getSelectedRow();
-//					int colIndex = tbl_ReportTable.getSelectedColumn();
-//					URLInDefaultBrowser.browseGenericURL(EnsemblUrl.getHomoSapiensLink(tbl_ReportTable.getModel().getValueAt(rowIndex, 0).toString(), (Integer) tbl_ReportTable.getModel().getValueAt(rowIndex, 8)));
-//				} catch (IOException ex) {
-//					log.error(null, ex);
-//				}
-//			}
-//		});
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
@@ -228,7 +203,27 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
+		tbl_ReportTable.setModel(new DefaultTableModel(
+				new Object[][] {
+					{null, null, null, "Go!"}
+				},
+				new String[] {"", "", "", ""}));
+
+		txt_NRows.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				final int key = e.getKeyChar();
+				if (key == KeyEvent.VK_ENTER) {
+					loadReportAction.actionPerformed(null);
+				}
+			}
+		});
+		btn_Get.setAction(loadReportAction);
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(
+				operationKey.getParentMatrixKey().getStudyKey(),
+				reportFileName,
+				tbl_ReportTable,
+				txt_NRows));
 		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 
@@ -257,7 +252,8 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 				final List<Object[]> tableRows;
 				try {
-					tableRows = OutputHardyWeinberg.parseHWReport(reportFile, numRowsToFetch, false);
+					tableRows = OutputHardyWeinberg.parseHWReport(
+							reportFile, numRowsToFetch, false);
 				} catch (final IOException ex) {
 					log.error(null, ex);
 					// TODO maybe inform the user through a dialog?

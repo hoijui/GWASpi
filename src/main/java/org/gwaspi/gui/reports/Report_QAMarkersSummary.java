@@ -76,7 +76,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QAMarkersSummary(final OperationKey operationKey, final String qaFileName) {
+	public Report_QAMarkersSummary(final OperationKey operationKey, final String reportFileName) {
 
 		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
@@ -94,7 +94,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + qaFileName);
+		reportFile = new File(reportPath + reportFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
@@ -131,6 +131,9 @@ public class Report_QAMarkersSummary extends JPanel {
 				Text.Reports.report + ": " + reportName)); // NOI18N
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
+
+		final Action loadReportAction = new LoadReportAction(
+				reportFile, tbl_ReportTable, txt_NRows, missingness);
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText(nRowsSuffix);
@@ -211,9 +214,6 @@ public class Report_QAMarkersSummary extends JPanel {
 				},
 				new String[] {"", "", "", ""}));
 
-		final Action loadReportAction = new LoadReportAction(
-				reportFile, tbl_ReportTable, txt_NRows, missingness);
-
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -226,7 +226,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		btn_Get.setAction(loadReportAction);
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(
 				operationKey.getParentMatrixKey().getStudyKey(),
-				qaFileName,
+				reportFileName,
 				tbl_ReportTable,
 				txt_NRows));
 		btn_Back.setAction(new BackAction(new DataSetKey(this.operationKey)));
@@ -294,7 +294,7 @@ public class Report_QAMarkersSummary extends JPanel {
 									Integer i1 = Integer.parseInt(o1.toString());
 									Integer i2 = Integer.parseInt(o2.toString());
 									return i1.compareTo(i2);
-								} catch (NumberFormatException ex1) {
+								} catch (final NumberFormatException ex1) {
 									log.warn(null, ex1);
 									return o1.toString().compareTo(o2.toString());
 								}
