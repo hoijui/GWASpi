@@ -222,7 +222,11 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		txt_missing.setText(missingThreshold.toString());
 		btn_redraw.setAction(new RedrawAction());
 
-		btn_Save.setAction(new SaveAsAction(this));
+		btn_Save.setAction(new SaveAsAction(
+				"SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png",
+				scrl_Chart,
+				zoomChart,
+				this));
 
 		btn_Reset.setAction(new ResetAction());
 
@@ -582,12 +586,20 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		}
 	}
 
-	private class SaveAsAction extends AbstractAction {
+	static class SaveAsAction extends AbstractAction {
 
+		private final Logger log = LoggerFactory.getLogger(SaveAsAction.class);
+
+		private final String newFileName;
 		private final Component dialogParent;
+		private final JScrollPane scrl_Chart;
+		private final JFreeChart zoomChart;
 
-		SaveAsAction(final Component dialogParent) {
+		SaveAsAction(final String newFileName, final JScrollPane scrl_Chart, final JFreeChart zoomChart, final Component dialogParent) {
 
+			this.newFileName = newFileName;
+			this.scrl_Chart = scrl_Chart;
+			this.zoomChart = zoomChart;
 			this.dialogParent = dialogParent;
 			putValue(NAME, Text.All.save);
 		}
@@ -595,7 +607,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				final String newFileName = "SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png";
 				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
 						"Choose the new directory for " + newFileName,

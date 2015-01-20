@@ -26,7 +26,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,6 @@ import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartRenderingInfo;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -381,7 +379,11 @@ public final class ManhattanPlotZoom extends JPanel {
 				.addContainerGap(14, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Save.setAction(new SaveAsAction(this));
+		btn_Save.setAction(new SampleQAHetzygPlotZoom.SaveAsAction(
+				"zoom_" + origMarkerKey + ".png",
+				scrl_Chart,
+				zoomChart,
+				this));
 
 		btn_Reset.setAction(new ResetAction(testOpKey));
 
@@ -738,35 +740,6 @@ public final class ManhattanPlotZoom extends JPanel {
 					 nRows));
 
 			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-		}
-	}
-
-	private class SaveAsAction extends AbstractAction {
-
-		private final Component dialogParent;
-
-		SaveAsAction(final Component dialogParent) {
-
-			this.dialogParent = dialogParent;
-			putValue(NAME, Text.All.save);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				final String newFileName = "zoom_" + origMarkerKey + ".png";
-				final File newDir = Dialogs.selectDirectoryDialog(
-						Config.PROPERTY_EXPORT_DIR,
-						"Choose the new directory for " + newFileName,
-						dialogParent);
-				final File newFile = new File(newDir, newFileName);
-				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (NullPointerException ex) {
-				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error(null, ex);
-			}
 		}
 	}
 
