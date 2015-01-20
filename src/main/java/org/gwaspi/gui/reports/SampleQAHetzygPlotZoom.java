@@ -85,9 +85,9 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
 
 	private final OperationKey operationKey;
-	private OperationMetadata rdOPMetadata;
+	private final OperationMetadata rdOPMetadata;
 	private Map<String, SampleKey> labeler;
-	private MatrixMetadata rdMatrixMetadata;
+	private final MatrixMetadata rdMatrixMetadata;
 	private String currentMarkerId;
 	private long centerPhysPos;
 	private long startPhysPos;
