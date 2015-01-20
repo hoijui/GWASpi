@@ -262,10 +262,7 @@ public class Report_QASamplesSummary extends JPanel {
 					return;
 				}
 
-				final Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
-				for (int i = 0; i < tableRows.size(); i++) {
-					tableMatrix[i] = tableRows.get(i);
-				}
+				final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
 				TableModel model = new DefaultTableModel(tableMatrix, columns);
 				reportTable.setModel(model);

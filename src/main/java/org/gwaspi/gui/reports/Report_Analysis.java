@@ -397,10 +397,7 @@ public abstract class Report_Analysis extends JPanel {
 				return;
 			}
 
-			Object[][] tableMatrix = new Object[tableRows.size()][11];
-			for (int i = 0; i < tableRows.size(); i++) {
-				tableMatrix[i] = tableRows.get(i);
-			}
+			final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
 			TableModel model = new DefaultTableModel(tableMatrix, getColumns());
 			tbl_ReportTable.setModel(model);
