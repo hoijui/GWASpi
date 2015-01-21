@@ -29,6 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -477,16 +478,21 @@ public abstract class Report_Analysis extends JPanel {
 		private final JFormattedTextField nRows;
 		private final List<Integer> colIndToSave;
 
-		public SaveAsAction(StudyKey studyKey, String reportFileName, JTable reportTable, JFormattedTextField nRows, int trailingColsNotToSave) {
-
+		public SaveAsAction(
+				final StudyKey studyKey,
+				final String reportFileName,
+				final JTable reportTable,
+				final JFormattedTextField nRows,
+				final int trailingColsNotToSave)
+		{
 			this.studyKey = studyKey;
 			this.reportFileName = reportFileName;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
-			// Don't want last trailingColsNotToSave columns
+			// we do not want the last trailingColsNotToSave number of columns
 			this.colIndToSave = new ArrayList<Integer>(reportTable.getColumnCount() - trailingColsNotToSave);
-			for (int ci = 0; ci < reportTable.getColumnCount() - trailingColsNotToSave; ci++) {
-				colIndToSave.add(ci);
+			for (int columnI = 0; columnI < reportTable.getColumnCount() - trailingColsNotToSave; columnI++) {
+				colIndToSave.add(columnI);
 			}
 			putValue(NAME, Text.All.save);
 		}
@@ -508,16 +514,18 @@ public abstract class Report_Analysis extends JPanel {
 					return;
 				}
 				final File newFile = new File(newDir, reportFileName);
-				if (origFile.exists()) {
-					Utils.copyFile(origFile, newFile);
+				if (!origFile.exists()) {
+					throw new FileNotFoundException("Could not read from original report file: "
+							+ origFile.getAbsolutePath());
 				}
-			} catch (IOException ex) {
+				Utils.copyFile(origFile, newFile);
+			} catch (final IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
-			} catch (NullPointerException ex) {
+			} catch (final NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
-			} catch (Exception ex) {
+			} catch (final Exception ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
 			}
@@ -537,8 +545,8 @@ public abstract class Report_Analysis extends JPanel {
 
 				StringBuilder tableData = new StringBuilder();
 				// HEADER
-				for (int ri : colIndToSave) {
-					tableData.append(reportTable.getColumnName(ri));
+				for (final int columnI : colIndToSave) {
+					tableData.append(reportTable.getColumnName(columnI));
 					tableData.append("\t");
 				}
 				// delete the last "\t"
@@ -547,11 +555,11 @@ public abstract class Report_Analysis extends JPanel {
 				writer.write(tableData.toString());
 
 				// TABLE CONTENT
-				for (int rowNb = 0; rowNb < reportTable.getModel().getRowCount(); rowNb++) {
+				for (int rowI = 0; rowI < reportTable.getModel().getRowCount(); rowI++) {
 					tableData = new StringBuilder();
 
-					for (int colNb : colIndToSave) {
-						String curVal = (String) reportTable.getValueAt(rowNb, colNb);
+					for (final int columnI : colIndToSave) {
+						String curVal = (String) reportTable.getValueAt(rowI, columnI);
 
 						if (curVal == null) {
 							curVal = "";
@@ -565,19 +573,17 @@ public abstract class Report_Analysis extends JPanel {
 					tableData.append("\n");
 					writer.write(tableData.toString());
 				}
-
-				writer.flush();
-			} catch (NullPointerException ex) {
+			} catch (final NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
-			} catch (IOException ex) {
+			} catch (final IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
 			} finally {
 				if (writer != null) {
 					try {
 						writer.close();
-					} catch (IOException ex) {
+					} catch (final IOException ex) {
 						log.warn("Failed to close report-to-file writer", ex);
 					}
 				}
