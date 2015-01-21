@@ -135,7 +135,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		final Action loadReportAction = new LoadReportAction(
 				reportFile, tbl_ReportTable, txt_NRows, reportParser);
 
-		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		lbl_suffix1.setText(nRowsSuffix);
 
