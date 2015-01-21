@@ -133,15 +133,6 @@ public abstract class Report_Analysis extends JPanel {
 		}
 		reportFile = new File(reportPath + analysisFileName);
 
-//		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
-//		reportName = reportName.substring(reportName.indexOf('-') + 2);
-//		String reportPath = "";
-//		try {
-//			reportPath = Study.constructReportsPath(studyKey);
-//		} catch (IOException ex) {
-//			log.error(null, ex);
-//		}
-//		reportFile = new File(reportPath + analysisFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
