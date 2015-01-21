@@ -56,6 +56,52 @@ class LoadReportAction extends AbstractAction {
 		putValue(NAME, Text.All.get);
 	}
 
+
+	private static class DoubleOrIntegerComparator implements Comparator<Object> {
+
+		@Override
+		public int compare(final Object o1, final Object o2) {
+			try {
+				final Double d1 = Double.parseDouble(o1.toString());
+				final Double d2 = Double.parseDouble(o2.toString());
+				return d1.compareTo(d2);
+			} catch (final NumberFormatException exDouble) {
+				try {
+					final Integer i1 = Integer.parseInt(o1.toString());
+					final Integer i2 = Integer.parseInt(o2.toString());
+					return i1.compareTo(i2);
+				} catch (final NumberFormatException exInteger) {
+					log.warn("To compare objects are neither both Double,"
+							+ " nor both Integer: {} {}",
+							o1,
+							o2);
+					return o1.toString().compareTo(o2.toString());
+				}
+			}
+		}
+	}
+
+	private static class DoubleOrIntegerTableRowSorter extends TableRowSorter {
+
+		private final Comparator comparator;
+
+		DoubleOrIntegerTableRowSorter(final TableModel model) {
+			super(model);
+
+			this.comparator = new DoubleOrIntegerComparator();
+		}
+
+		@Override
+		public Comparator getComparator(final int column) {
+			return comparator;
+		}
+
+		@Override
+		public boolean useToString(final int column) {
+			return false;
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 
@@ -76,43 +122,7 @@ class LoadReportAction extends AbstractAction {
 			final TableModel model
 					= new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 			reportTable.setModel(model);
-
-			final TableRowSorter sorter = new TableRowSorter(model) {
-				final Comparator<Object> comparator = new Comparator<Object>() {
-					@Override
-					public int compare(final Object o1, final Object o2) {
-						try {
-							final Double d1 = Double.parseDouble(o1.toString());
-							final Double d2 = Double.parseDouble(o2.toString());
-							return d1.compareTo(d2);
-						} catch (final NumberFormatException exDouble) {
-							try {
-								final Integer i1 = Integer.parseInt(o1.toString());
-								final Integer i2 = Integer.parseInt(o2.toString());
-								return i1.compareTo(i2);
-							} catch (final NumberFormatException exInteger) {
-								log.warn("To compare objects are neither both Double,"
-										+ " nor both Integer: {} {}",
-										o1,
-										o2);
-								return o1.toString().compareTo(o2.toString());
-							}
-						}
-					}
-				};
-
-				@Override
-				public Comparator getComparator(final int column) {
-					return comparator;
-				}
-
-				@Override
-				public boolean useToString(final int column) {
-					return false;
-				}
-			};
-
-			reportTable.setRowSorter(sorter);
+			reportTable.setRowSorter(new DoubleOrIntegerTableRowSorter(model));
 		}
 	}
 }
