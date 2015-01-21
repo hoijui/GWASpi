@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -287,7 +286,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		pnl_ChartNavigator.setBorder(GWASpiExplorerPanel.createMainTitledBorder(
 				"Manhattan Plot Navigator" + titlePlot)); // NOI18N
 
-		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+		pnl_Chart.setBorder(GWASpiExplorerPanel.createLineBorder());
 
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);

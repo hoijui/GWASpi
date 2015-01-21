@@ -20,7 +20,6 @@ package org.gwaspi.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -39,7 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -108,12 +106,14 @@ public class MatrixTrafoPanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.transformMatrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.transformMatrix)); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName())); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
-		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.All.description));
 		txtA_ParentMatrixDesc.setText(parentMatrixMetadata.getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
@@ -135,13 +135,15 @@ public class MatrixTrafoPanel extends JPanel {
 
 		//</editor-fold>
 
-		pnl_TrafoMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.trafoMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_TrafoMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Trafo.trafoMatrixDetails)); // NOI18N
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
-		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {

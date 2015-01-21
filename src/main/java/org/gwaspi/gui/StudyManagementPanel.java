@@ -19,7 +19,6 @@ package org.gwaspi.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -41,7 +39,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.gwaspi.global.Text;
@@ -171,9 +168,10 @@ public class StudyManagementPanel extends JPanel {
 		tbl_StudiesTable = new StudyTable();
 		tbl_StudiesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Study.studies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.studies)); // NOI18N
 
-		pnl_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Study.createNewStudy, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Study.createNewStudy)); // NOI18N
 		lbl_NewStudyName.setText(Text.Study.studyName);
 		txtF_NewStudyName.setDocument(new LimitedLengthDocument(63));
 
@@ -208,7 +206,8 @@ public class StudyManagementPanel extends JPanel {
 		scrl_Desc.setViewportView(txtA_Desc);
 		btn_AddStudy.setAction(new AddStudyAction());
 
-		pnl_StudiesTable.setBorder(BorderFactory.createTitledBorder(null, Text.Study.availableStudies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_StudiesTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Study.availableStudies)); // NOI18N
 		tbl_StudiesTable.setModel(new StudyTableModel(StudyList.getStudyList()));
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
 		btn_DeleteStudy.setAction(new DeleteStudyAction());

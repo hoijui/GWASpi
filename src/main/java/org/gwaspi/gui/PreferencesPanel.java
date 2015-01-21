@@ -18,7 +18,6 @@
 package org.gwaspi.gui;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -37,7 +35,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.gwaspi.global.Config;
@@ -119,7 +116,7 @@ public class PreferencesPanel extends JPanel {
 		btn_Reset = new JButton();
 		btn_ChangeDataDir = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.App.propertiesPaths, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.App.propertiesPaths)); // NOI18N
 
 		tbl_PreferencesTable.setModel(new PreferencesTableModel());
 		scrl_PreferencesTable.setViewportView(tbl_PreferencesTable);

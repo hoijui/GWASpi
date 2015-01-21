@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -44,6 +43,7 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
@@ -112,7 +112,7 @@ public class MoreGWASinOneGoInfo extends JDialog {
 	private JPanel getHeaderPanel() {
 
 		JPanel pnl_Header = new JPanel(new GridBagLayout());
-		pnl_Header.setBorder(BorderFactory.createTitledBorder("Analysis to perform"));
+		pnl_Header.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("Analysis to perform"));
 
 		chkB_allelic = new JCheckBox();
 		chkB_allelic.setText("  " + Text.Operation.performAllelicTests + "  ");
@@ -146,7 +146,7 @@ public class MoreGWASinOneGoInfo extends JDialog {
 	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
-		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
+		pnl_Questions.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("A few questions..."));
 
 		chkB_MMM = new JCheckBox();
 		final JCheckBox chkB_MMS = new JCheckBox();

@@ -18,6 +18,7 @@
 package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -101,6 +102,10 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 
 		return singleton;
+	}
+
+	public static Border createLineBorder() {
+		return BorderFactory.createLineBorder(Color.BLACK);
 	}
 
 	public static Border createRegularTitledBorder(String title) {

@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -153,7 +152,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		pnl_ChartNavigator.setBorder(GWASpiExplorerPanel.createMainTitledBorder(titlePlot)); // NOI18N
 
-		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+		pnl_Chart.setBorder(GWASpiExplorerPanel.createLineBorder());
 
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);

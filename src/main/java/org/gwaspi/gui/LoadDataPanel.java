@@ -19,7 +19,6 @@ package org.gwaspi.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -45,7 +43,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -128,16 +125,16 @@ public class LoadDataPanel extends JPanel {
 		formatAction = new LoadDataPanel.FormatAction();
 		browseSampleInfoAction = new LoadDataPanel.BrowseSampleInfoAction();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.importGenotypes, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.importGenotypes)); // NOI18N
 
-		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.nameAndDescription, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_NameAndDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.nameAndDescription)); // NOI18N
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txt_NewMatrixName.requestFocus();
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
-		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
@@ -191,7 +188,7 @@ public class LoadDataPanel extends JPanel {
 
 		//</editor-fold>
 
-		pnl_Input.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.input, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_Input.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.input)); // NOI18N
 
 		lbl_Format.setText(Text.Matrix.format);
 

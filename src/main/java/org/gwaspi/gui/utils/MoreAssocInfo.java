@@ -25,7 +25,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -35,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class MoreAssocInfo extends JFrame {
 	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
-		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
+		pnl_Questions.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("A few questions..."));
 
 		rdioB_1 = new JRadioButton();
 		lbl_1 = new JLabel();

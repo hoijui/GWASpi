@@ -25,7 +25,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -35,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
@@ -89,7 +89,7 @@ public class MoreInfoForGtFreq extends JFrame {
 	private JPanel createQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
-		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
+		pnl_Questions.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("A few questions..."));
 
 		chkB_1 = new JCheckBox();
 		chkB_2 = new JCheckBox();

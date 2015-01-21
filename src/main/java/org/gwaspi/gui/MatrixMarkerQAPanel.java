@@ -19,18 +19,15 @@ package org.gwaspi.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.TitledBorder;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -75,36 +72,24 @@ public class MatrixMarkerQAPanel extends JPanel {
 		final JButton btn_Back = new JButton();
 		final JButton btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null,
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
 				Text.Operation.operation + ": "
-				+ ((currentOP == null) ? "<NONE>" : currentOP.getFriendlyName()),
-				TitledBorder.DEFAULT_JUSTIFICATION,
-				TitledBorder.DEFAULT_POSITION,
-				new Font("FreeSans", 1, 18))); // NOI18N
+				+ ((currentOP == null) ? "<NONE>" : currentOP.getFriendlyName()))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
-		txtA_Description.setBorder(BorderFactory.createTitledBorder(null,
-				Text.All.description,
-				TitledBorder.DEFAULT_JUSTIFICATION,
-				TitledBorder.DEFAULT_POSITION,
-				new Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_Description.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.All.description)); // NOI18N
 		if (opId != OperationKey.NULL_ID) {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
+			pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 					Text.Operation.operationId + ": "
-					+ ((currentOPKey == null) ? "<NONE>" : currentOPKey.getId()),
-					TitledBorder.DEFAULT_JUSTIFICATION,
-					TitledBorder.DEFAULT_POSITION,
-					new Font("DejaVu Sans", 1, 13))); // NOI18N
+					+ ((currentOPKey == null) ? "<NONE>" : currentOPKey.getId()))); // NOI18N
 			txtA_Description.setText((currentOP == null) ? "<NONE>"
 					: currentOP.getDescription());
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
-					Text.Matrix.matrix + ": " + parentMatrixMetadata.getFriendlyName(),
-					TitledBorder.DEFAULT_JUSTIFICATION,
-					TitledBorder.DEFAULT_POSITION,
-					new Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+					Text.Matrix.matrix + ": " + parentMatrixMetadata.getFriendlyName())); // NOI18N
 			txtA_Description.setText(parentMatrixMetadata.getDescription());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);

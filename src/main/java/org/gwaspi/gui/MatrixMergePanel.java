@@ -120,10 +120,12 @@ public class MatrixMergePanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Trafo.mergeMatrices)); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName())); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName())); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
-		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_ParentMatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.All.description));
 		txtA_ParentMatrixDesc.setText(parentMatrixMetadata.getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
@@ -145,7 +147,8 @@ public class MatrixMergePanel extends JPanel {
 
 		//</editor-fold>
 
-		pnl_addedMatrix.setBorder(BorderFactory.createTitledBorder(Text.Trafo.mergeWithMatrix)); // NOI18N
+		pnl_addedMatrix.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.Trafo.mergeWithMatrix)); // NOI18N
 
 		String[] matricesNames = new String[matrixItems.size()];
 		for (int i = 0; i < matrixItems.size(); i++) {
@@ -225,7 +228,8 @@ public class MatrixMergePanel extends JPanel {
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
-		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
+				Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
