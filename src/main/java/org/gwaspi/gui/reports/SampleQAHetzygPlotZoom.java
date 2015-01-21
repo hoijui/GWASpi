@@ -47,8 +47,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
@@ -83,43 +81,18 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public static final double PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT = 0.5;
 	public static final String PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG = "CHART_SAMPLEQA_MISSING_THRESHOLD";
 	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
-
-	private final OperationKey operationKey;
-	private final OperationMetadata rdOPMetadata;
-	private Map<String, SampleKey> labeler;
-	private final MatrixMetadata rdMatrixMetadata;
-	private String currentMarkerId;
-	private long centerPhysPos;
-	private long startPhysPos;
+	private static final Color PLOT_MANHATTAN_BACKGROUND = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private static final Color PLOT_MANHATTAN_DOTS = Color.red;
 	/**
 	 * roughly 2000MB needed per 100.000 plotted markers
 	 */
-	private static final int DEFAULT_NUM_MARKERS
+	private static final int DEFAULT_NUM_MARKERS // NOTE unused
 			= (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
-	private XYDataset initXYDataset;
-	private JFreeChart zoomChart;
-	private ChartPanel zoomPanel;
-	private Double hetzyThreshold = 0.015;
-	private Double missingThreshold = 0.5;
-	private static final Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	private static final Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	private static final Color manhattan_dot = Color.red;
-	// Variables declaration - do not modify
-	private JButton btn_Reset;
-	private JButton btn_Save;
-	private JPanel pnl_Chart;
-	private JPanel pnl_ChartNavigator;
-	private JPanel pnl_Footer;
-	private JPanel pnl_FooterGroup1;
-	private JPanel pnl_FooterGroup0;
-	private JScrollPane scrl_Chart;
-	private JButton btn_redraw;
-	private JLabel lbl_hetzy;
-	private JLabel lbl_missing;
-	private JLabel lbl_thresholds;
-	private JTextField txt_hetzy;
-	private JTextField txt_missing;
-	// End of variables declaration
+
+	private final OperationKey operationKey;
+	private Map<String, SampleKey> labeler;
+	private Double hetzyThreshold;
+	private Double missingThreshold;
 
 	/**
 	 * Creates new form ManhattanPlotZoom
@@ -129,9 +102,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public SampleQAHetzygPlotZoom(OperationKey operationKey) throws IOException {
 
 		this.operationKey = operationKey;
-
-		rdOPMetadata = OperationsList.getOperationMetadata(this.operationKey);
-		rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
+		this.hetzyThreshold = 0.015; // XXX Why is it different then PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT?
+		this.missingThreshold = PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT;
 
 		initChart();
 
@@ -147,37 +119,37 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
 				String.valueOf(PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
 
-		initXYDataset = getSampleHetzygDataset(operationKey);
+		final XYDataset initXYDataset = getSampleHetzygDataset(operationKey);
+		final JFreeChart zoomChart = createChart(initXYDataset);
+		final ChartPanel zoomPanel = new ChartPanel(zoomChart);
 
-		zoomChart = createChart(initXYDataset);
-		zoomPanel = new ChartPanel(zoomChart);
 		zoomPanel.setInitialDelay(10);
 		zoomPanel.setDismissDelay(8000);
 
-		initGUI();
+		initGUI(zoomChart, zoomPanel);
 	}
 
-	private void initGUI() {
+	private void initGUI(final JFreeChart zoomChart, final ChartPanel zoomPanel) throws IOException {
 
 //		setCursor(CursorUtils.WAIT_CURSOR);
 
-		pnl_ChartNavigator = new JPanel();
-		pnl_Chart = new JPanel();
-		scrl_Chart = new JScrollPane();
-		pnl_Footer = new JPanel();
-		pnl_FooterGroup1 = new JPanel();
-		pnl_FooterGroup0 = new JPanel();
-		btn_Save = new JButton();
-		btn_Reset = new JButton();
+		final JPanel pnl_ChartNavigator = new JPanel();
+		final JPanel pnl_Chart = new JPanel();
+		final JScrollPane scrl_Chart = new JScrollPane();
+		final JPanel pnl_Footer = new JPanel();
+		final JPanel pnl_FooterGroup1 = new JPanel();
+		final JPanel pnl_FooterGroup0 = new JPanel();
+		final JButton btn_Save = new JButton();
+		final JButton btn_Reset = new JButton();
 
-		lbl_thresholds = new JLabel();
-		lbl_hetzy = new JLabel();
-		txt_hetzy = new JTextField();
-		btn_redraw = new JButton();
-		lbl_missing = new JLabel();
-		txt_missing = new JTextField();
+		final JLabel lbl_thresholds = new JLabel();
+		final JLabel lbl_hetzy = new JLabel();
+		final JTextField txt_hetzy = new JTextField();
+		final JButton btn_redraw = new JButton();
+		final JLabel lbl_missing = new JLabel();
+		final JTextField txt_missing = new JTextField();
 
-		String titlePlot = Text.Reports.smplHetzyVsMissingRat;
+		final String titlePlot = Text.Reports.smplHetzyVsMissingRat;
 
 		pnl_ChartNavigator.setBorder(GWASpiExplorerPanel.createMainTitledBorder(titlePlot)); // NOI18N
 
@@ -210,7 +182,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				.addContainerGap()
 				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
-
 		// </editor-fold>
 
 		lbl_thresholds.setText(Text.Reports.thresholds);
@@ -220,10 +191,13 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		lbl_missing.setText(Text.Reports.missRatio);
 		txt_missing.setText(missingThreshold.toString());
-		btn_redraw.setAction(new RedrawAction());
+		btn_redraw.setAction(new RedrawAction(txt_hetzy, txt_missing));
 
+		final MatrixMetadata rdMatrixMetadata
+				= MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
+		final String originFriendlyName = rdMatrixMetadata.getFriendlyName();
 		btn_Save.setAction(new SaveAsAction(
-				"SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png",
+				"SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(originFriendlyName) + ".png",
 				scrl_Chart,
 				zoomChart,
 				this));
@@ -352,24 +326,24 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
-		plot.setBackgroundPaint(manhattan_back); // Hue, saturation, brightness 9
+		plot.setBackgroundPaint(PLOT_MANHATTAN_BACKGROUND); // Hue, saturation, brightness 9
 
 		// GRIDLINES
 		plot.setDomainGridlineStroke(new BasicStroke(0.0f));
 		plot.setDomainMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
-		plot.setDomainMinorGridlinePaint(manhattan_back); // Hue, saturation, brightness 9
+		plot.setDomainGridlinePaint(PLOT_MANHATTAN_BACKGROUND.darker().darker()); // Hue, saturation, brightness 7
+		plot.setDomainMinorGridlinePaint(PLOT_MANHATTAN_BACKGROUND); // Hue, saturation, brightness 9
 		plot.setRangeGridlineStroke(new BasicStroke(0.0f));
 		plot.setRangeMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setRangeGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
-		plot.setRangeMinorGridlinePaint(manhattan_back.darker());  // Hue, saturation, brightness 8
+		plot.setRangeGridlinePaint(PLOT_MANHATTAN_BACKGROUND.darker().darker()); // Hue, saturation, brightness 7
+		plot.setRangeMinorGridlinePaint(PLOT_MANHATTAN_BACKGROUND.darker());  // Hue, saturation, brightness 8
 
 		plot.setDomainMinorGridlinesVisible(true);
 		plot.setRangeMinorGridlinesVisible(true);
 
 		// DOTS RENDERER
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-		renderer.setSeriesPaint(0, manhattan_dot);
+		renderer.setSeriesPaint(0, PLOT_MANHATTAN_DOTS);
 //		renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
 //		renderer.setUseOutlinePaint(true);
 		// Set dot shape of the currently appended Series
@@ -545,8 +519,13 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	 */
 	private class RedrawAction extends AbstractAction {
 
-		RedrawAction() {
+		final JTextField txt_hetzy;
+		final JTextField txt_missing;
 
+		RedrawAction(final JTextField txt_hetzy, final JTextField txt_missing) {
+
+			this.txt_hetzy = txt_hetzy;
+			this.txt_missing = txt_missing;
 			putValue(NAME, Text.Reports.redraw);
 		}
 
