@@ -29,6 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.reports.ReportParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +124,12 @@ class LoadReportAction extends AbstractAction {
 					= new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 			reportTable.setModel(model);
 			reportTable.setRowSorter(new DoubleOrIntegerTableRowSorter(model));
+		} else {
+			final String message
+					= "The report could not be loaded, because the file does either not exist,"
+							+ " or is a directory: \"" + reportFile.getAbsolutePath() + "\"";
+			log.warn(message);
+			Dialogs.showWarningDialogue(message);
 		}
 	}
 }
