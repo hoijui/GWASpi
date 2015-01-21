@@ -115,6 +115,8 @@ public abstract class Report_Analysis extends JPanel {
 
 	protected Report_Analysis(final OperationKey testOpKey, final String analysisFileName, final Integer nRows) {
 
+		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
+		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		final String helpUrlSuffix = HelpURLs.QryURL.assocReport;
 		final ReportParser reportParser
 				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
@@ -122,8 +124,6 @@ public abstract class Report_Analysis extends JPanel {
 		this.testOpKey = testOpKey;
 		this.chrSetInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 
-		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
-		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
 		try {
@@ -137,6 +137,8 @@ public abstract class Report_Analysis extends JPanel {
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
+		final Integer actualNRows = (nRows == null) ? 100 : nRows;
+		txt_NRows.setValue(actualNRows);
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -174,18 +176,16 @@ public abstract class Report_Analysis extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Reports.report + ": " + reportName)); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
+				Text.Reports.report + ": " + reportName)); // NOI18N
 
 		pnl_Summary.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Reports.summary));
 
 		final Action loadReportAction = new LoadReportAction(
 				reportFile, tbl_ReportTable, txt_NRows, reportParser);
 
-		Integer actualNRows = (nRows == null) ? 100 : nRows;
-		txt_NRows.setValue(actualNRows);
-
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
-		lbl_suffix1.setText(Text.Reports.radio1Suffix_pVal);
+		lbl_suffix1.setText(nRowsSuffix);
 		txt_PvalThreshold.setEnabled(false);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT SUMMARY">
@@ -290,7 +290,7 @@ public abstract class Report_Analysis extends JPanel {
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
+				final int key = e.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
 					loadReportAction.actionPerformed(null);
 				}
