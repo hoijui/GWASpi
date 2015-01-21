@@ -33,14 +33,10 @@ import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReportWriter {
 
 	private static final String SEP = ExportConstants.SEPARATOR_REPORTS;
-
-	private static final Logger LOG = LoggerFactory.getLogger(ReportWriter.class);
 
 	private static class MapArrayValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
 
@@ -104,134 +100,126 @@ public class ReportWriter {
 	private ReportWriter() {
 	}
 
-	protected static <S> boolean writeFirstColumnToReport(
-			String reportPath,
-			String reportName,
-			String header,
-			Collection<S> readContent,
-			Extractor<S, String> keyExtractor,
-			Extractor<S, String> valueExtractor)
+	protected static <S> void writeFirstColumnToReport(
+			final String reportPath,
+			final String reportName,
+			final String header,
+			final Collection<S> readContent,
+			final Extractor<S, String> keyExtractor,
+			final Extractor<S, String> valueExtractor)
 			throws IOException
 	{
-		boolean appendResult = false;
-
 		final File reportFile = new File(reportPath, reportName);
 
-		FileWriter outputFW = new FileWriter(reportFile);
-		BufferedWriter outputBW = new BufferedWriter(outputFW);
+		final FileWriter outputFW = new FileWriter(reportFile);
+		final BufferedWriter outputBW = new BufferedWriter(outputFW);
 
 		final boolean withKey = (keyExtractor != null);
 
-		String sep = ExportConstants.SEPARATOR_REPORTS;
+		final String sep = ExportConstants.SEPARATOR_REPORTS;
 		outputBW.append(header);
 
-		for (S entry : readContent) {
-			StringBuilder sb = new StringBuilder();
-			String value = valueExtractor.extract(entry);
+		for (final S entry : readContent) {
+			final String value = valueExtractor.extract(entry);
 			if (withKey) {
-				sb.append(keyExtractor.extract(entry));
-				sb.append(sep);
+				outputBW.append(keyExtractor.extract(entry));
+				outputBW.append(sep);
 			}
-//			else {
-//				// cut off the initial separator from the value
-//				try {
-//				value = value.substring(sep.length());
-//				} catch (Exception ex) {
-//					throw new RuntimeException(ex);
-//				}
-//			}
-			sb.append(value);
+			outputBW.append(value);
 
-			sb.append("\n");
-			outputBW.append(sb);
+			outputBW.append('\n');
 		}
 
 		outputBW.close();
-		outputFW.close();
-
-		return appendResult;
 	}
 
-	protected static <K, V> boolean appendColumnToReport(
-			String reportPath,
-			String reportName,
-			Map<K, V> map,
-			boolean isArray,
-			boolean withKey) throws IOException
+	protected static <K, V> void appendColumnToReport(
+			final String reportPath,
+			final String reportName,
+			final Map<K, V> map,
+			final boolean isArray,
+			final boolean withKey) throws IOException
 	{
-		Extractor<Entry<K, V>, String> valueExtractor;
+		final Extractor<Entry<K, V>, String> valueExtractor;
 		if (isArray) {
 			valueExtractor = new MapArrayValueExtractor<K, V>(false);
 		} else {
 			valueExtractor = new MapValueExtractor<K, V>(false);
 		}
 
-		Extractor<Entry<K, V>, String> keyExtractor;
+		final Extractor<Entry<K, V>, String> keyExtractor;
 		if (withKey) {
 			keyExtractor = new MapKeyExtractor<K, V>();
 		} else {
 			keyExtractor = null;
 		}
 
-		return appendColumnToReport(reportPath, reportName, map.entrySet(), keyExtractor, valueExtractor);
+		appendColumnToReport(reportPath, reportName, map.entrySet(), keyExtractor, valueExtractor);
 	}
 
-	protected static <S> boolean appendColumnToReport(
-			String reportPath,
-			String reportName,
-			Collection<S> readContent,
-			Extractor<S, String> keyExtractor,
-			Extractor<S, String> valueExtractor) throws IOException
+	protected static <S> void appendColumnToReport(
+			final String reportPath,
+			final String reportName,
+			final Collection<S> readContent,
+			final Extractor<S, String> keyExtractor,
+			final Extractor<S, String> valueExtractor) throws IOException
 	{
-		boolean appendResult = false;
-
 		final File tempFile = new File(reportPath, "tmp.rep");
 		final File inputFile = new File(reportPath, reportName);
 
-		FileReader inputFR = new FileReader(inputFile);
-		BufferedReader inputBR = new BufferedReader(inputFR);
+		FileReader inputFR = null;
+		BufferedReader inputBR = null;
+		FileWriter outputFW = null;
+		BufferedWriter outputBW = null;
+		try {
+			inputFR = new FileReader(inputFile);
+			inputBR = new BufferedReader(inputFR);
 
-		FileWriter tempFW = new FileWriter(tempFile);
-		BufferedWriter tempBW = new BufferedWriter(tempFW);
+			outputFW = new FileWriter(tempFile);
+			outputBW = new BufferedWriter(outputFW);
 
-		final boolean withKey = (keyExtractor != null);
+			final boolean withKey = (keyExtractor != null);
 
-		String l;
-		int count = 0;
-		String sep = ExportConstants.SEPARATOR_REPORTS;
-		Iterator<S> readContentIt = readContent.iterator();
-		while ((l = inputBR.readLine()) != null) {
-			if (count == 0) {
-				tempBW.append(l);
-				tempBW.append("\n");
-			} else {
-				StringBuilder sb = new StringBuilder();
-				sb.append(l);
+			final String sep = ExportConstants.SEPARATOR_REPORTS;
+			final Iterator<S> readContentIt = readContent.iterator();
+			// read an re-write the header
+			String inputLine = inputBR.readLine();
+			outputBW.append(inputLine).append('\n');
 
-				S readEntry = readContentIt.next();
+			// read, extend and re-write the data
+			while ((inputLine = inputBR.readLine()) != null) {
+				outputBW.append(inputLine);
 
-				sb.append(sep);
+				final S readEntry = readContentIt.next();
+
+				outputBW.append(sep);
 				if (withKey) {
 					String key = keyExtractor.extract(readEntry);
-					sb.append(key);
-					sb.append(sep);
+					outputBW.append(key);
+					outputBW.append(sep);
 				}
-				String value = valueExtractor.extract(readEntry);
-				sb.append(value);
+				final String value = valueExtractor.extract(readEntry);
+				outputBW.append(value);
 
-				sb.append("\n");
-				tempBW.append(sb);
+				outputBW.append('\n');
 			}
-			count++;
+
+			inputBR.close();
+			outputBW.close();
+		} finally {
+			if (inputBR != null) {
+				inputBR.close();
+			} else if (inputFR != null) {
+				inputFR.close();
+			}
+			if (outputBW != null) {
+				outputBW.close();
+			} else if (outputFW != null) {
+				outputFW.close();
+			}
 		}
 
-		inputBR.close();
-		inputFR.close();
-		tempBW.close();
-		tempFW.close();
 		Utils.move(tempFile, inputFile);
-
-		return appendResult;
 	}
 
 	protected static <S> List<S> parseReport(
@@ -252,11 +240,11 @@ public class ReportWriter {
 			/*String header = */inputBufferReader.readLine();
 			int rowIndex = 0;
 			while (rowIndex < numRowsToFetch) {
-				String line = inputBufferReader.readLine();
+				final String line = inputBufferReader.readLine();
 				if (line == null) {
 					break;
 				}
-				String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+				final String[] cVals = line.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 				final S parsedRow = keyExtractor.extract(cVals);
 				parsedRows.add(parsedRow);
 				rowIndex++;
