@@ -43,8 +43,12 @@ class LoadReportAction extends AbstractAction {
 	private final JFormattedTextField nRows;
 	private final ReportParser reportParser;
 
-	LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, final ReportParser reportParser) {
-
+	LoadReportAction(
+			final File reportFile,
+			final JTable reportTable,
+			final JFormattedTextField nRows,
+			final ReportParser reportParser)
+	{
 		this.reportFile = reportFile;
 		this.reportTable = reportTable;
 		this.nRows = nRows;
@@ -69,24 +73,28 @@ class LoadReportAction extends AbstractAction {
 
 			final Object[][] tableMatrix = tableRows.toArray(new Object[0][0]);
 
-			TableModel model = new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
+			final TableModel model
+					= new DefaultTableModel(tableMatrix, reportParser.getColumnHeaders());
 			reportTable.setModel(model);
 
-			TableRowSorter sorter = new TableRowSorter(model) {
-				Comparator<Object> comparator = new Comparator<Object>() {
+			final TableRowSorter sorter = new TableRowSorter(model) {
+				final Comparator<Object> comparator = new Comparator<Object>() {
 					@Override
-					public int compare(Object o1, Object o2) {
+					public int compare(final Object o1, final Object o2) {
 						try {
-							Double d1 = Double.parseDouble(o1.toString());
-							Double d2 = Double.parseDouble(o2.toString());
+							final Double d1 = Double.parseDouble(o1.toString());
+							final Double d2 = Double.parseDouble(o2.toString());
 							return d1.compareTo(d2);
 						} catch (final NumberFormatException exDouble) {
 							try {
-								Integer i1 = Integer.parseInt(o1.toString());
-								Integer i2 = Integer.parseInt(o2.toString());
+								final Integer i1 = Integer.parseInt(o1.toString());
+								final Integer i2 = Integer.parseInt(o2.toString());
 								return i1.compareTo(i2);
 							} catch (final NumberFormatException exInteger) {
-								log.warn("To compare objects are neither both Double, nor both Integer: {} {}", o1, o2);
+								log.warn("To compare objects are neither both Double,"
+										+ " nor both Integer: {} {}",
+										o1,
+										o2);
 								return o1.toString().compareTo(o2.toString());
 							}
 						}
@@ -94,12 +102,12 @@ class LoadReportAction extends AbstractAction {
 				};
 
 				@Override
-				public Comparator getComparator(int column) {
+				public Comparator getComparator(final int column) {
 					return comparator;
 				}
 
 				@Override
-				public boolean useToString(int column) {
+				public boolean useToString(final int column) {
 					return false;
 				}
 			};
