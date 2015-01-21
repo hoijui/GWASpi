@@ -62,30 +62,12 @@ public class Report_QASamplesSummary extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_QASamplesSummary.class);
 
-	// Variables declaration - do not modify
-	private final File reportFile;
-	private final OperationKey operationKey;
-	private final JButton btn_Get;
-	private final JButton btn_Save;
-	private final JButton btn_Back;
-	private final JButton btn_Help;
-	private final JPanel pnl_Footer;
-	private final JPanel pnl_Summary;
-	private final JLabel lbl_suffix1;
-	private final JScrollPane scrl_ReportTable;
-	private final JTable tbl_ReportTable;
-	private final JFormattedTextField txt_NRows;
-	// End of variables declaration
-	private final ReportParser reportParser;
-
 	public Report_QASamplesSummary(final OperationKey operationKey, final String reportFileName) {
 
 		final String reportName = "Sample Info & Missing Ratios";
 		final String nRowsSuffix = "Samples by most significant Missing Ratios";
 		final String helpUrlSuffix = HelpURLs.QryURL.sampleQAreport;
-		this.reportParser = new OutputQASamples.QASamplesReportParser();
-
-		this.operationKey = operationKey;
+		final ReportParser reportParser = new OutputQASamples.QASamplesReportParser();
 
 		String reportPath = "";
 		try {
@@ -93,7 +75,18 @@ public class Report_QASamplesSummary extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + reportFileName);
+		final File reportFile = new File(reportPath + reportFileName);
+
+		final JButton btn_Get;
+		final JButton btn_Save;
+		final JButton btn_Back;
+		final JButton btn_Help;
+		final JPanel pnl_Footer;
+		final JPanel pnl_Summary;
+		final JLabel lbl_suffix1;
+		final JScrollPane scrl_ReportTable;
+		final JTable tbl_ReportTable;
+		final JFormattedTextField txt_NRows;
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();

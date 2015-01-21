@@ -62,31 +62,13 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_HardyWeinbergSummary.class);
 
-	// Variables declaration - do not modify
-	private final File reportFile;
-	private final OperationKey operationKey;
-	private final JButton btn_Get;
-	private final JButton btn_Save;
-	private final JButton btn_Back;
-	private final JButton btn_Help;
-	private final JPanel pnl_Footer;
-	private final JPanel pnl_Summary;
-	private final JLabel lbl_suffix1;
-	private final JScrollPane scrl_ReportTable;
-	private final JTable tbl_ReportTable;
-	private final JFormattedTextField txt_NRows;
-	// End of variables declaration
-	private final ReportParser reportParser;
-
 	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String reportFileName) {
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		final String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
 		final String helpUrlSuffix = HelpURLs.QryURL.hwReport;
-		this.reportParser = new OutputHardyWeinberg.HWReportParser();
-
-		this.operationKey = operationKey;
+		final ReportParser reportParser = new OutputHardyWeinberg.HWReportParser();
 
 		String reportPath = "";
 		try {
@@ -94,7 +76,18 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + reportFileName);
+		final File reportFile = new File(reportPath + reportFileName);
+
+		final JButton btn_Get;
+		final JButton btn_Save;
+		final JButton btn_Back;
+		final JButton btn_Help;
+		final JPanel pnl_Footer;
+		final JPanel pnl_Summary;
+		final JLabel lbl_suffix1;
+		final JScrollPane scrl_ReportTable;
+		final JTable tbl_ReportTable;
+		final JFormattedTextField txt_NRows;
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();

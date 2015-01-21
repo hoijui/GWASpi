@@ -93,46 +93,39 @@ public abstract class Report_Analysis extends JPanel {
 	public static final DecimalFormat FORMAT_ROUND = new DecimalFormat("0.#####");
 	public static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("#");
 
-	// Variables declaration - do not modify
-	private final OperationKey testOpKey;
-	protected Map<ChromosomeKey, ChromosomeInfo> chrSetInfoMap;
-	protected File reportFile;
-	private JButton btn_Get;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JLabel lbl_suffix1;
-	private JPanel pnl_Summary;
-	private JPanel pnl_SearchDB;
-	protected JComboBox cmb_SearchDB;
-	private JScrollPane scrl_ReportTable;
-	protected final JTable tbl_ReportTable;
-	protected final JFormattedTextField txt_NRows;
 	/** @deprecated currently not added -> not visible */
 	private JFormattedTextField txt_PvalThreshold;
-	// End of variables declaration
 
-	protected Report_Analysis(final OperationKey testOpKey, final String analysisFileName, final Integer nRows) {
+	protected Report_Analysis(final OperationKey operationKey, final String reportFileName, final Integer nRows) {
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
+		final String nRowsSuffix = Text.Reports.radio1Suffix_pVal;
 		final String helpUrlSuffix = HelpURLs.QryURL.assocReport;
 		final ReportParser reportParser
 				= new OutputTest.AssociationTestReportParser(getAssociationTestType());
 
-		this.testOpKey = testOpKey;
-		this.chrSetInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
-
+		final Map<ChromosomeKey, ChromosomeInfo> chrSetInfoMap
+				= new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(testOpKey.getParentMatrixKey().getStudyKey());
+			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + analysisFileName);
+		final File reportFile = new File(reportPath + reportFileName);
 
+		final JButton btn_Get;
+		final JButton btn_Save;
+		final JButton btn_Back;
+		final JButton btn_Help;
+		final JPanel pnl_Footer;
+		final JPanel pnl_Summary;
+		final JLabel lbl_suffix1;
+		final JScrollPane scrl_ReportTable;
+		final JTable tbl_ReportTable;
+		final JFormattedTextField txt_NRows;
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
@@ -154,10 +147,10 @@ public abstract class Report_Analysis extends JPanel {
 		txt_PvalThreshold = new JFormattedTextField();
 		btn_Get = new JButton();
 
-		pnl_SearchDB = new JPanel();
+		final JPanel pnl_SearchDB = new JPanel();
 		pnl_SearchDB.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.Reports.externalResourceDB));
-		cmb_SearchDB = new JComboBox();
+		final JComboBox cmb_SearchDB = new JComboBox();
 		cmb_SearchDB.setModel(new DefaultComboBoxModel(LinksExternalResouces.getLinkNames()));
 
 		scrl_ReportTable = new JScrollPane();
@@ -167,7 +160,6 @@ public abstract class Report_Analysis extends JPanel {
 				return false;
 			}
 		};
-
 		// TO DISABLE COLUMN MOVING (DON'T WANT TO MOVE BEHIND COLUMN 9)
 		tbl_ReportTable.getTableHeader().setReorderingAllowed(false);
 
@@ -274,8 +266,8 @@ public abstract class Report_Analysis extends JPanel {
 				.addComponent(scrl_ReportTable, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
 				.addContainerGap()));
 		try {
-			if (chrSetInfoMap == null) {
-				initChrSetInfo();
+			if (chrSetInfoMap.isEmpty()) {
+				chrSetInfoMap.putAll(loadChrSetInfo(operationKey));
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -298,18 +290,18 @@ public abstract class Report_Analysis extends JPanel {
 		});
 		btn_Get.setAction(loadReportAction);
 		btn_Save.setAction(new SaveAsAction(
-				testOpKey.getParentMatrixKey().getStudyKey(),
-				analysisFileName,
+				operationKey.getParentMatrixKey().getStudyKey(),
+				reportFileName,
 				tbl_ReportTable,
 				txt_NRows,
 				3));
-		btn_Back.setAction(new BackAction(new DataSetKey(testOpKey)));
+		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 		btn_Help.setAction(new BrowserHelpUrlAction(helpUrlSuffix));
 
 		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent me) {
-				displayColumnCursor(me);
+				displayColumnCursor(tbl_ReportTable, me);
 			}
 		});
 
@@ -320,8 +312,8 @@ public abstract class Report_Analysis extends JPanel {
 				try {
 					int rowIndex = tbl_ReportTable.getSelectedRow();
 					int colIndex = tbl_ReportTable.getSelectedColumn();
-					if (chrSetInfoMap == null || chrSetInfoMap.isEmpty()) {
-						initChrSetInfo();
+					if (chrSetInfoMap.isEmpty()) {
+						chrSetInfoMap.putAll(loadChrSetInfo(operationKey));
 					}
 
 					if (colIndex == getZoomColumnIndex()) { // Zoom
@@ -338,7 +330,7 @@ public abstract class Report_Analysis extends JPanel {
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
-								testOpKey,
+								operationKey,
 								chr,
 								markerKey,
 								markerPhysPos,
@@ -384,8 +376,8 @@ public abstract class Report_Analysis extends JPanel {
 				getExternalResourceColumnIndex());
 	}
 
-	protected final void initChrSetInfo() throws IOException {
-		chrSetInfoMap = OperationManager.extractChromosomeKeysAndInfos(testOpKey);
+	private Map<ChromosomeKey, ChromosomeInfo> loadChrSetInfo(final OperationKey operationKey) throws IOException {
+		return OperationManager.extractChromosomeKeysAndInfos(operationKey);
 	}
 
 	private static class LoadReportAction extends AbstractAction {
@@ -601,11 +593,11 @@ public abstract class Report_Analysis extends JPanel {
 	/**
 	 * Method to change cursor based on some arbitrary rule.
 	 */
-	private void displayColumnCursor(MouseEvent me) {
+	private void displayColumnCursor(final JTable reportTable, final MouseEvent me) {
 
-		Point p = me.getPoint();
-		int column = tbl_ReportTable.columnAtPoint(p);
-		String columnName = tbl_ReportTable.getColumnName(column);
+		final Point p = me.getPoint();
+		final int column = reportTable.columnAtPoint(p);
+		final String columnName = reportTable.getColumnName(column);
 		if (!getCursor().equals(CursorUtils.WAIT_CURSOR)) {
 			if (columnName.equals(Text.Reports.zoom)) {
 				setCursor(CursorUtils.HAND_CURSOR);
