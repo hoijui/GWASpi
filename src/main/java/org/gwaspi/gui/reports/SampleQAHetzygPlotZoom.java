@@ -569,14 +569,18 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		private final Logger log = LoggerFactory.getLogger(SaveAsAction.class);
 
-		private final String newFileName;
+		private final String newReportFileName;
 		private final Component dialogParent;
 		private final JScrollPane scrl_Chart;
 		private final JFreeChart zoomChart;
 
-		SaveAsAction(final String newFileName, final JScrollPane scrl_Chart, final JFreeChart zoomChart, final Component dialogParent) {
-
-			this.newFileName = newFileName;
+		SaveAsAction(
+				final String newReportFileName,
+				final JScrollPane scrl_Chart,
+				final JFreeChart zoomChart,
+				final Component dialogParent)
+		{
+			this.newReportFileName = newReportFileName;
 			this.scrl_Chart = scrl_Chart;
 			this.zoomChart = zoomChart;
 			this.dialogParent = dialogParent;
@@ -588,15 +592,21 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 			try {
 				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
-						"Choose the new directory for " + newFileName,
+						"Choose the new directory for " + newReportFileName,
 						dialogParent);
-				final File newFile = new File(newDir, newFileName);
-				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (NullPointerException ex) {
-				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error(null, ex);
+				if (newDir == null) {
+					// the user has not choosen a directory to save to
+					return;
+				}
+				final File newFile = new File(newDir, newReportFileName);
+				ChartUtilities.saveChartAsPNG(
+						newFile,
+						zoomChart,
+						scrl_Chart.getWidth(),
+						scrl_Chart.getHeight());
+			} catch (final IOException ex) {
+				Dialogs.showWarningDialogue("A plot saving error has occurred");
+				log.error("A plot saving error has occurred", ex);
 			}
 		}
 	}

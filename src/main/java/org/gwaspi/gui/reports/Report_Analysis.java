@@ -380,20 +380,20 @@ public abstract class Report_Analysis extends JPanel {
 	public static class SaveAsAction extends AbstractAction {
 
 		private final StudyKey studyKey;
-		private final String reportFileName;
+		private final String newReportFileName;
 		private final JTable reportTable;
 		private final JFormattedTextField nRows;
 		private final List<Integer> colIndToSave;
 
 		public SaveAsAction(
 				final StudyKey studyKey,
-				final String reportFileName,
+				final String newReportFileName,
 				final JTable reportTable,
 				final JFormattedTextField nRows,
 				final int trailingColsNotToSave)
 		{
 			this.studyKey = studyKey;
-			this.reportFileName = reportFileName;
+			this.newReportFileName = newReportFileName;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
 			// we do not want the last trailingColsNotToSave number of columns
@@ -411,16 +411,16 @@ public abstract class Report_Analysis extends JPanel {
 		private void actionSaveCompleteReportAs(final Component dialogParent) {
 			try {
 				final String reportPath = Study.constructReportsPath(studyKey);
-				final File origFile = new File(reportPath, reportFileName);
+				final File origFile = new File(reportPath, newReportFileName);
 				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
-						"Choose the new directory for " + reportFileName,
+						"Choose the new directory for " + newReportFileName,
 						dialogParent);
 				if (newDir == null) {
 					// the user has not choosen a directory to save to
 					return;
 				}
-				final File newFile = new File(newDir, reportFileName);
+				final File newFile = new File(newDir, newReportFileName);
 				if (!origFile.exists()) {
 					throw new FileNotFoundException("Could not read from original report file: "
 							+ origFile.getAbsolutePath());
@@ -442,7 +442,7 @@ public abstract class Report_Analysis extends JPanel {
 
 			FileWriter writer = null;
 			try {
-				final String newFileName = nRows.getText() + "rows_" + reportFileName;
+				final String newFileName = nRows.getText() + "rows_" + newReportFileName;
 				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
 						"Choose the new directory for " + newFileName,

@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
@@ -151,13 +152,16 @@ public class ChartDefaultDisplay extends JPanel {
 	static class SaveAsAction extends AbstractAction {
 
 		private final StudyKey studyKey;
-		private final String chartPath;
+		private final String newReportFileName;
 		private final Component dialogParent;
 
-		public SaveAsAction(StudyKey studyKey, String chartPath, final Component dialogParent) {
-
+		public SaveAsAction(
+				final StudyKey studyKey,
+				final String newReportFileName,
+				final Component dialogParent)
+		{
 			this.studyKey = studyKey;
-			this.chartPath = chartPath;
+			this.newReportFileName = newReportFileName;
 			this.dialogParent = dialogParent;
 			putValue(NAME, Text.All.save);
 		}
@@ -166,19 +170,30 @@ public class ChartDefaultDisplay extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				final String reportPath = Study.constructReportsPath(studyKey);
-				final File origFile = new File(reportPath, chartPath);
-				final File newChartDir = Dialogs.selectDirectoryDialog(
+				final File origFile = new File(reportPath, newReportFileName);
+				final File newDir = Dialogs.selectDirectoryDialog(
 						Config.PROPERTY_EXPORT_DIR,
-						"Choose the new directory for " + chartPath,
+						"Choose the new directory for " + newReportFileName,
 						dialogParent);
-				final File newFile = new File(newChartDir, chartPath);
-				if (origFile.exists()) {
-					Utils.copyFile(origFile, newFile);
+				if (newDir == null) {
+					// the user has not choosen a directory to save to
+					return;
 				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (Exception ex) {
-				log.error(null, ex);
+				final File newFile = new File(newDir, newReportFileName);
+				if (!origFile.exists()) {
+					throw new FileNotFoundException("Could not read from original report file: "
+							+ origFile.getAbsolutePath());
+				}
+				Utils.copyFile(origFile, newFile);
+			} catch (final IOException ex) {
+				Dialogs.showWarningDialogue("A table saving error has occurred");
+				log.error("A table saving error has occurred", ex);
+			} catch (final NullPointerException ex) {
+				//Dialogs.showWarningDialogue("A table saving error has occurred");
+				log.error("A table saving error has occurred", ex);
+			} catch (final Exception ex) {
+				Dialogs.showWarningDialogue("A table saving error has occurred");
+				log.error("A table saving error has occurred", ex);
 			}
 		}
 	}
