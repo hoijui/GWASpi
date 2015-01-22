@@ -36,12 +36,10 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
 
-		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
+		File[] sampleFiles = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		int numSamples = 0;
-		for (File currentLGENFile : lgenFilesToScan) {
-			File sampleFile = currentLGENFile;
-
+		for (File sampleFile : sampleFiles) {
 			FileReader inputFileReader = null;
 			BufferedReader inputBufferReader = null;
 			try {
@@ -76,7 +74,7 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 					numSamples++;
 				}
 				log.info("Parsed {} Samples in LGEN file {}...",
-						numSamples, currentLGENFile.getName());
+						numSamples, sampleFile.getName());
 			} finally {
 				if (inputBufferReader != null) {
 					try {

@@ -45,15 +45,18 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 			try {
 				inputFileReader = new FileReader(sampleFile);
 				inputBufferReader = new BufferedReader(inputFileReader);
-
 				boolean gotHeader = false;
-				while (!gotHeader && inputBufferReader.ready()) {
+				while (!gotHeader) {
 					String header = inputBufferReader.readLine();
+					if (header == null) {
+						break;
+					}
 					if (header.startsWith("[Data]")) {
-						/*header = */inputBufferReader.readLine(); // Get next line which is real header
+						/*header = */inputBufferReader.readLine(); // get the next line, which is the real header
 						gotHeader = true;
 					}
 				}
+
 				String l;
 				while (inputBufferReader.ready()) {
 					l = inputBufferReader.readLine();
@@ -69,12 +72,9 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 							);
 					samplesReceiver.addSampleInfo(sampleInfo);
 					numSamples++;
-
-					if (numSamples % 100 == 0) {
-						log.info("Parsed {} Samples...", numSamples);
-					}
 				}
-				log.info("Parsed {} Samples in LGEN file {}...", numSamples, sampleFile.getName());
+				log.info("Parsed {} Samples in LGEN file {}...",
+						numSamples, sampleFile.getName());
 			} finally {
 				if (inputBufferReader != null) {
 					try {
