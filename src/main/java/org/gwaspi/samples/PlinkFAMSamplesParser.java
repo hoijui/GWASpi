@@ -17,68 +17,39 @@
 
 package org.gwaspi.samples;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class PlinkFAMSamplesParser implements SamplesParser {
-
-	private static final Logger LOG
-			= LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
+public class PlinkFAMSamplesParser extends AbstractSamplesParser {
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
+	protected void parseSampleInfoFileLine(
+			final StudyKey studyKey,
+			final int lineIndex,
+			final String line,
+			final DataSetDestination samplesReceiver)
+			throws IOException
+	{
+		final String[] cVals = line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 
-		File sampleFile = new File(sampleInfoPath);
-
-		FileReader inputFileReader = null;
-		BufferedReader inputBufferReader = null;
-		try {
-			inputFileReader = new FileReader(sampleFile);
-			inputBufferReader = new BufferedReader(inputFileReader);
-
-			while (inputBufferReader.ready()) {
-				String l = inputBufferReader.readLine();
-				String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
-
-				String sexStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_sex];
-				sexStr = sexStr.equals("-9") ? "0" : sexStr;
-				String affectionStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_affection];
-				affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
-				SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
-				SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
-				SampleInfo sampleInfo = new SampleInfo(
-						studyKey,
-						cVals[ImportConstants.Annotation.Plink_Binary.ped_sampleId],
-						cVals[ImportConstants.Annotation.Plink_Binary.ped_familyId],
-						cVals[ImportConstants.Annotation.Plink_Binary.ped_fatherId],
-						cVals[ImportConstants.Annotation.Plink_Binary.ped_motherId],
-						sex,
-						affection
-						);
-				samplesReceiver.addSampleInfo(sampleInfo);
-			}
-		} finally {
-			if (inputBufferReader != null) {
-				try {
-					inputBufferReader.close();
-				} catch (IOException ex) {
-					LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
-				}
-			} else if (inputFileReader != null) {
-				try {
-					inputFileReader.close();
-				} catch (IOException ex) {
-					LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
-				}
-			}
-		}
+		String sexStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_sex];
+		sexStr = sexStr.equals("-9") ? "0" : sexStr;
+		String affectionStr = cVals[ImportConstants.Annotation.Plink_Binary.ped_affection];
+		affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
+		final SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
+		final SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
+		final SampleInfo sampleInfo = new SampleInfo(
+				studyKey,
+				cVals[ImportConstants.Annotation.Plink_Binary.ped_sampleId],
+				cVals[ImportConstants.Annotation.Plink_Binary.ped_familyId],
+				cVals[ImportConstants.Annotation.Plink_Binary.ped_fatherId],
+				cVals[ImportConstants.Annotation.Plink_Binary.ped_motherId],
+				sex,
+				affection
+				);
+		samplesReceiver.addSampleInfo(sampleInfo);
 	}
 }

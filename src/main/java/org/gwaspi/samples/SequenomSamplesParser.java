@@ -17,54 +17,28 @@
 
 package org.gwaspi.samples;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SequenomSamplesParser implements SamplesParser {
-
-	private static final Logger log
-			= LoggerFactory.getLogger(SequenomSamplesParser.class);
+public class SequenomSamplesParser extends AbstractSamplesParser {
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
-
-		File gtFileToImport = new File(sampleInfoPath);
-		FileReader inputFileReader = new FileReader(gtFileToImport);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
-
-		String l;
-		int numSamples = 0;
-		while (inputBufferReader.ready()) {
-			l = inputBufferReader.readLine();
-			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
-				String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
-				// TODO maybe use more then just the sampleId read from the Sequenom file?
-				SampleInfo sampleInfo = new SampleInfo(
-						studyKey, cVals[ImportConstants.Annotation.Sequenom.sampleId]);
-				// NOTE this is done in DataSet, by using LinkedHashSet for the sampleInfos
-//				if (!sampleInfos.contains(sampleInfo)) {
-					samplesReceiver.addSampleInfo(sampleInfo);
-//				}
-				numSamples++;
-
-				if (numSamples % 100 == 0) {
-					log.info("Parsed {} lines...", numSamples);
-				}
-			}
-
+	protected void parseSampleInfoFileLine(
+			final StudyKey studyKey,
+			final int lineIndex,
+			final String line,
+			final DataSetDestination samplesReceiver)
+			throws IOException
+	{
+		if (!line.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
+			String[] cVals = line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
+			// TODO maybe use more then just the sampleId read from the Sequenom file?
+			SampleInfo sampleInfo = new SampleInfo(
+					studyKey, cVals[ImportConstants.Annotation.Sequenom.sampleId]);
+			samplesReceiver.addSampleInfo(sampleInfo);
 		}
-		log.info("Parsed {} Samples in Sequenom file {}...",
-				numSamples, gtFileToImport);
-
-		inputBufferReader.close();
-		inputFileReader.close();
 	}
 }

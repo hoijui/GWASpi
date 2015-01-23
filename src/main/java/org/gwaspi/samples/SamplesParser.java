@@ -23,5 +23,9 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public interface SamplesParser {
 
-	void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException;
+	void scanSampleInfo(
+			StudyKey studyKey,
+			String sampleInfoPath,
+			DataSetDestination samplesReceiver)
+			throws IOException;
 }

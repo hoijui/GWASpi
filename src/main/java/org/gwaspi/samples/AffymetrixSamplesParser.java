@@ -19,6 +19,7 @@ package org.gwaspi.samples;
 
 import java.io.File;
 import java.io.IOException;
+import org.gwaspi.global.Utils;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -26,20 +27,24 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws IOException {
+	public void scanSampleInfo(
+			final StudyKey studyKey,
+			final String sampleInfoPath,
+			final DataSetDestination samplesReceiver)
+			throws IOException
+	{
+		final File[] sampleFiles = Utils.listFiles(sampleInfoPath);
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
-
-		for (File gtFilesToImport1 : gtFilesToImport) {
-			String l = gtFilesToImport1.getName();
-			String sampleId;
-			int end = l.lastIndexOf(".birdseed-v2");
+		for (final File sampleFile : sampleFiles) {
+			final String line = sampleFile.getName();
+			final String sampleId;
+			final int end = line.lastIndexOf(".birdseed-v2");
 			if (end != -1) {
-				sampleId = l.substring(0, end);
+				sampleId = line.substring(0, end);
 			} else {
-				sampleId = l.substring(0, l.lastIndexOf('.'));
+				sampleId = line.substring(0, line.lastIndexOf('.'));
 			}
-			SampleInfo sampleInfo = new SampleInfo(studyKey, sampleId);
+			final SampleInfo sampleInfo = new SampleInfo(studyKey, sampleId);
 			samplesReceiver.addSampleInfo(sampleInfo);
 		}
 	}
