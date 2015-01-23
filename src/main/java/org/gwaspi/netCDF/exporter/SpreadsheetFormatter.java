@@ -28,7 +28,6 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
-import static org.gwaspi.netCDF.exporter.Formatter.PLACEHOLDER_PS_EXPORT;
 import org.gwaspi.progress.IndeterminateProgressHandler;
 import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProcessInfo;

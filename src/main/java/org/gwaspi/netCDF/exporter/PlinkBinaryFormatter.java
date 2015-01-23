@@ -37,7 +37,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
-import static org.gwaspi.netCDF.exporter.Formatter.PLACEHOLDER_PS_EXPORT;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.progress.IntegerProgressHandler;
