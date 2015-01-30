@@ -365,6 +365,7 @@ public class NetCDFConstants {
 			QQPLOT,
 			FILTER_BY_VALID_AFFECTION,
 			FILTER_BY_HW_THREASHOLD,
+			FILTER_FRACTION,
 			FILTER_BY_WEIGHTS;
 
 			public static OPType compareTo(String str) {
