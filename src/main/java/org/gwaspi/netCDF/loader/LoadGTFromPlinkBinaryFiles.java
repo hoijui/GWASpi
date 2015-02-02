@@ -118,7 +118,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		boolean allele2;
 		if (mode == 1) {
 			// GET GENOTYPES
-			int rowCounter = 1;
+			int rowCounter = 0;
 //			List<byte[]> genotypes = new ArrayList<byte[]>();
 			while (itMarkerSet.hasNext()) {
 				try {
