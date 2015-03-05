@@ -89,12 +89,10 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 
 		DataSetSource dataSetSource = getParentDataSetSource();
 
-		MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
-
 		QASamplesOperationDataSet dataSet = generateFreshOperationDataSet();
-		dataSet.setNumMarkers(rdMatrixMetadata.getNumMarkers());
-		dataSet.setNumChromosomes(rdMatrixMetadata.getNumChromosomes());
-		dataSet.setNumSamples(rdMatrixMetadata.getNumSamples());
+		dataSet.setNumMarkers(dataSetSource.getNumMarkers());
+		dataSet.setNumChromosomes(dataSetSource.getNumChromosomes());
+		dataSet.setNumSamples(dataSetSource.getNumSamples());
 
 		SamplesGenotypesSource samplesGenotypes = dataSetSource.getSamplesGenotypesSource();
 		MarkersMetadataSource markersInfSrc = dataSetSource.getMarkersMetadatasSource();
