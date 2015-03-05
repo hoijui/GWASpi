@@ -41,14 +41,17 @@ public class QAMarkersOperationMetadataFactory implements OperationMetadataFacto
 				+ "\nMarkers: " + operationDataSet.getNumMarkers()
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				"Marker QA", // friendly name
 				description, // description
 				getTypeInfo().getType(),
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

@@ -36,15 +36,18 @@ public class QASamplesOperationMetadataFactory implements OperationMetadataFacto
 
 		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
 
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				"Sample QA", // friendly name
 				"Sample census on " + rdDataSetMetadata.getFriendlyName()
 						+ "\nSamples: " + operationDataSet.getNumSamples(), // description
 				getTypeInfo().getType(),
-				operationDataSet.getNumSamples(),
-				operationDataSet.getNumMarkers(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

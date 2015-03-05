@@ -37,6 +37,9 @@ public class HardyWeinbergOperationMetadataFactory
 			final HardyWeinbergOperationParams params)
 			throws IOException
 	{
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				"Hardy-Weinberg_" + params.getName(), // friendly name
@@ -44,9 +47,9 @@ public class HardyWeinbergOperationMetadataFactory
 					+ "\nMarkers: " + operationDataSet.getNumMarkers() + ""
 					+ "\nSamples: " + operationDataSet.getNumSamples(), // description
 				getTypeInfo().getType(), // operationType
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

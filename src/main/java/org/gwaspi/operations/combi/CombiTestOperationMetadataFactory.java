@@ -42,14 +42,18 @@ public class CombiTestOperationMetadataFactory
 	{
 		DataSetKey parentDataSetKey = operationDataSet.getParent();
 		DataSetMetadata parentDataSetMetadata = MatricesList.getDataSetMetadata(parentDataSetKey);
+
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				parentDataSetKey, // parent data set
 				"COMBI_Test"/* + myFriendlyName*/, // friendly name
 				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
 				getTypeInfo().getType(), // operationType
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

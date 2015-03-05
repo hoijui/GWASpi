@@ -43,14 +43,17 @@ public class SimpleFilterOperationMetadataFactory<P extends OperationParams>
 	@Override
 	public OperationMetadata generateMetadata(SimpleOperationDataSet operationDataSet, P params) throws IOException {
 
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				"Filtering_by_" + filterDescription, // friendly name
 				"Filters the markers and/or samples by " + filterDescription, // description
 				getTypeInfo().getType(), // operationType
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

@@ -43,15 +43,18 @@ public class TestOperationMetadataFactory<D extends CommonTestOperationDataSet, 
 
 		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(params.getMarkerCensus());
 
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				params.getName(), // friendly name
 				params.getName() + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + markerCensusOP.getDescription(), // description
 				getTypeInfo().getType(),
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }

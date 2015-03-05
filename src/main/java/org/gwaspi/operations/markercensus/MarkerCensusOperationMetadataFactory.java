@@ -50,6 +50,9 @@ public class MarkerCensusOperationMetadataFactory
 			opType = NetCDFConstants.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
+		final boolean markersOriented = getTypeInfo().isMarkersOriented();
+		final int numMarkers = operationDataSet.getNumMarkers();
+		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
 				"Genotypes freq. - " + params.getName(), // friendly name
@@ -61,9 +64,9 @@ public class MarkerCensusOperationMetadataFactory
 					+ "\nMarkers: " + operationDataSet.getNumMarkers()
 					+ "\nSamples: " + operationDataSet.getNumSamples(), // description
 				opType,
-				operationDataSet.getNumMarkers(),
-				operationDataSet.getNumSamples(),
+				markersOriented ? numMarkers : numSamples,
+				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				operationDataSet.getTypeInfo().isMarkersOriented());
+				markersOriented);
 	}
 }
