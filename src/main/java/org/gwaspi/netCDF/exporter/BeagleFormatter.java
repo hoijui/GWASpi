@@ -91,6 +91,8 @@ class BeagleFormatter implements Formatter {
 		exportPS.addSubProgressSource(exportMarkersPS, 0.08);
 
 		final File exportDir = Utils.checkDirPath(exportPath);
+		final String friendlyNameSanitized
+				= Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 
 		String sep = ExportConstants.SEPARATOR_BEAGLE;
 
@@ -98,7 +100,7 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter beagleBW = null;
 		try {
 			FileWriter beagleFW = new FileWriter(new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".beagle"));
+					friendlyNameSanitized + ".beagle"));
 			beagleBW = new BufferedWriter(beagleFW);
 
 			// BEAGLE files:
@@ -226,7 +228,7 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter markerBW = null;
 		try {
 			FileWriter markerFW = new FileWriter(new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".markers"));
+					friendlyNameSanitized + ".markers"));
 			markerBW = new BufferedWriter(markerFW);
 
 			// get MARKER_QA Operation

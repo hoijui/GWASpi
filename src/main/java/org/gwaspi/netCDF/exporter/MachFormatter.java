@@ -78,7 +78,7 @@ public class MachFormatter implements Formatter {
 		String tmpChr = "";
 		int start = 0;
 		int end = 0;
-		String dataSetName = rdDataSetMetadata.getFriendlyName();
+		final String dataSetName = Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 		List<String> chrMarkerRsIds = new LinkedList<String>();
 		int chromosomeIndex = 0;
 		exportPS.setNewStatus(ProcessStatus.RUNNING);

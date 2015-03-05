@@ -112,6 +112,8 @@ public class PlinkBinaryFormatter implements Formatter {
 		exportPS.addSubProgressSource(exportSamplesPS, 0.02);
 
 		final File exportDir = Utils.checkDirPath(exportPath);
+		final String friendlyNameSanitized
+				= Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 
 		String sep = ExportConstants.SEPARATOR_PLINK;
 
@@ -134,8 +136,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
-		File bimFile = new File(exportDir.getPath(),
-				rdDataSetMetadata.getFriendlyName() + ".bim");
+		File bimFile = new File(exportDir.getPath(), friendlyNameSanitized + ".bim");
 		BufferedWriter bimBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(bimFile);
@@ -206,8 +207,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		int byteChunkSize = bytesPerSampleSet * nbRowsPerChunk;
 
 		// Create an output stream to the file.
-		File bedFile = new File(exportDir.getPath(),
-				rdDataSetMetadata.getFriendlyName() + ".bed");
+		File bedFile = new File(exportDir.getPath(), friendlyNameSanitized + ".bed");
 		DataOutputStream bedBW = null;
 		try {
 			FileOutputStream bedFW = new FileOutputStream(bedFile);
@@ -280,8 +280,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="FAM FILE">
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
-		File famFile = new File(exportDir.getPath(),
-				rdDataSetMetadata.getFriendlyName() + ".fam");
+		File famFile = new File(exportDir.getPath(), friendlyNameSanitized + ".fam");
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(famFile);

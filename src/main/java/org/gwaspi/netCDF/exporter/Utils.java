@@ -44,6 +44,17 @@ public class Utils {
 		return dir;
 	}
 
+	/**
+	 * Converts a string into an other string that looks about as similar to the original
+	 * as possible, while being save (and nice) to be used as a (part of a) file name.
+	 * @param orig to be sanitized; might contain any character
+	 * @return sanitized version of {@code orig}
+	 */
+	public static String sanitizeForFileName(final String orig) {
+
+		return orig.replaceAll("[^_\\-.0-9a-zA-Z]", "_");
+	}
+
 	public static Map<SampleKey, SampleInfo> createSampleKeyToInfoMap(final SamplesInfosSource samplesInfosSource) {
 
 		final Map<SampleKey, SampleInfo> sampleKeyToInfo = new HashMap<SampleKey, SampleInfo>();

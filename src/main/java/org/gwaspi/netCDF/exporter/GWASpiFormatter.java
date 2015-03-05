@@ -68,6 +68,8 @@ public class GWASpiFormatter implements Formatter {
 		exportPS.addSubProgressSource(exportMarkersPS, 0.2);
 
 		final File exportDir = Utils.checkDirPath(exportPath);
+		final String friendlyNameSanitized
+				= Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 
 		exportSamplesPS.setNewStatus(ProcessStatus.INITIALIZING);
 		String sep = ExportConstants.SEPARATOR_SAMPLE_INFO;
@@ -75,7 +77,7 @@ public class GWASpiFormatter implements Formatter {
 		try {
 			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">
 			FileWriter sampleInfoFW = new FileWriter(new File(exportDir.getPath(),
-					"SampleInfo_" + rdDataSetMetadata.getFriendlyName() + ".txt"));
+					"SampleInfo_" + friendlyNameSanitized + ".txt"));
 			sampleInfoBW = new BufferedWriter(sampleInfoFW);
 
 			sampleInfoBW.append("FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tCategory\tDesease\tPopulation\tAge");
@@ -144,8 +146,7 @@ public class GWASpiFormatter implements Formatter {
 		//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
 		exportMarkersPS.setNewStatus(ProcessStatus.INITIALIZING);
 		File origFile = MatrixMetadata.generatePathToNetCdfFileGeneric(rdDataSetMetadata);
-		File newFile = new File(exportDir.getPath(),
-				rdDataSetMetadata.getFriendlyName() + ".nc");
+		File newFile = new File(exportDir.getPath(), friendlyNameSanitized + ".nc");
 		exportMarkersPS.setNewStatus(ProcessStatus.RUNNING);
 		if (!origFile.exists()) {
 			throw new IOException("Could not find internal markers storage file");

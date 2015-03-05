@@ -73,6 +73,8 @@ public class PlinkTransposedFormatter implements Formatter {
 		exportPS.addSubProgressSource(exportSamplesPS, 0.05);
 
 		final File exportDir = Utils.checkDirPath(exportPath);
+		final String friendlyNameSanitized
+				= Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 
 		String sep = ExportConstants.SEPARATOR_PLINK;
 
@@ -81,7 +83,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tpedBW = null;
 		try {
 			FileWriter tpedFW = new FileWriter(new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".tped"));
+					friendlyNameSanitized + ".tped"));
 			tpedBW = new BufferedWriter(tpedFW);
 			// TPED files:
 			// chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
@@ -131,7 +133,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".tfam"));
+					friendlyNameSanitized + ".tfam"));
 			tfamBW = new BufferedWriter(tfamFW);
 
 			// Iterate through all samples

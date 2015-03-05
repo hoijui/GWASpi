@@ -75,6 +75,8 @@ public class SpreadsheetFormatter implements Formatter {
 		exportPS.addSubProgressSource(exportSamplesPS, 1.0 - headerTimeFraction);
 
 		final File exportDir = Utils.checkDirPath(exportPath);
+		final String friendlyNameSanitized
+				= Utils.sanitizeForFileName(rdDataSetMetadata.getFriendlyName());
 
 		String sep = ExportConstants.SEPARATOR_REPORTS;
 
@@ -83,7 +85,7 @@ public class SpreadsheetFormatter implements Formatter {
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
-					rdDataSetMetadata.getFriendlyName() + ".csv"));
+					friendlyNameSanitized + ".csv"));
 			pedBW = new BufferedWriter(pedFW);
 
 			// HEADER CONTAINING MARKER IDs

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.netCDF.exporter.Utils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -34,12 +35,16 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 	private static final Logger log = LoggerFactory.getLogger(TestLoadAndExportScripts.class);
 
+	public static String createSanitizedMatrixName(final ImportFormat format, final String name) {
+		return Utils.sanitizeForFileName(format.name() + "." + name);
+	}
+
 	/**
 	 * @return the matrixName
 	 */
 	private static String testLoadPlinkBinary(Setup setup, String name) throws Exception {
 
-		String matrixName = ImportFormat.PLINK_Binary.name() + "." + name;
+		final String matrixName = createSanitizedMatrixName(ImportFormat.PLINK_Binary, name);
 
 		if (setup.getMatrixIds().containsKey(matrixName)) {
 			// this data is already loaded
@@ -100,7 +105,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 	 */
 	static String testLoadPlinkFlat(Setup setup, String name) throws Exception {
 
-		String matrixName = ImportFormat.PLINK.name() + "." + name;
+		final String matrixName = createSanitizedMatrixName(ImportFormat.PLINK, name);
 
 		if (setup.getMatrixIds().containsKey(matrixName)) {
 			// this data is already loaded
