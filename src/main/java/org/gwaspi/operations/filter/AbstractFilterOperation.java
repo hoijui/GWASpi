@@ -130,18 +130,18 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 			return Integer.MIN_VALUE;
 		}
 
-		final List<Integer> filtereMarkersOriginalIndices = new ArrayList<Integer>(filteredMarkerOrigIndicesAndKeys.keySet());
-		final List<MarkerKey> filtereMarkersKeys = new ArrayList<MarkerKey>(filteredMarkerOrigIndicesAndKeys.values());
+		final List<Integer> filteredMarkersOriginalIndices = new ArrayList<Integer>(filteredMarkerOrigIndicesAndKeys.keySet());
+		final List<MarkerKey> filteredMarkersKeys = new ArrayList<MarkerKey>(filteredMarkerOrigIndicesAndKeys.values());
 
-		final List<Integer> filtereSamplesOriginalIndices = new ArrayList<Integer>(filteredSampleOrigIndicesAndKeys.keySet());
-		final List<SampleKey> filtereSamplesKeys = new ArrayList<SampleKey>(filteredSampleOrigIndicesAndKeys.values());
+		final List<Integer> filteredSamplesOriginalIndices = new ArrayList<Integer>(filteredSampleOrigIndicesAndKeys.keySet());
+		final List<SampleKey> filteredSamplesKeys = new ArrayList<SampleKey>(filteredSampleOrigIndicesAndKeys.values());
 
 		final Map<Integer, ChromosomeKey> filteredChromosomeOrigIndicesAndKeys
 					= ChromosomeUtils.aggregateChromosomeIndicesAndKeys(
 							parentDataSetSource.getChromosomesKeysSource().getIndicesMap(),
-							ChromosomeUtils.aggregateChromosomeKeys(new IndicesFilteredList<String>(MatrixFactory.generateMatrixDataSetSource(getParentKey().getOrigin()).getMarkersMetadatasSource().getChromosomes(), filtereMarkersOriginalIndices)));
-		final List<Integer> filtereChromosomesOriginalIndices = new ArrayList<Integer>(filteredChromosomeOrigIndicesAndKeys.keySet());
-		final List<ChromosomeKey> filtereChromosomesKeys = new ArrayList<ChromosomeKey>(filteredChromosomeOrigIndicesAndKeys.values());
+							ChromosomeUtils.aggregateChromosomeKeys(new IndicesFilteredList<String>(MatrixFactory.generateMatrixDataSetSource(getParentKey().getOrigin()).getMarkersMetadatasSource().getChromosomes(), filteredMarkersOriginalIndices)));
+		final List<Integer> filteredChromosomesOriginalIndices = new ArrayList<Integer>(filteredChromosomeOrigIndicesAndKeys.keySet());
+		final List<ChromosomeKey> filteredChromosomesKeys = new ArrayList<ChromosomeKey>(filteredChromosomeOrigIndicesAndKeys.values());
 
 		storePH.setNewStatus(ProcessStatus.INITIALIZING);
 		SimpleOperationDataSet dataSet = generateFreshOperationDataSet();
@@ -152,9 +152,9 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 		dataSet.setNumChromosomes(filteredChromosomeOrigIndicesAndKeys.size());
 		dataSet.setNumSamples(filteredSampleOrigIndicesAndKeys.size());
 
-		dataSet.setMarkers(filtereMarkersOriginalIndices, filtereMarkersKeys);
-		dataSet.setChromosomes(filtereChromosomesOriginalIndices, filtereChromosomesKeys);
-		dataSet.setSamples(filtereSamplesOriginalIndices, filtereSamplesKeys);
+		dataSet.setMarkers(filteredMarkersOriginalIndices, filteredMarkersKeys);
+		dataSet.setChromosomes(filteredChromosomesOriginalIndices, filteredChromosomesKeys);
+		dataSet.setSamples(filteredSamplesOriginalIndices, filteredSamplesKeys);
 		storePH.setNewStatus(ProcessStatus.FINALIZING);
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
