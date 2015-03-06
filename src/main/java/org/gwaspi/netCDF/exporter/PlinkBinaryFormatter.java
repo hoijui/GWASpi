@@ -348,7 +348,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		if (tempGT[0] == 48
 				|| tempGT[1] == 48) {
 			// SOME MISSING ALLELES => SET ALL TO MISSING
-			result = new byte[]{1, 0};
+			result = new byte[] {1, 0};
 		} else {
 			if (tempGT[0] == tmpMinorAllele) {
 				if (tempGT[1] == tmpMinorAllele) {
