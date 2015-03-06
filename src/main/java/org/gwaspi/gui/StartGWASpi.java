@@ -50,13 +50,13 @@ public class StartGWASpi {
 
 	// FIXME TODO convert all this to non-static, and make configuration in general more modular (for example, use preferences for everything?)
 	public static boolean guiMode = true;
-	private static MainFrame mainGUIFrame = null;
-	private static boolean logToFile = false;
 	public static boolean logOff = false;
 	public static boolean inMemoryStorage = false;
-	private static String logPath;
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
+	private static MainFrame mainGUIFrame = null;
+	private static boolean logToFile = false;
+	private static String logPath;
 
 	public StartGWASpi() {
 	}
