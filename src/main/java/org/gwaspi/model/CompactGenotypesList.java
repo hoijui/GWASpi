@@ -34,7 +34,10 @@ import java.util.Set;
 import org.gwaspi.operations.NetCdfUtils;
 
 /**
- * A memory efficient implementation of GenotypesList.
+ * An immutable genotypes-list that compresses the data on creation,
+ * and decompresses it on-the-fly when fetching.
+ * This is memory efficient but CPU intensive.
+ * @see ArrayGenotypesList
  */
 public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList, Serializable {
 

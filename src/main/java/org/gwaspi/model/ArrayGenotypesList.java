@@ -26,7 +26,9 @@ import java.util.Set;
 import org.gwaspi.operations.NetCdfUtils;
 
 /**
- * A simple, ArrayList based implementation of GenotypesList.
+ * A simple, {@link ArrayList} based genotypes-list.
+ * This is memory heavy but light on the CPU.
+ * @see CompactGenotypesList
  */
 public class ArrayGenotypesList extends ArrayList<byte[]> implements GenotypesList {
 
