@@ -238,13 +238,14 @@ public class Util {
 
 		List<List<Double>> transposed = new ArrayList<List<Double>>(matrix.get(0).size());
 
-		for (int c = 0; c < matrix.get(0).size(); c++) {
+		final int origRows = matrix.get(0).size();
+		for (int colIndex = 0; colIndex < origRows; colIndex++) {
 			transposed.add(new ArrayList<Double>(matrix.size()));
 		}
 
-		for (final List<Double> row : matrix) {
-			for (int c = 0; c < row.size(); c++) {
-				transposed.get(c).add(row.get(c));
+		for (final List<Double> origColumn : matrix) {
+			for (int rowIndex = 0; rowIndex < origColumn.size(); rowIndex++) {
+				transposed.get(rowIndex).add(origColumn.get(rowIndex));
 			}
 		}
 
