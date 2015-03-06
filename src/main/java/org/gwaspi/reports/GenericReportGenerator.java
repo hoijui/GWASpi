@@ -211,7 +211,7 @@ public class GenericReportGenerator {
 						currChrS.add(data.getPosition(), pVal);
 						labeler.put(currChr + "_" + data.getPosition(), markerKey);
 					} else {
-						if (!currChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
+						if (!currChr.isEmpty()) { // SKIP FIRST TIME (NO DATA YET!)
 							// add the last (now compleeted) chromosomes data-set,
 							// before starting the new one
 							currChrSC.addSeries(currChrS);

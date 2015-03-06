@@ -187,7 +187,7 @@ public class Config {
 			checkUpdates();
 
 			if (startWithGUI) { // GUI MODE
-				if (dirToData.getPath().equals("")) {
+				if (dirToData.getPath().isEmpty()) {
 					JOptionPane.showMessageDialog(dialogParent, Text.App.initText);
 					File dataDir = Dialogs.selectDirectoryDialog(
 							PROPERTY_DATA_DIR,
@@ -223,7 +223,7 @@ public class Config {
 						}
 					}
 
-//					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
+//					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
 					updateConfigDataDirs(dirToData);
 //					} else {
 					setDBSystemDir(derbyCenter.getPath());
@@ -232,7 +232,7 @@ public class Config {
 					isInitiated = true;
 				}
 			} else { // CLI & THREAD MODE
-				if (dirToData.getPath().equals("")) {
+				if (dirToData.getPath().isEmpty()) {
 					if (scriptFile != null) {
 						// Use path from script file
 						// 1st line contains data path
@@ -258,7 +258,7 @@ public class Config {
 						throw new IllegalStateException("Unable to determine a data directory path");
 					}
 				} else {
-					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
+					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
 						updateConfigDataDirs(dirToData);
 						createDataStructure(dirToData);
 					}

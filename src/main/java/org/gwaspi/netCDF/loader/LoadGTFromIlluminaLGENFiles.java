@@ -148,7 +148,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 						(byte) cVals[Standard.allele2].charAt(0)};
 				tempMarkerSet.put(MarkerKey.valueOf(cVals[Standard.markerId]), tmpAlleles);
 			} else {
-				if (!currentSampleKey.getSampleId().equals("")) { // EXCEPT FIRST TIME ROUND
+				if (!currentSampleKey.getSampleId().isEmpty()) { // EXCEPT FIRST TIME ROUND
 					// INIT AND PURGE SORTEDMARKERSET Map
 					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(markerKeys, NetCDFConstants.Defaults.DEFAULT_GT);
 

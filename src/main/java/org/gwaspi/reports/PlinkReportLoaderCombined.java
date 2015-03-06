@@ -92,7 +92,7 @@ public class PlinkReportLoaderCombined {
 
 //						series1.add(position, logPValue);
 					} else {
-						if (!tempChr.equals("")) { // Not the first time round!
+						if (!tempChr.isEmpty()) { // Not the first time round!
 							XYSeriesCollection tempChrData = new XYSeriesCollection();
 							tempChrData.addSeries(series1);
 							tempChrData.addSeries(series2);

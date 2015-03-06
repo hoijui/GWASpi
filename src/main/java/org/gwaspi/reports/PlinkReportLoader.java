@@ -118,7 +118,7 @@ public class PlinkReportLoader {
 						}
 						labeler.put(tempChr + "_" + position, markerId);
 					} else {
-						if (!tempChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
+						if (!tempChr.isEmpty()) { // SKIP FIRST TIME (NO DATA YET!)
 							chrData.addSeries(series1);
 							chrData.addSeries(series2);
 							appendToCombinedRangePlot(combinedPlot, tempChr, chrData);
