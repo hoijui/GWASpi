@@ -226,13 +226,14 @@ public class PlinkBinaryFormatter implements Formatter {
 			// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
 			exportGenotypesPS.setNewStatus(ProcessStatus.RUNNING);
+			final StringBuilder tetraGTs = new StringBuilder(4 * 2);
 			for (int markerIndex = 0; markerIndex < nbOfMarkers; markerIndex++) {
 				byte tmpMinorAllele = minorAlleles.get(markerIndex);
 				byte tmpMajorAllele = majorAlleles.get(markerIndex);
 
 				for (Iterator<byte[]> rdSampleGts = markersGenotypesIt.next().iterator(); rdSampleGts.hasNext();) {
 					// ONE BYTE AT A TIME (4 SAMPLES)
-					StringBuilder tetraGTs = new StringBuilder("");
+					tetraGTs.setLength(0); // clear
 					for (int i = 0; i < 4; i++) {
 						if (rdSampleGts.hasNext()) {
 							byte[] tempGT = rdSampleGts.next();
@@ -242,15 +243,8 @@ public class PlinkBinaryFormatter implements Formatter {
 						}
 					}
 
-					int number = Integer.parseInt(tetraGTs.toString(), 2);
-					byte[] tetraGT = new byte[] {(byte) number};
-
-					System.arraycopy(
-							tetraGT,
-							0,
-							wrBytes,
-							byteCount,
-							1);
+					final byte number = (byte) Short.parseShort(tetraGTs.toString(), 2);
+					wrBytes[byteCount] = number;
 					byteCount++;
 
 					if (byteCount == byteChunkSize) {
