@@ -236,6 +236,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 				for (Iterator<byte[]> rdSampleGts = markersGenotypesIt.next().iterator(); rdSampleGts.hasNext();) {
 					// ONE BYTE AT A TIME (4 SAMPLES)
+					// TODO This code could be made faster, maybe by using BitSet, BigInteger, byte[] pr boolean[] instead of StringBuilder
 					tetraGTs.setLength(0); // clear
 					for (int i = 0; i < 4; i++) {
 						if (rdSampleGts.hasNext()) {
