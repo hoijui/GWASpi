@@ -260,6 +260,7 @@ public class Config {
 				} else {
 					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
 						updateConfigDataDirs(dirToData);
+						createDataStructure(dirToData);
 					}
 					isInitiated = true;
 				}
