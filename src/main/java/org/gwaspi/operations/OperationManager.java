@@ -100,7 +100,15 @@ public class OperationManager {
 	}
 
 	private static OperationFactory getOperationFactory(final Class<? extends MatrixOperation> type) {
-		return operationTypeToFactory.get(type);
+
+		final OperationFactory operationFactory
+				= operationTypeToFactory.get(type);
+		if (operationFactory == null) {
+			throw new IllegalArgumentException("No factory available for operation type: "
+					+ type.toString());
+		}
+
+		return operationFactory;
 	}
 
 	public static OperationTypeInfo getOperationTypeInfo(final Class<? extends MatrixOperation> type) {
