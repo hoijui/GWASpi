@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
-import javax.xml.parsers.ParserConfigurationException;
 import org.gwaspi.cli.ScriptUtils;
 import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.gui.StartGWASpi;
@@ -47,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 public class Config {
 
@@ -165,10 +163,14 @@ public class Config {
 //		return prop;
 //	}
 
-	public static void clearConfigFile() throws IOException, BackingStoreException {
+	public static void clearConfigFile() throws IOException {
 		if (StartGWASpi.guiMode) {
-			// GUI MODE
-			prefs.clear();
+			try {
+				// GUI MODE
+				prefs.clear();
+			} catch (final BackingStoreException ex) {
+				throw new IOException(ex);
+			}
 		} else {
 			// CLI MODE
 			instancePrefs.get().clear();
@@ -199,7 +201,7 @@ public class Config {
 							createDataStructure(dataDir);
 							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 							isInitiated = true;
-						} catch (Exception ex) {
+						} catch (final Exception ex) {
 							JOptionPane.showMessageDialog(dialogParent, Text.App.warnUnableToInitForFirstTime);
 							log.error(Text.App.warnUnableToInitForFirstTime, ex);
 						}
@@ -247,7 +249,7 @@ public class Config {
 							try {
 								createDataStructure(dataDir);
 								isInitiated = true;
-							} catch (Exception ex) {
+							} catch (final Exception ex) {
 								log.error(Text.App.warnUnableToInitForFirstTime, ex);
 							}
 						}
@@ -265,7 +267,7 @@ public class Config {
 					isInitiated = true;
 				}
 			}
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			isInitiated = false;
 			log.error("Failed initializing the configuration", ex);
 		}
@@ -273,7 +275,7 @@ public class Config {
 		return isInitiated;
 	}
 
-	protected static File initDataBaseVars(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+	protected static File initDataBaseVars(File dataDir) throws IOException {
 
 		clearConfigFile();
 		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
@@ -283,15 +285,20 @@ public class Config {
 		return derbyCenter;
 	}
 
-	private static Document getLocalVersionDom() throws URISyntaxException {
+	private static Document getLocalVersionDom() throws IOException {
 
 		URL localVersionPath = Config.class.getResource(GlobalConstants.LOCAL_VERSION_XML);
-		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		Document localDom;
+		try {
+			localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		} catch (final URISyntaxException ex) {
+			throw new IOException(ex);
+		}
 
 		return localDom;
 	}
 
-	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+	protected static void createDataStructure(File dataDir) throws IOException {
 
 		Utils.createFolder(dataDir);
 
@@ -322,7 +329,7 @@ public class Config {
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 	}
 
-	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+	private static void updateConfigDataDirs(File dataDir) throws IOException {
 
 		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
 		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
@@ -392,7 +399,7 @@ public class Config {
 		setDBSystemDir(derbyCenter.getPath());
 	}
 
-	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
+	public static void checkUpdates() throws IOException, ParseException {
 
 		if (Utils.checkInternetConnection()) {
 			Document localDom = getLocalVersionDom();
