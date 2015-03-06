@@ -25,6 +25,7 @@ import java.util.List;
 import libsvm.svm_model;
 import libsvm.svm_node;
 import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.GenotypesListManager;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
@@ -87,7 +88,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		try {
 			// HACK This next line is for debugging purposes only
-			Util.storeForEncoding(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs);
+			Util.storeForEncoding(GenotypesListManager.getCommon(), markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

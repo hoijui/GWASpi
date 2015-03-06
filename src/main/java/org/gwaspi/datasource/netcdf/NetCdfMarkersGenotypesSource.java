@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.NetCDFConstants;
-import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
+import org.gwaspi.model.GenotypesListManager;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatrixKey;
 import ucar.nc2.NetcdfFile;
@@ -42,7 +42,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractNetCdfListSource<Genot
 	private NetCdfMarkersGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
 		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_MARKERSET);
 
-		this.genotypesListFactory = CompactGenotypesList.FACTORY;
+		this.genotypesListFactory = GenotypesListManager.getCommon();
 	}
 
 	public static MarkersGenotypesSource createForMatrix(MatrixKey origin, NetcdfFile rdNetCdfFile) throws IOException {

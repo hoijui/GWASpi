@@ -28,8 +28,8 @@ import java.io.ObjectOutputStream;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
@@ -385,6 +385,7 @@ public class Util {
 	}
 
 	public static void storeForEncoding(
+			final GenotypesListFactory genotypesListFactory,
 			List<MarkerKey> markers,
 //			final List<Census> allMarkersCensus,
 			final List<Byte> majorAlleles,
@@ -410,7 +411,7 @@ public class Util {
 		List<Affection> sampleAffections = new ArrayList<Affection>(sampleAffecs);
 		List<GenotypesList> markerGenotypes = new ArrayList<GenotypesList>(markerGTs.size());
 		for (GenotypesList mGTs : markerGTs) {
-			markerGenotypes.add(CompactGenotypesList.FACTORY.extract(mGTs));
+			markerGenotypes.add(genotypesListFactory.extract(mGTs));
 		}
 
 		try {

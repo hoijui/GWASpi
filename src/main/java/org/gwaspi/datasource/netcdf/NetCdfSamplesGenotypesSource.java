@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
+import org.gwaspi.model.GenotypesListManager;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SamplesGenotypesSource;
@@ -64,7 +64,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 	private NetCdfSamplesGenotypesSource(MatrixKey origin, NetcdfFile rdNetCdfFile) {
 		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, NetCDFConstants.Dimensions.DIM_SAMPLESET);
 
-		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+		this.genotyesListFactory = GenotypesListManager.getCommon();
 		this.originSource = null;
 	}
 
