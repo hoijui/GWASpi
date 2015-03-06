@@ -224,6 +224,9 @@ public class PlinkBinaryFormatter implements Formatter {
 			int byteCount = 0;
 			byte[] wrBytes = new byte[byteChunkSize];
 			// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
+			// We encode 4 samples at a time.
+			// Each sample has 2 alleles == 1 genotype, which gets encoded into 2 bits.
+			// This makes 4 samples * 2 bits = 8 bits = 1 byte.
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
 			exportGenotypesPS.setNewStatus(ProcessStatus.RUNNING);
 			final StringBuilder tetraGTs = new StringBuilder(4 * 2);
@@ -243,6 +246,9 @@ public class PlinkBinaryFormatter implements Formatter {
 						}
 					}
 
+					// We can not use {@code Byte#parseByte} because we give in (binary encoded)
+					// numbers from 0 to 255, and byte is signed (-128 to 127),
+					// so we parse as short, and then convert it to byte.
 					final byte number = (byte) Short.parseShort(tetraGTs.toString(), 2);
 					wrBytes[byteCount] = number;
 					byteCount++;
