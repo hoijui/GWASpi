@@ -34,7 +34,7 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -49,22 +49,21 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-		// checking study
-		final StudyKey studyKey = prepareStudy(args.get("study-id"), true);
-		final boolean studyExists = checkStudy(studyKey);
-		if (!studyExists) {
-			return false;
-		}
+		try {
+			// checking study
+			final StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+			checkStudyForScript(studyKey);
 
-		final String sampleInfoFilePath = fetchRequired(args, PARAM_SAMPLE_INFO_FILE);
-		final File sampleInfoFile = new File(sampleInfoFilePath);
-		if (!sampleInfoFile.exists()) {
-			System.err.println("Sample-info file does not exist: \"" + sampleInfoFile.getAbsolutePath() + "\"");
-			return false;
-		}
+			final String sampleInfoFilePath = fetchRequired(args, PARAM_SAMPLE_INFO_FILE);
+			final File sampleInfoFile = new File(sampleInfoFilePath);
+			if (!sampleInfoFile.exists()) {
+				throw new ScriptExecutionException("Sample-info file does not exist: \"" + sampleInfoFile.getAbsolutePath() + "\"");
+			}
 
-		final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
-		MultiOperations.queueTask(updateSampleInfoTask);
-		return true;
+			final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+			MultiOperations.queueTask(updateSampleInfoTask);
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Universitat Pompeu Fabra
+ * Copyright (C) 2015 Universitat Pompeu Fabra
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 
 package org.gwaspi.cli;
 
-import java.util.Map;
+public class ScriptExecutionException extends Exception {
 
-/**
- * Parses, prepares and executes one command read from a script file.
- */
-interface ScriptCommand {
+	public ScriptExecutionException(final String message) {
+		super(message);
+	}
 
-	String getCommandName();
+	public ScriptExecutionException(final Throwable cause) {
+		super(cause);
+	}
 
-	/**
-	 * @param args a list of properties in the order they appeared in the script
-	 */
-	void execute(Map<String, String> args) throws ScriptExecutionException;
+	public ScriptExecutionException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
 }

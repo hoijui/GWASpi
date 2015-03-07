@@ -77,7 +77,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -97,13 +97,13 @@ public class TestScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+		try {
+			GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-		// checking study
-		StudyKey studyKey = prepareStudy(args.get("study-id"), false);
-		boolean studyExists = checkStudy(studyKey);
+			// checking study
+			StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+			checkStudyForScript(studyKey);
 
-		if (studyExists) {
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
 			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 			int gtFreqId = Integer.parseInt(args.get("gtfreq-id")); // Parent GtFreq operation Id
@@ -131,11 +131,12 @@ public class TestScriptCommand extends AbstractScriptCommand {
 						gwasParams,
 						testType);
 				MultiOperations.queueTask(testTask);
-				return true;
+			} else {
+				System.err.println("Not proceeding after trying to ensure QA operations");
 			}
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
 		}
-
-		return false;
 	}
 
 	public static void ensureQAOperations(final DataSetKey dataSetKey, final GWASinOneGOParams gwasParams) {

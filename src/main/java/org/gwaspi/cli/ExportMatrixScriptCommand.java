@@ -37,7 +37,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -54,32 +54,31 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-		// checking study
-		final StudyKey studyKey = prepareStudy(args.get("study-id"), false);
-		final int matrixId = Integer.parseInt(args.get("matrix-id"));
-		final Integer operationId = fetchInteger(args, "operation-id", null);
-		final MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
-		final DataSetKey dataSetKey;
-		if (operationId == null) {
-			// we will export the matrix
-			dataSetKey = new DataSetKey(matrixKey);
-		} else {
-			// we will export the operation
-			dataSetKey = new DataSetKey(new OperationKey(matrixKey, operationId));
-		}
-		boolean studyExists = checkStudy(studyKey);
+		try {
+			// checking study
+			final StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+			final int matrixId = Integer.parseInt(args.get("matrix-id"));
+			final Integer operationId = fetchInteger(args, "operation-id", null);
+			final MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
+			final DataSetKey dataSetKey;
+			if (operationId == null) {
+				// we will export the matrix
+				dataSetKey = new DataSetKey(matrixKey);
+			} else {
+				// we will export the operation
+				dataSetKey = new DataSetKey(new OperationKey(matrixKey, operationId));
+			}
+			checkStudyForScript(studyKey);
 
-		String formatStr = args.get("format");
-		ExportFormat format = ExportFormat.valueOf(formatStr);
+			String formatStr = args.get("format");
+			ExportFormat format = ExportFormat.valueOf(formatStr);
 
-		if (studyExists) {
 			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
 					dataSetKey, format, DBSamplesConstants.F_AFFECTION);
 			final CommonRunnable exportTask = new Threaded_ExportMatrix(matrixExporterParams);
 			MultiOperations.queueTask(exportTask);
-			return true;
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
 		}
-
-		return false;
 	}
 }

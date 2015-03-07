@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import org.gwaspi.cli.CliExecutor;
+import org.gwaspi.cli.ScriptExecutionException;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -185,9 +186,10 @@ public class StartGWASpi {
 
 				if (initialized) {
 					CliExecutor cliExecutor = new CliExecutor(scriptFile);
-					boolean success = cliExecutor.execute();
-					if (!success) {
-						throw new IOException("Failed to execute script '" + scriptFile + "'");
+					try {
+						cliExecutor.execute();
+					} catch (final ScriptExecutionException ex) {
+						throw new IOException("Failed to execute script(s) from file '" + scriptFile + "'", ex);
 					}
 				}
 			} else {

@@ -36,7 +36,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -58,13 +58,13 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 		*/
 		//</editor-fold>
 
-		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+		try {
+			GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-		// checking study
-		StudyKey studyKey = prepareStudy(args.get("study-id"), false);
-		boolean studyExists = checkStudy(studyKey);
+			// checking study
+			StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+			checkStudyForScript(studyKey);
 
-		if (studyExists) {
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
 			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 			String gtFrqName = args.get("gtfreq-name");
@@ -75,10 +75,10 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			}
 
 			boolean markersMismatchDiscard = true;
-//			boolean markersMismatchDiscard = Boolean.parseBoolean(args.get("discard-mismached-marker"));
-//			boolean discardByMarkersMissingRatio = Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio"));
+	//			boolean markersMismatchDiscard = Boolean.parseBoolean(args.get("discard-mismached-marker"));
+	//			boolean discardByMarkersMissingRatio = Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio"));
 			double markersMissingRatioThreshold = Double.parseDouble(args.get("discard-marker-missing-ratio-threshold"));
-//			boolean discardBySamplesMissingRatio = Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio"));
+	//			boolean discardBySamplesMissingRatio = Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio"));
 			double samplesMissingRatioThreshold = Double.parseDouble(args.get("discard-samples-missing-ratio-threshold"));
 			double samplesHetzyRatioThreshold = Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold"));
 
@@ -104,10 +104,11 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			if (gwasParams.isProceed()) {
 				final CommonRunnable gtFreqHwTask = new Threaded_GTFreq_HW(gwasParams);
 				MultiOperations.queueTask(gtFreqHwTask);
-				return true;
+			} else {
+				System.err.println("Not proceeding after trying to ensure QA operations");
 			}
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
 		}
-
-		return false;
 	}
 }

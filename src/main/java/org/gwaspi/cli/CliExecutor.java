@@ -58,9 +58,7 @@ public class CliExecutor {
 		this.scriptFile = scriptFile;
 	}
 
-	public boolean execute() throws IOException {
-
-		boolean success = false;
+	public void execute() throws IOException, ScriptExecutionException {
 
 		// GET ALL SCRIPTS CONTAINED IN FILE
 		List<Map<String, String>> scripts = ScriptUtils.readArgsFromScript(scriptFile);
@@ -82,13 +80,12 @@ public class CliExecutor {
 			ScriptCommand scriptCommand = SCRIPT_COMMANDS.get(command);
 
 			if (scriptCommand == null) {
-				throw new IOException("Not a valid script command name: \"" + command + "\"");
+				throw new ScriptExecutionException(
+						"Not a valid script command name: \"" + command + "\"");
 			} else {
-				success = scriptCommand.execute(args);
+				scriptCommand.execute(args);
 			}
 		}
 		System.out.println("\n");
-
-		return success;
 	}
 }

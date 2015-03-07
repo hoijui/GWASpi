@@ -164,7 +164,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		return studyKey;
 	}
 
-	protected static boolean checkStudy(StudyKey studyKey) throws IOException {
+	private static boolean checkStudy(StudyKey studyKey) throws IOException {
 
 		boolean studyExists;
 
@@ -184,6 +184,20 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 
 		return studyExists;
+	}
+
+	protected static void checkStudyForScript(StudyKey studyKey) throws ScriptExecutionException {
+
+		final boolean studyExists;
+		try {
+			studyExists = checkStudy(studyKey);
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
+		}
+		if (!studyExists) {
+			throw new ScriptExecutionException(new IllegalArgumentException(
+					"Study does not exist: " + studyKey.toRawIdString()));
+		}
 	}
 
 	protected static String fetchRequired(final Map<String, String> args, final String argName) throws IOException {

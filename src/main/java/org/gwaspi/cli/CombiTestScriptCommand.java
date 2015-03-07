@@ -49,7 +49,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -72,11 +72,11 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-		// checking study
-		StudyKey studyKey = fetchStudyKey(args, "study-id", "study-name", false);
-		boolean studyExists = checkStudy(studyKey);
+		try {
+			// checking study
+			StudyKey studyKey = fetchStudyKey(args, "study-id", "study-name", false);
+			checkStudyForScript(studyKey);
 
-		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
 
 			OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers-id", "qa-markers-name");
@@ -109,10 +109,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			// test block
 			final CommonRunnable combiTask = new Threaded_Combi(paramsTest, paramsFilter);
 			MultiOperations.queueTask(combiTask);
-
-			return true;
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
 		}
-
-		return false;
 	}
 }

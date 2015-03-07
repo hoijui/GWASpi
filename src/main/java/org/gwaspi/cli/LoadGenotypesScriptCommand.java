@@ -34,7 +34,7 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(Map<String, String> args) throws IOException {
+	public void execute(final Map<String, String> args) throws ScriptExecutionException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -55,13 +55,13 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 		*/
 		//</editor-fold>
 
-		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+		try {
+			GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-		// checking study
-		StudyKey studyKey = prepareStudy(args.get("study-id"), true);
-		boolean studyExists = checkStudy(studyKey);
+			// checking study
+			StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+			checkStudyForScript(studyKey);
 
-		if (studyExists) {
 			ImportFormat format = ImportFormat.compareTo(args.get("format"));
 			String newMatrixName = args.get("new-matrix-name");
 			String description = args.get("description");
@@ -84,10 +84,8 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 					false, // Do GWAS
 					gwasParams); // gwasParams (dummy)
 			MultiOperations.queueTask(loadGwasTask);
-
-			return true;
+		} catch (final IOException ex) {
+			throw new ScriptExecutionException(ex);
 		}
-
-		return false;
 	}
 }
