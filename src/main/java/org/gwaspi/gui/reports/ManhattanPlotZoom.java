@@ -698,7 +698,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			String rsLabel = null;
 			Number pValue = dataset.getYValue(series, item);
 			int position = (int) dataset.getXValue(series, item);
-			if (pValue != null) {
+			if (pValue != null) { // TODO unnessesary test for null
 				double pV = pValue.doubleValue();
 				StringBuilder chrPos = new StringBuilder(chr.getChromosome());
 				chrPos.append("_");
