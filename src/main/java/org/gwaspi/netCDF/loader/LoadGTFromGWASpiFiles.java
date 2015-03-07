@@ -120,7 +120,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				loadDescription.getStudyKey(),
 				null);
 
-		final String currentGwaspiDbVersion = Config.getConfigValue(
+		final String currentGwaspiDbVersion = Config.getSingleton().getString(
 				Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(currentGwaspiDbVersion)) {
 			// COMPARE DATABASE VERSIONS

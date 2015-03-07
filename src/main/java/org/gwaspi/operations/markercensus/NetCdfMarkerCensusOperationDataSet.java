@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.global.Config;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetKey;
@@ -92,11 +93,13 @@ public class NetCdfMarkerCensusOperationDataSet
 	 */
 	private static int getDefaultEntriesWriteBufferSize() {
 
-		int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
+		final int maxProcessMarkers
+				= Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
+		int chunkSize = Math.round((float) maxProcessMarkers / 4);
 		if (chunkSize > 500000) {
 			chunkSize = 500000; // We want to keep things manageable for RAM
 		}
-		if (chunkSize < 10000 && org.gwaspi.gui.StartGWASpi.maxProcessMarkers > 10000) {
+		if (chunkSize < 10000 && maxProcessMarkers > 10000) {
 			chunkSize = 10000; // But keep Map size sensible
 		}
 

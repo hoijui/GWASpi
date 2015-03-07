@@ -20,8 +20,8 @@ package org.gwaspi.threadbox;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
+import org.gwaspi.global.Config;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 
@@ -92,7 +92,7 @@ public class MultiOperations {
 	}
 
 	public static void updateTree() throws IOException {
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
 			GWASpiExplorerPanel.getSingleton().updateTreePanel(false);
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(true);
@@ -100,7 +100,7 @@ public class MultiOperations {
 	}
 
 	public static void updateTreeAndPanel() throws IOException {
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
 			GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(true);

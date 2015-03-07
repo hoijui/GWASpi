@@ -28,12 +28,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import org.gwaspi.cli.ScriptUtils;
 import org.gwaspi.constants.GlobalConstants;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -51,23 +49,32 @@ public class Config {
 
 	private static final Logger log = LoggerFactory.getLogger(Config.class);
 
-	public static final String PROPERTY_LAST_OPENED_DIR = "LAST_OPENED_DIR";
-	public static final String PROPERTY_LAST_SELECTED_NODE = "LAST_SELECTED_NODE";
-	public static final String PROPERTY_DATA_DIR = "DataDir";
-	public static final String PROPERTY_GENOTYPES_DIR = "GTdir";
-	public static final String PROPERTY_EXPORT_DIR = "ExportDir";
-	public static final String PROPERTY_REPORTS_DIR = "ReportsDir";
-	public static final String PROPERTY_LOG_DIR = "LogDir";
-	public static final String PROPERTY_CURRENT_GWASPIDB_VERSION = "CURRENT_GWASPIDB_VERSION";
+	public static final String PROPERTY_LAST_OPENED_DIR = "LAST_OPENED_DIR"; // String
+	public static final String PROPERTY_LAST_SELECTED_NODE = "LAST_SELECTED_NODE"; // String
+	public static final String PROPERTY_DATA_DIR = "DataDir"; // String
+	public static final String PROPERTY_GENOTYPES_DIR = "GTdir"; // String
+	public static final String PROPERTY_EXPORT_DIR = "ExportDir"; // String
+	public static final String PROPERTY_REPORTS_DIR = "ReportsDir"; // String
+	public static final String PROPERTY_LOG_DIR = "LogDir"; // String
+	public static final String PROPERTY_CURRENT_GWASPIDB_VERSION = "CURRENT_GWASPIDB_VERSION"; // String
+	public static final String PROPERTY_GUI_MODE = "mode.gui"; // Boolean
+	public static final String PROPERTY_STORAGE_IN_MEMORY = "performance.storage.inMemory"; // Boolean
+	public static final String PROPERTY_STORAGE_COMPACT_GT_LISTS = "performance.storage.compactGTLists"; // Boolean
+	public static final String PROPERTY_LOG_OFF = "performance.logOff"; // Boolean
+	public static final String PROPERTY_MAX_HEAP_MB = "performance.heapMB.max"; // Integer
+	public static final String PROPERTY_MAX_PROCESS_MARKERS = "performance.markers.max"; // INTEGER
 
+	private final boolean guiMode;
 	/** System wide preferences. */
-	private static final Preferences prefs = Preferences.userNodeForPackage(Config.class);
+	private final Preferences prefs;
 	/**
 	 * Per software (runtime-)instance preferences.
 	 * We use per-thread prefs, initialized with the values from the main thread
 	 * (so they use at least the same data-dir, for example).
 	 */
-	private static ThreadLocal<Map<String, Object>> instancePrefs = new PrefsThreadLocal();
+	private ThreadLocal<Map<String, Object>> instancePrefs;
+
+	private static Config SINGLETON = null;
 
 	private static class PrefsThreadLocal extends ThreadLocal<Map<String, Object>> {
 
@@ -96,36 +103,178 @@ public class Config {
 		}
 	}
 
-	private Config() {
+	private Config(final boolean guiMode) {
+
+		this.guiMode = guiMode;
+		if (guiMode) {
+			this.prefs = Preferences.userNodeForPackage(Config.class);
+			this.instancePrefs = null;
+		} else {
+			this.prefs = null;
+			this.instancePrefs = new PrefsThreadLocal();
+		}
 	}
 
-	public static void setConfigValue(String key, Object value) throws IOException {
+	public static void createSingleton(final boolean guiMode) { //  HACK
 
-		if (StartGWASpi.guiMode) {
+		if (SINGLETON != null) {
+			throw new IllegalStateException(Config.class.getSimpleName() + " singleton can be created only once");
+		}
+		SINGLETON = new Config(guiMode);
+		SINGLETON.putBoolean(PROPERTY_GUI_MODE, guiMode);
+	}
+
+	public static void destroySingleton() { //  HACK
+		SINGLETON = null;
+	}
+
+	public static Config getSingleton() { //  HACK
+		return SINGLETON;
+	}
+
+	private void put(final String key, final Object value) {
+
+		if (guiMode) {
 			// GUI PREFS
-			prefs.put(key, value.toString());
+//			prefs.put(key, value.toString()); // the toString() will not work for most objects!
+			throw new IllegalStateException("GUI prefs can not store Object's; developper failed!");
 		} else {
 			// CLI & THREAD PREFS
 			instancePrefs.get().put(key, value);
 		}
 	}
 
-	public static void clearNonPersistentConfig() throws IOException {
+	public void putString(final String key, final String value) {
 
-		if (!StartGWASpi.guiMode) {
+		if (guiMode) {
+			prefs.put(key, value);
+		} else {
+			put(key, value);
+		}
+	}
+
+	public void putColor(final String key, final Color value) {
+		putString(key, colorToString(value));
+	}
+
+	public void putBoolean(final String key, final boolean value) {
+
+		if (guiMode) {
+			prefs.putBoolean(key, value);
+		} else {
+			put(key, value);
+		}
+	}
+
+	public void putInteger(final String key, final int value) {
+
+		if (guiMode) {
+			prefs.putInt(key, value);
+		} else {
+			put(key, value);
+		}
+	}
+
+	public void putDouble(final String key, final double value) {
+
+		if (guiMode) {
+			prefs.putDouble(key, value);
+		} else {
+			put(key, value);
+		}
+	}
+
+	public void clearNonPersistent() {
+
+		if (!guiMode) {
 			instancePrefs = new PrefsThreadLocal();
 		}
 	}
 
-	public static void setConfigColor(String key, Color value) throws IOException {
-		setConfigValue(key, colorToString(value));
+	private Object get(final String key, final Object defaultValue) {
+
+		final Object value;
+		if (guiMode) {
+			// GUI MODE
+//			value = prefs.get(key, defaultValue.toString()); // the toString() will not work for most objects!
+			throw new IllegalStateException("GUI prefs can not store Object's; developper failed!");
+		} else {
+			final Map<String, Object> myPrefs = instancePrefs.get();
+			if (myPrefs.containsKey(key)) {
+				value = myPrefs.get(key);
+			} else {
+				value = defaultValue;
+				myPrefs.put(key, value);
+			}
+		}
+
+		return value;
+	}
+
+	public String getString(final String key, final String defaultValue) {
+
+		final String value;
+		if (guiMode) {
+			value = prefs.get(key, defaultValue);
+		} else {
+			value = (String) get(key, defaultValue);
+		}
+
+		return value;
+	}
+
+	public Color getColor(final String key, final Color defaultValue) {
+		return stringToColor(getString(key, colorToString(defaultValue)));
+	}
+
+	public Boolean getBoolean(final String key, final boolean defaultValue) {
+
+		final Boolean value;
+		if (guiMode) {
+//			value = prefs.getBoolean(key, defaultValue);
+			Boolean val = null;
+			try {
+			val = prefs.getBoolean(key, defaultValue);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			value = val;
+		} else {
+			value = (Boolean) get(key, defaultValue);
+		}
+
+		return value;
+	}
+
+	public Integer getInteger(final String key, final int defaultValue) {
+
+		final Integer value;
+		if (guiMode) {
+			value = prefs.getInt(key, defaultValue);
+		} else {
+			value = (Integer) get(key, defaultValue);
+		}
+
+		return value;
+	}
+
+	public Double getDouble(final String key, final double defaultValue) {
+
+		final Double value;
+		if (guiMode) {
+			value = prefs.getDouble(key, defaultValue);
+		} else {
+			value = (Double) get(key, defaultValue);
+		}
+
+		return value;
 	}
 
 	public static String colorToString(Color value) {
 		return value.getRed() + "," + value.getGreen() + "," + value.getBlue();
 	}
 
-	public static Color stringToColor(String value) throws IOException {
+	public static Color stringToColor(String value) {
 
 		String[] split = value.split(",");
 		float[] hsbVals = Color.RGBtoHSB(
@@ -136,54 +285,12 @@ public class Config {
 		return Color.getHSBColor(hsbVals[0], hsbVals[1], hsbVals[2]);
 	}
 
-	public static String getConfigValue(String key, String defaultV) throws IOException {
-
-		String prop = defaultV;
-
-		if (StartGWASpi.guiMode) {
-			// GUI MODE
-			prop = prefs.get(key, defaultV);
-		} else {
-			if (instancePrefs.get().containsKey(key)) {
-				prop = instancePrefs.get().get(key).toString();
-			} else {
-				setConfigValue(key, defaultV);
-			}
-		}
-
-		return prop;
-	}
-
-	public static Color getConfigColor(String key, Color defaultV) throws IOException {
-		return stringToColor(getConfigValue(key, colorToString(defaultV)));
-	}
-
-//	public static int getConfigValue(String key, int defaultV) throws IOException {
-//		int prop = prefs.getInt(key, defaultV);
-//		return prop;
-//	}
-
-	public static void clearConfigFile() throws IOException {
-		if (StartGWASpi.guiMode) {
-			try {
-				// GUI MODE
-				prefs.clear();
-			} catch (final BackingStoreException ex) {
-				throw new IOException(ex);
-			}
-		} else {
-			// CLI MODE
-			instancePrefs.get().clear();
-		}
-	}
-
-	public static boolean initPreferences(boolean startWithGUI, File scriptFile, final Component dialogParent) {
+	public boolean initPreferences(boolean startWithGUI, File scriptFile, final Component dialogParent) {
 
 		boolean isInitiated = false;
-		//startWithGUI = _startWithGUI;
 		try {
 			//clearConfigFile();
-			File dirToData = new File(getConfigValue(PROPERTY_DATA_DIR, ""));
+			File dirToData = new File(getString(PROPERTY_DATA_DIR, ""));
 
 			// CHECK FOR RECENT GWASPI VERSION
 			checkUpdates();
@@ -225,7 +332,7 @@ public class Config {
 						}
 					}
 
-//					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
+//					if (getString(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
 					updateConfigDataDirs(dirToData);
 //					} else {
 					setDBSystemDir(derbyCenter.getPath());
@@ -260,7 +367,7 @@ public class Config {
 						throw new IllegalStateException("Unable to determine a data directory path");
 					}
 				} else {
-					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
+					if (getString(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
 						updateConfigDataDirs(dirToData);
 						createDataStructure(dirToData);
 					}
@@ -275,10 +382,10 @@ public class Config {
 		return isInitiated;
 	}
 
-	protected static File initDataBaseVars(File dataDir) throws IOException {
+	protected File initDataBaseVars(File dataDir) {
 
-		clearConfigFile();
-		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
+//		clearConfigFile();
+		putString(PROPERTY_DATA_DIR, dataDir.getPath());
 		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
 		setDBSystemDir(derbyCenter.getPath());
 
@@ -298,7 +405,7 @@ public class Config {
 		return localDom;
 	}
 
-	protected static void createDataStructure(File dataDir) throws IOException {
+	protected void createDataStructure(File dataDir) throws IOException {
 
 		Utils.createFolder(dataDir);
 
@@ -319,87 +426,87 @@ public class Config {
 		Utils.createFolder(dataDir.getPath(), "reports");
 		Utils.createFolder(dataDir.getPath() + "/reports", "log");
 
-		setConfigValue(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
-		setConfigValue(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
-		setConfigValue(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
-		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
+		putString(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
+		putString(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
+		putString(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
+		putString(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
 
 		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
+		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 	}
 
-	private static void updateConfigDataDirs(File dataDir) throws IOException {
+	private void updateConfigDataDirs(File dataDir) throws IOException {
 
-		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
-		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
+		String lastOpenedDir = getString(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
+		String lastSelectedNode = getString(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
 
-		String lastMnhttThreshold = Config.getConfigValue(
+		String lastMnhttThreshold = getString(
 					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
 					String.valueOf(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT));
-		Color lastMnhttBack = Config.getConfigColor(
+		Color lastMnhttBack = getColor(
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
-		Color lastMnhttBackAlt = Config.getConfigColor(
+		Color lastMnhttBackAlt = getColor(
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
-		Color lastMnhttMain = Config.getConfigColor(
+		Color lastMnhttMain = getColor(
 					GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG,
 					GenericReportGenerator.PLOT_MANHATTAN_MAIN_DEFAULT);
 
-		Color lastQQBack = Config.getConfigColor(
+		Color lastQQBack = getColor(
 					GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG,
 					GenericReportGenerator.PLOT_QQ_BACKGROUND_DEFAULT);
-		Color lastQQActual = Config.getConfigColor(
+		Color lastQQActual = getColor(
 					GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG,
 					GenericReportGenerator.PLOT_QQ_ACTUAL_DEFAULT);
-		Color lastQQMu = Config.getConfigColor(
+		Color lastQQMu = getColor(
 					GenericReportGenerator.PLOT_QQ_MU_CONFIG,
 					GenericReportGenerator.PLOT_QQ_MU_DEFAULT);
-		Color lastQQSigma = Config.getConfigColor(
+		Color lastQQSigma = getColor(
 					GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG,
 					GenericReportGenerator.PLOT_QQ_SIGMA_DEFAULT);
 
-		String lastSampleQAHetzyg = getConfigValue(
+		String lastSampleQAHetzyg = getString(
 				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
 				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT));
-		String lastSampleQAMissingratio = getConfigValue(
+		String lastSampleQAMissingratio = getString(
 				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
 				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT));
 
-		clearConfigFile();
-		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
+//		clearConfigFile();
+		putString(PROPERTY_DATA_DIR, dataDir.getPath());
 		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
 
-		setConfigValue(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
-		setConfigValue(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
-		setConfigValue(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
-		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
-		setConfigValue(PROPERTY_LAST_OPENED_DIR, lastOpenedDir);
-		setConfigValue(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
+		putString(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
+		putString(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
+		putString(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
+		putString(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
+		putString(PROPERTY_LAST_OPENED_DIR, lastOpenedDir);
+		putString(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
 
 		// SET CHART PREFERENCES
-		setConfigValue(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
-		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG, lastMnhttBack);
-		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG, lastMnhttBackAlt);
-		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG, lastMnhttMain);
+		putString(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
+		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG, lastMnhttBack);
+		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG, lastMnhttBackAlt);
+		putColor(GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG, lastMnhttMain);
 
-		setConfigColor(GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG, lastQQBack);
-		setConfigColor(GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG, lastQQActual);
-		setConfigColor(GenericReportGenerator.PLOT_QQ_MU_CONFIG, lastQQMu);
-		setConfigColor(GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG, lastQQSigma);
+		putColor(GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG, lastQQBack);
+		putColor(GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG, lastQQActual);
+		putColor(GenericReportGenerator.PLOT_QQ_MU_CONFIG, lastQQMu);
+		putColor(GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG, lastQQSigma);
 
-		setConfigValue(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG, lastSampleQAHetzyg);
-		setConfigValue(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG, lastSampleQAMissingratio);
+		putString(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG, lastSampleQAHetzyg);
+		putString(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG, lastSampleQAMissingratio);
 
 		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
+		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 
 		setDBSystemDir(derbyCenter.getPath());
 	}
 
-	public static void checkUpdates() throws IOException, ParseException {
+	public void checkUpdates() throws IOException, ParseException {
 
 		if (Utils.checkInternetConnection()) {
 			Document localDom = getLocalVersionDom();
@@ -408,7 +515,7 @@ public class Config {
 				System.setProperty("java.net.useSystemProxies", "true");
 
 				List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
+				putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 
 				URL remoteVersionPath = new URL(GlobalConstants.REMOTE_VERSION_XML);
 				Document remoteDom = null;
@@ -446,7 +553,7 @@ public class Config {
 					message.append("\nChangelog: ").append(XMLParser.getTextValue(remoteElements.get(0), "Description"));
 
 					if (localUpdateDate.compareTo(remoteUpdateDate) < 0) { //Remote version is more recent
-						if (StartGWASpi.guiMode) {
+						if (guiMode) {
 							Dialogs.showWarningDialogue(message.toString());
 						} else {
 							log.error(message.toString());

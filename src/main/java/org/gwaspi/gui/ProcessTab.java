@@ -127,7 +127,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
 
-		if (!StartGWASpi.logOff) {
+		if (!Config.getSingleton().getBoolean(Config.PROPERTY_LOG_OFF, false)) {
 			txtA_ProcessLog.setDocument(new LogDocument());
 		}
 	}

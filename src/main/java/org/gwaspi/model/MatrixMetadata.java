@@ -199,7 +199,7 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 				friendlyName,
 				MatrixFactory.generateMatrixNetCDFNameByDate(creationDate), // simpleName
 				technology,
-				Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null), // gwaspiDBVersion
+				Config.getSingleton().getString(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null), // gwaspiDBVersion
 				description,
 				gtEncoding,
 				strand,

@@ -28,7 +28,6 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Extractor;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerMetadata;
@@ -130,7 +129,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_MATRIX_ID, matrixMetadata.getMatrixId());
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName());
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
-		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
+		final String versionNb = Config.getSingleton().getString(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_DESCRIPTION, matrixMetadata.getDescription());
 		ncfile.addGlobalAttribute(NetCDFConstants.Attributes.GLOB_STRAND, matrixMetadata.getStrand().toString());
@@ -416,11 +415,13 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		} else {
 //			curAllelesMarkerIndex = 0;
 
+			final int maxProcessMarkers = Config.getSingleton().getInteger(
+					Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
 			// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
 			// This number specifies, how many markers (lines in hte file)
 			// are read into memory, before writing them to the NetCDF-file
 			hyperSlabRows = (int) Math.round(
-					(double) StartGWASpi.maxProcessMarkers / (getDataSet().getSampleInfos().size() * 2));
+					(double) maxProcessMarkers / (getDataSet().getSampleInfos().size() * 2));
 			if (getDataSet().getMarkerMetadatas().size() < hyperSlabRows) {
 				hyperSlabRows = getDataSet().getMarkerMetadatas().size();
 			}

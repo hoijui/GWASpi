@@ -24,7 +24,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.dao.jpa.JPAStudyService;
-import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ public class StudyList {
 		if (emf == null) {
 			try {
 				final String persistenceUnitName
-						= StartGWASpi.inMemoryStorage
+						= Config.getSingleton().getBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, false)
 						? PERSISTENCE_UNIT_NAME_IN_MEMORY
 						: PERSISTENCE_UNIT_NAME_DEFAULT;
 				emf = Persistence.createEntityManagerFactory(persistenceUnitName);

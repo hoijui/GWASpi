@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.ImportConstants.Separators;
+import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class SingeFileSort {
 			ArrayList<String[]> filerows = new ArrayList<String[]>();
 			Random generator = new Random();
 			int rnd = Math.abs(generator.nextInt());
-			tempSorted = new File(org.gwaspi.global.Config.getConfigValue(
+			tempSorted = new File(Config.getSingleton().getString(
 					GlobalConstants.SORT_SINGLE_DIR_CONFIG,
 					GlobalConstants.USER_DIR_DEFAULT)
 					+ "/" + rnd + ".csv");

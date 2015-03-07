@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
-import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.global.Config;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
@@ -120,7 +120,7 @@ public class OperationManager {
 		Map<String, Object> defaultFactoryProperties = new HashMap<String, Object>();
 
 		final String storageType;
-		if (StartGWASpi.inMemoryStorage) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, false)) {
 			storageType = AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_MEMORY;
 		} else {
 			storageType = AbstractDefaultTypesOperationFactory.PROPERTY_VALUE_TYPE_NETCDF;

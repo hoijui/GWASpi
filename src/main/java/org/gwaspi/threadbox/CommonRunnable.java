@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
+import org.gwaspi.global.Config;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
@@ -62,7 +63,7 @@ public abstract class CommonRunnable implements Runnable {
 
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
-			org.gwaspi.global.Config.initPreferences(false, null, null);
+			Config.getSingleton().initPreferences(false, null, null);
 
 			// NOTE ABORTION_POINT We could be gracefully abort here
 

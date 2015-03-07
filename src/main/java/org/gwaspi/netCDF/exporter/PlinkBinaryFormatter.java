@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.global.Config;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
@@ -200,7 +201,9 @@ public class PlinkBinaryFormatter implements Formatter {
 		int nbOfSamples = dataSetSource.getSamplesKeysSource().size();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = dataSetSource.getMarkersKeysSource().size();
-		int nbRowsPerChunk = Math.round((float) org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
+		final int maxProcessMarkers
+				= Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
+		int nbRowsPerChunk = Math.round((float) maxProcessMarkers / nbOfSamples);
 		if (nbRowsPerChunk > nbOfMarkers) {
 			nbRowsPerChunk = nbOfMarkers;
 		}

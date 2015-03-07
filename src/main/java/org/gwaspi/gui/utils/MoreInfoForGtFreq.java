@@ -23,7 +23,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -117,36 +116,21 @@ public class MoreInfoForGtFreq extends JFrame {
 		chkB_1.setEnabled(false);
 
 		chkB_2.setText(Text.Operation.discardMarkerMissing);
-		double markerMissingRatioThreshold;
-		try {
-			markerMissingRatioThreshold = Double.parseDouble(Config.getConfigValue(
-					"markerMissingRatioThreshold",
-					String.valueOf(MarkerCensusOperationParams.DEFAULT_MARKER_MISSING_RATIO)));
-		} catch (IOException ex) {
-			markerMissingRatioThreshold = MarkerCensusOperationParams.DISABLE_MARKER_MISSING_RATIO;
-		}
+		final  double markerMissingRatioThreshold = Config.getSingleton().getDouble(
+				"markerMissingRatioThreshold",
+				MarkerCensusOperationParams.DEFAULT_MARKER_MISSING_RATIO);
 		txtF_1.setText(String.valueOf(markerMissingRatioThreshold));
 
 		chkB_SMS.setText(Text.Operation.discardSampleMissing);
-		double sampleMissingRatioThreshold;
-		try {
-			sampleMissingRatioThreshold = Double.parseDouble(Config.getConfigValue(
-					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
-					String.valueOf(MarkerCensusOperationParams.DEFAULT_SAMPLE_MISSING_RATIO)));
-		} catch (IOException ex) {
-			sampleMissingRatioThreshold = MarkerCensusOperationParams.DISABLE_SAMPLE_MISSING_RATIO;
-		}
+		final double sampleMissingRatioThreshold = Config.getSingleton().getDouble(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
+				MarkerCensusOperationParams.DEFAULT_SAMPLE_MISSING_RATIO);
 		txtF_SMS.setText(String.valueOf(sampleMissingRatioThreshold));
 
 		chkB_SHZ.setText(Text.Operation.discardSampleHetzy);
-		double hetzygThreshold;
-		try {
-			hetzygThreshold = Double.parseDouble(Config.getConfigValue(
-					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
-					String.valueOf(MarkerCensusOperationParams.DEFAULT_SAMPLE_HETZY_RATIO)));
-		} catch (IOException ex) {
-			hetzygThreshold = MarkerCensusOperationParams.DISABLE_SAMPLE_HETZY_RATIO;
-		}
+		final double hetzygThreshold = Config.getSingleton().getDouble(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
+				MarkerCensusOperationParams.DEFAULT_SAMPLE_HETZY_RATIO);
 		txtF_SHZ.setText(String.valueOf(hetzygThreshold));
 		chkB_SHZ.setEnabled(true);
 

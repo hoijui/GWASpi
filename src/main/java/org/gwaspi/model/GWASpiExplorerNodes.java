@@ -25,9 +25,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,7 +248,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="STUDY NODES">
 	public static void insertStudyNode(StudyKey studyKey) throws IOException {
 
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			try {
 				// GET STUDY
 				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY_MANAGEMENT, null);
@@ -286,7 +286,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="MATRIX NODES">
 	public static void insertMatrixNode(MatrixKey matrixKey) throws IOException {
 
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			try {
 				// GET STUDY
 				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY, matrixKey.getStudyKey());
@@ -323,7 +323,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="OPERATION NODES">
 	public static void insertOperationUnderMatrixNode(OperationKey operationKey) throws IOException {
 
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			try {
 				// GET MATRIX
 				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.MATRIX, operationKey.getParentMatrixKey());
@@ -343,7 +343,7 @@ public class GWASpiExplorerNodes {
 
 	public static void insertSubOperationUnderOperationNode(OperationKey parentOpKey, OperationKey operationKey) throws IOException {
 
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			try {
 				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, parentOpKey);
 				DefaultMutableTreeNode parentNode = findTreeNode(parentNodeId);
@@ -379,7 +379,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="expanded" desc="REPORT NODES">
 	public static void insertReportsUnderOperationNode(OperationKey parentOpKey) throws IOException {
 
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			try {
 				// GET OPERATION
 				final int parentNodeId = NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.OPERATION, parentOpKey);

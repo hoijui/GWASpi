@@ -45,7 +45,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 
 	public static void main(String[] args) throws Exception {
 
-		boolean isInitiated = Config.initPreferences(true, null, null);
+		boolean isInitiated = Config.getSingleton().initPreferences(true, null, null);
 
 		final List<StudyKey> studies = StudyList.getStudies();
 		MatrixKey matrix = null;

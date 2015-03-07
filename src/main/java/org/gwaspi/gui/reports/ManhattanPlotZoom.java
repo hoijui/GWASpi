@@ -42,7 +42,6 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LinksExternalResouces;
@@ -88,7 +87,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	private final Logger log = LoggerFactory.getLogger(ManhattanPlotZoom.class);
 
 	/** roughly 2000MB needed per 100.000 plotted markers */
-	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
+	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) Config.getSingleton().getInteger(Config.PROPERTY_MAX_HEAP_MB, -1) / 2000));
 
 	private final OperationKey testOpKey;
 	private Map<String, MarkerKey> labeler;
@@ -165,19 +164,15 @@ public final class ManhattanPlotZoom extends JPanel {
 	public void initChart(boolean usePhysicalPosition) {
 
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
-		try {
-			this.threshold = Double.parseDouble(Config.getConfigValue(
-					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
-					String.valueOf(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
-			this.manhattan_back = Config.getConfigColor(
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
-			this.manhattan_dot = Config.getConfigColor(
-					GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_MAIN_DEFAULT);
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
+		this.threshold = Config.getSingleton().getDouble(
+				GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
+				GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT);
+		this.manhattan_back = Config.getSingleton().getColor(
+				GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
+				GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
+		this.manhattan_dot = Config.getSingleton().getColor(
+				GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG,
+				GenericReportGenerator.PLOT_MANHATTAN_MAIN_DEFAULT);
 		//</editor-fold>
 
 		final MarkerKey toUseMarkerKey;

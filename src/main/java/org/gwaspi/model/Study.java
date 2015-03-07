@@ -121,7 +121,7 @@ public class Study implements Serializable {
 
 	private static String constructStoragePath(StudyKey studyKey, String basePathConfigKey) throws IOException {
 		return String.format("%s/STUDY_%d/",
-				Config.getConfigValue(basePathConfigKey, ""),
+				Config.getSingleton().getString(basePathConfigKey, ""),
 				studyKey.getId());
 	}
 

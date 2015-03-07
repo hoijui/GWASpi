@@ -286,7 +286,8 @@ public class GWASpiExplorerPanel extends JPanel {
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
-		Integer lastSelectedNodeId = Integer.valueOf(Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0"));
+		final Integer lastSelectedNodeId = Config.getSingleton().getInteger(
+				Config.PROPERTY_LAST_SELECTED_NODE, 0);
 
 		// Find out what paths are expanded
 		List<TreePath> expandedNodes = null;
@@ -366,7 +367,7 @@ public class GWASpiExplorerPanel extends JPanel {
 	}
 
 	public void setAllNodesCollapsable() {
-		if (StartGWASpi.guiMode) {
+		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
 			for (int i = 0; i < getTree().getRowCount(); i++) {
 				TreePath treePath = getTree().getPathForRow(i);
 				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();

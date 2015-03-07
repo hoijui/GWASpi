@@ -28,6 +28,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.threadbox.TaskQueue;
@@ -119,12 +120,15 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		if (StartGWASpi.maxHeapSize > 254) {
-			Dialogs.showInfoDialogue(StartGWASpi.maxHeapSize + Text.App.memoryAvailable1 + "\n"
-					+ Text.App.memoryAvailable2 + StartGWASpi.maxProcessMarkers + Text.App.memoryAvailable3);
+		final int maxHeapSize = Config.getSingleton().getInteger(Config.PROPERTY_MAX_HEAP_MB, -1);
+		final int maxProcessMarkers =
+				Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
+		if (maxHeapSize > 254) {
+			Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3);
 		} else {
-			Dialogs.showInfoDialogue(StartGWASpi.maxHeapSize + Text.App.memoryAvailable1 + "\n"
-					+ Text.App.memoryAvailable2 + StartGWASpi.maxProcessMarkers + Text.App.memoryAvailable3 + "\n"
+			Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3 + "\n"
 					+ Text.App.memoryAvailable4);
 		}
 	}

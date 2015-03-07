@@ -48,13 +48,9 @@ public class StartGWASpi {
 	public static final String COMMAND_LINE_SWITCH_NOLOG = "nolog";
 	public static final String COMMAND_LINE_SWITCH_SCRIPT = "script";
 	public static final String COMMAND_LINE_SWITCH_IN_MEMORY = "memory";
+	public static final String COMMAND_LINE_SWITCH_ARRAY_GENOTYPE_LISTS = "array-genotypes-lists";
 
 	// FIXME TODO convert all this to non-static, and make configuration in general more modular (for example, use preferences for everything?)
-	public static boolean guiMode = true;
-	public static boolean logOff = false;
-	public static boolean inMemoryStorage = false;
-	public static long maxHeapSize = 0;
-	public static long maxProcessMarkers = 0;
 	private static MainFrame mainGUIFrame = null;
 	private static boolean logToFile = false;
 	private static String logPath;
@@ -74,6 +70,8 @@ public class StartGWASpi {
 	public static String constructHighlyVisibleApplicationName() {
 
 		String highlyVisibleApplicationName = Text.App.appName;
+		final boolean inMemoryStorage =
+				Config.getSingleton().getBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, false);
 		if (inMemoryStorage) {
 			highlyVisibleApplicationName += " - " + Text.App.inMemoryNoteShort;
 		}
@@ -158,14 +156,23 @@ public class StartGWASpi {
 			return;
 		}
 
+		final boolean guiMode = !hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_SCRIPT);
+		if (Config.getSingleton() == null) { // HACK we do it like this, because some unit test scripts might already have initialzied the config
+			Config.createSingleton(guiMode);
+		}
+
 		// Get current size of heap in bytes
-		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
-		maxProcessMarkers = Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
+		final int maxHeapSize = (int) Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
+		final int maxProcessMarkers = (int) Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
+		final boolean inMemoryStorage = hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_IN_MEMORY);
+		final boolean arrayGenotypes = hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_ARRAY_GENOTYPE_LISTS);
 
-		inMemoryStorage = hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_IN_MEMORY);
+		Config.getSingleton().putInteger(Config.PROPERTY_MAX_HEAP_MB, maxHeapSize);
+		Config.getSingleton().putInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, maxProcessMarkers);
+		Config.getSingleton().putBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, inMemoryStorage);
+		Config.getSingleton().putBoolean(Config.PROPERTY_STORAGE_COMPACT_GT_LISTS, !arrayGenotypes);
 
-		if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_SCRIPT)) {
-			guiMode = false;
+		if (!guiMode) {
 			if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_LOG)) {
 				logToFile = true;
 				logPath = fetchCommandLineSwitchArgument(args, COMMAND_LINE_SWITCH_LOG);
@@ -197,7 +204,7 @@ public class StartGWASpi {
 			}
 		} else {
 			if (hasCommandLineSwitch(args, COMMAND_LINE_SWITCH_NOLOG)) {
-				logOff = true;
+				Config.getSingleton().putBoolean(Config.PROPERTY_LOG_OFF, true);
 			}
 
 			try {
@@ -220,7 +227,7 @@ public class StartGWASpi {
 		}
 
 		// initialize configuration of moapi
-		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile, mainGUIFrame);
+		boolean isInitiated = Config.getSingleton().initPreferences(startWithGUI, scriptFile, mainGUIFrame);
 
 		if (isInitiated) {
 			if (startWithGUI) {
@@ -229,7 +236,7 @@ public class StartGWASpi {
 				if (logToFile) {
 					// LOGGING OF SYSTEM OUTPUT
 					if (logPath == null) {
-						logPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
+						logPath = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
 					}
 					FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
 					fileAppender.setFile(logPath);

@@ -40,7 +40,6 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
@@ -86,7 +85,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	 * roughly 2000MB needed per 100.000 plotted markers
 	 */
 	private static final int DEFAULT_NUM_MARKERS // NOTE unused
-			= (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
+			= (int) Math.round(100000 * ((double) Config.getSingleton().getInteger(
+					Config.PROPERTY_MAX_HEAP_MB, -1) / 2000));
 
 	private final OperationKey operationKey;
 	private Map<String, SampleKey> labeler;
@@ -111,12 +111,12 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 	public void initChart() throws IOException {
 
-		hetzyThreshold = Double.parseDouble(Config.getConfigValue(
+		hetzyThreshold = Config.getSingleton().getDouble(
 				PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
-				String.valueOf(PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT)));
-		missingThreshold = Double.parseDouble(Config.getConfigValue(
+				PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT);
+		missingThreshold = Config.getSingleton().getDouble(
 				PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
-				String.valueOf(PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
+				PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT);
 
 		final XYDataset initXYDataset = getSampleHetzygDataset(operationKey);
 		final JFreeChart zoomChart = createChart(initXYDataset);
@@ -534,8 +534,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 			try {
 				hetzyThreshold = Double.parseDouble(txt_hetzy.getText());
 				missingThreshold = Double.parseDouble(txt_missing.getText());
-				Config.setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold.toString());
-				Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
+				Config.getSingleton().putDouble("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold);
+				Config.getSingleton().putDouble("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold);
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {

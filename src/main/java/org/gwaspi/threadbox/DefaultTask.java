@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.Date;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
@@ -154,7 +155,7 @@ public class DefaultTask implements Task {
 		DefaultTask thisSwi = null;
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getTask().getDetailedName());
-			org.gwaspi.global.Config.initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
+			Config.getSingleton().initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
 
 			// NOTE ABORTION_POINT We could be gracefully abort here
 

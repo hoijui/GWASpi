@@ -210,8 +210,6 @@ public abstract class AbstractTestScripts {
 	@BeforeClass
 	public static void createTempDataDirs() throws IOException {
 
-		StartGWASpi.inMemoryStorage = true; // HACK
-		Config.clearNonPersistentConfig(); // HACK
 		StudyList.clearListsInternalServices(); // HACK
 		StudyList.clearListsInternalServices(); // HACK
 		setup = Setup.createTemp();
@@ -227,12 +225,13 @@ public abstract class AbstractTestScripts {
 		} catch (SQLException ex) {
 			log.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
 		}
-		StartGWASpi.inMemoryStorage = false; // HACK
+		Config.getSingleton().putBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, false); // HACK
 
 		MatrixInMemoryDataSetSource.clearAllInMemoryStorage();
 
 		setup.cleanupTemp();
 		setup = null;
+		Config.destroySingleton();
 	}
 
 	protected static void startGWASpi(final String[] args) throws Exception {

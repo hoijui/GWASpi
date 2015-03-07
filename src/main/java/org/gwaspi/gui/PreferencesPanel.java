@@ -287,11 +287,7 @@ public class PreferencesPanel extends JPanel {
 					for (int i = 0; i < preferencesTable.getRowCount(); i++) {
 						final String selectedPropertyName = preferencesTable.getValueAt(i, 0).toString();
 						final String selectedPropertyValue = preferencesTable.getValueAt(i, 1).toString();
-						try {
-							Config.setConfigValue(selectedPropertyName, selectedPropertyValue);
-						} catch (IOException ex) {
-							log.error(null, ex);
-						}
+						Config.getSingleton().putString(selectedPropertyName, selectedPropertyValue); // HACK FIXME this will likely casue failure, becasue we do not have only String type values!
 					}
 					Dialogs.showInfoDialogue("Preferences & Paths Saved");
 				}
@@ -341,12 +337,7 @@ public class PreferencesPanel extends JPanel {
 			boolean result = true;
 
 			for (String[] pref : prefBackup) {
-				try {
-					Config.setConfigValue(pref[0], pref[1]);
-				} catch (IOException ex) {
-					result = false;
-					log.error(null, ex);
-				}
+				Config.getSingleton().putString(pref[0], pref[1]); // HACK FIXME this will likely casue failure, becasue we do not have only String type values!
 			}
 
 			if (result) {
@@ -401,7 +392,7 @@ public class PreferencesPanel extends JPanel {
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue(Config.PROPERTY_GENOTYPES_DIR, newFile.getPath());
+						Config.getSingleton().putString(Config.PROPERTY_GENOTYPES_DIR, newFile.getPath());
 
 //						origFile = new File(currentDataDirPath + "/help");
 //						newFile = new File(newDataDir.getPath() + "/help");
@@ -415,16 +406,16 @@ public class PreferencesPanel extends JPanel {
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue(Config.PROPERTY_EXPORT_DIR, newFile.getPath());
+						Config.getSingleton().putString(Config.PROPERTY_EXPORT_DIR, newFile.getPath());
 
 						origFile = new File(currentDataDirPath + "/reports");
 						newFile = new File(newDataDir.getPath() + "/reports");
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue(Config.PROPERTY_REPORTS_DIR, newFile.getPath());
-						Config.setConfigValue(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
-						Config.setConfigValue(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
+						Config.getSingleton().putString(Config.PROPERTY_REPORTS_DIR, newFile.getPath());
+						Config.getSingleton().putString(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
+						Config.getSingleton().putString(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
 
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
 						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());

@@ -25,7 +25,6 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -268,25 +267,15 @@ public class MoreGWASinOneGoInfo extends JDialog {
 		});
 
 		chkB_SMS.setText(Text.Operation.discardSampleMissing);
-		double missingThreshold;
-		try {
-			missingThreshold = Double.parseDouble(Config.getConfigValue(
-					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
-					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
-		} catch (IOException ex) {
-			missingThreshold = 0.05; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT?
-		}
+		final double missingThreshold = Config.getSingleton().getDouble(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT);
 		txtF_SMS.setText(String.valueOf(missingThreshold));
 
 		chkB_SHZ.setText(Text.Operation.discardSampleHetzy);
-		double hetzygThreshold;
-		try {
-			hetzygThreshold = Double.parseDouble(Config.getConfigValue(
-					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
-					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT)));
-		} catch (IOException ex) {
-			hetzygThreshold = 1.0; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT?
-		}
+		final double hetzygThreshold = Config.getSingleton().getDouble(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT);
 		txtF_SHZ.setText(String.valueOf(hetzygThreshold));
 		chkB_SHZ.setEnabled(true);
 

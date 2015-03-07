@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.JProgressBar;
 import org.gwaspi.constants.GlobalConstants;
+import org.gwaspi.global.Config;
 
 public class SystemSort {
 
@@ -31,7 +32,7 @@ public class SystemSort {
 
 	public static void processData(File dir, String format, JProgressBar progressBar) throws IOException {
 		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString());
-		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue(
+		File formatFolder = org.gwaspi.global.Utils.createFolder(Config.getSingleton().getString(
 				GlobalConstants.SORT_EXEC_DIR_CONFIG,
 				GlobalConstants.USER_DIR_DEFAULT), format);
 		String processingDir = formatFolder.getPath() + "/";
@@ -48,7 +49,7 @@ public class SystemSort {
 	public static String getCommandLine(String pathToFile, String format) throws IOException {
 		String executable;
 		String commandLine = "";
-		String outputPath = org.gwaspi.global.Config.getConfigValue(
+		String outputPath = Config.getSingleton().getString(
 				GlobalConstants.SORT_EXEC_DIR_CONFIG,
 				GlobalConstants.USER_DIR_DEFAULT)
 				+ "/" + format + "/" + (numFiles - 1) + ".csv";

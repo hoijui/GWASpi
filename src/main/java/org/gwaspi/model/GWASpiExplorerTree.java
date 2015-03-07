@@ -239,11 +239,7 @@ public class GWASpiExplorerTree {
 			NodeElementInfo currentElementInfo = (NodeElementInfo) currentNode.getUserObject();
 			TreePath treePath = evt.getPath();
 
-			try {
-				Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeId());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			Config.getSingleton().putInteger(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeId());
 
 			// Get parent node of currently selected node
 			NodeElementInfo parentElementInfo = null;

@@ -58,8 +58,8 @@ public class ChiSqrBoundaryCalculator {
 
 	public static void main(String[] args) throws IOException, MathException {
 
-		boundaryPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrboundary" + df + "_" + method + simNb + "x" + N + ".txt";
-		netCDFFile = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrdist" + df + ".nc";
+		boundaryPath = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrboundary" + df + "_" + method + simNb + "x" + N + ".txt";
+		netCDFFile = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrdist" + df + ".nc";
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(netCDFFile, false);
 
 		generatChisqrDistributions(ncfile, df);

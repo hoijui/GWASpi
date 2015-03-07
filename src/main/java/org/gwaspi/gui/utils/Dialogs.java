@@ -348,15 +348,11 @@ public class Dialogs {
 		fc.setFileSelectionMode(fileSelectionMode);
 
 		// getting the latest opened dir
-		try {
-//			File tmpFile = new File(dir);
-//			if(!tmpFile.exists()){
-			String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
-			fc.setCurrentDirectory(new File(tmpDir));
-//			}
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
+//		File tmpFile = new File(dir);
+//		if(!tmpFile.exists()){
+		String tmpDir = Config.getSingleton().getString(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
+		fc.setCurrentDirectory(new File(tmpDir));
+//		}
 
 		fc.setFileFilter(new FileFilter() {
 			@Override
@@ -383,11 +379,7 @@ public class Dialogs {
 			textField.setText(resultFile.getPath());
 
 			// setting the directory to latest opened dir
-			try {
-				Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			Config.getSingleton().putString(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 		}
 
 		return resultFile;
@@ -420,12 +412,8 @@ public class Dialogs {
 
 		if (currentSelection == null) {
 			// getting the latest opened dir
-			try {
-				final String dir = Config.getConfigValue(propertyName, GlobalConstants.HOMEDIR);
-				fc.setCurrentDirectory(new File(dir));
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			final String dir = Config.getSingleton().getString(propertyName, GlobalConstants.HOMEDIR);
+			fc.setCurrentDirectory(new File(dir));
 		} else {
 			fc.setCurrentDirectory(currentSelection);
 		}
@@ -437,11 +425,7 @@ public class Dialogs {
 			resultFile = fc.getSelectedFile();
 
 			// setting the directory to latest opened dir
-			try {
-				Config.setConfigValue(propertyName, resultFile);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			Config.getSingleton().putString(propertyName, resultFile.getAbsolutePath());
 		}
 
 		return resultFile;
@@ -458,12 +442,8 @@ public class Dialogs {
 		// Handle open button action.
 		if (okOption == JOptionPane.OK_OPTION) {
 			// getting the last opened dir
-			try {
-				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
-				fc.setCurrentDirectory(new File(dir));
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
+			String dir = Config.getSingleton().getString(Config.PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
+			fc.setCurrentDirectory(new File(dir));
 
 			int returnVal = fc.showOpenDialog(dialogParent);
 
@@ -471,11 +451,7 @@ public class Dialogs {
 				resultFile = fc.getSelectedFile();
 
 				// setting the directory to last opened dir
-				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+				Config.getSingleton().putString(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 			}
 		}
 

@@ -173,16 +173,17 @@ public class GenericReportGenerator {
 	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey testOpKey) throws IOException {
 
 		// PLOT DEFAULTS
-		double threshold = Double.parseDouble(Config.getConfigValue(
+		final Config config = Config.getSingleton();
+		final double threshold = config.getDouble(
 				PLOT_MANHATTAN_THRESHOLD_CONFIG,
-				String.valueOf(PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
-		Color background = Config.getConfigColor(
+				PLOT_MANHATTAN_THRESHOLD_DEFAULT);
+		final Color background = config.getColor(
 				PLOT_MANHATTAN_BACKGROUND_CONFIG,
 				PLOT_MANHATTAN_BACKGROUND_DEFAULT);
-		Color backgroundAlternative = Config.getConfigColor(
+		final Color backgroundAlternative = config.getColor(
 				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
 				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
-		Color main = Config.getConfigColor(
+		final Color main = config.getColor(
 				PLOT_MANHATTAN_MAIN_CONFIG,
 				PLOT_MANHATTAN_MAIN_DEFAULT);
 
@@ -338,16 +339,17 @@ public class GenericReportGenerator {
 		}
 
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
-		Color background = Config.getConfigColor(
+		final Config config = Config.getSingleton();
+		final Color background = config.getColor(
 				PLOT_QQ_BACKGROUND_CONFIG,
 				PLOT_QQ_BACKGROUND_DEFAULT);
-		Color actual = Config.getConfigColor(
+		final Color actual = config.getColor(
 				PLOT_QQ_ACTUAL_CONFIG,
 				PLOT_QQ_ACTUAL_DEFAULT);
-		Color sigma = Config.getConfigColor(
+		final Color sigma = config.getColor(
 				PLOT_QQ_SIGMA_CONFIG,
 				PLOT_QQ_SIGMA_DEFAULT);
-		Color mu = Config.getConfigColor(
+		final Color mu = config.getColor(
 				PLOT_QQ_MU_CONFIG,
 				PLOT_QQ_MU_DEFAULT);
 		//</editor-fold>
