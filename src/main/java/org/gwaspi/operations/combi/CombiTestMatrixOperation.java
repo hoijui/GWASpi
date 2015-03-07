@@ -83,7 +83,7 @@ public class CombiTestMatrixOperation
 
 	private Boolean valid;
 	private String problemDescription;
-	private ProgressHandler operationPH;
+	private ProgressHandler customProgressHandler;
 	private IntegerProgressHandler creatingKernelMatrixPH;
 	private IntegerProgressHandler transcribeKernelMatrixPH;
 	private IndeterminateProgressHandler trainSVMPH;
@@ -107,9 +107,9 @@ public class CombiTestMatrixOperation
 	}
 
 	@Override
-	public ProgressSource getProgressSource() throws IOException {
+	protected ProgressHandler getProgressHandler() throws IOException {
 
-		if (operationPH == null) {
+		if (customProgressHandler == null) {
 			final DataSetSource parentDataSetSource = getParentDataSetSource();
 			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
 			final int n = parentDataSetSource.getNumSamples();
@@ -159,10 +159,10 @@ public class CombiTestMatrixOperation
 			subProgressSourcesAndWeights.put(trainSVMPH, 0.05);
 			subProgressSourcesAndWeights.put(calculateOriginalSpaceWeightsPH, 0.1);
 
-			operationPH = new SuperProgressSource(combiProcessInfo, subProgressSourcesAndWeights);
+			customProgressHandler = new SuperProgressSource(combiProcessInfo, subProgressSourcesAndWeights);
 		}
 
-		return operationPH;
+		return customProgressHandler;
 	}
 
 	@Override
@@ -211,7 +211,8 @@ public class CombiTestMatrixOperation
 	@Override
 	public int processMatrix() throws IOException {
 
-		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 //		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
@@ -250,7 +251,7 @@ public class CombiTestMatrixOperation
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
 
-		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
 		List<Double> weights = runEncodingAndSVM(
 				markerKeys,
@@ -270,13 +271,13 @@ public class CombiTestMatrixOperation
 		// TODO write stuff to a matrix (maybe the list of important markers?)
 		// NOTE both of these are done in the ByCombiWeightsFilterOperation, so these todos are probably obsolete
 
-		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.setWeights(weights);
 
 		dataSet.finnishWriting();
 
-		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return dataSet.getOperationKey().getId();
 	}

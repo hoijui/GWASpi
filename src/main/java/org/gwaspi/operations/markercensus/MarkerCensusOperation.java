@@ -54,7 +54,6 @@ import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +78,6 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return MarkerCensusOperationFactory.OPERATION_TYPE_INFO;
-	}
-
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
-		return getProgressHandler();
 	}
 
 	@Override

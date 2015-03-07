@@ -48,15 +48,16 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractFilterOperation.class);
 
 	private ProgressHandler storePH;
-	private SuperProgressSource progressSource;
+	private ProgressHandler customProgressHandler;
 
 	protected AbstractFilterOperation(P params) {
 		super(params);
 	}
 
-	private SuperProgressSource getSuperProgressHandler() throws IOException {
+	@Override
+	protected ProgressHandler getProgressHandler() throws IOException {
 
-		if (progressSource == null) {
+		if (customProgressHandler == null) {
 //			final int numItems = getNumItems();
 			final ProgressSource filterPS = getFilteringProgressSource();
 //			storePH = new IntegerProgressHandler(
@@ -72,15 +73,10 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 			tmpSubProgressSourcesAndWeights.put(storePH, 0.5);
 			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 
-			progressSource = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
+			customProgressHandler = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
 		}
 
-		return progressSource;
-	}
-
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
-		return getSuperProgressHandler();
+		return customProgressHandler;
 	}
 
 	@Override
@@ -104,7 +100,7 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 	@Override
 	public int processMatrix() throws IOException {
 
-		final SuperProgressSource progressHandler = getSuperProgressHandler();
+		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		final DataSetSource parentDataSetSource = getParentDataSetSource();

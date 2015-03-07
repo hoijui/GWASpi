@@ -25,7 +25,6 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
@@ -35,7 +34,6 @@ import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 
 public class QASamplesOperation extends AbstractOperationCreatingOperation<QASamplesOperationDataSet, QASamplesOperationParams> {
 
@@ -56,11 +54,6 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return QASamplesOperationFactory.OPERATION_TYPE_INFO;
-	}
-
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
-		return getProgressHandler();
 	}
 
 	@Override

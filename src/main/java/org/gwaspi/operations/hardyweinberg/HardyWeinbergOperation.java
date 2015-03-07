@@ -61,7 +61,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 //	private ProgressHandler hwCasePH;
 	private ProgressHandler hwControlPH;
 	private ProgressHandler hwAlternatePH;
-	private SuperProgressSource progressSource;
+	private SuperProgressSource customProgressHandler;
 
 	public HardyWeinbergOperation(HardyWeinbergOperationParams params) {
 		super(params);
@@ -70,7 +70,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 //		this.hwCasePH = null;
 		this.hwControlPH = null;
 		this.hwAlternatePH = null;
-		this.progressSource = null;
+		this.customProgressHandler = null;
 	}
 
 	@Override
@@ -78,9 +78,10 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		return HardyWeinbergOperationFactory.OPERATION_TYPE_INFO;
 	}
 
-	private SuperProgressSource getSuperProgressHandler() throws IOException {
+	@Override
+	protected ProgressHandler getProgressHandler() throws IOException {
 
-		if (progressSource == null) {
+		if (customProgressHandler == null) {
 			final int numItems = getNumItems();
 //			this.hwAllPH = new IntegerProgressHandler(
 //					new SubProcessInfo(PROCESS_INFO, "H&W all", "Run the Hardy & Weinberg test over the 'all' category"),
@@ -104,15 +105,10 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 			tmpSubProgressSourcesAndWeights.put(hwAlternatePH, 0.5);
 			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 
-			progressSource = new SuperProgressSource(PROCESS_INFO, subProgressSourcesAndWeights);
+			customProgressHandler = new SuperProgressSource(PROCESS_INFO, subProgressSourcesAndWeights);
 		}
 
-		return progressSource;
-	}
-
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
-		return getSuperProgressHandler();
+		return customProgressHandler;
 	}
 
 	@Override
@@ -135,7 +131,8 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 		int resultOpId;
 
-		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		final OperationKey markerCensusOPKey = getParams().getParent().getOperationParent();
 		final MarkerCensusOperationDataSet markerCensusOperationDataSet
@@ -149,7 +146,7 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		final Collection<MarkerCensusOperationEntry> markersCensus
 				= markerCensusOperationDataSet.getEntries();
 
-		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
 //		log.info("Perform Hardy-Weinberg test (All)");
 //		performHardyWeinberg(wrNcFile, markersCensus, Category.ALL);
@@ -163,12 +160,12 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 		log.info("Perform Hardy-Weinberg test (Alternate Hardy&Weinberg)");
 		performHardyWeinberg(dataSet, markersCensus, Category.ALTERNATE, hwAlternatePH);
 
-		progressSource.setNewStatus(ProcessStatus.FINALIZING);
+		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 		dataSet.finnishWriting();
 		resultOpId = dataSet.getOperationKey().getId();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
-		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return resultOpId;
 	}

@@ -36,7 +36,6 @@ import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 
 public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMarkersOperationDataSet, QAMarkersOperationParams> {
 
@@ -57,11 +56,6 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return QAMarkersOperationFactory.OPERATION_TYPE_INFO;
-	}
-
-	@Override
-	public ProgressSource getProgressSource() throws IOException {
-		return getProgressHandler();
 	}
 
 	@Override

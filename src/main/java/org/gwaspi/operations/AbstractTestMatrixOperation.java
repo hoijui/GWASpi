@@ -53,19 +53,20 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 
 	private ProgressHandler filterPH;
 	private ProgressHandler testPH;
-	private SuperProgressSource progressSource;
+	private ProgressHandler customProgressHandler;
 
 	public AbstractTestMatrixOperation(P params) {
 		super(params);
 
 		this.filterPH = null;
 		this.testPH = null;
-		this.progressSource = null;
+		this.customProgressHandler = null;
 	}
 
-	private SuperProgressSource getSuperProgressHandler() throws IOException {
+	@Override
+	protected ProgressHandler getProgressHandler() throws IOException {
 
-		if (progressSource == null) {
+		if (customProgressHandler == null) {
 			final int numItems = getNumItems();
 			filterPH = new IntegerProgressHandler(
 					new SubProcessInfo(getProcessInfo(), getParams().getName() + " filtering", null),
@@ -81,15 +82,15 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 			tmpSubProgressSourcesAndWeights.put(testPH, 0.5);
 			subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 
-			progressSource = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
+			customProgressHandler = new SuperProgressSource(getProcessInfo(), subProgressSourcesAndWeights);
 		}
 
-		return progressSource;
+		return customProgressHandler;
 	}
 
 	@Override
 	public ProgressSource getProgressSource() throws IOException {
-		return getSuperProgressHandler();
+		return getProgressHandler();
 	}
 
 	@Override
@@ -107,7 +108,7 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 
 		int resultOpId = OperationKey.NULL_ID;
 
-		final SuperProgressSource progressHandler = getSuperProgressHandler();
+		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		SimpleOperationDataSet filteredOperationDataSet
