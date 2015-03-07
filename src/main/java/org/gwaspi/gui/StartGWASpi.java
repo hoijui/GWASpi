@@ -203,7 +203,6 @@ public class StartGWASpi {
 			} catch (RuntimeException ex) {
 				log.error(Text.App.warnOnlyOneInstance, ex);
 				Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
-				return;
 			} catch (OutOfMemoryError ex) {
 				log.error(Text.App.outOfMemoryError, ex);
 			} catch (Exception ex) {
