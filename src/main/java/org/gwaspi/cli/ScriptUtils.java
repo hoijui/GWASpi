@@ -73,17 +73,17 @@ public class ScriptUtils {
 
 		List<Map<String, String>> scripts = new ArrayList<Map<String, String>>();
 
-		FileReader fr = null;
-		BufferedReader br = null;
+		FileReader scriptFileReader = null;
+		BufferedReader scriptReader = null;
 		String line = null;
 		int lineNum = -1;
 		try {
-			fr = new FileReader(src);
-			br = new BufferedReader(fr);
+			scriptFileReader = new FileReader(src);
+			scriptReader = new BufferedReader(scriptFileReader);
 
 			Map<String, String> script = null;
-			while (br.ready()) {
-				line = br.readLine().trim();
+			while (scriptReader.ready()) {
+				line = scriptReader.readLine().trim();
 				lineNum++;
 				if ((script == null) && line.startsWith("[script]")) {
 					// We use LinkedHashMap, because it preserves the order
@@ -108,10 +108,10 @@ public class ScriptUtils {
 			}
 		} finally {
 			try {
-				if (br != null) {
-					br.close();
-				} else if (fr != null) {
-					fr.close();
+				if (scriptReader != null) {
+					scriptReader.close();
+				} else if (scriptFileReader != null) {
+					scriptFileReader.close();
 				}
 			} catch (Exception ex) {
 				log.warn("Failed parsing script at line " + lineNum + ": \"" + line + "\"" , ex);
