@@ -20,7 +20,7 @@ package org.gwaspi.constants;
 public class ExportConstants {
 
 	public static final String SEPARATOR_PLINK = " ";
-	public static final String SEPARATOR_PLINK_big = "\t";
+	public static final String SEPARATOR_PLINK_BIG = "\t";
 	public static final String SEPARATOR_BEAGLE = " ";
 	public static final String SEPARATOR_MACH = " ";
 	public static final String SEPARATOR_REPORTS = "\t";
