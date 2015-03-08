@@ -66,13 +66,13 @@ public interface MatrixOperation<P extends OperationParams> {
 	 * and may be able to execute properly.
 	 * @return a human readable description of the problem
 	 *   with the given parameters if the operation is invalid;
-	 *   <code>null</code> otherwise
+	 *   {@code null} otherwise
 	 * @see #isValid()
 	 */
 	String getProblemDescription();
 
 	/**
-	 * @return this operations parameters; may be <code>null</code>
+	 * @return this operations parameters; may be {@code null}
 	 */
 	P getParams();
 
