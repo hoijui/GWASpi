@@ -40,9 +40,9 @@ public abstract class AbstractNetCdfTestOperationDataSet<E extends OperationData
 	// - Variables.VAR_CHR_IN_MATRIX: chromosomeInfo.keySet() [Collection<ChromosomeKey>]
 	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
 	// switch (test-type) {
-	//   case "allelic association test": Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR: {T, P-Value, OR} [Double[3]]
-	//   case "genotypic association test": Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
-	//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
+	//   case "allelic association test": Association.VAR_OP_MARKERS_AS_ALLELIC_ASSOCIATION_TPOR: {T, P-Value, OR} [Double[3]]
+	//   case "genotypic association test": Association.VAR_OP_MARKERS_AS_GENOTYPIC_ASSOCIATION_TP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
+	//   case "trend test": Association.VAR_OP_MARKERS_AS_TREND_TEST_TP: {T, P-Value} [Double[2]]
 	// }
 
 	public AbstractNetCdfTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {

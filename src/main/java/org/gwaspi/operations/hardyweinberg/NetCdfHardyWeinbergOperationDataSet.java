@@ -64,10 +64,10 @@ public class NetCdfHardyWeinbergOperationDataSet
 
 	static {
 		Map<Category, String> netCdfPVarsTmp = new EnumMap<Category, String>(Category.class);
-		netCdfPVarsTmp.put(Category.ALL, HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
-		netCdfPVarsTmp.put(Category.CASE, HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
-		netCdfPVarsTmp.put(Category.CONTROL, HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-		netCdfPVarsTmp.put(Category.ALTERNATE, HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+		netCdfPVarsTmp.put(Category.ALL, HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_ALL);
+		netCdfPVarsTmp.put(Category.CASE, HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_CASE);
+		netCdfPVarsTmp.put(Category.CONTROL, HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_CTRL);
+		netCdfPVarsTmp.put(Category.ALTERNATE, HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_ALT);
 		netCdfPVars = Collections.unmodifiableMap(netCdfPVarsTmp);
 
 		Map<Category, String> netCdfHetzyObsVarsTmp = new EnumMap<Category, String>(Category.class);
@@ -121,8 +121,8 @@ public class NetCdfHardyWeinbergOperationDataSet
 		// Define OP Variables
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL, DataType.DOUBLE, markersSpace);
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(NetCDFConstants.HardyWeinberg.VAR_OP_MARKERS_HW_P_VAL_ALT, DataType.DOUBLE, markersSpace);
 
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALL, DataType.DOUBLE, markersSpace);
 //		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CASE, DataType.DOUBLE, markersSpace);

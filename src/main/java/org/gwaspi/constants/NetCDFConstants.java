@@ -159,10 +159,10 @@ public class NetCDFConstants {
 
 	public static class HardyWeinberg {
 
-		public static final String VAR_OP_MARKERS_HWPval_ALL = "OP_markers_hwpval_all";
-		public static final String VAR_OP_MARKERS_HWPval_CASE = "OP_markers_hwpval_case";
-		public static final String VAR_OP_MARKERS_HWPval_CTRL = "OP_markers_hwpval_ctrl";
-		public static final String VAR_OP_MARKERS_HWPval_ALT = "OP_markers_hwpval_alt";
+		public static final String VAR_OP_MARKERS_HW_P_VAL_ALL = "OP_markers_hwpval_all";
+		public static final String VAR_OP_MARKERS_HW_P_VAL_CASE = "OP_markers_hwpval_case";
+		public static final String VAR_OP_MARKERS_HW_P_VAL_CTRL = "OP_markers_hwpval_ctrl";
+		public static final String VAR_OP_MARKERS_HW_P_VAL_ALT = "OP_markers_hwpval_alt";
 		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
 		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
 		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
@@ -183,11 +183,11 @@ public class NetCDFConstants {
 	public static class Association {
 
 		/** @deprecated was used before the grand storage restructure. now: {T, P} */
-		public static final String VAR_OP_MARKERS_ASTrendTestTP = "OP_markers_as_cochranarmitageTP";
+		public static final String VAR_OP_MARKERS_AS_TREND_TEST_TP = "OP_markers_as_cochranarmitageTP";
 		/** @deprecated was used before the grand storage restructure. now: {T, P, OR, OR2} */
-		public static final String VAR_OP_MARKERS_ASGenotypicAssociationTP2OR = "OP_markers_as_gnotypTP";
+		public static final String VAR_OP_MARKERS_AS_GENOTYPIC_ASSOCIATION_TP2OR = "OP_markers_as_gnotypTP";
 		/** @deprecated was used before the grand storage restructure. now: {T, P, OR} */
-		public static final String VAR_OP_MARKERS_ASAllelicAssociationTPOR = "OP_markers_as_allelicTPOR";
+		public static final String VAR_OP_MARKERS_AS_ALLELIC_ASSOCIATION_TPOR = "OP_markers_as_allelicTPOR";
 		public static final String VAR_OP_MARKERS_T = "OP_markers_T";
 		public static final String VAR_OP_MARKERS_P = "OP_markers_P";
 		public static final String VAR_OP_MARKERS_OR = "OP_markers_OR";
