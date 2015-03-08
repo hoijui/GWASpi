@@ -98,17 +98,17 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 		Color bg;
 		if (!selected) {
-			bg = (row % 2 == 0 ? GlobalConstants.alternateRowColor : GlobalConstants.background);
+			bg = (row % 2 == 0 ? GlobalConstants.ALTERNATE_ROW : GlobalConstants.BACKGROUND);
 		} else {
-			bg = GlobalConstants.selectionBackground;
+			bg = GlobalConstants.SELECTION_BACKGROUND;
 		}
 		tableCellRenderer.setBackground(bg);
 
 		Color fg;
 		if (selected) {
-			fg = GlobalConstants.selectionForeground;
+			fg = GlobalConstants.SELECTION_FOREGROUND;
 		} else {
-			fg = GlobalConstants.foreground;
+			fg = GlobalConstants.FOREGROUND;
 		}
 		tableCellRenderer.setForeground(fg);
 	}

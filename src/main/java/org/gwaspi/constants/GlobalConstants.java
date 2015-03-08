@@ -32,12 +32,12 @@ public class GlobalConstants {
 	public static final String LOCAL_VERSION_XML = "/version.xml";
 	public static final String REMOTE_VERSION_XML = "http://www.gwaspi.org/downloads/version.xml";
 	// Interloped table row colors
-	public static final Color background = UIManager.getColor("Table.background");
-	public static final Color alternateRowColor = new Color(background.getRed() - 20, background.getGreen() - 20, background.getBlue() - 20);
-	//public static final Color alternateRowColor = UIManager.getColor("Table.dropLineColor");
-	public static final Color foreground = UIManager.getColor("Table.foreground");
-	public static final Color selectionBackground = UIManager.getColor("Table.selectionBackground");
-	public static final Color selectionForeground = UIManager.getColor("Table.selectionForeground");
+	public static final Color BACKGROUND = UIManager.getColor("Table.background");
+	public static final Color ALTERNATE_ROW = new Color(BACKGROUND.getRed() - 20, BACKGROUND.getGreen() - 20, BACKGROUND.getBlue() - 20);
+	//public static final Color ALTERNATE_ROW = UIManager.getColor("Table.dropLineColor");
+	public static final Color FOREGROUND = UIManager.getColor("Table.foreground");
+	public static final Color SELECTION_BACKGROUND = UIManager.getColor("Table.selectionBackground");
+	public static final Color SELECTION_FOREGROUND = UIManager.getColor("Table.selectionForeground");
 
 	private GlobalConstants() {
 	}
