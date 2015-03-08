@@ -228,11 +228,21 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	 */
 //	@org.junit.Ignore
 	@Test
-	public void testCombiAssociationTest() throws Exception {
+	public void testCombiAssociationAllelicTest() throws Exception {
 
 		testCombiAssociationTest(getSetup(), "extra", AllelicGenotypeEncoder.SINGLETON);
-//		testCombiAssociationTest(getSetup(), "extra", GenotypicGenotypeEncoder.SINGLETON);
-//		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
+	}
+
+	@Test
+	public void testCombiAssociationGenotypicTest() throws Exception {
+
+		testCombiAssociationTest(getSetup(), "extra", GenotypicGenotypeEncoder.SINGLETON);
+	}
+
+	@Test
+	public void testCombiAssociationNominalTest() throws Exception {
+
+		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
 	}
 
 	@org.junit.Ignore
