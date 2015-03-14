@@ -142,7 +142,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		return result;
 	}
 
-	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder) throws Exception {
+	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder, final boolean perChromosome) throws Exception {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
@@ -209,6 +209,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 //		substitutions.put("\\$\\{GENOTYPE_FREQUENCY_OPERATION_ID\\}", String.valueOf(gtFreqOpKey.getId()));
 //		substitutions.put("\\$\\{HARDY_WEINBERG_OPERATION_ID\\}", String.valueOf(hwOpKey.getId()));
 		substitutions.put("\\$\\{QA_MARKERS_OPERATION_ID\\}", String.valueOf(parentQaMarkersOpKey.getId()));
+		substitutions.put("\\$\\{PER_CHROMOSOME\\}", String.valueOf(perChromosome ? 1 : 0));
 		substitutions.put("\\$\\{GENOTYPE_ENCODING\\}", genotypeEncoder.getHumanReadableName());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
@@ -229,19 +230,19 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	@Test
 	public void testCombiAssociationAllelicTest() throws Exception {
 
-		testCombiAssociationTest(getSetup(), "extra", AllelicGenotypeEncoder.SINGLETON);
+		testCombiAssociationTest(getSetup(), "extra", AllelicGenotypeEncoder.SINGLETON, false);
 	}
 
 	@Test
 	public void testCombiAssociationGenotypicTest() throws Exception {
 
-		testCombiAssociationTest(getSetup(), "extra", GenotypicGenotypeEncoder.SINGLETON);
+		testCombiAssociationTest(getSetup(), "extra", GenotypicGenotypeEncoder.SINGLETON, false);
 	}
 
 	@Test
 	public void testCombiAssociationNominalTest() throws Exception {
 
-		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON);
+		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, false);
 	}
 
 	@org.junit.Ignore

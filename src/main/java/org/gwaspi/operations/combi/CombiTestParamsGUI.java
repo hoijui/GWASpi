@@ -78,6 +78,10 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JCheckBox useThresholdCalibrationValue;
 	private final JLabel useThresholdCalibrationWarning;
 
+	private final JLabel perChromosomeLabel;
+	private final JPanel perChromosomeP;
+	private final JCheckBox perChromosomeValue;
+
 	private final JLabel resultMatrixLabel;
 	private final JPanel resultMatrixP;
 	private final JTextField resultMatrixValue;
@@ -104,6 +108,10 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationValue = new JCheckBox();
 		this.useThresholdCalibrationWarning = new JLabel();
 
+		this.perChromosomeLabel = new JLabel();
+		this.perChromosomeP = new JPanel();
+		this.perChromosomeValue = new JCheckBox();
+
 		this.resultMatrixLabel = new JLabel();
 		this.resultMatrixP = new JPanel();
 		this.resultMatrixValue = new JTextField();
@@ -116,6 +124,8 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
 
+		this.perChromosomeP.add(this.perChromosomeValue);
+
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
 
@@ -124,6 +134,7 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(qaMarkersOperationLabel, qaMarkersOperationValue);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
+		labelsAndComponents.put(perChromosomeLabel, perChromosomeP);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
 		GroupLayout layout = new GroupLayout(this);
 		createLayout(layout, labelsAndComponents);
@@ -171,6 +182,14 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationValue.setEnabled(false);
 		this.useThresholdCalibrationWarning.setEnabled(false);
 
+		this.perChromosomeLabel.setText("run per chromosome");
+		this.perChromosomeLabel.setLabelFor(this.perChromosomeValue);
+		this.perChromosomeP.setLayout(contentPanelLayout);
+		final String perChromosomeTooltip = "train SVM once per chromosome (or genome wide)";
+		this.perChromosomeLabel.setToolTipText(perChromosomeTooltip);
+		this.perChromosomeValue.setToolTipText(perChromosomeTooltip);
+		this.perChromosomeP.setToolTipText(perChromosomeTooltip);
+
 		this.resultMatrixLabel.setText("Result matrix name");
 		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
 		this.resultMatrixP.setLayout(contentPanelLayout);
@@ -210,6 +229,8 @@ public class CombiTestParamsGUI extends JPanel {
 		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
 
 		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
+
+		perChromosomeValue.setSelected(params.isPerChromosome());
 
 		resultMatrixValue.setText(params.getName());
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
@@ -252,6 +273,7 @@ public class CombiTestParamsGUI extends JPanel {
 				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
 				useThresholdCalibrationValue.isSelected(),
+				perChromosomeValue.isSelected(),
 				resultMatrixValue.getText()
 				);
 
@@ -317,6 +339,7 @@ public class CombiTestParamsGUI extends JPanel {
 				parentOperationKey,
 				NominalGenotypeEncoder.SINGLETON,
 				Boolean.TRUE, // useThresholdCalibration
+				Boolean.TRUE, // perChromosome
 				"my name is... my name is... my name is ..");
 		CombiTestOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
 	}

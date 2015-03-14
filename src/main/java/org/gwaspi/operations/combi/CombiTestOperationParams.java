@@ -47,11 +47,16 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	 * This feature takes a lot of computation time!
 	 */
 	private final boolean useThresholdCalibration;
+	/**
+	 * Whether to use run the SVM once per chromosome, or rather over the whole genome at once.
+	 */
+	private final Boolean perChromosome;
 
 	public CombiTestOperationParams(
 			OperationKey qaMarkersOperationKey,
 			GenotypeEncoder encoder,
 			Boolean useThresholdCalibration,
+			final Boolean perChromosome,
 			String name)
 	{
 		super(OPType.COMBI_ASSOC_TEST, new DataSetKey(qaMarkersOperationKey), name);
@@ -62,12 +67,16 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		this.useThresholdCalibration = (useThresholdCalibration == null)
 				? isUseThresholdCalibrationDefault()
 				: useThresholdCalibration;
+		this.perChromosome = (perChromosome == null)
+				? isPerChromosomeDefault()
+				: perChromosome;
 	}
 
 	public CombiTestOperationParams(OperationKey qaMarkersOperationKey)
 	{
 		this(
 				qaMarkersOperationKey,
+				null,
 				null,
 				null,
 				null
@@ -117,8 +126,16 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		return useThresholdCalibration;
 	}
 
-	public boolean isUseThresholdCalibrationDefault() {
+	public static boolean isUseThresholdCalibrationDefault() {
 		return false;
+	}
+
+	public boolean isPerChromosome() {
+		return perChromosome;
+	}
+
+	public static boolean isPerChromosomeDefault() {
+		return true;
 	}
 
 	@Override

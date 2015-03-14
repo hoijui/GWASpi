@@ -61,6 +61,10 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 	private final JLabel combiOperationLabel;
 	private final JComboBox combiOperationValue;
 
+	private final JLabel perChromosomeLabel;
+	private final JPanel perChromosomeP;
+	private final JCheckBox perChromosomeValue;
+
 	private final JLabel weightsFilterWidthLabel;
 	private final AbsolutePercentageComponent weightsFilterWidthValue;
 
@@ -80,6 +84,10 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		this.combiOperationLabel = new JLabel();
 		this.combiOperationValue = new JComboBox();
 
+		this.perChromosomeLabel = new JLabel();
+		this.perChromosomeP = new JPanel();
+		this.perChromosomeValue = new JCheckBox();
+
 		this.weightsFilterWidthLabel = new JLabel();
 		this.weightsFilterWidthValue = new AbsolutePercentageComponent();
 
@@ -92,11 +100,14 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		this.resultMatrixDefault = new JCheckBox();
 
 		// pre-configure the GUI components
+		this.perChromosomeP.add(this.perChromosomeValue);
+
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
 
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
 		labelsAndComponents.put(combiOperationLabel, combiOperationValue);
+		labelsAndComponents.put(perChromosomeLabel, perChromosomeP);
 		labelsAndComponents.put(weightsFilterWidthLabel, weightsFilterWidthValue);
 		labelsAndComponents.put(markersToKeepLabel, markersToKeepValue);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
@@ -109,6 +120,14 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 
 		this.combiOperationLabel.setText("Parent data source");
 		this.combiOperationLabel.setToolTipText("As this has to be a QA Markers operation, only these are displayed in this list");
+
+		this.perChromosomeLabel.setText("run per chromosome");
+		this.perChromosomeLabel.setLabelFor(this.perChromosomeValue);
+		this.perChromosomeP.setLayout(contentPanelLayout);
+		final String perChromosomeTooltip = "smooth and filter once per chromosome (or genome wide)";
+		this.perChromosomeLabel.setToolTipText(perChromosomeTooltip);
+		this.perChromosomeValue.setToolTipText(perChromosomeTooltip);
+		this.perChromosomeP.setToolTipText(perChromosomeTooltip);
 
 		this.weightsFilterWidthLabel.setText("weights filter kernel width");
 		this.weightsFilterWidthLabel.setLabelFor(this.weightsFilterWidthValue);
@@ -133,7 +152,6 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		}
 
 		// set the new candidates
-		combiOperationValue.setEnabled(true);
 		for (OperationKey parentCandidate : parentCandidates) {
 			combiOperationValue.addItem(parentCandidate);
 		}
@@ -151,6 +169,8 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		final int totalMarkers = (params.getTotalMarkers() < 1) ? 100000 : params.getTotalMarkers(); // HACK for testing purposes only, we shoudl probably rather produce an exception here
 
 		combiOperationValue.setSelectedItem(params.getParent().getOperationParent());
+
+		perChromosomeValue.setSelected(params.isPerChromosome());
 
 		weightsFilterWidthValue.setModel(new AbsolutePercentageModel(
 				params.getWeightsFilterWidth(),
@@ -180,6 +200,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		ByCombiWeightsFilterOperationParams params = new ByCombiWeightsFilterOperationParams(
 				originalParams.getTotalMarkers(),
 				(OperationKey) combiOperationValue.getSelectedItem(),
+				perChromosomeValue.isSelected(),
 				(Integer) weightsFilterWidthValue.getValue(),
 				(Integer) markersToKeepValue.getValue(),
 				resultMatrixValue.getText()
@@ -249,6 +270,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		ByCombiWeightsFilterOperationParams inputParams = new ByCombiWeightsFilterOperationParams(
 				totalMarkers,
 				parentOperationKey,
+				true, // perChromosome
 				35, // weightsFilterWidth
 				20, // markersToKeep
 				"my name is... my name is... my name is ..");

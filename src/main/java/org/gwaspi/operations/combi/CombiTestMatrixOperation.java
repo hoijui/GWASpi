@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import libsvm.svm;
@@ -31,6 +33,7 @@ import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.global.IndicesSubList;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -179,6 +182,32 @@ public class CombiTestMatrixOperation
 		}
 	}
 
+	private static Map<String, List<Integer>> extractChromToIndicesMap(
+			final DataSetSource dataSetSource)
+			throws IOException
+	{
+		final Map<String, List<Integer>> markersChromosomeToIndices
+				= new LinkedHashMap<String, List<Integer>>(22 + 2);
+
+//		final List<Integer> markersOrigIndices
+//				= dataSetSource.getMarkersKeysSource().getIndices();
+		final List<String> markersChromosomes
+				= dataSetSource.getMarkersMetadatasSource().getChromosomes();
+		for (int markerIndex = 0; markerIndex < markersChromosomes.size(); markerIndex++) {
+//			final int markerOrigIndex = markersOrigIndices.get(markerIndex);
+			final String markerChromosome = markersChromosomes.get(markerIndex);
+			List<Integer> chromosomeMarkerIndices
+					= markersChromosomeToIndices.get(markerChromosome);
+			if (chromosomeMarkerIndices == null) {
+				chromosomeMarkerIndices = new LinkedList<Integer>();
+				markersChromosomeToIndices.put(markerChromosome, chromosomeMarkerIndices);
+			}
+			chromosomeMarkerIndices.add(markerIndex);
+		}
+
+		return markersChromosomeToIndices;
+	}
+
 	@Override
 	protected ProgressHandler getProgressHandler() throws IOException {
 
@@ -186,13 +215,34 @@ public class CombiTestMatrixOperation
 			final DataSetSource parentDataSetSource = getParentDataSetSource();
 			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
 			final int n = parentDataSetSource.getNumSamples();
-			final int dSamples = parentDataSetSource.getNumMarkers();
-			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
-			final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
-			final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
 
-			svmPHs = new ArrayList<SvmProgressHandler>();
-			svmPHs.add(new SvmProgressHandler(PI_SVM_GENOME, n, dEncoded, numChunks));
+			if (getParams().isPerChromosome()) {
+				// run SVM once per chromosome
+				final Map<String, List<Integer>> markersChromosomeToIndices
+						= extractChromToIndicesMap(parentDataSetSource);
+				svmPHs = new ArrayList<SvmProgressHandler>(markersChromosomeToIndices.size());
+				for (final Map.Entry<String, List<Integer>> chromosomeMarkerToIndices
+						: markersChromosomeToIndices.entrySet())
+				{
+					final String chromosome = chromosomeMarkerToIndices.getKey();
+					final List<Integer> markerIndices = chromosomeMarkerToIndices.getValue();
+					final int dSamples = markerIndices.size();
+					final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
+					final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
+					final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
+
+					final ProcessInfo piSvmChromosome = new SubProcessInfo(combiProcessInfo, "Train chromosome-wide SVM for chromosome " + chromosome, "");
+					svmPHs.add(new SvmProgressHandler(piSvmChromosome, n, dEncoded, numChunks));
+				}
+			} else {
+				// run SVM only once, genome-wide
+				final int dSamples = parentDataSetSource.getNumMarkers();
+				final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
+				final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
+				final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
+
+				svmPHs = Collections.singletonList(new SvmProgressHandler(PI_SVM_GENOME, n, dEncoded, numChunks));
+			}
 
 			customProgressHandler = new SuperProgressSource(combiProcessInfo, svmPHs);
 		}
@@ -259,42 +309,98 @@ public class CombiTestMatrixOperation
 		dataSet.setNumChromosomes(parentDataSetSource.getNumChromosomes());
 		dataSet.setNumSamples(parentDataSetSource.getNumSamples());
 
-		final int dSamples = parentDataSetSource.getNumMarkers();
-		final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
-		final int n = parentDataSetSource.getNumSamples();
+		final List<Double> weights;
+		if (getParams().isPerChromosome()) {
+			// run SVM once per chromosome
+			final Map<String, List<Integer>> markersChromosomeToIndices // TODO maybe store it from getProgressHandler()?
+					= extractChromToIndicesMap(parentDataSetSource);
 
-		final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
-		final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
-		final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+			final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
+			final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 
-		LOG.debug("Combi Association Test: #samples: " + n);
-		LOG.debug("Combi Association Test: #markers: " + dSamples);
-		LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
-		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
+			weights = new ArrayList<Double>(Collections.nCopies(parentDataSetSource.getNumMarkers(), -1.0));
+			progressHandler.setNewStatus(ProcessStatus.RUNNING);
+			int chromoIndex = 0;
+			for (final Map.Entry<String, List<Integer>> markerChromosomeIndices : markersChromosomeToIndices.entrySet()) {
+				final String chromosome = markerChromosomeIndices.getKey();
+				final List<Integer> markerIndices = markerChromosomeIndices.getValue();
 
-		final List<Byte> majorAlleles = parentQAMarkersOperationDataSet.getKnownMajorAllele();
-		final List<Byte> minorAlleles = parentQAMarkersOperationDataSet.getKnownMinorAllele();
-		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
-		final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
+				// run SVM only once, genome-wide
+				final int dSamples = markerIndices.size();
+				final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
+				final int n = parentDataSetSource.getNumSamples();
 
-		progressHandler.setNewStatus(ProcessStatus.RUNNING);
+				final List<MarkerKey> markerKeys = new IndicesSubList<MarkerKey>(parentDataSetSource.getMarkersKeysSource(), markerIndices);
 
-		List<Double> weights = runEncodingAndSVM(
-				markerKeys,
-				majorAlleles,
-				minorAlleles,
-				markerGenotypesCounts,
-				validSamplesKeys,
-				validSampleAffections,
-				markersGenotypesSource,
-				getParams().getEncoder(),
-				svmPHs.get(0));
+				LOG.debug("Combi Association Test: #samples: " + n);
+				LOG.debug("Combi Association Test: #markers: " + dSamples);
+				LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
+				LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-		// TODO sort the weights (should already be absolute? .. hopefully not!)
-		// TODO write stuff to a matrix (maybe the list of important markers?)
-		// NOTE both of these are done in the ByCombiWeightsFilterOperation, so these todos are probably obsolete
+				final List<Byte> majorAlleles = new IndicesSubList<Byte>(parentQAMarkersOperationDataSet.getKnownMajorAllele(), markerIndices);
+				final List<Byte> minorAlleles = new IndicesSubList<Byte>(parentQAMarkersOperationDataSet.getKnownMinorAllele(), markerIndices);
+				final List<int[]> markerGenotypesCounts = new IndicesSubList<int[]>(parentQAMarkersOperationDataSet.getGenotypeCounts(), markerIndices);
+				final List<GenotypesList> markersGenotypesSource = new IndicesSubList<GenotypesList>(parentDataSetSource.getMarkersGenotypesSource(), markerIndices);
 
-		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
+				final List<Double> chromosomeWeights = runEncodingAndSVM(
+						markerKeys,
+						majorAlleles,
+						minorAlleles,
+						markerGenotypesCounts,
+						validSamplesKeys,
+						validSampleAffections,
+						markersGenotypesSource,
+						getParams().getEncoder(),
+						svmPHs.get(chromoIndex));
+
+				int chromosomeMarkerIndex = 0;
+				for (final Integer genomeMarkerIndex : markerIndices) {
+					weights.set(genomeMarkerIndex, chromosomeWeights.get(chromosomeMarkerIndex++));
+				}
+
+				chromoIndex++;
+			}
+			progressHandler.setNewStatus(ProcessStatus.FINALIZING);
+		} else {
+			// run SVM only once, genome-wide
+			final int dSamples = parentDataSetSource.getNumMarkers();
+			final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
+			final int n = parentDataSetSource.getNumSamples();
+
+			final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
+			final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
+			final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+
+			LOG.debug("Combi Association Test: #samples: " + n);
+			LOG.debug("Combi Association Test: #markers: " + dSamples);
+			LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
+			LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
+
+			final List<Byte> majorAlleles = parentQAMarkersOperationDataSet.getKnownMajorAllele();
+			final List<Byte> minorAlleles = parentQAMarkersOperationDataSet.getKnownMinorAllele();
+			final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
+			final MarkersGenotypesSource markersGenotypesSource = parentDataSetSource.getMarkersGenotypesSource();
+
+			progressHandler.setNewStatus(ProcessStatus.RUNNING);
+
+			weights = runEncodingAndSVM(
+					markerKeys,
+					majorAlleles,
+					minorAlleles,
+					markerGenotypesCounts,
+					validSamplesKeys,
+					validSampleAffections,
+					markersGenotypesSource,
+					getParams().getEncoder(),
+					svmPHs.get(0));
+
+			// TODO sort the weights (should already be absolute? .. hopefully not!)
+			// TODO write stuff to a matrix (maybe the list of important markers?)
+			// NOTE both of these are done in the ByCombiWeightsFilterOperation, so these todos are probably obsolete
+
+			progressHandler.setNewStatus(ProcessStatus.FINALIZING);
+		}
+
 
 		dataSet.setWeights(weights);
 

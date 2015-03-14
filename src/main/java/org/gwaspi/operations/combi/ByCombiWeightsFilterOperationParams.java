@@ -29,6 +29,10 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	 */
 	private Integer totalMarkers;
 	/**
+	 * Whether to run the filtering once per chromosome, or rather over the whole genome at once.
+	 */
+	private final Boolean perChromosome;
+	/**
 	 * The filter-width of the moving average filter (p-norm-filter)
 	 * applied to the weights after SVM training.
 	 */
@@ -42,6 +46,7 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	ByCombiWeightsFilterOperationParams(
 			Integer totalMarkers,
 			OperationKey combiParentOpKey,
+			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
 			String name)
@@ -50,6 +55,9 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 		this.totalMarkers = totalMarkers;
 
+		this.perChromosome = (perChromosome == null)
+				? isPerChromosomeDefault()
+				: perChromosome;
 		this.weightsFilterWidth = ((weightsFilterWidth == null)
 				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= totalMarkers))
 				? getWeightsFilterWidthDefault()
@@ -62,25 +70,28 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 	public ByCombiWeightsFilterOperationParams(
 			OperationKey combiParentOpKey,
+			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
 			String name)
 	{
-		this(null, combiParentOpKey, weightsFilterWidth, markersToKeep, name);
+		this(null, combiParentOpKey, perChromosome, weightsFilterWidth, markersToKeep, name);
 	}
 
 	public ByCombiWeightsFilterOperationParams(
 			int totalMarkers,
+			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
 			String name)
 	{
-		this(totalMarkers, null, weightsFilterWidth, markersToKeep, name);
+		this(totalMarkers, null, perChromosome, weightsFilterWidth, markersToKeep, name);
 	}
 
 	public ByCombiWeightsFilterOperationParams(OperationKey combiParentOpKey) {
 		this(
 				combiParentOpKey,
+				null,
 				null,
 				null,
 				null
@@ -123,6 +134,14 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 	public int getMarkersToKeep() {
 		return markersToKeep;
+	}
+
+	public boolean isPerChromosome() {
+		return perChromosome;
+	}
+
+	public static boolean isPerChromosomeDefault() {
+		return true;
 	}
 
 	public int getMarkersToKeepDefault() { // XXX review this mechanism with marius

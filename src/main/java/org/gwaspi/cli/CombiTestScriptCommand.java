@@ -81,6 +81,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers-id", "qa-markers-name");
 
+			final Boolean perChromosome = fetchBoolean(args, "per-chromosome", null);
+
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
 			final int weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
@@ -99,9 +101,11 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					qaMarkersOperationKey,
 					genotypeEncoder,
 					useThresholdCalibration,
+					perChromosome,
 					resultOperationName);
 			ByCombiWeightsFilterOperationParams paramsFilter = new ByCombiWeightsFilterOperationParams(
 					totalMarkers,
+					perChromosome,
 					weightsFilterWidth,
 					markersToKeep,
 					"Filter on " + resultOperationName);
