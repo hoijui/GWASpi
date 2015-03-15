@@ -285,6 +285,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public static void main(String[] args) {
 
+		Config.createSingleton(true);
 		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
 
 		List<OperationKey> parentCandidates = new ArrayList<OperationKey>();
