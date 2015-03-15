@@ -703,8 +703,9 @@ public class DataSetExtractPanel extends JPanel {
 
 			StringBuilder markerIdsList = new StringBuilder();
 			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
-				markerIdsList.append(key.getMarkerId());
-				markerIdsList.append(",");
+				markerIdsList
+						.append(key.getMarkerId())
+						.append(',');
 			}
 			markerIdsList.deleteCharAt(markerIdsList.length() - 1);
 

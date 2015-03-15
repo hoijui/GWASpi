@@ -201,14 +201,14 @@ public final class ManhattanPlotZoom extends JPanel {
 			public void chartMouseClicked(ChartMouseEvent event) {
 				int mouseX = event.getTrigger().getX();
 				int mouseY = event.getTrigger().getY();
-				Point2D p = zoomPanel.translateScreenToJava2D(new Point(mouseX, mouseY));
+				final Point2D point = zoomPanel.translateScreenToJava2D(new Point(mouseX, mouseY));
 				XYPlot plot = (XYPlot) zoomChart.getPlot();
 				ChartRenderingInfo info = zoomPanel.getChartRenderingInfo();
 				Rectangle2D dataArea = info.getPlotInfo().getDataArea();
 
 				ValueAxis domainAxis = plot.getDomainAxis();
 				RectangleEdge domainAxisEdge = plot.getDomainAxisEdge();
-				long chartX = (long) domainAxis.java2DToValue(p.getX(), dataArea, domainAxisEdge);
+				long chartX = (long) domainAxis.java2DToValue(point.getX(), dataArea, domainAxisEdge);
 //				ValueAxis rangeAxis = plot.getRangeAxis();
 //				RectangleEdge rangeAxisEdge = plot.getRangeAxisEdge();
 //				double chartY = rangeAxis.java2DToValue(p.getY(), dataArea,
@@ -614,19 +614,20 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		@Override
 		public String generateToolTip(XYDataset dataset, int series, int item) {
-			StringBuilder toolTip = new StringBuilder("<html>");
+			StringBuilder toolTip = new StringBuilder(128);
+			toolTip.append("<html>");
 			double position = dataset.getXValue(series, item);
 			double pValue = dataset.getYValue(series, item);
 
 			String chrPos = chr.getChromosome() + "_" + Report_Analysis.FORMAT_INTEGER.format(position);
 			if (getLabelerMap().containsKey(chrPos)) {
-				toolTip.append(getLabelerMap().get(chrPos));
-				toolTip.append("<br>");
+				toolTip.append(getLabelerMap().get(chrPos)).append("<br>");
 			}
 
-			toolTip.append("pVal: ").append(Report_Analysis.FORMAT_SCIENTIFIC.format(pValue));
-			toolTip.append("<br>pos: ").append(Report_Analysis.FORMAT_INTEGER.format(position));
-			toolTip.append("</html>");
+			toolTip
+					.append("pVal: ").append(Report_Analysis.FORMAT_SCIENTIFIC.format(pValue))
+					.append("<br>pos: ").append(Report_Analysis.FORMAT_INTEGER.format(position))
+					.append("</html>");
 			return toolTip.toString();
 		}
 
@@ -694,11 +695,10 @@ public final class ManhattanPlotZoom extends JPanel {
 			Number pValue = dataset.getYValue(series, item);
 			int position = (int) dataset.getXValue(series, item);
 			if (pValue != null) { // TODO unnessesary test for null
-				double pV = pValue.doubleValue();
+				final double pValueDouble = pValue.doubleValue();
 				StringBuilder chrPos = new StringBuilder(chr.getChromosome());
-				chrPos.append("_");
-				chrPos.append(position);
-				if (pV < this.threshold) {
+				chrPos.append('_').append(position);
+				if (pValueDouble < this.threshold) {
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
 					//result = value.toString().substring(0, 4); // could apply formatting here
 				}
@@ -725,7 +725,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
+			GWASpiExplorerPanel.getSingleton().setPnlContent(new ManhattanPlotZoom(
 					 parent,
 					 operationKey,
 					 origChr,
@@ -733,7 +733,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					 requestedPosWindow, // physPos window
 					 nRows));
 
-			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+			GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 		}
 	}
 
@@ -748,8 +748,8 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(testOpKey.getParentMatrixKey(), testOpKey, nRows));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new Report_AnalysisPanel(testOpKey.getParentMatrixKey(), testOpKey, nRows));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -773,8 +773,8 @@ public final class ManhattanPlotZoom extends JPanel {
 				if (!manhattenPlotReports.isEmpty()) {
 					reportFile = manhattenPlotReports.get(0).getFileName();
 				}
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(reportFile, testOpKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new ManhattanChartDisplay(reportFile, testOpKey));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

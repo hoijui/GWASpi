@@ -363,12 +363,12 @@ public class PreferencesPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			int decision = Dialogs.showConfirmDialogue(Text.App.confirmCopyDataDir);
 			if (decision == JOptionPane.YES_OPTION) {
-				TableModel tm = preferencesTable.getModel();
+				final TableModel tableModel = preferencesTable.getModel();
 				String currentDataDirPath = null;
-				for (int i = 0; i < tm.getRowCount(); i++) {
-					String key = tm.getValueAt(i, 0).toString();
+				for (int i = 0; i < tableModel.getRowCount(); i++) {
+					String key = tableModel.getValueAt(i, 0).toString();
 					if (key.equals(Config.PROPERTY_DATA_DIR)) {
-						currentDataDirPath = tm.getValueAt(i, 1).toString();
+						currentDataDirPath = tableModel.getValueAt(i, 1).toString();
 					}
 				}
 
@@ -417,8 +417,8 @@ public class PreferencesPanel extends JPanel {
 						Config.getSingleton().putString(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
 						Config.getSingleton().putString(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
 
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						GWASpiExplorerPanel.getSingleton().setPnlContent(new PreferencesPanel());
+						GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 						Dialogs.showInfoDialogue(Text.App.infoDataDirCopyOK);
 					} catch (IOException ex) {
 						log.warn(Text.App.warnErrorCopyData, ex);

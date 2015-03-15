@@ -539,18 +539,23 @@ public class Config {
 					String remoteVersionNumber = XMLParser.getTextValue(remoteElements.get(0), "Number");
 					String remoteCompatibilityNumber = XMLParser.getTextValue(remoteElements.get(0), "Compatibility");
 
-					StringBuilder message = new StringBuilder(Text.App.newVersionAvailable);
-					message.append("\nLocal Version: ").append(localVersionNumber);
-					message.append("\nNewest Version: ").append(remoteVersionNumber);
-					message.append("\nUpdate Type: ").append(XMLParser.getTextValue(remoteElements.get(0), "Type"));
-
 					// MAKE VERSION CHECKS
-					if (remoteCompatibilityNumber.compareTo(localVersionNumber) <= 0) { //Remote version is still compatible with local version
-						message.append("\n").append(Text.App.newVersionIsCompatible).append("\n").append(XMLParser.getTextValue(remoteElements.get(0), "ActionCompatible"));
-					} else { // Remote version is NOT compatible with local version
-						message.append("\n").append(Text.App.newVersionIsUnCompatible).append("\n").append(XMLParser.getTextValue(remoteElements.get(0), "ActionUnCompatible"));
-					}
-					message.append("\nChangelog: ").append(XMLParser.getTextValue(remoteElements.get(0), "Description"));
+					// Check whether remote version is still compatible with local version
+					final boolean remoteCompatibleWithLocalVersion =
+							(remoteCompatibilityNumber.compareTo(localVersionNumber) <= 0);
+					final String versionCompatibility = remoteCompatibleWithLocalVersion
+							? Text.App.newVersionIsCompatible : Text.App.newVersionIsUnCompatible;
+					final String tagName = remoteCompatibleWithLocalVersion
+							? "ActionCompatible" : "ActionUnCompatible";
+
+					final StringBuilder message = new StringBuilder(Text.App.newVersionAvailable);
+					message
+							.append("\nLocal Version: ").append(localVersionNumber)
+							.append("\nNewest Version: ").append(remoteVersionNumber)
+							.append("\nUpdate Type: ").append(XMLParser.getTextValue(remoteElements.get(0), "Type"))
+							.append('\n').append(versionCompatibility)
+							.append('\n').append(XMLParser.getTextValue(remoteElements.get(0), tagName))
+							.append("\nChangelog: ").append(XMLParser.getTextValue(remoteElements.get(0), "Description"));
 
 					if (localUpdateDate.compareTo(remoteUpdateDate) < 0) { //Remote version is more recent
 						if (guiMode) {

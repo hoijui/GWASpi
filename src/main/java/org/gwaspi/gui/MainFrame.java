@@ -88,15 +88,15 @@ public class MainFrame extends JFrame {
 
 		addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent we) {
+			public void windowClosing(final WindowEvent windowEvent) {
 				final boolean jobsPending = TaskQueue.getInstance().isActive();
 				if (jobsPending) {
 					int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
 					if (decision == JOptionPane.YES_OPTION) {
-						we.getWindow().setVisible(false);
+						windowEvent.getWindow().setVisible(false);
 					}
 				} else {
-					we.getWindow().setVisible(false);
+					windowEvent.getWindow().setVisible(false);
 				}
 			}
 		});
@@ -123,7 +123,7 @@ public class MainFrame extends JFrame {
 		final int maxHeapSize = Config.getSingleton().getInteger(Config.PROPERTY_MAX_HEAP_MB, -1);
 		final int maxProcessMarkers =
 				Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
-		if (maxHeapSize > 254) {
+		if (maxHeapSize > StartGWASpi.MIN_HEAP_SIZE_MB) {
 			Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
 					+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3);
 		} else {

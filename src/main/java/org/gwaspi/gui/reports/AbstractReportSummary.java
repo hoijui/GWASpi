@@ -201,8 +201,8 @@ public class AbstractReportSummary extends JPanel {
 
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				final int key = e.getKeyChar();
+			public void keyReleased(final KeyEvent evt) {
+				final int key = evt.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
 					loadReportAction.actionPerformed(null);
 				}

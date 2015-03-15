@@ -167,8 +167,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new DataSetExtractPanel(dataSetKey, "", ""));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new DataSetExtractPanel(dataSetKey, "", ""));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -190,8 +190,8 @@ public class CurrentMatrixPanel extends JPanel {
 
 			// Goto Trafo Pane
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new MatrixTrafoPanel(matrix));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -213,8 +213,8 @@ public class CurrentMatrixPanel extends JPanel {
 
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new DataSetAnalysePanel(parentKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new DataSetAnalysePanel(parentKey));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -285,8 +285,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new MatrixMergePanel(matrix));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

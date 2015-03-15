@@ -164,8 +164,8 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			//GWASpiExplorerPanel.getSingleton().pnl_Content = new LoadDataPanel(study.getId());
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(StudyKey.valueOf(study)));
-			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+			GWASpiExplorerPanel.getSingleton().setPnlContent(new LoadDataPanel(StudyKey.valueOf(study)));
+			GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 		}
 	}
 

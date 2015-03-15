@@ -148,16 +148,16 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 
 			addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
-				public void mouseMoved(MouseEvent me) {
+				public void mouseMoved(final MouseEvent evt) {
 					//displayColumnCursor(me, tmpTable);
 				}
 			});
 			addMouseListener(new MouseAdapter() {
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void mouseClicked(final MouseEvent evt) {
 					int rowIndex = getSelectedRow();
 					int colIndex = getSelectedColumn();
-					if (colIndex == 7) { // Abort
+					if (colIndex == 7) { // Abort FIXME there should be already a way to get this as a value or constant; if not, create one
 						throw new UnsupportedOperationException("needs to be implemented!"); // TODO implement aborting the selected task, also maybe add pausing support!
 					}
 				}
@@ -250,10 +250,10 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 	/**
 	 * Method to change cursor based on some arbitrary rule.
 	 */
-	private void displayColumnCursor(MouseEvent me, JTable table) {
+	private void displayColumnCursor(final MouseEvent evt, final JTable table) {
 
-		Point p = me.getPoint();
-		int column = table.columnAtPoint(p);
+		final Point point = evt.getPoint();
+		int column = table.columnAtPoint(point);
 		String columnName = table.getColumnName(column);
 		if (columnName.equals(Text.Reports.zoom)) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

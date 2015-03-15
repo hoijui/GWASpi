@@ -536,8 +536,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				missingThreshold = Double.parseDouble(txt_missing.getText());
 				Config.getSingleton().putDouble("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold);
 				Config.getSingleton().putDouble("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold);
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new SampleQAHetzygPlotZoom(operationKey));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.warn(Text.App.warnMustBeNumeric, ex);
 				Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric);
@@ -556,8 +556,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new SampleQAHetzygPlotZoom(operationKey));
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

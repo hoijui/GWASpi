@@ -454,17 +454,17 @@ public class MatrixMergePanel extends JPanel {
 		if (!matrices.isEmpty()) {
 			for (int i = matrices.size() - 1; i >= 0; i--) {
 				MatrixMetadata currentMatrix = matrices.get(i);
-				StringBuilder sb = new StringBuilder();
-				sb.append("SID: ");
-				sb.append(currentMatrix.getStudyId());
-				sb.append(" - MX: ");
-				sb.append(currentMatrix.getMatrixId());
-				sb.append(" - ");
-				sb.append(currentMatrix.getFriendlyName());
+				StringBuilder desc = new StringBuilder();
+				desc.append("SID: ");
+				desc.append(currentMatrix.getStudyId());
+				desc.append(" - MX: ");
+				desc.append(currentMatrix.getMatrixId());
+				desc.append(" - ");
+				desc.append(currentMatrix.getFriendlyName());
 
 				Object[] matrixItem = new Object[2];
 				matrixItem[0] = currentMatrix.getMatrixId();
-				matrixItem[1] = sb.toString();
+				matrixItem[1] = desc.toString();
 
 				result.add(matrixItem);
 			}

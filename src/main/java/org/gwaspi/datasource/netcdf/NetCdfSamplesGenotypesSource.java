@@ -115,13 +115,13 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 		StringBuilder netCdfReadStr = new StringBuilder(64);
 
 		netCdfReadStr
-				.append("(")
+				.append('(')
 				.append(fromSampleIndex)
-				.append(":")
+				.append(':')
 				.append(toSampleIndex)
 				.append(":1, ")
 				.append(fromMarkerIndex)
-				.append(":")
+				.append(':')
 				.append(toMarkerIndex)
 				.append(":1, " + "0:")
 				.append(numGTs - 1)
@@ -206,8 +206,8 @@ public class NetCdfSamplesGenotypesSource extends AbstractNetCdfListSource<Genot
 			ranges.add(new Range(0, shp[2] - 1));
 			for (int r0 = 0; r0 < shp[0]; r0++) {
 				ranges.set(0, new Range(r0, r0));
-				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) from.section(ranges);
-				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+				ArrayByte.D2 gtACD2 = (ArrayByte.D2) from.section(ranges);
+				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gtACD2);
 				GenotypesList innerList = genotyesListFactory.extract(rawList);
 				to.add(innerList);
 			}

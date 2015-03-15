@@ -278,8 +278,8 @@ public abstract class Report_Analysis extends JPanel {
 
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				final int key = e.getKeyChar();
+			public void keyReleased(final KeyEvent evt) {
+				final int key = evt.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
 					loadReportAction.actionPerformed(null);
 				}
@@ -297,8 +297,8 @@ public abstract class Report_Analysis extends JPanel {
 
 		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
-			public void mouseMoved(MouseEvent me) {
-				displayColumnCursor(tbl_ReportTable, me);
+			public void mouseMoved(final MouseEvent evt) {
+				displayColumnCursor(tbl_ReportTable, evt);
 			}
 		});
 
@@ -326,14 +326,14 @@ public abstract class Report_Analysis extends JPanel {
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
+						GWASpiExplorerPanel.getSingleton().setPnlContent(new ManhattanPlotZoom(
 								operationKey,
 								chr,
 								markerKey,
 								markerPhysPos,
 								requestedWindowSize, // requested window size in phys positions
 								((Number) txt_NRows.getValue()).intValue()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 					}
 					if (colIndex == getExternalResourceColumnIndex()) { // Show selected resource database
 						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(
@@ -450,20 +450,19 @@ public abstract class Report_Analysis extends JPanel {
 				final File newFile = new File(newDir, newFileName);
 				writer = new FileWriter(newFile);
 
-				StringBuilder tableData = new StringBuilder();
+				final StringBuilder tableData = new StringBuilder(512);
 				// HEADER
 				for (final int columnI : colIndToSave) {
-					tableData.append(reportTable.getColumnName(columnI));
-					tableData.append("\t");
+					tableData.append(reportTable.getColumnName(columnI)).append('\t');
 				}
 				// delete the last "\t"
 				tableData.deleteCharAt(tableData.length() - 1);
-				tableData.append("\n");
+				tableData.append('\n');
 				writer.write(tableData.toString());
 
 				// TABLE CONTENT
 				for (int rowI = 0; rowI < reportTable.getModel().getRowCount(); rowI++) {
-					tableData = new StringBuilder();
+					tableData.setLength(0); // clear
 
 					for (final int columnI : colIndToSave) {
 						String curVal = (String) reportTable.getValueAt(rowI, columnI);
@@ -472,12 +471,11 @@ public abstract class Report_Analysis extends JPanel {
 							curVal = "";
 						}
 
-						tableData.append(curVal);
-						tableData.append("\t");
+						tableData.append(curVal).append('\t');
 					}
 					// delete the last "\t"
 					tableData.deleteCharAt(tableData.length() - 1);
-					tableData.append("\n");
+					tableData.append('\n');
 					writer.write(tableData.toString());
 				}
 			} catch (final NullPointerException ex) {
@@ -517,10 +515,10 @@ public abstract class Report_Analysis extends JPanel {
 	/**
 	 * Method to change cursor based on some arbitrary rule.
 	 */
-	private void displayColumnCursor(final JTable reportTable, final MouseEvent me) {
+	private void displayColumnCursor(final JTable reportTable, final MouseEvent evt) {
 
-		final Point p = me.getPoint();
-		final int column = reportTable.columnAtPoint(p);
+		final Point point = evt.getPoint();
+		final int column = reportTable.columnAtPoint(point);
 		final String columnName = reportTable.getColumnName(column);
 		if (!getCursor().equals(CursorUtils.WAIT_CURSOR)) {
 			if (columnName.equals(Text.Reports.zoom)) {

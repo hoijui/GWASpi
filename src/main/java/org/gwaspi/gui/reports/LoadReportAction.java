@@ -61,22 +61,22 @@ class LoadReportAction extends AbstractAction {
 	private static class DoubleOrIntegerComparator implements Comparator<Object> {
 
 		@Override
-		public int compare(final Object o1, final Object o2) {
+		public int compare(final Object obj1, final Object obj2) {
 			try {
-				final Double d1 = Double.parseDouble(o1.toString());
-				final Double d2 = Double.parseDouble(o2.toString());
-				return d1.compareTo(d2);
+				final Double double1 = Double.parseDouble(obj1.toString());
+				final Double double2 = Double.parseDouble(obj2.toString());
+				return double1.compareTo(double2);
 			} catch (final NumberFormatException exDouble) {
 				try {
-					final Integer i1 = Integer.parseInt(o1.toString());
-					final Integer i2 = Integer.parseInt(o2.toString());
-					return i1.compareTo(i2);
+					final Integer int1 = Integer.parseInt(obj1.toString());
+					final Integer int2 = Integer.parseInt(obj2.toString());
+					return int1.compareTo(int2);
 				} catch (final NumberFormatException exInteger) {
 					log.warn("To compare objects are neither both Double,"
 							+ " nor both Integer: {} {}",
-							o1,
-							o2);
-					return o1.toString().compareTo(o2.toString());
+							obj1,
+							obj2);
+					return obj1.toString().compareTo(obj2.toString());
 				}
 			}
 		}

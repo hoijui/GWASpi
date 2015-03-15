@@ -140,12 +140,12 @@ public class StudyManagementPanel extends JPanel {
 
 		@Override
 		public Component prepareRenderer(final TableCellRenderer renderer, final int rowIndex, final int vColIndex) {
-			final Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-			if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-				final JComponent jc = (JComponent) c;
-				jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
+			final Component component = super.prepareRenderer(renderer, rowIndex, vColIndex);
+			if (component instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
+				final JComponent jComponent = (JComponent) component;
+				jComponent.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
 			}
-			return c;
+			return component;
 		}
 	}
 

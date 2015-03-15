@@ -40,17 +40,17 @@ public class XMLParser {
 	private XMLParser() {
 	}
 
-	public static Document parseXmlFile(String XMLurl) {
+	public static Document parseXmlFile(final String xmlUrl) {
 		Document dom = null;
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
 			// Using factory get an instance of document builder
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			final DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
 
 			// parse using builder to get DOM representation of the XML file
-			dom = db.parse(XMLurl);
+			dom = documentBuilder.parse(xmlUrl);
 		} catch (UnknownHostException ex) {
 			log.debug("UnknownHostException: {}", ex.getMessage());
 		} catch (Exception ex) {
@@ -68,11 +68,11 @@ public class XMLParser {
 		Element docEle = dom.getDocumentElement();
 
 		// get a nodelist of  elements
-		NodeList nl = docEle.getElementsByTagName(tagName);
-		if (nl != null && nl.getLength() > 0) {
-			for (int i = 0; i < nl.getLength(); i++) {
+		final NodeList nodeList = docEle.getElementsByTagName(tagName);
+		if (nodeList != null && nodeList.getLength() > 0) {
+			for (int nodeIndex = 0; nodeIndex < nodeList.getLength(); nodeIndex++) {
 				// get the tagName element
-				Element el = (Element) nl.item(i);
+				Element el = (Element) nodeList.item(nodeIndex);
 				// get the tagName object
 				//Employee tagObject = getEmployee(el);
 				// add it to list
@@ -84,20 +84,20 @@ public class XMLParser {
 
 	public static String getTextValue(Element ele, String tagName) {
 		String textVal = null;
-		NodeList nl = ele.getElementsByTagName(tagName);
-		if (nl != null && nl.getLength() > 0) {
-			Element el = (Element) nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
+		final NodeList nodeList = ele.getElementsByTagName(tagName);
+		if (nodeList != null && nodeList.getLength() > 0) {
+			final Element element = (Element) nodeList.item(0);
+			textVal = element.getFirstChild().getNodeValue();
 		}
 		return textVal;
 	}
 
 	public static Date getDateValue(Element ele, String tagName) throws ParseException {
 		Date date = null;
-		NodeList nl = ele.getElementsByTagName(tagName);
-		if (nl != null && nl.getLength() > 0) {
-			Element el = (Element) nl.item(0);
-			String textVal = el.getFirstChild().getNodeValue();
+		final NodeList nodeList = ele.getElementsByTagName(tagName);
+		if (nodeList != null && nodeList.getLength() > 0) {
+			final Element element = (Element) nodeList.item(0);
+			String textVal = element.getFirstChild().getNodeValue();
 			DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 			date = formatter.parse(textVal);
 		}

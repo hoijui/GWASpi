@@ -35,13 +35,13 @@ public class NetCdfChromosomesKeysSource extends AbstractNetCdfKeysSource<Chromo
 	 */
 	private static final int DEFAULT_CHUNK_SIZE = 100;
 
-	private static final String varDimension = NetCDFConstants.Dimensions.DIM_CHRSET;
-	private static final String varKeys = NetCDFConstants.Variables.VAR_CHR_IN_MATRIX;
+	private static final String VAR_DIMENSION = NetCDFConstants.Dimensions.DIM_CHRSET;
+	private static final String VAR_KEYS = NetCDFConstants.Variables.VAR_CHR_IN_MATRIX;
 
 	private ChromosomesKeysSource originSource;
 
 	private NetCdfChromosomesKeysSource(MatrixKey origin, NetcdfFile rdNetCdfFile, String varOriginalIndices) {
-		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, varDimension, varOriginalIndices, varKeys);
+		super(origin, rdNetCdfFile, DEFAULT_CHUNK_SIZE, VAR_DIMENSION, varOriginalIndices, VAR_KEYS);
 
 		this.originSource = null;
 	}

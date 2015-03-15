@@ -159,8 +159,8 @@ public class IntroPanel extends JPanel {
 		}
 
 		@Override
-		public Object getElementAt(int i) {
-			return HelpURLs.INTRO_LINKS.get(i).getLabel();
+		public Object getElementAt(final int index) {
+			return HelpURLs.INTRO_LINKS.get(index).getLabel();
 		}
 	}
 
@@ -171,14 +171,14 @@ public class IntroPanel extends JPanel {
 			// check for double click
 			if (evt.getClickCount() == 2) {
 				try {
-					list_HelpMouseReleased(evt);
+					listHelpMouseReleased(evt);
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
 			}
 		}
 
-		private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
+		private void listHelpMouseReleased(MouseEvent evt) throws IOException {
 			URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(((JList) evt.getSource()).getSelectedIndex()).getUrl());
 		}
 	}
@@ -192,8 +192,8 @@ public class IntroPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
-			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+			GWASpiExplorerPanel.getSingleton().setPnlContent(new PreferencesPanel());
+			GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 		}
 	}
 
@@ -208,8 +208,8 @@ public class IntroPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionRow(1);
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				GWASpiExplorerPanel.getSingleton().setPnlContent(new StudyManagementPanel());
+				GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

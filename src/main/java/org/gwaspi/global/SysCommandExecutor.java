@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 public class SysCommandExecutor {
 
 	private static final Logger log = LoggerFactory.getLogger(SysCommandExecutor.class);
-	private static Process pr = null;
 
 	private SysCommandExecutor() {
 	}
@@ -54,26 +53,27 @@ public class SysCommandExecutor {
 		InputStreamReader inputStreamReader = null;
 		BufferedReader inputBufferReader = null;
 		try {
-			Runtime rt = Runtime.getRuntime();
+			final Runtime runtime = Runtime.getRuntime();
 
+			Process process = null;
 			if (GlobalConstants.OSNAME.equals("Linux")) {
-				pr = rt.exec(cmd);
+				process = runtime.exec(cmd);
 			} else if (GlobalConstants.OSNAME.contains("Windows")) {
-				pr = rt.exec("cmd /c " + cmd);
+				process = runtime.exec("cmd /c " + cmd);
 			}
 //			else { // TODO implement for at least OS X
 //				JOptionPane.showMessageDialog(org.gwaspi.gui.StartGUI.getFrames()[0], "Sorry, your Operating System is not supported by our software.\nSupported platforms include Windows and Linux.");
 //			}
 
-			inputStreamReader = new InputStreamReader(pr.getInputStream());
+			inputStreamReader = new InputStreamReader(process.getInputStream());
 			inputBufferReader = new BufferedReader(inputStreamReader);
 			String line;
 			while ((line = inputBufferReader.readLine()) != null) {
-				result.append(line).append("\n");
+				result.append(line).append('\n');
 			}
 
-			int exitVal = pr.waitFor();
-			result.append("\n").append(exitVal).append("\n");
+			final int exitVal = process.waitFor();
+			result.append('\n').append(exitVal).append('\n');
 		} catch (Exception ex) {
 			log.error("Failed to execute command: " + cmd, ex);
 		} finally {

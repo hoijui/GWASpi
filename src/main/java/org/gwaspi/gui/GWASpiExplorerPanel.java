@@ -276,8 +276,8 @@ public class GWASpiExplorerPanel extends JPanel {
 			this.refreshContentPanel = !this.refreshContentPanel;
 		}
 
-		int X = scrl_Tree.getHorizontalScrollBar().getValue();
-		int Y = scrl_Tree.getVerticalScrollBar().getValue();
+		final int scrlX = scrl_Tree.getHorizontalScrollBar().getValue();
+		final int scrlY = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
 		GWASpiExplorerTree gwaspiExplorer = new GWASpiExplorerTree();
@@ -293,11 +293,11 @@ public class GWASpiExplorerPanel extends JPanel {
 		List<TreePath> expandedNodes = null;
 		if (tree != null) {
 			TreePath rootPath = tree.getPathForRow(0);
-			Enumeration e = tree.getExpandedDescendants(rootPath);
+			final Enumeration descendants = tree.getExpandedDescendants(rootPath);
 			List<TreePath> expanded = new ArrayList<TreePath>();
-			if (e != null) {
-				while (e.hasMoreElements()) {
-					expanded.add((TreePath) e.nextElement());
+			if (descendants != null) {
+				while (descendants.hasMoreElements()) {
+					expanded.add((TreePath) descendants.nextElement());
 				}
 			}
 			expandedNodes = expanded;
@@ -339,8 +339,8 @@ public class GWASpiExplorerPanel extends JPanel {
 
 			row--;
 			while (row >= 0) {
-				TreePath tp = tmpTree.getPathForRow(row);
-				if (!tp.isDescendant(tmpTree.getSelectionPath())) {
+				final TreePath treePath = tmpTree.getPathForRow(row);
+				if (!treePath.isDescendant(tmpTree.getSelectionPath())) {
 					tmpTree.collapseRow(row);
 				}
 				row--;
@@ -353,8 +353,8 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 
 		splt_MoapiPanel.setDividerLocation(width);
-		scrl_Tree.getHorizontalScrollBar().setValue(X);
-		scrl_Tree.getVerticalScrollBar().setValue(Y);
+		scrl_Tree.getHorizontalScrollBar().setValue(scrlX);
+		scrl_Tree.getVerticalScrollBar().setValue(scrlY);
 
 		tmpTree.setEnabled(true);
 	}
@@ -396,19 +396,19 @@ public class GWASpiExplorerPanel extends JPanel {
 		this.refreshContentPanel = refreshContentPanel;
 	}
 
-	public JPanel getPnl_Content() {
+	public JPanel getPnlContent() {
 		return pnl_Content;
 	}
 
-	public void setPnl_Content(JPanel pnl_Content) {
-		this.pnl_Content = pnl_Content;
+	public void setPnlContent(final JPanel pnlContent) {
+		this.pnl_Content = pnlContent;
 	}
 
-	public JScrollPane getScrl_Content() {
+	public JScrollPane getScrlContent() {
 		return scrl_Content;
 	}
 
-	public void setScrl_Content(JScrollPane scrl_Content) {
-		this.scrl_Content = scrl_Content;
+	public void setScrlContent(final JScrollPane scrlContent) {
+		this.scrl_Content = scrlContent;
 	}
 }

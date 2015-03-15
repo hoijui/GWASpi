@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class MatrixMarkerQAPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
+	private static final String NONE = "<NONE>";
 
 	private final OperationKey currentOPKey;
 
@@ -74,7 +75,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(
 				Text.Operation.operation + ": "
-				+ ((currentOP == null) ? "<NONE>" : currentOP.getFriendlyName()))); // NOI18N
+				+ ((currentOP == null) ? NONE : currentOP.getFriendlyName()))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
@@ -84,8 +85,8 @@ public class MatrixMarkerQAPanel extends JPanel {
 		if (opId != OperationKey.NULL_ID) {
 			pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 					Text.Operation.operationId + ": "
-					+ ((currentOPKey == null) ? "<NONE>" : currentOPKey.getId()))); // NOI18N
-			txtA_Description.setText((currentOP == null) ? "<NONE>"
+					+ ((currentOPKey == null) ? NONE : currentOPKey.getId()))); // NOI18N
+			txtA_Description.setText((currentOP == null) ? NONE
 					: currentOP.getDescription());
 		} else {
 			pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(

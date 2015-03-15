@@ -217,8 +217,8 @@ public class GWASpiExplorerTree {
 			}
 
 			if (tree.isSelectionEmpty()) {
-				gwasPiExplorerPanel.setPnl_Content(new JPanel());
-				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+				gwasPiExplorerPanel.setPnlContent(new JPanel());
+				gwasPiExplorerPanel.getScrlContent().setViewportView(gwasPiExplorerPanel.getPnlContent());
 			}
 
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -230,8 +230,8 @@ public class GWASpiExplorerTree {
 
 			// Check first if we are at the GWASpi root
 			if (currentNode.isRoot()) { // We are in GWASpi node
-				gwasPiExplorerPanel.setPnl_Content(new IntroPanel());
-				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+				gwasPiExplorerPanel.setPnlContent(new IntroPanel());
+				gwasPiExplorerPanel.getScrlContent().setViewportView(gwasPiExplorerPanel.getPnlContent());
 			}
 
 			// Check where we are in the tree,
@@ -359,12 +359,12 @@ public class GWASpiExplorerTree {
 				if (newContent == null) {
 					newContent = newErrorContent("No idea what I should show!");
 				}
-				gwasPiExplorerPanel.setPnl_Content(newContent);
-				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+				gwasPiExplorerPanel.setPnlContent(newContent);
+				gwasPiExplorerPanel.getScrlContent().setViewportView(gwasPiExplorerPanel.getPnlContent());
 			} catch (IOException ex) {
 				log.warn(null, ex);
 			}
-			gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
+			gwasPiExplorerPanel.getScrlContent().setViewportView(gwasPiExplorerPanel.getPnlContent());
 
 			// THIS IS TO AVOID RANDOM MONKEY CLICKER BUG
 			try {

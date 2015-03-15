@@ -817,8 +817,8 @@ public class Utils {
 		}
 
 		@Override
-		public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-			return multiplier * ((Comparable) o1.getValue()).compareTo(o2.getValue());
+		public int compare(Map.Entry<K, V> entry1, Map.Entry<K, V> entry2) {
+			return multiplier * ((Comparable) entry1.getValue()).compareTo(entry2.getValue());
 		}
 	}
 

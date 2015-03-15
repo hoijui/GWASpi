@@ -92,24 +92,24 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		label.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent evt) {
 				try {
-					if (e.getClickCount() == 1 && !isFired()) {
+					if (evt.getClickCount() == 1 && !isFired()) {
 						setFired(true);
-						int mouseX = e.getX();
+						int mouseX = evt.getX();
 						if (mouseX > padLeft) {
 							pnl_Chart.setCursor(CursorUtils.WAIT_CURSOR);
 
 							Object[] selectedSliceInfo = getChrSliceInfo(mouseX);
 
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
+							GWASpiExplorerPanel.getSingleton().setPnlContent(new ManhattanPlotZoom(
 									ManhattanChartDisplay.this,
 									operationKey,
 									(ChromosomeKey) selectedSliceInfo[1],
 									(Long) selectedSliceInfo[3], // startPhysPos
 									(Long) selectedSliceInfo[4], // physPos window
 									100));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());
 						}
 					}
 				} catch (NumberFormatException ex) {
@@ -119,8 +119,8 @@ public final class ManhattanChartDisplay extends JPanel {
 		});
 		label.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
-			public void mouseMoved(MouseEvent e) {
-				int mouseX = e.getX();
+			public void mouseMoved(final MouseEvent evt) {
+				int mouseX = evt.getX();
 				if (mouseX > padLeft) {
 					Object[] sliceInfo = getChrSliceInfo(mouseX);
 
