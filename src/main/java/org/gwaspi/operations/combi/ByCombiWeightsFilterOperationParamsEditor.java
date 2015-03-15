@@ -249,7 +249,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		ByCombiWeightsFilterOperationParams inputParams = new ByCombiWeightsFilterOperationParams(
 				totalMarkers,
 				parentOperationKey,
-				35, // weightsFIlterWidth
+				35, // weightsFilterWidth
 				20, // markersToKeep
 				"my name is... my name is... my name is ..");
 		ByCombiWeightsFilterOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
