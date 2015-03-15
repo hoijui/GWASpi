@@ -146,11 +146,6 @@ public class CombiTestMatrixOperation
 							0, // start state
 							dEncoded - 1); // end state. this value is too high and will be adjusted later on!
 
-//			ProgressListener slf4jProgressListener = new PerTimeIntervalFilteredProgressListener(new Slf4jProgressListener(LOG, calculateOriginalSpaceWeightsPI), 2000);
-//			calculateOriginalSpaceWeightsProgressSource.addProgressListener(slf4jProgressListener);
-//			SwingMonitorProgressListener swingMonitorProgressListener = new SwingMonitorProgressListener(calculateOriginalSpaceWeightsProgressSource);
-//			calculateOriginalSpaceWeightsProgressSource.addProgressListener(swingMonitorProgressListener);
-
 			Map<ProgressSource, Double> subProgressSourcesAndWeights
 					= new LinkedHashMap<ProgressSource, Double>();
 
@@ -215,11 +210,7 @@ public class CombiTestMatrixOperation
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
-//		MarkerCensusOperationDataSet parentMarkerCensusOperationDataSet
-////				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(params.getCensusOperationKey());
-//				= (MarkerCensusOperationDataSet) parentDataSetSource;
 		QAMarkersOperationDataSet parentQAMarkersOperationDataSet
-//				= (MarkerCensusOperationDataSet) OperationManager.generateOperationDataSet(params.getCensusOperationKey());
 				= (QAMarkersOperationDataSet) parentDataSetSource;
 
 		CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
@@ -236,16 +227,11 @@ public class CombiTestMatrixOperation
 		final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
 		final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 
-//		dataSet.setMarkers(wrMarkersFiltered);
-////		dataSet.setChromosomes(...); // NOTE This is not required, because if it is not set, it gets automatically extracted from the markers
-//		dataSet.setSamples(validSamplesOrigIndicesAndKey);
-
 		LOG.debug("Combi Association Test: #samples: " + n);
 		LOG.debug("Combi Association Test: #markers: " + dSamples);
 		LOG.debug("Combi Association Test: encoding factor: " + getParams().getEncoder().getEncodingFactor());
 		LOG.debug("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-//		final List<Census> allMarkersCensus = parentMarkerCensusOperationDataSet.getCensus(HardyWeinbergOperationEntry.Category.ALL);
 		final List<Byte> majorAlleles = parentQAMarkersOperationDataSet.getKnownMajorAllele();
 		final List<Byte> minorAlleles = parentQAMarkersOperationDataSet.getKnownMinorAllele();
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
@@ -331,6 +317,8 @@ public class CombiTestMatrixOperation
 	{
 		ProcessInfo encodingMarkersChunkPI = new DefaultProcessInfo("encoding markers chunk", null);
 		ProgressHandler encodingMarkersChunkProgressSource
+				// NOTE the IntegerP*H* would give more detailed info about the process,
+				//   but it also slows it down.
 //				= new IntegerProgressHandler(
 //						encodingMarkersChunkPI,
 //						markerIndexFrom,
@@ -361,7 +349,7 @@ public class CombiTestMatrixOperation
 		try {
 			// NOTE This allocates quite some memory!
 			//   We use float instead of double to half the memory,
-			//   this might be subject to change, as in,
+			//   this might be subject to change, as in:
 			//   change to use double.
 			LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4L * n * n));
 			kernelMatrix = new float[n][n];
@@ -494,7 +482,7 @@ public class CombiTestMatrixOperation
 		}
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 
-//		XXX; // this loop uses lots of time!
+		// XXX this loop uses lots of time!
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
@@ -502,7 +490,7 @@ public class CombiTestMatrixOperation
 			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
-//		XXX; // this loop uses lots of time!
+
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.FINALIZING);
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
@@ -663,7 +651,6 @@ public class CombiTestMatrixOperation
 		Iterator<Double> itY = Y.iterator();
 		for (int si = 0; si < n; si++) {
 			double y = itY.next();
-//			y = (y + 1.0) / 2.0;
 			prob.y[si] = y;
 		}
 
@@ -674,38 +661,40 @@ public class CombiTestMatrixOperation
 
 		svm_parameter svmParams = new svm_parameter();
 
-		/** possible values: C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR */
+		// TODO make many of these values configurable throuhg the *Params! see the matlab scripts
+
+		// possible values: C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR
 		svmParams.svm_type = svm_parameter.C_SVC;
-		/** possible values: LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED */
+		// possible values: LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED
 //		svmParams.kernel_type = svm_parameter.LINEAR;
 		svmParams.kernel_type = svm_parameter.PRECOMPUTED;
-		/** for poly */
+		// for poly
 		svmParams.degree = 3;
-		/** for poly/RBF/sigmoid */
+		// for poly/RBF/sigmoid
 		svmParams.gamma = 0.0;
-		/** for poly/sigmoid */
+		// for poly/sigmoid
 		svmParams.coef0 = 0;
 
 		// these are for training only
-		/** The cache size in MB */
+		// The cache size in MB
 		svmParams.cache_size = 40;
-		/** stopping criteria */
+		// stopping criteria
 		svmParams.eps = 1E-7;
-		/** for C_SVC, EPSILON_SVR and NU_SVR */
+		// for C_SVC, EPSILON_SVR and NU_SVR
 		svmParams.C = 1.0;
-		/** for C_SVC */
+		// for C_SVC
 		svmParams.nr_weight = 0;
-		/** for C_SVC */
+		// for C_SVC
 		svmParams.weight_label = new int[svmParams.nr_weight];
-		/** for C_SVC */
+		// for C_SVC
 		svmParams.weight = new double[svmParams.nr_weight];
-		/** for NU_SVC, ONE_CLASS, and NU_SVR */
+		// for NU_SVC, ONE_CLASS, and NU_SVR
 		svmParams.nu = 0.5;
-		/** for EPSILON_SVR */
+		// for EPSILON_SVR
 		svmParams.p = 0.5;
-		/** use the shrinking heuristics */
+		// use the shrinking heuristics
 		svmParams.shrinking = 1;
-		/** do probability estimates */
+		// do probability estimates
 		svmParams.probability = 0;
 
 		return svmParams;
