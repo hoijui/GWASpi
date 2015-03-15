@@ -63,7 +63,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		}
 	}
 
-	public SuperProgressSource(ProcessInfo processInfo, Map<ProgressSource, Double> subProgressSourcesAndWeights) {
+	public SuperProgressSource(ProcessInfo processInfo, Map<? extends ProgressSource, Double> subProgressSourcesAndWeights) {
 		super(processInfo, calculateNumIntervalls(subProgressSourcesAndWeights));
 
 		this.superProgressListeners = new ArrayList<SuperProgressListener>(1);
@@ -74,7 +74,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		this.lastCompletionFraction = 0.0;
 		this.weightSum = 0.0;
 
-		for (Map.Entry<ProgressSource, Double> subProgressSourceAndWeight : subProgressSourcesAndWeights.entrySet()) {
+		for (Map.Entry<? extends ProgressSource, Double> subProgressSourceAndWeight : subProgressSourcesAndWeights.entrySet()) {
 			final ProgressSource progressSource = subProgressSourceAndWeight.getKey();
 			final double weight = subProgressSourceAndWeight.getValue();
 			progressSource.addProgressListener(progressListener);
@@ -84,7 +84,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		}
 	}
 
-	public SuperProgressSource(ProcessInfo processInfo, Collection<ProgressSource> subProgressSources) {
+	public SuperProgressSource(ProcessInfo processInfo, Collection<? extends ProgressSource> subProgressSources) {
 		this(processInfo, createEvenlyDistributedWeights(subProgressSources));
 	}
 
@@ -92,13 +92,13 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		this(processInfo, Collections.EMPTY_MAP);
 	}
 
-	private static Map<ProgressSource, Double> createEvenlyDistributedWeights(Collection<ProgressSource> subProgressSources) {
+	private static <S extends ProgressSource> Map<S, Double> createEvenlyDistributedWeights(Collection<S> subProgressSources) {
 
-		Map<ProgressSource, Double> subProgressSourcesAndWeights
-				= new HashMap<ProgressSource, Double>(subProgressSources.size());
+		Map<S, Double> subProgressSourcesAndWeights
+				= new HashMap<S, Double>(subProgressSources.size());
 
 		final double weight = 1.0 / subProgressSources.size();
-		for (ProgressSource progressSource : subProgressSources) {
+		for (final S progressSource : subProgressSources) {
 			subProgressSourcesAndWeights.put(progressSource, weight);
 		}
 
@@ -120,7 +120,7 @@ public class SuperProgressSource extends AbstractProgressHandler<Double> {
 		return numSubIntervalls;
 	}
 
-	private static Integer calculateNumIntervalls(Map<ProgressSource, Double> subProgressSourcesAndWeights) {
+	private static Integer calculateNumIntervalls(Map<? extends ProgressSource, Double> subProgressSourcesAndWeights) {
 
 		int numIntervalls = 0;
 		for (ProgressSource progressSource : subProgressSourcesAndWeights.keySet()) {
