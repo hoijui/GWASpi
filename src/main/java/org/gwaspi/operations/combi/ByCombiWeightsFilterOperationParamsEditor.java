@@ -213,7 +213,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		return returnParams;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		Config.createSingleton(true);
 		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
@@ -236,14 +236,18 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		}
 
 		final OperationKey parentOperationKey;
+		final int totalMarkers;
 		if (parentCandidates.isEmpty()) {
 			LOG.warn("No suitable COMBI Test operation found that could be used as parent");
 			parentOperationKey = new OperationKey(new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID), OperationKey.NULL_ID);
+			totalMarkers = 100000;
 		} else {
 			parentOperationKey = parentCandidates.get(0);
+			totalMarkers = OperationsList.getOperationMetadata(parentOperationKey).getNumMarkers();
 		}
 
 		ByCombiWeightsFilterOperationParams inputParams = new ByCombiWeightsFilterOperationParams(
+				totalMarkers,
 				parentOperationKey,
 				35, // weightsFIlterWidth
 				20, // markersToKeep
