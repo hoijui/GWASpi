@@ -50,7 +50,6 @@ import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
 import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressHandler;
-import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SubProcessInfo;
 import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
@@ -81,14 +80,12 @@ public class CombiTestMatrixOperation
 	public static CombiTestOperationSpy spy = null;
 
 	private static final ProcessInfo combiProcessInfo = new DefaultProcessInfo("COMBI Test", ""); // TODO
+	private static final ProcessInfo PI_SVM_GENOME = new SubProcessInfo(combiProcessInfo, "Train genome-wide SVM", ""); // TODO
 
 	private Boolean valid;
 	private String problemDescription;
 	private ProgressHandler customProgressHandler;
-	private IntegerProgressHandler creatingKernelMatrixPH;
-	private IntegerProgressHandler transcribeKernelMatrixPH;
-	private IndeterminateProgressHandler trainSVMPH;
-	private IntegerProgressHandler calculateOriginalSpaceWeightsPH;
+	private List<SvmProgressHandler> svmPHs;
 
 	public CombiTestMatrixOperation(CombiTestOperationParams params) {
 		super(params);
@@ -107,17 +104,15 @@ public class CombiTestMatrixOperation
 		return combiProcessInfo;
 	}
 
-	@Override
-	protected ProgressHandler getProgressHandler() throws IOException {
+	static class SvmProgressHandler extends SuperProgressSource {
 
-		if (customProgressHandler == null) {
-			final DataSetSource parentDataSetSource = getParentDataSetSource();
-			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
-			final int n = parentDataSetSource.getNumSamples();
-			final int dSamples = parentDataSetSource.getNumMarkers();
-			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
-			final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
-			final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
+		private final ProgressHandler<Integer> creatingKernelMatrixPH;
+		private final ProgressHandler<Integer> transcribeKernelMatrixPH;
+		private final ProgressHandler<?> trainSVMPH;
+		private final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH;
+
+		public SvmProgressHandler(final ProcessInfo processInfo, final int n, final int dEncoded, final int numChunks) {
+			super(processInfo);
 
 			ProcessInfo creatingKernelMatrixPI = new SubProcessInfo(combiProcessInfo,
 					"encoding features and creating kernel matrix", null);
@@ -147,15 +142,59 @@ public class CombiTestMatrixOperation
 							0, // start state
 							dEncoded - 1); // end state. this value is too high and will be adjusted later on!
 
-			Map<ProgressSource, Double> subProgressSourcesAndWeights
-					= new LinkedHashMap<ProgressSource, Double>();
+			addSubProgressSource(creatingKernelMatrixPH, 0.80);
+			addSubProgressSource(transcribeKernelMatrixPH, 0.05);
+			addSubProgressSource(trainSVMPH, 0.05);
+			addSubProgressSource(calculateOriginalSpaceWeightsPH, 0.1);
+		}
 
-			subProgressSourcesAndWeights.put(creatingKernelMatrixPH, 0.80);
-			subProgressSourcesAndWeights.put(transcribeKernelMatrixPH, 0.05);
-			subProgressSourcesAndWeights.put(trainSVMPH, 0.05);
-			subProgressSourcesAndWeights.put(calculateOriginalSpaceWeightsPH, 0.1);
+		public SvmProgressHandler() {
+			super(null);
 
-			customProgressHandler = new SuperProgressSource(combiProcessInfo, subProgressSourcesAndWeights);
+			creatingKernelMatrixPH = new NullProgressHandler<Integer>(null);
+			transcribeKernelMatrixPH = new NullProgressHandler<Integer>(null);
+			trainSVMPH = new NullProgressHandler(null);
+			calculateOriginalSpaceWeightsPH = new NullProgressHandler<Integer>(null);
+
+			addSubProgressSource(creatingKernelMatrixPH, 0.80);
+			addSubProgressSource(transcribeKernelMatrixPH, 0.05);
+			addSubProgressSource(trainSVMPH, 0.05);
+			addSubProgressSource(calculateOriginalSpaceWeightsPH, 0.1);
+		}
+
+		public ProgressHandler<Integer> getCreatingKernelMatrixPH() {
+			return creatingKernelMatrixPH;
+		}
+
+		public ProgressHandler<Integer> getTranscribeKernelMatrixPH() {
+			return transcribeKernelMatrixPH;
+		}
+
+		public ProgressHandler<?> getTrainSVMPH() {
+			return trainSVMPH;
+		}
+
+		public ProgressHandler<Integer> getCalculateOriginalSpaceWeightsPH() {
+			return calculateOriginalSpaceWeightsPH;
+		}
+	}
+
+	@Override
+	protected ProgressHandler getProgressHandler() throws IOException {
+
+		if (customProgressHandler == null) {
+			final DataSetSource parentDataSetSource = getParentDataSetSource();
+			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
+			final int n = parentDataSetSource.getNumSamples();
+			final int dSamples = parentDataSetSource.getNumMarkers();
+			final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
+			final int maxChunkSize = MarkerGenotypesEncoder.calculateMaxChunkSize(genotypeEncoder, dSamples, n, null);
+			final int numChunks = MarkerGenotypesEncoder.calculateNumChunks(dSamples, maxChunkSize);
+
+			svmPHs = new ArrayList<SvmProgressHandler>();
+			svmPHs.add(new SvmProgressHandler(PI_SVM_GENOME, n, dEncoded, numChunks));
+
+			customProgressHandler = new SuperProgressSource(combiProcessInfo, svmPHs);
 		}
 
 		return customProgressHandler;
@@ -249,10 +288,7 @@ public class CombiTestMatrixOperation
 				validSampleAffections,
 				markersGenotypesSource,
 				getParams().getEncoder(),
-				creatingKernelMatrixPH,
-				transcribeKernelMatrixPH,
-				trainSVMPH,
-				calculateOriginalSpaceWeightsPH);
+				svmPHs.get(0));
 
 		// TODO sort the weights (should already be absolute? .. hopefully not!)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -375,10 +411,7 @@ public class CombiTestMatrixOperation
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
 			GenotypeEncoder genotypeEncoder,
-			final ProgressHandler<Integer> creatingKernelMatrixPH,
-			final ProgressHandler<Integer> transcribeKernelMatrixPH,
-			final ProgressHandler trainSVMPH,
-			final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH)
+			final SvmProgressHandler svmPH)
 			throws IOException
 	{
 		final int dSamples = markerKeys.size();
@@ -409,7 +442,7 @@ public class CombiTestMatrixOperation
 			spy.initializing(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs, genotypeEncoder, markerGenotypesEncoder);
 		}
 
-		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder, creatingKernelMatrixPH);
+		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder, svmPH.getCreatingKernelMatrixPH());
 
 		if (spy != null) {
 			spy.kernelCalculated(kernelMatrix);
@@ -419,9 +452,9 @@ public class CombiTestMatrixOperation
 				kernelMatrix,
 				encodedAffectionStates.values(),
 				libSvmParameters,
-				transcribeKernelMatrixPH);
+				svmPH.getTranscribeKernelMatrixPH());
 
-		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, trainSVMPH, calculateOriginalSpaceWeightsPH);
+		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, svmPH);
 	}
 
 	static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
@@ -789,9 +822,9 @@ public class CombiTestMatrixOperation
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			svm_problem libSvmProblem,
 			GenotypeEncoder genotypeEncoder,
-			final ProgressHandler trainSVMPH,
-			final ProgressHandler<Integer> calculateOriginalSpaceWeightsPH)
+			final SvmProgressHandler svmPH)
 	{
+		final ProgressHandler<?> trainSVMPH = svmPH.getTrainSVMPH();
 		trainSVMPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
@@ -815,7 +848,7 @@ public class CombiTestMatrixOperation
 
 		LOG.debug("calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y, calculateOriginalSpaceWeightsPH);
+				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y, svmPH.getCalculateOriginalSpaceWeightsPH());
 
 		if (spy != null) {
 			spy.originalSpaceWeightsCalculated(weightsEncoded);
