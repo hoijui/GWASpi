@@ -239,9 +239,9 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		return value;
 	}
 
-	protected static boolean fetchBoolean(Map<String, String> args, String argName, boolean defaultValue) throws IOException {
+	protected static Boolean fetchBoolean(Map<String, String> args, String argName, Boolean defaultValue) throws IOException {
 
-		boolean value;
+		Boolean value;
 
 		try {
 			value = (Integer.parseInt(args.get(argName)) != 0);
