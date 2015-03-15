@@ -32,8 +32,8 @@ import org.gwaspi.global.Extractor;
 public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 		implements PropertyChangeListener, ChangeListener
 {
-	private final ValueContainer absoluteComponent;
-	private final ValueContainer percentageComponent;
+	private final ValueContainer<Number> absoluteComponent;
+	private final ValueContainer<Number> percentageComponent;
 	private final Number totalValue;
 	private final Extractor<Number, Number> absoluteConstrainer;
 	private final Extractor<Number, Number> percentageConstrainer;
@@ -62,8 +62,8 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 	}
 
 	public AbsolutePercentageComponentRelation(
-			ValueContainer absoluteComponent,
-			ValueContainer percentageComponent,
+			ValueContainer<Number> absoluteComponent,
+			ValueContainer<Number> percentageComponent,
 			Number totalValue,
 			Extractor<Number, Number> absoluteConstrainer,
 			Extractor<Number, Number> percentageConstrainer)
@@ -81,8 +81,8 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 	}
 
 	public AbsolutePercentageComponentRelation(
-			ValueContainer absoluteComponent,
-			ValueContainer percentageComponent,
+			ValueContainer<Number> absoluteComponent,
+			ValueContainer<Number> percentageComponent,
 			Number totalValue)
 	{
 		this(
