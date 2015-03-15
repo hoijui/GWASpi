@@ -44,6 +44,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -62,6 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoadDataPanel extends JPanel {
+
+	public static final String CONFIG_LAST_SELECTED_FORMAT_INDEX
+			= LoadDataPanel.class.getCanonicalName() + ".load.format.last.selected";
 
 	private static final Logger log = LoggerFactory.getLogger(LoadDataPanel.class);
 
@@ -196,10 +200,16 @@ public class LoadDataPanel extends JPanel {
 		importFormatsList.remove(ImportFormat.UNKNOWN);
 
 		cmb_Format.setModel(new DefaultComboBoxModel(importFormatsList.toArray()));
+		cmb_Format.setSelectedIndex(Config.getSingleton().getInteger(
+				CONFIG_LAST_SELECTED_FORMAT_INDEX,
+				importFormatsList.indexOf(ImportFormat.PLINK)));
 		cmb_Format.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				formatAction.actionPerformed(evt);
+				Config.getSingleton().putInteger(
+						CONFIG_LAST_SELECTED_FORMAT_INDEX,
+						cmb_Format.getSelectedIndex());
 			}
 		});
 		formatAction.actionPerformed(null);
@@ -417,7 +427,6 @@ public class LoadDataPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		cmb_Format.setSelectedIndex(2);
 		formatAction.actionPerformed(null);
 	}
 
