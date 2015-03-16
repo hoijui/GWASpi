@@ -100,8 +100,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 //		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
-		matrixOperation.processMatrix();
-		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
+		final MatrixKey resultMatrixKey = matrixOperation.call();
 
 		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);

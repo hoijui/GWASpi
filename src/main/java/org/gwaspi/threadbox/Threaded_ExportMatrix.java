@@ -66,6 +66,6 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 		final MatrixExporter mEx = new MatrixExporter(params);
 		progressForwarder.setInnerProgressHandler((ProgressHandler) mEx.getProgressSource()); // HACK
 //		OperationManager.performOperation(mEx); // XXX We can not do that, because MatrixExporter does not support getParams() yet, so instead we do ...
-		mEx.processMatrix();
+		mEx.call();
 	}
 }

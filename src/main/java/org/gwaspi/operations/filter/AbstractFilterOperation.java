@@ -28,6 +28,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -98,7 +99,9 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 	protected abstract ProgressSource getFilteringProgressSource() throws IOException;
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
+
+		OperationKey resultOpKey = null;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -119,11 +122,11 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 
 		if (filteredMarkerOrigIndicesAndKeys.isEmpty()) {
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (markers)");
-			return Integer.MIN_VALUE;
+			return resultOpKey;
 		}
 		if (filteredSampleOrigIndicesAndKeys.isEmpty()) {
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (samples)");
-			return Integer.MIN_VALUE;
+			return resultOpKey;
 		}
 
 		final List<Integer> filteredMarkersOriginalIndices = new ArrayList<Integer>(filteredMarkerOrigIndicesAndKeys.keySet());
@@ -155,9 +158,10 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
+		resultOpKey = dataSet.getOperationKey();
 		storePH.setNewStatus(ProcessStatus.COMPLEETED);
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return dataSet.getOperationKey().getId();
+		return resultOpKey;
 	}
 }

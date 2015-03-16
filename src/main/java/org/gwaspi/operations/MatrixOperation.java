@@ -18,9 +18,10 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import org.gwaspi.progress.ProgressSource;
 
-public interface MatrixOperation<P extends OperationParams> {
+public interface MatrixOperation<P extends OperationParams, R> extends Callable<R> {
 
 //	/**
 //	 * Every operation is in one of these states at any time.
@@ -78,10 +79,9 @@ public interface MatrixOperation<P extends OperationParams> {
 
 	/**
 	 * Execute this operation.
-	 * @return the resulting matrixes ID if the operation succeeded,
-	 *   with the given parameters if the operation is invalid;
-	 *   <code>Integer#MIN_VALUE</code> otherwise
+	 * @return the resulting data-sets key if the operation succeeded, {@code null} otherwise
 	 * @throws IOException
 	 */
-	int processMatrix() throws IOException;
+	@Override
+	R call() throws IOException;
 }

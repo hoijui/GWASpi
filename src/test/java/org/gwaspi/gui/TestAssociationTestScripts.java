@@ -34,7 +34,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.OperationManager;
-import static org.gwaspi.operations.OperationManager.performOperation;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.GenotypeEncoder;
@@ -171,20 +170,20 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperation);
 
 			final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, dataSpecifier, matrixMarkersQAOpKey);
-			final MatrixOperation operation = new HardyWeinbergOperation(hardyWeinbergOperationParams);
-			final OperationKey hwOpKey = performOperation(operation);
+			final MatrixOperation<?, OperationKey> operation = new HardyWeinbergOperation(hardyWeinbergOperationParams);
+			final OperationKey hwOpKey = OperationManager.performOperationCreatingOperation(operation);
 
 			final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
 			final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
-			final OperationKey byHwThresholFilterOpKey = OperationManager.performOperation(byHardyWeinbergThresholdFilterOperation);
+			final OperationKey byHwThresholFilterOpKey = OperationManager.performOperationCreatingOperation(byHardyWeinbergThresholdFilterOperation);
 
 			final ByValidAffectionFilterOperationParams byValidAffectionFilterOperationParams = new ByValidAffectionFilterOperationParams(new DataSetKey(byHwThresholFilterOpKey), null);
 			final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
-			final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperation(byValidAffectionFilterOperation);
+			final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperationCreatingOperation(byValidAffectionFilterOperation);
 
 			final QAMarkersOperationParams markersQAOperationParams = new QAMarkersOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
 			final QAMarkersOperation qaMarkersOperation = new QAMarkersOperation(markersQAOperationParams);
-			parentQaMarkersOpKey = OperationManager.performOperation(qaMarkersOperation); // we do not need the QA Marker reports here!
+			parentQaMarkersOpKey = OperationManager.performOperationCreatingOperation(qaMarkersOperation); // we do not need the QA Marker reports here!
 		} else {
 			parentQaMarkersOpKey = matrixMarkersQAOpKey;
 		}

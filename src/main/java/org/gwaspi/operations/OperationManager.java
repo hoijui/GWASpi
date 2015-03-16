@@ -200,7 +200,7 @@ public class OperationManager {
 		final String byWhat = (params.getPhenotypeFile() == null) ? "Affection" : "Phenotype (file: " + params.getPhenotypeFile().getName() + ")";
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count (by " + byWhat + ")");
 
-		final OperationKey operationKey = performOperation(operation);
+		final OperationKey operationKey = performOperationCreatingOperation(operation);
 
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 
@@ -222,7 +222,7 @@ public class OperationManager {
 		final MatrixOperation excludeOperation = new ByHardyWeinbergThresholdFilterOperation(
 				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
 		superProgressSource.replaceSubProgressSource(ByHardyWeinbergThresholdFilterOperation.PLACEHOLDER_PS_HW_TF, excludeOperation.getProgressSource(), null);
-		final OperationKey excludeOperationKey = performOperation(excludeOperation);
+		final OperationKey excludeOperationKey = performOperationCreatingOperation(excludeOperation);
 
 		// run the test
 		final MatrixOperation operation;
@@ -239,22 +239,37 @@ public class OperationManager {
 		}
 		superProgressSource.replaceSubProgressSource(AllelicAssociationTestOperation.PLACEHOLDER_PS_TEST, operation.getProgressSource(), null);
 
-		final OperationKey operationKey = performOperation(operation);
+		final OperationKey operationKey = performOperationCreatingOperation(operation);
 
 		return operationKey;
 	}
 
-	public static OperationKey performOperation(MatrixOperation operation)
+	public static <R> R performOperation(final MatrixOperation<?, R> operation)
+			throws IOException
+	{
+		final R result;
+		if (operation.isValid()) {
+			result = operation.call();
+		} else {
+			result = null;
+			log.error(
+					"Can not execute {} operation, because the given parameters are invalid: {}",
+					operation.getClass().getSimpleName(), // HACK should be getType(), but only Operation-Operations have this method
+					operation.getProblemDescription());
+		}
+
+		return result;
+	}
+
+	public static OperationKey performOperationCreatingOperation(final MatrixOperation<?, OperationKey> operation)
 			throws IOException
 	{
 		final DataSetKey parent = operation.getParams().getParent();
 
-		final OperationKey resultOperationKey;
-		if (operation.isValid()) {
-			final int resultOperationId = operation.processMatrix();
-
-			resultOperationKey = new OperationKey(parent.getOrigin(), resultOperationId);
-
+		OperationKey resultOperationKey = performOperation(operation);
+		if (resultOperationKey == null) {
+			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
+		} else {
 			final boolean opHasResultView
 					= (OperationsList.getOperationMetadata(resultOperationKey) != null); // HACK maybe better add a getter to OperationType or so
 			if (opHasResultView) {
@@ -264,12 +279,6 @@ public class OperationManager {
 					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(parent.getOperationParent(), resultOperationKey);
 				}
 			}
-		} else {
-			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
-			log.error(
-					"Can not execute {} operation, because the given parameters are invalid: {}",
-					operation.getClass().getSimpleName(), // HACK should be getType(), but only Operation-Operations have this method
-					operation.getProblemDescription());
 		}
 
 		return resultOperationKey;

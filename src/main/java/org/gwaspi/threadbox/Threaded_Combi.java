@@ -129,14 +129,14 @@ public class Threaded_Combi extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		final MatrixOperation combiTestOperation = new CombiTestMatrixOperation(paramsTest);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, combiTestOperation.getProgressSource(), null);
-		final OperationKey combiTestOpKey = OperationManager.performOperation(combiTestOperation);
+		final OperationKey combiTestOpKey = OperationManager.performOperationCreatingOperation(combiTestOperation);
 
 		// NOTE ABORTION_POINT We could be gracefully abort here
 
 		paramsFilter.setParent(new DataSetKey(combiTestOpKey));
 		final MatrixOperation byCombiWeightsFilterOperation = new ByCombiWeightsFilterOperation(paramsFilter);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_FILTER, byCombiWeightsFilterOperation.getProgressSource(), null);
-		final OperationKey combiFilterOpKey = OperationManager.performOperation(byCombiWeightsFilterOperation);
+		final OperationKey combiFilterOpKey = OperationManager.performOperationCreatingOperation(byCombiWeightsFilterOperation);
 
 		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(new DataSetKey(combiFilterOpKey), false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
@@ -150,20 +150,20 @@ public class Threaded_Combi extends CommonRunnable {
 		MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
 		final MatrixOperation markerCensusOperation = new MarkerCensusOperation(markerCensusParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
-		final OperationKey markerCensusOpKey = OperationManager.performOperation(markerCensusOperation);
+		final OperationKey markerCensusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
 
 		// NOTE ABORTION_POINT We could be gracefully abort here
 
 		final TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
 		final MatrixOperation testOperation = new TrendTestOperation(trendTestParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TREND_TEST, testOperation.getProgressSource(), null);
-		final OperationKey trendTestOpKey = OperationManager.performOperation(testOperation);
+		final OperationKey trendTestOpKey = OperationManager.performOperationCreatingOperation(testOperation);
 
 		if (trendTestOpKey != null) {
 			final TestOutputParams testOutputParams = new TestOutputParams(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey);
 			final MatrixOperation testOutputOperation = new OutputTest(testOutputParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_OUTPUT, testOutputOperation.getProgressSource(), null);
-			OperationManager.performOperation(testOutputOperation);
+			OperationManager.performOperationCreatingOperation(testOutputOperation);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);

@@ -132,13 +132,9 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
-		int resultMatrixId = MatrixKey.NULL_ID;
-
-		translateToACGT();
-
-		return resultMatrixId;
+		return translateToACGT();
 	}
 
 	private interface GenotypeTranslator {
@@ -294,7 +290,9 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		}
 	}
 
-	private void translateToACGT() throws IOException {
+	private MatrixKey translateToACGT() throws IOException {
+
+		MatrixKey resultMatrixKey;
 
 		final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(params.getParent());
 
@@ -368,6 +366,10 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		}
 		dataSetDestination.finishedLoadingAlleles();
 
+		dataSetDestination.done();
+		resultMatrixKey = dataSetDestination.getResultMatrixKey();
 		org.gwaspi.global.Utils.sysoutCompleted("Translation");
+
+		return resultMatrixKey;
 	}
 }

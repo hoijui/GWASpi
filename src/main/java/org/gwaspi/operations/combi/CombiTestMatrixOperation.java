@@ -35,6 +35,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
@@ -204,7 +205,7 @@ public class CombiTestMatrixOperation
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -265,7 +266,7 @@ public class CombiTestMatrixOperation
 
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return dataSet.getOperationKey().getId();
+		return dataSet.getOperationKey();
 	}
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections) {

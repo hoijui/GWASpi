@@ -45,7 +45,8 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationDataSet, P extends TrendTestOperationParams>
+public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationDataSet,
+		P extends TrendTestOperationParams>
 		extends AbstractOperationCreatingOperation<D, P>
 {
 	private final Logger log
@@ -104,9 +105,9 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
-		int resultOpId = OperationKey.NULL_ID;
+		OperationKey resultOpKey = null;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -117,7 +118,7 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 		// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 		if (!filteredOperationDataSet.isDataLeft()) {
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
-			return resultOpId;
+			return resultOpKey;
 		}
 
 		MarkerCensusOperationDataSet markerCensusOperationDataSet
@@ -162,10 +163,10 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
-		resultOpId = dataSet.getOperationKey().getId();
+		resultOpKey = dataSet.getOperationKey();
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return resultOpId;
+		return resultOpKey;
 	}
 
 	private static <K, V> Map<K, V> filter(Map<K, V> toBeFiltered, Collection<K> toBeExcluded) {

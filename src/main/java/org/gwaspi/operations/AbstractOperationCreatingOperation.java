@@ -29,8 +29,10 @@ import org.gwaspi.progress.IntegerProgressHandler;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 
-public abstract class AbstractOperationCreatingOperation<D extends OperationDataSet, P extends OperationParams> extends AbstractOperation<P> {
-
+public abstract class AbstractOperationCreatingOperation<D extends OperationDataSet,
+		P extends OperationParams>
+		extends AbstractOperation<P, OperationKey>
+{
 	/** @params deprecated */
 	private final DataSetKey parent;
 	private final P params;

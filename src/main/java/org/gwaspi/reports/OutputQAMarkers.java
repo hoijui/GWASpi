@@ -108,7 +108,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final OperationMetadata qaMarkersOperation = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
@@ -148,7 +148,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.COMPLEETED);
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return Integer.MIN_VALUE;
+		return null;
 	}
 
 	@Override

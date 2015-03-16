@@ -26,6 +26,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
 import org.gwaspi.operations.CensusDecision;
@@ -74,9 +75,9 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
-		int resultOpId;
+		OperationKey resultOpKey;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -149,12 +150,12 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 		//</editor-fold>
 
 		dataSet.finnishWriting();
-		resultOpId = dataSet.getOperationKey().getId();
+		resultOpKey = dataSet.getOperationKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return resultOpId;
+		return resultOpKey;
 	}
 
 	/**

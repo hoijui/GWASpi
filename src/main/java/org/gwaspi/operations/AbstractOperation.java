@@ -23,8 +23,9 @@ import java.util.List;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.progress.ProcessInfo;
 
-public abstract class AbstractOperation<P extends OperationParams> implements MatrixOperation<P> {
-
+public abstract class AbstractOperation<P extends OperationParams, R>
+		implements MatrixOperation<P, R>
+{
 	private final List<OperationListener> operationListeners;
 	private final DataSetDestination dataSetDestination;
 

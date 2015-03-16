@@ -95,7 +95,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final OperationMetadata hwOperation = OperationsList.getOperationMetadata(getParams().getHardyWeinbergOpKey());
@@ -118,7 +118,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 		Utils.sysoutCompleted("Hardy-Weinberg Report");
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return Integer.MIN_VALUE;
+		return null;
 	}
 
 	@Override

@@ -120,7 +120,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 		final MatrixOperation operation = new HardyWeinbergOperation(params);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HW, operation.getProgressSource(), null);
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		hardyWeinbergOperationKey = OperationManager.performOperation(operation);
+		hardyWeinbergOperationKey = OperationManager.performOperationCreatingOperation(operation);
 
 		final HardyWeinbergOutputParams hardyWeinbergOutputParams
 				= new HardyWeinbergOutputParams(hardyWeinbergOperationKey, params.getMarkersQAOpKey());

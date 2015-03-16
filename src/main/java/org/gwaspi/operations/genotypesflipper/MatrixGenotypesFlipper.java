@@ -153,9 +153,9 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
-		int resultMatrixId = MatrixKey.NULL_ID;
+		MatrixKey resultMatrixKey;
 
 		final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(params.getParent());
 
@@ -231,9 +231,11 @@ public class MatrixGenotypesFlipper extends AbstractMatrixCreatingOperation {
 		}
 		dataSetDestination.finishedLoadingAlleles();
 
+		dataSetDestination.done();
+		resultMatrixKey = dataSetDestination.getResultMatrixKey();
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Flipping to new Matrix");
 
-		return resultMatrixId;
+		return resultMatrixKey;
 	}
 
 	private static String flipDictionaryAlleles(String alleles) {

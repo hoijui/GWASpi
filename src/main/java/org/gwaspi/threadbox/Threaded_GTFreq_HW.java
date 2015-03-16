@@ -181,7 +181,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 		final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
-		censusOpKey = OperationManager.performOperation(markerCensusOperation);
+		censusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
 
 		return censusOpKey;
 	}

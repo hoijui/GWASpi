@@ -26,6 +26,7 @@ import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -76,20 +77,18 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		// Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		SamplesKeysSource sampleKeys = dataSetSource1.getSamplesKeysSource();
 
-		mergeMatrices(
+		return mergeMatrices(
 				wrSampleSetMap,
 				sampleKeys,
 				OPERATION_TYPE_INFO.getName(),
 				OPERATION_TYPE_INFO.getDescription());
-
-		return Integer.MIN_VALUE;
 	}
 
 	@Override

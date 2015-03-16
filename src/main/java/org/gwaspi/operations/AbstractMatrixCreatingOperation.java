@@ -18,14 +18,16 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.AbstractDataSetDestination;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.loader.DataSetDestinationProgressHandler;
 import org.gwaspi.progress.ProgressHandler;
 import org.gwaspi.progress.ProgressSource;
 
-public abstract class AbstractMatrixCreatingOperation<P extends OperationParams> extends AbstractOperation<P> {
-
+public abstract class AbstractMatrixCreatingOperation<P extends OperationParams>
+		extends AbstractOperation<P, MatrixKey>
+{
 //	private final PT params; // TODO So far, only Operation creating operations take params, matrix creating ones do not, but maybe should?
 	private ProgressHandler operationPH;
 

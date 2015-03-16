@@ -96,7 +96,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final OperationMetadata qaSamplesOperation = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
@@ -144,7 +144,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		creatingHetzyPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return Integer.MIN_VALUE;
+		return null;
 	}
 
 	@Override

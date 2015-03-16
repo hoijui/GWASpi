@@ -102,9 +102,9 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	 * Appends samples and keeps markers constant.
 	 */
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
-		int resultMatrixId = MatrixKey.NULL_ID;
+		MatrixKey resultMatrixKey;
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrComboSampleSetMap
@@ -151,10 +151,11 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		writeGenotypesMeta(wrComboSampleSetMap.values());
 
 		dataSetDestination.done();
+		resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Merging into to new Matrix");
 
-		return resultMatrixId;
+		return resultMatrixKey;
 	}
 
 	protected void writeGenotypesMeta(Collection<int[]> wrComboSampleSetMap)

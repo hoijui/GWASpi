@@ -126,7 +126,7 @@ public class Threaded_MergeMatrices extends CommonRunnable {
 
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MERGE, matrixOperation.getProgressSource(), null);
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		OperationManager.performOperation(matrixOperation);
+		OperationManager.performOperationCreatingOperation(matrixOperation);
 		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);

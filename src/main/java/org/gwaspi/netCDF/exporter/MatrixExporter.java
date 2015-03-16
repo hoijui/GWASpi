@@ -40,7 +40,7 @@ import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProgressSource;
 import org.gwaspi.progress.SuperProgressSource;
 
-public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
+public class MatrixExporter extends AbstractOperation<MatrixExporterParams, Object> {
 
 	public static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			Text.Trafo.exportMatrix,
@@ -107,7 +107,7 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public Object call() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		String exportPath = Study.constructExportsPath(rdDataSetMetadata.getStudyKey());
@@ -128,6 +128,6 @@ public class MatrixExporter extends AbstractOperation<MatrixExporterParams> {
 		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return Integer.MIN_VALUE;
+		return null;
 	}
 }

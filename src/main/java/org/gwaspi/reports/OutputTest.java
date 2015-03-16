@@ -219,7 +219,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
@@ -282,7 +282,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		Utils.sysoutCompleted(testName + " Test Reports & Charts");
 		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return Integer.MIN_VALUE;
+		return null;
 	}
 
 	private void writeManhattanPlotFromAssociationData(String outName, int width, int height) throws IOException {

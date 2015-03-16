@@ -81,19 +81,17 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 	 * @throws IOException
 	 */
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, ?> theSamples = wrSampleSetMap;
 
-		mergeMatrices(
+		return mergeMatrices(
 				wrSampleSetMap,
 				theSamples.keySet(),
 				OPERATION_TYPE_INFO.getName(),
 				OPERATION_TYPE_INFO.getDescription());
-
-		return MatrixKey.NULL_ID;
 	}
 
 	@Override

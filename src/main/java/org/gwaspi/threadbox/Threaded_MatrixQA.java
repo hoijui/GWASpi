@@ -142,26 +142,26 @@ public class Threaded_MatrixQA extends CommonRunnable {
 			final QASamplesOperationParams qaSamplesOperationParams = new QASamplesOperationParams(parentKey);
 			final MatrixOperation qaSamplesOperation = new QASamplesOperation(qaSamplesOperationParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA_SAMPLES, qaSamplesOperation.getProgressSource(), null);
-			samplesQAOperationKey = OperationManager.performOperation(qaSamplesOperation);
+			samplesQAOperationKey = OperationManager.performOperationCreatingOperation(qaSamplesOperation);
 
 			if (createReports) {
 				final QASamplesOutputParams qaSamplesOutputParams = new QASamplesOutputParams(samplesQAOperationKey, true);
 				final MatrixOperation outputQASamples = new OutputQASamples(qaSamplesOutputParams);
 				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA_SAMPLES_REPORTS, outputQASamples.getProgressSource(), null);
-				OperationManager.performOperation(outputQASamples);
+				OperationManager.performOperationCreatingOperation(outputQASamples);
 			}
 		}
 		if (missingOPs.contains(OPType.MARKER_QA)) {
 			final QAMarkersOperationParams qaMarkersOperationParams = new QAMarkersOperationParams(parentKey);
 			final MatrixOperation qaMarkersOperation = new QAMarkersOperation(qaMarkersOperationParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA_MARKERS, qaMarkersOperation.getProgressSource(), null);
-			markersQAOperationKey = OperationManager.performOperation(qaMarkersOperation);
+			markersQAOperationKey = OperationManager.performOperationCreatingOperation(qaMarkersOperation);
 
 			if (createReports) {
 				final QAMarkersOutputParams qaMarkersOutputParams = new QAMarkersOutputParams(markersQAOperationKey);
 				final MatrixOperation outputQAMarkers = new OutputQAMarkers(qaMarkersOutputParams);
 				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA_MARKERS_REPORTS, outputQAMarkers.getProgressSource(), null);
-				OperationManager.performOperation(outputQAMarkers);
+				OperationManager.performOperationCreatingOperation(outputQAMarkers);
 			}
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);

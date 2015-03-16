@@ -57,14 +57,14 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
-	protected void mergeMatrices(
+	protected MatrixKey mergeMatrices(
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Collection<SampleKey> sampleKeys,
 			final String humanReadableMethodName,
 			final String methodDescription)
 			throws IOException
 	{
-		MatrixKey resultMatrixKey = null;
+		MatrixKey resultMatrixKey;
 
 		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
@@ -170,8 +170,11 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		writeGenotypesMeta(wrSampleSetMap, wrCombinedSortedMarkersMetadata.keySet());
 
 		dataSetDestination.done();
+		resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Merging into to new Matrix");
+
+		return resultMatrixKey;
 	}
 
 	protected void writeGenotypesMeta(

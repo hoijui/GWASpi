@@ -36,6 +36,7 @@ import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -96,9 +97,9 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
-		int resultOpId = Integer.MIN_VALUE;
+		OperationKey resultOpKey = null;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -113,7 +114,7 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		if (!dataRemaining) {
 			// NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
-			return resultOpId;
+			return resultOpKey;
 		}
 
 		DataSetSource dataSetSource = getParentDataSetSource();
@@ -256,12 +257,12 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 		//</editor-fold>
 
 		dataSet.finnishWriting();
-		resultOpId = dataSet.getOperationKey().getId();
+		resultOpKey = dataSet.getOperationKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return resultOpId;
+		return resultOpKey;
 	}
 
 	/**

@@ -444,9 +444,9 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public MatrixKey call() throws IOException {
 
-		int resultMatrixId = MatrixKey.NULL_ID;
+		MatrixKey resultMatrixKey = null;
 
 		final DataSetSource dataSetSource = MatrixFactory.generateDataSetSource(params.getParent());
 
@@ -465,7 +465,7 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		if (pickedSamplesOrigIndices.isEmpty()) {
 			// XXX maybe we should instead throw an IOException?
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
-			return resultMatrixId;
+			return resultMatrixKey;
 		}
 
 		final List<Integer> pickedMarkersOrigIndices = pickMarkers(
@@ -477,7 +477,7 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		if (pickedMarkersOrigIndices.isEmpty()) {
 			// XXX maybe we should instead throw an IOException?
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
-			return resultMatrixId;
+			return resultMatrixKey;
 		}
 
 
@@ -560,10 +560,11 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		dataSetDestination.finishedLoadingAlleles();
 
 		dataSetDestination.done();
+		resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Extraction to new Matrix");
 
-		return resultMatrixId;
+		return resultMatrixKey;
 	}
 
 	private static <V> List<Integer> pickValidMarkerSetItemsByKey(DataSetDestination dataSetDestination, DataSetSource dataSetSource, Set<MarkerKey> criteria, boolean includes) throws IOException {

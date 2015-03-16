@@ -127,9 +127,9 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
-		int resultOpId;
+		OperationKey resultOpKey;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -162,12 +162,12 @@ public class HardyWeinbergOperation extends AbstractOperationCreatingOperation<H
 
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 		dataSet.finnishWriting();
-		resultOpId = dataSet.getOperationKey().getId();
+		resultOpKey = dataSet.getOperationKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return resultOpId;
+		return resultOpKey;
 	}
 
 	/**

@@ -21,7 +21,7 @@ import org.gwaspi.operations.AbstractOperation;
 import org.gwaspi.operations.OperationParams;
 
 public abstract class AbstractOutputOperation<P extends OperationParams>
-		extends AbstractOperation<P>
+		extends AbstractOperation<P, Object>
 {
 	private final P params;
 

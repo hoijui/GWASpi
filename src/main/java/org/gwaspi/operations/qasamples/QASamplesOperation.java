@@ -25,6 +25,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractOperationCreatingOperation;
@@ -72,9 +73,9 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 	}
 
 	@Override
-	public int processMatrix() throws IOException {
+	public OperationKey call() throws IOException {
 
-		int resultOpId;
+		OperationKey resultOpKey;
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
@@ -141,11 +142,11 @@ public class QASamplesOperation extends AbstractOperationCreatingOperation<QASam
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		dataSet.finnishWriting();
-		resultOpId = dataSet.getOperationKey().getId();
+		resultOpKey = dataSet.getOperationKey();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
-		return resultOpId;
+		return resultOpKey;
 	}
 }
