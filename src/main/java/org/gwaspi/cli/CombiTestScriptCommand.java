@@ -87,7 +87,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			final int markersToKeep = fetchInteger(args, "markers-to-keep", null);
 
-			final boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", false);
+			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
 
 			// This might return null, as it is optional,
 			// which will lead to using the default name
