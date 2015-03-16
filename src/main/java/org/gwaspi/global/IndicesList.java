@@ -20,7 +20,7 @@ package org.gwaspi.global;
 import java.util.AbstractList;
 
 /**
- * A List implementation returning a given range of indices,
+ * A {@link java.util.List} implementation returning a given range of indices,
  * using only constant (O(1)) amount of storage.
  */
 public class IndicesList extends AbstractList<Integer> {
