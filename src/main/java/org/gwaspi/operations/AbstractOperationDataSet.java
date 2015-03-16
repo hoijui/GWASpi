@@ -61,7 +61,7 @@ public abstract class AbstractOperationDataSet<E extends OperationDataEntry> imp
 	private OperationKey operationKey;
 	private final Queue<E> writeBuffer;
 	private int alreadyWritten;
-	private int entriesWriteBufferSize;
+	private final int entriesWriteBufferSize;
 	private final List<OperationKeyListener> operationKeyListeners;
 	private OperationParams params;
 
