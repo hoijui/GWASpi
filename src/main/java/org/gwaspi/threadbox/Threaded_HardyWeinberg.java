@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	private static final ProcessInfo fullHWProcessInfo
-			= new DefaultProcessInfo("Full Hardy & Weinberg Test",
-					"Complete Hardy & Weinberg Test and generation of reports"); // TODO
+			= new DefaultProcessInfo("Hardy & Weinberg Packet",
+					"Hardy & Weinberg Test and generation of reports"); // TODO
 	private static final ProgressSource PLACEHOLDER_PS_HW = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_HW", null));
 	private static final ProgressSource PLACEHOLDER_PS_HW_REPORTS = new NullProgressHandler(
