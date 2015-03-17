@@ -520,8 +520,8 @@ public class CombiTestMatrixOperation
 		for (float[] kernelMatrixRow : kernelMatrix) {
 			Arrays.fill(kernelMatrixRow, 0.0f);
 		}
-		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 
+		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 		// XXX this loop uses lots of time!
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
