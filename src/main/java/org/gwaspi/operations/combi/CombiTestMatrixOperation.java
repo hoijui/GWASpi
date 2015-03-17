@@ -319,12 +319,16 @@ public class CombiTestMatrixOperation
 			final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
 
 			weights = new ArrayList<Double>(Collections.nCopies(parentDataSetSource.getNumMarkers(), -1.0));
+			float[][] recyclableKernelMatrix = null;
+			svm_problem recyclableProblem = null;
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 			int chromoIndex = 0;
 			for (final Map.Entry<String, List<Integer>> markerChromosomeIndices : markersChromosomeToIndices.entrySet()) {
 //				final String chromosome = markerChromosomeIndices.getKey();
+				final SvmProgressHandler phSvmChromosome = svmPHs.get(chromoIndex);
 				final List<Integer> markerIndices = markerChromosomeIndices.getValue();
 
+				phSvmChromosome.setNewStatus(ProcessStatus.INITIALIZING);
 				// run SVM only once, genome-wide
 				final int dSamples = markerIndices.size();
 				final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
@@ -342,7 +346,8 @@ public class CombiTestMatrixOperation
 				final List<int[]> markerGenotypesCounts = new IndicesSubList<int[]>(parentQAMarkersOperationDataSet.getGenotypeCounts(), markerIndices);
 				final List<GenotypesList> markersGenotypesSource = new IndicesSubList<GenotypesList>(parentDataSetSource.getMarkersGenotypesSource(), markerIndices);
 
-				final List<Double> chromosomeWeights = runEncodingAndSVM(
+				phSvmChromosome.setNewStatus(ProcessStatus.RUNNING);
+				final RunSVMResults svmResults = runEncodingAndSVM(
 						markerKeys,
 						majorAlleles,
 						minorAlleles,
@@ -351,13 +356,20 @@ public class CombiTestMatrixOperation
 						validSampleAffections,
 						markersGenotypesSource,
 						getParams().getEncoder(),
-						svmPHs.get(chromoIndex));
+						recyclableKernelMatrix,
+						recyclableProblem,
+						phSvmChromosome);
+				phSvmChromosome.setNewStatus(ProcessStatus.FINALIZING);
+				final List<Double> chromosomeWeights = svmResults.getWeights();
+				recyclableKernelMatrix = svmResults.getRecyclableKernelMatrix();
+				recyclableProblem = svmResults.getRecyclableProblem();
 
 				int chromosomeMarkerIndex = 0;
 				for (final Integer genomeMarkerIndex : markerIndices) {
 					weights.set(genomeMarkerIndex, chromosomeWeights.get(chromosomeMarkerIndex++));
 				}
 
+				phSvmChromosome.setNewStatus(ProcessStatus.COMPLEETED);
 				chromoIndex++;
 			}
 			progressHandler.setNewStatus(ProcessStatus.FINALIZING);
@@ -383,7 +395,7 @@ public class CombiTestMatrixOperation
 
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-			weights = runEncodingAndSVM(
+			final RunSVMResults svmResults = runEncodingAndSVM(
 					markerKeys,
 					majorAlleles,
 					minorAlleles,
@@ -392,7 +404,10 @@ public class CombiTestMatrixOperation
 					validSampleAffections,
 					markersGenotypesSource,
 					getParams().getEncoder(),
+					null,
+					null,
 					svmPHs.get(0));
+			weights = svmResults.getWeights();
 
 			// TODO sort the weights (should already be absolute? .. hopefully not!)
 			// TODO write stuff to a matrix (maybe the list of important markers?)
@@ -484,21 +499,27 @@ public class CombiTestMatrixOperation
 	}
 
 	static float[][] encodeFeaturesAndCalculateKernel(
-			final int n,
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
+			final float[][] recyclableKernelMatrix,
 			final ProgressHandler<Integer> creatingKernelMatrixPH)
 			throws IOException
 	{
+		final int n = markerGenotypesEncoder.getNumSamples();
+
 		final float[][] kernelMatrix;
-		try {
-			// NOTE This allocates quite some memory!
-			//   We use float instead of double to half the memory,
-			//   this might be subject to change, as in:
-			//   change to use double.
-			LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4L * n * n));
-			kernelMatrix = new float[n][n];
-		} catch (OutOfMemoryError er) {
-			throw new IOException(er);
+		if (recyclableKernelMatrix != null && (recyclableKernelMatrix.length >= n)) {
+			kernelMatrix = recyclableKernelMatrix;
+		} else {
+			try {
+				// NOTE This allocates quite some memory!
+				//   We use float instead of double to half the memory,
+				//   this might be subject to change, as in:
+				//   change to use double.
+				LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4L * n * n));
+				kernelMatrix = new float[n][n];
+			} catch (final OutOfMemoryError er) {
+				throw new IOException(er);
+			}
 		}
 
 		encodeFeaturesAndCreateKernelMatrix(
@@ -509,7 +530,36 @@ public class CombiTestMatrixOperation
 		return kernelMatrix;
 	}
 
-	static List<Double> runEncodingAndSVM(
+	static class RunSVMResults {
+
+		private final List<Double> weights;
+		private final float[][] recyclableKernelMatrix;
+		private final svm_problem recyclableProblem;
+
+		RunSVMResults(
+				final List<Double> weights,
+				final float[][] recyclableKernelMatrix,
+				final svm_problem recyclableProblem)
+		{
+			this.weights = weights;
+			this.recyclableKernelMatrix = recyclableKernelMatrix;
+			this.recyclableProblem = recyclableProblem;
+		}
+
+		public List<Double> getWeights() {
+			return weights;
+		}
+
+		public float[][] getRecyclableKernelMatrix() {
+			return recyclableKernelMatrix;
+		}
+
+		public svm_problem getRecyclableProblem() {
+			return recyclableProblem;
+		}
+	}
+
+	static RunSVMResults runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
 			final List<Byte> majorAlleles,
 			final List<Byte> minorAlleles,
@@ -518,6 +568,8 @@ public class CombiTestMatrixOperation
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
 			GenotypeEncoder genotypeEncoder,
+			final float[][] recyclableKernelMatrix,
+			final svm_problem recyclableProblem,
 			final SvmProgressHandler svmPH)
 			throws IOException
 	{
@@ -549,19 +601,22 @@ public class CombiTestMatrixOperation
 			spy.initializing(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs, genotypeEncoder, markerGenotypesEncoder);
 		}
 
-		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(n, markerGenotypesEncoder, svmPH.getCreatingKernelMatrixPH());
+		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(markerGenotypesEncoder, recyclableKernelMatrix, svmPH.getCreatingKernelMatrixPH());
 
 		if (spy != null) {
 			spy.kernelCalculated(kernelMatrix);
 		}
 
-		svm_problem libSvmProblem = createLibSvmProblem(
+		final svm_problem libSvmProblem = createLibSvmProblem(
 				kernelMatrix,
 				encodedAffectionStates.values(),
 				libSvmParameters,
+				recyclableProblem,
 				svmPH.getTranscribeKernelMatrixPH());
 
-		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, svmPH);
+		final List<Double> weights = runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, svmPH);
+
+		return new RunSVMResults(weights, kernelMatrix, libSvmProblem);
 	}
 
 	/**
@@ -619,13 +674,16 @@ public class CombiTestMatrixOperation
 			final ProgressHandler<Integer> creatingKernelMatrixProgressSource)
 			throws IOException
 	{
+		final int n = markerGenotypesEncoder.getNumSamples();
+
 		// initialize the kernelMatrix
 		// this should not be required, if the array was just created,
 		// but who knows who will call this function in what way in the future!?
 		LOG.info("initialize kernel-matrix values to 0.0 ...");
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.INITIALIZING);
-		for (float[] kernelMatrixRow : kernelMatrix) {
-			Arrays.fill(kernelMatrixRow, 0.0f);
+		for (int kernelRowIndex = 0; kernelRowIndex < n; kernelRowIndex++) {
+			Arrays.fill(kernelMatrix[kernelRowIndex], 0.0f);
+
 		}
 
 		LOG.info("calculate the kernel-matrix ...");
@@ -635,10 +693,9 @@ public class CombiTestMatrixOperation
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
 
-			calculateKernelMatrixPart(kernelMatrix, featuresChunk, numFeaturesInChunk);
+			calculateKernelMatrixPart(n, kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
 		}
-
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.FINALIZING);
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
@@ -646,17 +703,17 @@ public class CombiTestMatrixOperation
 	/**
 	 * Calculates the part of the kernel matrix defined by
 	 * the supplied chunk of the feature matrix.
-	 * @param kernelMatrix
+	 * @param n #samples == kernel size
+	 * @param kernelMatrix n*n matrix (though the actual 2D array might be bigger, do not use additional elements!)
 	 * @param featuresChunk
 	 * @param numFeaturesInChunk
 	 */
 	private static void calculateKernelMatrixPart(
+			final int n,
 			final float[][] kernelMatrix,
 			final Float[][] featuresChunk,
 			final int numFeaturesInChunk)
 	{
-		final int n = kernelMatrix.length;
-
 		// Test data-set: ~ 22'000 markers, ~ 1'200 samples
 
 		switch (KERNEL_CALCULATION_ALGORTIHM) {
@@ -737,10 +794,17 @@ public class CombiTestMatrixOperation
 			final float[][] kernelMatrix,
 			final Collection<Double> labels,
 			final svm_parameter libSvmParameters,
+			final svm_problem recyclableProblem,
 			final ProgressHandler<Integer> transcribeKernelMatrixPH)
 			throws IOException
 	{
-		svm_problem prob = new svm_problem();
+		final svm_problem prob;
+
+		if (recyclableProblem == null) {
+			prob = new svm_problem();
+		} else {
+			prob = recyclableProblem;
+		}
 
 		final int n = labels.size();
 
@@ -751,11 +815,15 @@ public class CombiTestMatrixOperation
 			final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
 			LOG.debug("libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
-			LOG.debug("libSVM preparation: allocate kernel memory");
-			try {
-				prob.x = new svm_node[n][1 + n];
-			} catch (OutOfMemoryError er) {
-				throw new IOException(er);
+			if ((prob.x != null) && (prob.x.length >= n) && (prob.x[0].length >= (1 + n))) {
+				LOG.debug("libSVM preparation: recycle kernel memory");
+			} else {
+				LOG.debug("libSVM preparation: allocate kernel memory");
+				try {
+					prob.x = new svm_node[n][1 + n];
+				} catch (OutOfMemoryError er) {
+					throw new IOException(er);
+				}
 			}
 
 			LOG.debug("libSVM preparation: store the kernel elements");
@@ -795,9 +863,13 @@ public class CombiTestMatrixOperation
 		// prepare the labels
 		LOG.debug("libSVM preparation: store the labels");
 		prob.l = n;
-		prob.y = new double[prob.l];
+		if ((prob.y != null) && (prob.y.length >= prob.l)) {
+			LOG.debug("libSVM preparation: recycle labels memory");
+		} else {
+			prob.y = new double[prob.l];
+		}
 		Iterator<Double> itY = labels.iterator();
-		for (int si = 0; si < n; si++) {
+		for (int si = 0; si < prob.l; si++) {
 			double y = itY.next();
 			prob.y[si] = y;
 		}

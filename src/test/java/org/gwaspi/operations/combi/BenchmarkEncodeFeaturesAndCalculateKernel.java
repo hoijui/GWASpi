@@ -154,8 +154,8 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 //				markersGenotypesSource,
 //				genotypeEncoder);
 		float[][] kernelMatrix = CombiTestMatrixOperation.encodeFeaturesAndCalculateKernel(
-				numSamples,
 				markerGenotypesEncoder,
+				null,
 				new NullProgressHandler<Integer>(null));
 		final long endTime = System.currentTimeMillis();
 

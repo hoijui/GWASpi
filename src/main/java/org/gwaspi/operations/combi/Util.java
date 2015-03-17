@@ -465,6 +465,8 @@ public class Util {
 					sampleAffections,
 					markerGenotypes,
 					genotypeEncoder,
+					null,
+					null,
 					new CombiTestMatrixOperation.SvmProgressHandler());
 		} catch (Exception ex) {
 			ex.printStackTrace();
