@@ -518,9 +518,7 @@ public class CombiTestMatrixOperation
 		// but who knows who will call this function in what way in the future!?
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		for (float[] kernelMatrixRow : kernelMatrix) {
-			for (int ci = 0; ci < kernelMatrixRow.length; ci++) {
-				kernelMatrixRow[ci] = 0.0f;
-			}
+			Arrays.fill(kernelMatrixRow, 0.0f);
 		}
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 
