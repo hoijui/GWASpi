@@ -331,13 +331,15 @@ public class CombiTestMatrixOperation
 	 * then all sample values for marker markerIndexFrom + 1, ...
 	 * until markerIndexFrom + markersChunkSize - 1.
 	 * @param markerGTs
-	 * @param sampleAffections
+	 * @param majorAlleles
+	 * @param minorAlleles
+	 * @param markerGenotypesCounts
 	 * @param encoder
-	 * @param dSamples
-	 * @param n
-	 * @param usedSamples
+	 * @param markerIndexFrom
+	 * @param markersChunkSize
+	 * @param dSamples dimension of the samples space (== #markers)
+	 * @param n #samples
 	 * @param encodedSamples
-	 * @throws IOException
 	 */
 	static void encodeAndWhitenSamples(
 			final List<GenotypesList> markerGTs,
@@ -350,7 +352,6 @@ public class CombiTestMatrixOperation
 			final int dSamples,
 			final int n,
 			final SamplesFeaturesStorage<Float> encodedSamples)
-			throws IOException
 	{
 		ProcessInfo encodingMarkersChunkPI = new DefaultProcessInfo("encoding markers chunk", null);
 		ProgressHandler encodingMarkersChunkProgressSource
@@ -457,6 +458,19 @@ public class CombiTestMatrixOperation
 		return runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, svmPH);
 	}
 
+	/**
+	 *
+	 * @param markersGenotypesSource
+	 * @param majorAlleles
+	 * @param minorAlleles
+	 * @param markerGenotypesCounts
+	 * @param genotypeEncoder
+	 * @param dSamples dimension of the samples space (== #markers)
+	 * @param n #samples
+	 * @param maxChunkSize
+	 * @return
+	 * @throws IOException
+	 */
 	static MarkerGenotypesEncoder createMarkerGenotypesEncoder(
 			final List<GenotypesList> markersGenotypesSource,
 			final List<Byte> majorAlleles,
@@ -488,21 +502,15 @@ public class CombiTestMatrixOperation
 	 * vs back-end storage (usually the hard-disc) reads.
 	 * NOTE XXX We could save more memory by storing only half of the kernel matrix,
 	 * as it is symmetric.
-	 * @param markerGTs
-	 * @param sampleAffections
-	 * @param encoder
-	 * @param dSamples
-	 * @param dEncoded
-	 * @param n
-	 * @param usedSamples
-	 * @param encodedSamples
-	 * @return
+	 * @param markerGenotypesEncoder
+	 * @param kernelMatrix
+	 * @param creatingKernelMatrixProgressSource
 	 * @throws IOException
 	 */
 	private static void encodeFeaturesAndCreateKernelMatrix(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			final float[][] kernelMatrix,
-			ProgressHandler<Integer> creatingKernelMatrixProgressSource)
+			final ProgressHandler<Integer> creatingKernelMatrixProgressSource)
 			throws IOException
 	{
 		// initialize the kernelMatrix
@@ -620,19 +628,19 @@ public class CombiTestMatrixOperation
 	}
 
 	private static svm_problem createLibSvmProblem(
-			float[][] K,
-			Collection<Double> Y,
-			svm_parameter libSvmParameters,
+			final float[][] kernelMatrix,
+			final Collection<Double> labels,
+			final svm_parameter libSvmParameters,
 			final ProgressHandler<Integer> transcribeKernelMatrixPH)
 			throws IOException
 	{
 		svm_problem prob = new svm_problem();
 
-		final int n = Y.size();
+		final int n = labels.size();
 
 		// prepare the features
 		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-			// KERNEL
+			// transfer the kernel
 			final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
 			final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
 			LOG.debug("libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
@@ -655,7 +663,7 @@ public class CombiTestMatrixOperation
 				prob.x[si][0] = sampleIndexNode;
 
 				for (int s2i = si; s2i < n; s2i++) {
-					final double kernelValue = K[s2i][si]; // XXX or indices other way around?
+					final double kernelValue = kernelMatrix[s2i][si]; // XXX or indices other way around?
 
 					svm_node curNode = new svm_node();
 					curNode.index = 1 + s2i;
@@ -682,7 +690,7 @@ public class CombiTestMatrixOperation
 		LOG.debug("libSVM preparation: store the labels");
 		prob.l = n;
 		prob.y = new double[prob.l];
-		Iterator<Double> itY = Y.iterator();
+		Iterator<Double> itY = labels.iterator();
 		for (int si = 0; si < n; si++) {
 			double y = itY.next();
 			prob.y[si] = y;
@@ -741,9 +749,10 @@ public class CombiTestMatrixOperation
 	 * is the encoded genotypes space, not the actual genotype space yet.
 	 * <math>\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i \quad \forall i = 1 ... nSamples</math>
 	 * with <math>\mathbf{w}, \mathbf{x}_i</math> having dimension <math>dEncoded</math>.
-	 * @param alphas the SVM problem weights in kernel-space [nSamples]
+	 * @param nonZeroAlphas the SVM problem weights in kernel-space [nSamples]
 	 * @param xs the support-vector coordinates in the feature space [nSamples * dEncoded]
 	 * @param ys the labels of the data (-1, or 1) [nSamples]
+	 * @param calculateOriginalSpaceWeightsPH
 	 * @return the SVM problem weights 'w' in the feature space [dEncoded]
 	 */
 	private static List<Double> calculateOriginalSpaceWeights(
@@ -826,6 +835,7 @@ public class CombiTestMatrixOperation
 	{
 		final ProgressHandler<?> trainSVMPH = svmPH.getTrainSVMPH();
 		trainSVMPH.setNewStatus(ProcessStatus.INITIALIZING);
+		// dimension of the encoded samples space (== #markers * encoding-factor)
 		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		final int n = libSvmProblem.x.length;
