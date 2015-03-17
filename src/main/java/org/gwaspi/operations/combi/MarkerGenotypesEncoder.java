@@ -245,4 +245,8 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 	public int getNumFeatures() {
 		return dEncoded;
 	}
+
+	public int getNumSamples() {
+		return n;
+	}
 }
