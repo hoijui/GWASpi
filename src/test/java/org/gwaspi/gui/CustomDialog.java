@@ -49,7 +49,6 @@ public class CustomDialog extends JDialog
 
 	private String typedText = null;
 	private JTextField textField;
-	private toyAround dd;
 	private String magicWord;
 	private JOptionPane optionPane;
 	private String btnString1 = "Enter";
@@ -66,9 +65,8 @@ public class CustomDialog extends JDialog
 	/**
 	 * Creates the reusable dialog.
 	 */
-	public CustomDialog(Frame aFrame, String aWord, toyAround parent) {
+	public CustomDialog(Frame aFrame, String aWord) {
 		super(aFrame, true);
-		dd = parent;
 
 		magicWord = aWord.toUpperCase();
 		setTitle("Quiz");
