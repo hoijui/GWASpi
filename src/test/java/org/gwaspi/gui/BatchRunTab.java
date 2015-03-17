@@ -336,6 +336,7 @@ private void checkBox_AnalysisActionPerformed(java.awt.event.ActionEvent evt) {/
 	 */
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				//new BatchRunTab().setVisible(true);
 			}

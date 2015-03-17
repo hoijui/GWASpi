@@ -38,8 +38,8 @@ public class MouseListenerDemo4 extends ApplicationFrame
 	private static final Logger log
 			= LoggerFactory.getLogger(TableRenderDemo.class);
 
-	private JFreeChart chart;
-	private ChartPanel chartPanel;
+	private final JFreeChart chart;
+	private final ChartPanel chartPanel;
 
 	/**
 	 * A demonstration application showing how to pick up mouse clicks on the
@@ -80,6 +80,7 @@ public class MouseListenerDemo4 extends ApplicationFrame
 	 *
 	 * @param event the event.
 	 */
+	@Override
 	public void chartMouseClicked(ChartMouseEvent event) {
 		int mouseX = event.getTrigger().getX();
 		int mouseY = event.getTrigger().getY();
@@ -106,6 +107,7 @@ public class MouseListenerDemo4 extends ApplicationFrame
 	 *
 	 * @param event the event.
 	 */
+	@Override
 	public void chartMouseMoved(ChartMouseEvent event) {
 		// ignore
 	}

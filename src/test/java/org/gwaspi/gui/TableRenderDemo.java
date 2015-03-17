@@ -134,31 +134,28 @@ public class TableRenderDemo extends JPanel {
 
 	private class MyTableModel extends AbstractTableModel {
 
-		private String[] columnNames = {"First Name",
+		private final String[] columnNames = {
+			"First Name",
 			"Last Name",
 			"Sport",
 			"# of Years",
 			"Vegetarian"};
-		private Object[][] data = {
-			{"Kathy", "Smith",
-				"Snowboarding", new Integer(5), false},
-			{"John", "Doe",
-				"Rowing", new Integer(3), true},
-			{"Sue", "Black",
-				"Knitting", new Integer(2), false},
-			{"Jane", "White",
-				"Speed reading", new Integer(20), true},
-			{"Joe", "Brown",
-				"Pool", new Integer(10), false}
+		private final Object[][] data = {
+			{"Kathy", "Smith", "Snowboarding", 5, false},
+			{"John", "Doe", "Rowing", 3, true},
+			{"Sue", "Black", "Knitting", 2, false},
+			{"Jane", "White", "Speed reading", 20, true},
+			{"Joe", "Brown", "Pool", 10, false}
 		};
-		public final Object[] longValues = {"Jane", "Kathy",
-			"None of the above",
-			new Integer(20), Boolean.TRUE};
+		public final Object[] longValues = {
+			"Jane", "Kathy", "None of the above", 20, Boolean.TRUE};
 
+		@Override
 		public int getColumnCount() {
 			return columnNames.length;
 		}
 
+		@Override
 		public int getRowCount() {
 			return data.length;
 		}
@@ -168,6 +165,7 @@ public class TableRenderDemo extends JPanel {
 			return columnNames[col];
 		}
 
+		@Override
 		public Object getValueAt(int row, int col) {
 			return data[row][col];
 		}
@@ -191,11 +189,7 @@ public class TableRenderDemo extends JPanel {
 		public boolean isCellEditable(int row, int col) {
 			// Note that the data/cell address is constant,
 			// no matter where the cell appears onscreen.
-			if (col < 2) {
-				return false;
-			} else {
-				return true;
-			}
+			return !(col < 2);
 		}
 
 		/**
@@ -254,6 +248,7 @@ public class TableRenderDemo extends JPanel {
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				createAndShowGUI();
 			}

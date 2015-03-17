@@ -86,15 +86,15 @@ public class DumpNCMatrix {
 		// BUILD MARKERSET HEADER
 		StringBuilder headerSB = new StringBuilder();
 		for (String markerId : markerIdSetMap.keySet()) {
-			headerSB.append("\t").append(markerId.toString());
+			headerSB.append('\t').append(markerId);
 		}
 		dumpBW.append(headerSB.toString());
-		dumpBW.append("\n");
+		dumpBW.append('\n');
 
 		// ITERATE READ OF MARKERSETMap BY SAMPLE
 		int sampleNb = 0;
 		for (String sampleId : sampleIdSetMap.keySet()) {
-			StringBuilder sampleLineSB = new StringBuilder(sampleId.toString());
+			StringBuilder sampleLineSB = new StringBuilder(sampleId);
 
 			Variable genotypes = ncfile.findVariable(NetCDFConstants.Variables.VAR_GENOTYPES);
 
@@ -107,7 +107,7 @@ public class DumpNCMatrix {
 				NetCdfUtils.writeD2ArrayCharToMapValues(gt_ACD2, markerIdSetMap);
 
 				for (Object alleles : markerIdSetMap.values()) {
-					sampleLineSB.append("\t").append(alleles);
+					sampleLineSB.append('\t').append(alleles);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -116,7 +116,7 @@ public class DumpNCMatrix {
 			}
 
 			dumpBW.append(sampleLineSB.toString());
-			dumpBW.append("\n");
+			dumpBW.append('\n');
 			sampleNb++;
 		}
 

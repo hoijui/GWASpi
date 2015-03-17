@@ -66,21 +66,21 @@ public class TreeDemo extends JPanel implements TreeSelectionListener {
 
 	private static final Logger log = LoggerFactory.getLogger(TreeDemo.class);
 
-	private JEditorPane htmlPane;
-	private JTree tree;
+	private final JEditorPane htmlPane;
+	private final JTree tree;
 	private URL helpURL;
 	/**
 	 * Optionally play with line styles.
 	 */
-	private static boolean playWithLineStyle = false;
+	private static final boolean playWithLineStyle = false;
 	/**
 	 * Possible values are "Angled" (the default), "Horizontal", and "None".
 	 */
-	private static String lineStyle = "Horizontal";
+	private static final String lineStyle = "Horizontal";
 	/**
 	 * Optionally set the look and feel.
 	 */
-	private static boolean useSystemLookAndFeel = false;
+	private static final boolean useSystemLookAndFeel = false;
 
 	public TreeDemo() {
 		super(new GridLayout(1, 0));
@@ -129,6 +129,7 @@ public class TreeDemo extends JPanel implements TreeSelectionListener {
 	/**
 	 * Required by TreeSelectionListener interface.
 	 */
+	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 

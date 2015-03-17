@@ -17,14 +17,19 @@
 
 package org.gwaspi.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class TestImageDisplay extends JFrame {
 
-	private JScrollPane scrl_Image = new javax.swing.JScrollPane();
-	private JPanel pnl_Image = new javax.swing.JPanel();
+	private final JScrollPane scrl_Image;
 
 	public static void main(String[] args) {
 		TestImageDisplay t = new TestImageDisplay();

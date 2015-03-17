@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 public class SplitHapmapOriginalByIndividuals {
 
-	private static final Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
-	private static final String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt";
+	private static final Logger log = LoggerFactory.getLogger(SplitHapmapOriginalByIndividuals.class);
+	private static final String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt"; // HACK system dependent path
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		processData();
@@ -43,7 +43,7 @@ public class SplitHapmapOriginalByIndividuals {
 
 		String currentSampleId = "";
 		boolean header = true;
-		int hapmaprowcount = 0;
+		int hapmapRowCount = 0;
 		int samplecount = 0;
 		int genotypeCount = 0;
 		while (header) { // ignoring top empty line
@@ -56,12 +56,12 @@ public class SplitHapmapOriginalByIndividuals {
 
 		String l = bigHapmapBufferReader.readLine();
 		while (l != null) {
-			hapmaprowcount++;
+			hapmapRowCount++;
 			String[] cVals = l.split("[ \t,]");
 
 			if (currentSampleId.equals(cVals[0])) { // same sample => engross current Sample's genotype file
 				genotypeCount++;
-				bw.append(l + "\n");
+				bw.append(l).append('\n');
 			} else { // encountered a new sampleId in bigHapmapFile
 
 				samplecount++;
@@ -78,7 +78,7 @@ public class SplitHapmapOriginalByIndividuals {
 
 				log.info("SampleId: {} count={}", currentSampleId, samplecount);
 				// WRITE TO FILE
-				bw.append(l + "\n");
+				bw.append(l).append('\n');
 			}
 
 			l = bigHapmapBufferReader.readLine();

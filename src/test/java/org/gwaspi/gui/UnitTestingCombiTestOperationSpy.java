@@ -20,6 +20,7 @@ package org.gwaspi.gui;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import libsvm.svm_model;
@@ -144,15 +145,15 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		double[][] alphas = svmModel.sv_coef;
 		svm_node[][] SVs = svmModel.SV;
-		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + alphas[0]);
+		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.toString(alphas[0]));
 		LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
 		File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
 		List<List<Double>> correctAlphasSparse = Util.parsePlainTextMatrix(correctAlphasFile, false);
 		List<Double> correctAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-		for (int i = 0; i < correctAlphasSparse.size(); i++) {
-			final double value = correctAlphasSparse.get(i).get(0);
-			final int index = correctAlphasSparse.get(i).get(1).intValue();
+		for (List<Double> correctAlphasSparseEntry : correctAlphasSparse) {
+			final double value = correctAlphasSparseEntry.get(0);
+			final int index = correctAlphasSparseEntry.get(1).intValue();
 			correctAlphas.set(index, value);
 		}
 

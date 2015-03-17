@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class CreateNetcdf {
 

@@ -70,7 +70,7 @@ public class TreeMemory extends JPanel {
 		lastExpanded = expanded;
 	}
 
-	private final TreeModel model(int n) {
+	private TreeModel model(int n) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root " + n);
 		addNodes(root, 3);
 		return new DefaultTreeModel(root);

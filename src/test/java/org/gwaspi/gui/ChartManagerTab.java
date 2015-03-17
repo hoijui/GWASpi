@@ -154,6 +154,7 @@ private void button_SaveCompleteChartActionPerformed(java.awt.event.ActionEvent 
 	 */
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				new ChartManagerTab().setVisible(true);
 			}

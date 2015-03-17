@@ -130,6 +130,7 @@ private void button_AddDataActionPerformed(java.awt.event.ActionEvent evt) {//GE
 	 */
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				new LoadAndCheckTab().setVisible(true);
 			}

@@ -50,10 +50,11 @@ import javax.swing.Icon;
  */
 public class MissingIcon implements Icon {
 
-	private int width = 32;
-	private int height = 32;
-	private BasicStroke stroke = new BasicStroke(4);
+	private final int width = 32;
+	private final int height = 32;
+	private final BasicStroke stroke = new BasicStroke(4);
 
+	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 		Graphics2D g2d = (Graphics2D) g.create();
 
@@ -72,10 +73,12 @@ public class MissingIcon implements Icon {
 		g2d.dispose();
 	}
 
+	@Override
 	public int getIconWidth() {
 		return width;
 	}
 
+	@Override
 	public int getIconHeight() {
 		return height;
 	}

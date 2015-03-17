@@ -48,11 +48,11 @@ public class CustomDialog extends JDialog
 		PropertyChangeListener {
 
 	private String typedText = null;
-	private JTextField textField;
-	private String magicWord;
-	private JOptionPane optionPane;
-	private String btnString1 = "Enter";
-	private String btnString2 = "Cancel";
+	private final JTextField textField;
+	private final String magicWord;
+	private final JOptionPane optionPane;
+	private final String btnString1 = "Enter";
+	private final String btnString2 = "Cancel";
 
 	/**
 	 * Returns null if the typed string was invalid; otherwise, returns the
@@ -104,8 +104,7 @@ public class CustomDialog extends JDialog
 				 * we're going to change the JOptionPane's
 				 * value property.
 				 */
-				optionPane.setValue(new Integer(
-						JOptionPane.CLOSED_OPTION));
+				optionPane.setValue(JOptionPane.CLOSED_OPTION);
 			}
 		});
 
@@ -127,6 +126,7 @@ public class CustomDialog extends JDialog
 	/**
 	 * This method handles events for the text field.
 	 */
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		optionPane.setValue(btnString1);
 	}
@@ -134,6 +134,7 @@ public class CustomDialog extends JDialog
 	/**
 	 * This method reacts to state changes in the option pane.
 	 */
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		String prop = e.getPropertyName();
 

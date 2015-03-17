@@ -42,21 +42,21 @@ public class TestAnalyserTab extends JPanel {
 			= LoggerFactory.getLogger(TestAnalyserTab.class);
 
 	// Variables declaration - do not modify
-	private JPanel panel_Analysis;
-	private JButton button_Go;
-	private JButton button_PathToTfam;
-	private JButton button_PathToTped;
-	private JComboBox combo_Analysis;
-	private JLabel label_Analysis;
-	private JLabel label_PathToTfam;
-	private JLabel label_PathToTped;
-	private JLabel label_commandLine;
-	private JScrollPane scrollPane_cliResult;
-	private JTextArea textArea_cliResult;
-	private JTextArea textArea_commandLine;
-	private JTextField textField_PathToTfam;
-	private JTextField textField_PathToTped;
-	private JScrollPane jScrollPane1;
+	private final JPanel panel_Analysis;
+	private final JButton button_Go;
+	private final JButton button_PathToTfam;
+	private final JButton button_PathToTped;
+	private final JComboBox combo_Analysis;
+	private final JLabel label_Analysis;
+	private final JLabel label_PathToTfam;
+	private final JLabel label_PathToTped;
+	private final JLabel label_commandLine;
+	private final JScrollPane scrollPane_cliResult;
+	private final JTextArea textArea_cliResult;
+	private final JTextArea textArea_commandLine;
+	private final JTextField textField_PathToTfam;
+	private final JTextField textField_PathToTped;
+	private final JScrollPane jScrollPane1;
 	// End of variables declaration
 
 	// <editor-fold defaultstate="expanded" desc="Init">
@@ -84,6 +84,7 @@ public class TestAnalyserTab extends JPanel {
 //			combo_Analysis.addItem( analysis.PlinkBase.analysisList[iCtr] );
 //		}
 		combo_Analysis.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					combo_AnalysisActionPerformed(evt);
@@ -101,6 +102,7 @@ public class TestAnalyserTab extends JPanel {
 
 		button_PathToTfam.setText("Browse");
 		button_PathToTfam.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					button_PathToTfamActionPerformed(evt);
@@ -112,6 +114,7 @@ public class TestAnalyserTab extends JPanel {
 
 		button_PathToTped.setText("Browse");
 		button_PathToTped.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					button_PathToTpedActionPerformed(evt);
@@ -124,6 +127,7 @@ public class TestAnalyserTab extends JPanel {
 		button_Go.setText("Go!");
 		button_Go.setEnabled(true);
 		button_Go.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				button_GoActionPerformed(evt);
 			}

@@ -39,9 +39,9 @@ import javax.swing.table.TableColumnModel;
 
 public class TableSortDemo2 extends JFrame {
 
-	private JTable table = new JTable();
-	private MyTableModel tableModel;
-	private JLabel titleLabel = new JLabel("Click table header to sort the column.");
+	private final JTable table = new JTable();
+	private final MyTableModel tableModel;
+	private final JLabel titleLabel = new JLabel("Click table header to sort the column.");
 
 	public TableSortDemo2() {
 		setSize(600, 300);
@@ -79,27 +79,29 @@ class MyTableModel extends AbstractTableModel {
 
 	private int sortCol = 0;
 	private boolean isSortAsc = true;
-	private int m_result = 0;
-	private int columnsCount = 1;
-	private List<Integer> vector = new ArrayList<Integer>();
+	private final int m_result = 0;
+	private final int columnsCount = 1;
+	private final List<Integer> vector = new ArrayList<Integer>();
 
 	MyTableModel() {
 		vector.clear();
-		vector.add(new Integer(24976600));
-		vector.add(new Integer(24));
-		vector.add(new Integer(2497));
-		vector.add(new Integer(249766));
-		vector.add(new Integer(2497660));
-		vector.add(new Integer(6600));
-		vector.add(new Integer(76600));
-		vector.add(new Integer(976600));
-		vector.add(new Integer(4976600));
+		vector.add(24976600);
+		vector.add(24);
+		vector.add(2497);
+		vector.add(249766);
+		vector.add(2497660);
+		vector.add(6600);
+		vector.add(76600);
+		vector.add(976600);
+		vector.add(4976600);
 	}
 
+	@Override
 	public int getRowCount() {
 		return vector == null ? 0 : vector.size();
 	}
 
+	@Override
 	public int getColumnCount() {
 		return columnsCount;
 	}
@@ -118,6 +120,7 @@ class MyTableModel extends AbstractTableModel {
 		return false;
 	}
 
+	@Override
 	public Object getValueAt(int nRow, int nCol) {
 		if (nRow < 0 || nRow >= getRowCount()) {
 			return "";
@@ -170,16 +173,15 @@ class MyTableModel extends AbstractTableModel {
 
 class MyComparator implements Comparator<Integer> {
 
-	private boolean isSortAsc;
+	private final boolean isSortAsc;
 
 	MyComparator(boolean sortAsc) {
 		isSortAsc = sortAsc;
 	}
 
-	public int compare(Integer o1, Integer o2) {
-		Integer s1 = (Integer) o1;
-		Integer s2 = (Integer) o2;
-		int result = s1.compareTo(s2);
+	@Override
+	public int compare(Integer int1, Integer int2) {
+		int result = int1.compareTo(int2);
 		if (!isSortAsc) {
 			result = -result;
 		}

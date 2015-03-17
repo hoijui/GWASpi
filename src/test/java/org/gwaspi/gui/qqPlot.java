@@ -168,6 +168,7 @@ public class qqPlot implements ActionListener {
 	 *
 	 * @param event the event.
 	 */
+	@Override
 	public void actionPerformed(final ActionEvent event) {
 		this.finished = true;
 	}

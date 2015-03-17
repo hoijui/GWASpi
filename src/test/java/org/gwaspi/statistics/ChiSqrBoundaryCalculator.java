@@ -100,12 +100,13 @@ public class ChiSqrBoundaryCalculator {
 		// Make simNb X² distributions
 		for (int i = 0; i < simNb; i++) {
 			try {
-				List<Double> expChiSqrDist = null;
+				final List<Double> expChiSqrDist;
 				if (df == 1) {
 					expChiSqrDist = Chisquare.getChiSquareDistributionDf1(N, 1.0f);
-				}
-				if (df == 2) {
+				} else if (df == 2) {
 					expChiSqrDist = Chisquare.getChiSquareDistributionDf2(N, 1.0f);
+				} else {
+					throw new IllegalArgumentException("df can only be 1 or 2, is " + df);
 				}
 
 				Collections.sort(expChiSqrDist);
