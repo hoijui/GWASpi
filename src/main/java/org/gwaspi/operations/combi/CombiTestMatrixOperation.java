@@ -516,11 +516,13 @@ public class CombiTestMatrixOperation
 		// initialize the kernelMatrix
 		// this should not be required, if the array was just created,
 		// but who knows who will call this function in what way in the future!?
+		LOG.info("initialize kernel-matrix values to 0.0 ...");
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		for (float[] kernelMatrixRow : kernelMatrix) {
 			Arrays.fill(kernelMatrixRow, 0.0f);
 		}
 
+		LOG.info("calculate the kernel-matrix ...");
 		creatingKernelMatrixProgressSource.setNewStatus(ProcessStatus.RUNNING);
 		// XXX this loop uses lots of time!
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
