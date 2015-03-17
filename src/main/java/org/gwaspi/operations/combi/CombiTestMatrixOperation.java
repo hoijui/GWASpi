@@ -322,7 +322,7 @@ public class CombiTestMatrixOperation
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 			int chromoIndex = 0;
 			for (final Map.Entry<String, List<Integer>> markerChromosomeIndices : markersChromosomeToIndices.entrySet()) {
-				final String chromosome = markerChromosomeIndices.getKey();
+//				final String chromosome = markerChromosomeIndices.getKey();
 				final List<Integer> markerIndices = markerChromosomeIndices.getValue();
 
 				// run SVM only once, genome-wide
