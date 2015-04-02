@@ -188,7 +188,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //		return sum;
 //	}
 
-	private static List<List<Float>> createWhitenedValuesLists(List<List<Float>> valuesLists, List<Integer> genotypesCountsAccumulated, final int numSamples, final int numFeatures) {
+	private static List<List<Float>> createWhitenedValuesLists(List<List<Float>> valuesLists, List<Integer> genotypesCountsAccumulated, final int numSamples, final int numFeatures, final double pStdDev) {
 
 		// calculate genotype weights
 		List<Double> weights = new ArrayList<Double>(genotypesCountsAccumulated.size());
@@ -215,13 +215,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			final double weight = weightsIt.next();
 			for (int vi = 0; vi < valueCenters.length; vi++) {
 				final double centeredValue = valuesList.get(vi) - valueCenters[vi];
-				varianceMeans[vi] += centeredValue * centeredValue * weight;
+				varianceMeans[vi] += Math.pow(centeredValue, pStdDev) * weight;
 			}
 		}
+		final double pStdDevInverse = 1.0 / pStdDev;
 		double[] stdDevs = new double[varianceMeans.length];
 		for (int vi = 0; vi < varianceMeans.length; vi++) {
 //			final double weight = weightsIt.next();
-			stdDevs[vi] = Math.sqrt(varianceMeans[vi] * numFeatures);
+			stdDevs[vi] = Math.pow(varianceMeans[vi] * numFeatures, pStdDevInverse);
 		}
 
 		// whiten (center & set variance to 1.0)
@@ -308,7 +309,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			final byte minorAllele,
 			final int[] genotypeCounts,
 			final int numSamples,
-			final int numFeatures)
+			final int numFeatures,
+			final double pStdDev)
 	{
 //		Map<Integer, List<Float>> encodingTable
 //				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
@@ -362,7 +364,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			encodedValuesLists = swapMajorMinor(encodedValuesLists);
 //		}
 
-		List<List<Float>> encodedAndWhitenedValuesLists = createWhitenedValuesLists(encodedValuesLists, genotypesCountsAccumulated, numSamples, numFeatures);
+		List<List<Float>> encodedAndWhitenedValuesLists = createWhitenedValuesLists(encodedValuesLists, genotypesCountsAccumulated, numSamples, numFeatures, pStdDev);
 
 //		Map<Integer, List<Float>> encodingTable = stitchTogether(genotypesHashes, encodedAndWhitenedValuesLists, genotypesCountsAccumulated);
 		Map<Integer, List<Float>> encodingTable = stitchTogether(genotypesHashes, encodedAndWhitenedValuesLists, perHashGenotypesCounts);
@@ -414,6 +416,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			final byte majorAllele,
 			final byte minorAllele,
 			final int[] genotypeCounts,
+			final GenotypeEncodingParams params,
 			SamplesFeaturesStorage<Float> encodedSamplesFeatures,
 			int markerIndex)
 	{
@@ -433,7 +436,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		// create the encoding table
 		final Map<Integer, List<Float>> encodingTable
 //				= generateEncodingTable(possibleGenotypes, rawGenotypes);
-				= generateEncodingTable(majorAllele, minorAllele, genotypeCounts, numSamples, numFeatures);
+				= generateEncodingTable(majorAllele, minorAllele, genotypeCounts, numSamples, numFeatures, params.getPStandardDeviation());
 
 //System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
 //for (Map.Entry<Integer, List<Float>> encodingTableEntry : encodingTable.entrySet()) {

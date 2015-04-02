@@ -34,6 +34,7 @@ import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestOperationSpy;
 import org.gwaspi.operations.combi.GenotypeEncoder;
+import org.gwaspi.operations.combi.GenotypeEncodingParams;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.MarkerGenotypesEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
@@ -210,11 +211,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 //		GenotypeEncoder genotypeEncoder = GenotypicGenotypeEncoder.SINGLETON; // TODO
 		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
 //		final int weightsFilterWidth = 3; // TODO or 35, if we have more markers
+		final GenotypeEncodingParams genotypeEncodingParams = new GenotypeEncodingParams();
 
 //		runSVM(genotypeEncoder);
 
 		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
-		Util.runEncodingAndSVM(genotypeEncoder); // FIXME
+		Util.runEncodingAndSVM(genotypeEncoder, genotypeEncodingParams); // FIXME
 
 //		List<List<Double>> X = new ArrayList<List<Double>>(2);
 //		X.add(Arrays.asList(new Double[] {1.0, 0.0}));

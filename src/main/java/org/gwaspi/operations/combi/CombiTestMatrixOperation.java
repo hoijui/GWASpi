@@ -356,6 +356,7 @@ public class CombiTestMatrixOperation
 						validSampleAffections,
 						markersGenotypesSource,
 						getParams().getEncoder(),
+						getParams().getEncodingParams(),
 						recyclableKernelMatrix,
 						recyclableProblem,
 						phSvmChromosome);
@@ -404,6 +405,7 @@ public class CombiTestMatrixOperation
 					validSampleAffections,
 					markersGenotypesSource,
 					getParams().getEncoder(),
+					getParams().getEncodingParams(),
 					null,
 					null,
 					svmPHs.get(0));
@@ -468,6 +470,7 @@ public class CombiTestMatrixOperation
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
 			final GenotypeEncoder encoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			final int markerIndexFrom,
 			final int markersChunkSize,
 			final int dSamples,
@@ -491,7 +494,7 @@ public class CombiTestMatrixOperation
 			Byte majorAllele = majorAlleles.get(mi);
 			Byte minorAllele = minorAlleles.get(mi);
 			int[] genotypeCounts = markerGenotypesCounts.get(mi);
-			encoder.encodeGenotypes(gtsForOneMarker, majorAllele, minorAllele, genotypeCounts, encodedSamples, mi);
+			encoder.encodeGenotypes(gtsForOneMarker, majorAllele, minorAllele, genotypeCounts, genotypeEncodingParams, encodedSamples, mi);
 
 			encodingMarkersChunkProgressSource.setProgress(mi);
 		}
@@ -568,6 +571,7 @@ public class CombiTestMatrixOperation
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
 			GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			final float[][] recyclableKernelMatrix,
 			final svm_problem recyclableProblem,
 			final SvmProgressHandler svmPH)
@@ -593,6 +597,7 @@ public class CombiTestMatrixOperation
 				minorAlleles,
 				markerGenotypesCounts,
 				genotypeEncoder,
+				genotypeEncodingParams,
 				dSamples,
 				n,
 				maxChunkSize);
@@ -638,6 +643,7 @@ public class CombiTestMatrixOperation
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
 			final GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			final int dSamples,
 			final int n,
 			final int maxChunkSize)
@@ -651,6 +657,7 @@ public class CombiTestMatrixOperation
 				minorAlleles,
 				markerGenotypesCounts,
 				genotypeEncoder,
+				genotypeEncodingParams,
 				dSamples,
 				n,
 				maxChunkSize);

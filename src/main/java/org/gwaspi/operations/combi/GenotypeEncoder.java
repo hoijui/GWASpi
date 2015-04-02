@@ -60,9 +60,9 @@ public interface GenotypeEncoder {
 			final byte majorAllele,
 			final byte minorAllele,
 			final int[] genotypeCounts,
+			final GenotypeEncodingParams params,
 			SamplesFeaturesStorage<Float> encodedSamplesMarkers,
 			int markerIndex);
-
 
 	/**
 	 * Returns to how many values a genotype gets enlarged to.

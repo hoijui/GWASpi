@@ -66,6 +66,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 		log.debug("#markers: " + parentQAMarkersOperationDataSet.getNumMarkers());
 
 		final Map<String, GenotypeEncoder> genotypeEncoders = CombiTestScriptCommand.GENOTYPE_ENCODERS;
+		final GenotypeEncodingParams genotypeEncodingParams = new GenotypeEncodingParams();
 		final int[] kernelCalculationAlgorithms = new int[] {2, 3, 4, 5};
 		final int[] chunkSizes = new int[] {1, 10, 100, 1000};
 		final boolean[] arrayCopyStates = new boolean[] {/*true, */false};
@@ -80,7 +81,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 				for (int chunkSize : chunkSizes) {
 					for (boolean arrayCopy : arrayCopyStates) {
 						NetCdfUtils.ARRAY_COPY = arrayCopy;
-						final long wallClockTime = runCombi(parentQAMarkersOperationDataSet, genotypeEncoder.getValue(), chunkSize);
+						final long wallClockTime = runCombi(parentQAMarkersOperationDataSet, genotypeEncoder.getValue(), genotypeEncodingParams, chunkSize);
 						String benchmarkEntry = String.format(
 								"%d\t%s\t%d\t%d\t%s",
 								wallClockTime / 1000,
@@ -101,6 +102,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 	private static long runCombi(
 			QAMarkersOperationDataSet parentQAMarkersOperationDataSet,
 			GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			int chunkSize)
 			throws IOException
 	{
@@ -139,6 +141,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 				minorAlleles,
 				markerGenotypesCounts,
 				genotypeEncoder,
+				genotypeEncodingParams,
 				markerKeys.size(),
 				numSamples,
 				chunkSize);

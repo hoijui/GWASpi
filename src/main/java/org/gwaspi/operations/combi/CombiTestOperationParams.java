@@ -38,6 +38,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
 	private final GenotypeEncoder encoder;
+	private final GenotypeEncodingParams encodingParams;
 	/**
 	 * The number of total markers in the matrix we operate on, unfiltered.
 	 */
@@ -55,6 +56,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	public CombiTestOperationParams(
 			OperationKey qaMarkersOperationKey,
 			GenotypeEncoder encoder,
+			final GenotypeEncodingParams encodingParams,
 			Boolean useThresholdCalibration,
 			final Boolean perChromosome,
 			String name)
@@ -64,6 +66,9 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		this.encoder = (encoder == null)
 				? getEncoderDefault()
 				: encoder;
+		this.encodingParams = (encodingParams == null)
+				? getEncodingParamsDefault()
+				: encodingParams;
 		this.useThresholdCalibration = (useThresholdCalibration == null)
 				? isUseThresholdCalibrationDefault()
 				: useThresholdCalibration;
@@ -76,6 +81,7 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	{
 		this(
 				qaMarkersOperationKey,
+				null,
 				null,
 				null,
 				null,
@@ -111,6 +117,14 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 
 	public static GenotypeEncoder getEncoderDefault() {
 		return GenotypicGenotypeEncoder.SINGLETON;
+	}
+
+	public GenotypeEncodingParams getEncodingParams() {
+		return encodingParams;
+	}
+
+	public static GenotypeEncodingParams getEncodingParamsDefault() {
+		return new GenotypeEncodingParams();
 	}
 
 	public int getTotalMarkers() {

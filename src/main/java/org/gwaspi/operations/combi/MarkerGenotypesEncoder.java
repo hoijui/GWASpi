@@ -35,6 +35,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 	private final List<Byte> minorAlleles;
 	private final List<int[]> markerGenotypesCounts;
 	private final GenotypeEncoder genotypeEncoder;
+	private final GenotypeEncodingParams genotypeEncodingParams;
 	/** The total number of markers. */
 	private final int dSamples;
 	/** The total number of markers * encodingFactor. */
@@ -66,6 +67,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 			final List<Byte> minorAlleles,
 			final List<int[]> markerGenotypesCounts,
 			final GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			final int dSamples,
 			final int n,
 			final int maxChunkSize)
@@ -76,6 +78,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 		this.minorAlleles = minorAlleles;
 		this.markerGenotypesCounts = markerGenotypesCounts;
 		this.genotypeEncoder = genotypeEncoder;
+		this.genotypeEncodingParams = genotypeEncodingParams;
 		this.dSamples = dSamples;
 		this.dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
 		this.n = n;
@@ -192,6 +195,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 	//				sampleInfos.keySet(),
 	//				sampleAffections,
 					genotypeEncoder,
+					genotypeEncodingParams,
 					firstMarkerIndex,
 					numMarkersInChunk,
 					dSamples,

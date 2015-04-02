@@ -29,6 +29,7 @@ import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.GenotypeEncoder;
+import org.gwaspi.operations.combi.GenotypeEncodingParams;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
@@ -85,6 +86,14 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
+			final Double genotypeEncodindP = fetchDouble(args, "genotype-encoding-p", null);
+			final GenotypeEncodingParams genotypeEncodingParams;
+			if (genotypeEncodindP == null) {
+				genotypeEncodingParams = new GenotypeEncodingParams();
+			} else {
+				genotypeEncodingParams = new GenotypeEncodingParams(genotypeEncodindP);
+			}
+
 			final int weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
 
 			final int markersToKeep = fetchInteger(args, "markers-to-keep", null);
@@ -100,6 +109,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			CombiTestOperationParams paramsTest = new CombiTestOperationParams(
 					qaMarkersOperationKey,
 					genotypeEncoder,
+					genotypeEncodingParams,
 					useThresholdCalibration,
 					perChromosome,
 					resultOperationName);

@@ -433,8 +433,10 @@ public class Util {
 		}
 	}
 
-	public static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
-
+	public static void runEncodingAndSVM(
+			final GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams)
+	{
 		List<MarkerKey> markerKeys;
 		List<Byte> majorAlleles;
 		List<Byte> minorAlleles;
@@ -465,6 +467,7 @@ public class Util {
 					sampleAffections,
 					markerGenotypes,
 					genotypeEncoder,
+					genotypeEncodingParams,
 					null,
 					null,
 					new CombiTestMatrixOperation.SvmProgressHandler());
