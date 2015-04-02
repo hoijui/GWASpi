@@ -393,7 +393,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		// this map will e.g. contain (a sub-set of):
 		// {'0':0, 'A':1, 'G':2}
 		Map<Byte, Integer> possibleValuesSingleEncoding = new LinkedHashMap<Byte, Integer>(possibleValues.size());
-		final int firstEncodedVal = possibleValues.contains(new Byte((byte) '0')) ? 0 : 1;
+		final int firstEncodedVal = possibleValues.contains((byte) '0') ? 0 : 1;
 		int currentEncodedVal = firstEncodedVal;
 		for (Byte possibleValue : possibleValues) {
 			possibleValuesSingleEncoding.put(possibleValue, currentEncodedVal++);
