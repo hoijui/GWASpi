@@ -508,6 +508,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			int si = 0;
 //			if (samplesToKeep == null) {
 				// include all samples
+// XXX Testing-/debug-code that may be removed at some point
 int gti = 0;
 				for (byte[] genotype : rawGenotypes) {
 final byte[] genotypeIndexed = rawGenotypes.get(gti++);
@@ -515,7 +516,7 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 	throw new RuntimeException();
 }
 					final int gtHash = Genotype.hashCode(genotype);
-final String gtStr = new String(genotype);
+//final String gtStr = new String(genotype);
 					List<Float> encodedGT = encodingTable.get(gtHash);
 					if (encodedGT == null) {
 						encodedGT = invalidEncoded;
