@@ -52,7 +52,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 	 * @param idKey property-key of the id of the study
 	 * @param nameKey property-key of the name of the study
 	 * @param allowNew if true, then we create a new study,
-	 *   if the found value <code>contains("New Study")</code>
+	 *   if the found value <code>startsWith("New Study")</code>
 	 * @return the parsed study-key
 	 */
 	protected static StudyKey fetchStudyKey(Map<String, String> script, String idKey, String nameKey, boolean allowNew) throws IOException {
@@ -70,21 +70,23 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			StudyKey studyKey;
 			try {
 				studyKey = new StudyKey(Integer.parseInt(idValue));
-			} catch (NumberFormatException ex) {
-				if (allowNew && idValue.contains("New Study")) {
+			} catch (final NumberFormatException ex) {
+				if (allowNew && idValue.startsWith("New Study")) {
 					studyKey = StudyList.insertNewStudy(new Study(
-							idValue/*.substring(10)*/,
+							idValue.substring("New Study".length() + 1),
 							"Study created by command-line interface"));
 					GWASpiExplorerNodes.insertStudyNode(studyKey);
 				} else {
-					throw new IOException("The Study-id must be an integer value of an existing Study, \"" + idValue + "\" is not so!");
+					throw new IOException(
+							"The Study-Id has to be an integer value and the Id of an existing Study, "
+							+ "\"" + idValue + "\" is not so!");
 				}
 			}
 			return studyKey;
 		} else { // -> (nameValue != null)
-			if (allowNew && nameValue.contains("New Study")) {
+			if (allowNew && nameValue.startsWith("New Study")) {
 				StudyKey studyKey = StudyList.insertNewStudy(new Study(
-						idValue/*.substring(10)*/,
+						idValue.substring("New Study".length() + 1),
 						"Study created by command-line interface"));
 				GWASpiExplorerNodes.insertStudyNode(studyKey);
 				return studyKey;
