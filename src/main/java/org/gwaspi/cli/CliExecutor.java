@@ -60,8 +60,7 @@ public class CliExecutor {
 
 	public void execute() throws IOException, ScriptExecutionException {
 
-		// GET ALL SCRIPTS CONTAINED IN FILE
-		List<Map<String, String>> scripts = ScriptUtils.readArgsFromScript(scriptFile);
+		final List<Map<String, String>> scripts = ScriptUtils.readScriptsFromFile(scriptFile);
 
 		System.out.println("\nScripts in queue: " + scripts.size());
 

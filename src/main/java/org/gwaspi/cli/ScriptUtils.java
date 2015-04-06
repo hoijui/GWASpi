@@ -69,7 +69,14 @@ public class ScriptUtils {
 		return result;
 	}
 
-	public static List<Map<String, String>> readArgsFromScript(File src) throws IOException {
+	/**
+	 * Parse all scripts contained in a file.
+	 * @param scriptsFile plain-text file containing possibly multiple scripts
+	 *   ([script] ... [/script]).
+	 * @return one map of arguments per script, in the order in which they appear in the given file
+	 * @throws IOException
+	 */
+	public static List<Map<String, String>> readScriptsFromFile(final File scriptsFile) throws IOException {
 
 		List<Map<String, String>> scripts = new ArrayList<Map<String, String>>();
 
@@ -78,7 +85,7 @@ public class ScriptUtils {
 		String line = null;
 		int lineNum = -1;
 		try {
-			scriptFileReader = new FileReader(src);
+			scriptFileReader = new FileReader(scriptsFile);
 			scriptReader = new BufferedReader(scriptFileReader);
 
 			Map<String, String> script = null;
