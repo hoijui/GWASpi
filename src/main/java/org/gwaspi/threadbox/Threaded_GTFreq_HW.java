@@ -218,7 +218,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			getLog().warn("Hardy&Weinberg operation canceled because Marker-Census is not available");
 		} else {
 			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
-			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, NetCDFConstants.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
+			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, gwasParams.getHardyWeinbergOperationName(), markersQAOpKey);
 			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
 			CommonRunnable.doRunNowInThread(threaded_HardyWeinberg);

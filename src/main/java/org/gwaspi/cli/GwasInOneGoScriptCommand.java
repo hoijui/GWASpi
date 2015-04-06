@@ -109,7 +109,7 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get("perform-Allelic-Tests")));
 			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get("perform-Genotypic-Tests")));
 			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get("perform-Trend-Tests")));
-			gwasParams.setFriendlyName(gwasName);
+			gwasParams.setHardyWeinbergOperationName("H&W on " + gwasName);
 			gwasParams.setProceed(true);
 
 			TestScriptCommand.ensureMatrixQAs(matrixKey, gwasParams);

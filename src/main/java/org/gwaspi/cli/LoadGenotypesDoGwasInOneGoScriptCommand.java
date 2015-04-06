@@ -107,7 +107,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get("perform-Allelic-Tests")));
 			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get("perform-Genotypic-Tests")));
 			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get("perform-Trend-Tests")));
-			gwasParams.setFriendlyName(newMatrixName);
+			gwasParams.setHardyWeinbergOperationName("H&W on " + newMatrixName);
 			gwasParams.setProceed(true);
 
 			GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(

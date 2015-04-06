@@ -47,7 +47,7 @@ public class GWASinOneGOParams {
 	private String chromosome = "";
 	private StrandType strandType = StrandType.UNKNOWN;
 	private GenotypeEncoding gtCode = GenotypeEncoding.UNKNOWN;
-	private String friendlyName = "";
+	private String hardyWeinbergOperationName = "";
 
 	public boolean isProceed() {
 		return proceed;
@@ -209,11 +209,11 @@ public class GWASinOneGOParams {
 		this.gtCode = gtCode;
 	}
 
-	public String getFriendlyName() {
-		return friendlyName;
+	public String getHardyWeinbergOperationName() {
+		return hardyWeinbergOperationName;
 	}
 
-	public void setFriendlyName(String friendlyName) {
-		this.friendlyName = friendlyName;
+	public void setHardyWeinbergOperationName(final String hardyWeinbergOperationName) {
+		this.hardyWeinbergOperationName = hardyWeinbergOperationName;
 	}
 }

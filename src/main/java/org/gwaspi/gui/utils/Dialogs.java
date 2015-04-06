@@ -45,6 +45,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -319,7 +320,11 @@ public class Dialogs {
 
 		final String friendlyName = showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
 		gwasParams.setProceed(friendlyName != null);
-		gwasParams.setFriendlyName(friendlyName);
+		final MarkerCensusOperationParams markerCensusParams = gwasParams.getMarkerCensusOperationParams();
+		if (markerCensusParams != null) {
+			markerCensusParams.setName(friendlyName);
+		}
+		gwasParams.setHardyWeinbergOperationName("H&W on " + friendlyName);
 	}
 
 	public static String showInputBox(String message) {

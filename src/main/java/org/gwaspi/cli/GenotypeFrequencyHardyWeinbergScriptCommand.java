@@ -106,7 +106,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 							phenoFile);
 
 			gwasParams.setMarkerCensusOperationParams(markerCensusOperationParams);
-			gwasParams.setFriendlyName(gtFrqName);
+			gwasParams.setHardyWeinbergOperationName(hwName);
 			gwasParams.setProceed(true);
 
 			TestScriptCommand.ensureMatrixQAs(matrixKey, gwasParams);
