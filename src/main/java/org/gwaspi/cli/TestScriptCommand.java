@@ -104,8 +104,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 			final StudyKey studyKey = fetchStudyKey(args);
 			checkStudyForScript(studyKey);
 
-			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
-			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
+			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
 			int gtFreqId = Integer.parseInt(args.get("gtfreq-id")); // Parent GtFreq operation Id
 			OperationKey gtFreqKey = new OperationKey(matrixKey, gtFreqId);
 			int hwId = Integer.parseInt(args.get("hw-id")); // Parent Hardy-Weinberg operation Id

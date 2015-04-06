@@ -65,8 +65,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			final StudyKey studyKey = fetchStudyKey(args);
 			checkStudyForScript(studyKey);
 
-			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
-			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
+			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
 			String gtFrqName = args.get("gtfreq-name");
 			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get("use-external-phenotype-file"));
 			File phenoFile = null;
