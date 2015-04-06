@@ -141,6 +141,23 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 	}
 
+	protected static MatrixKey fetchMatrixKey(
+			final Map<String, String> script,
+			final StudyKey studyKey,
+			final String keyPrefix)
+			throws IOException
+	{
+		return fetchMatrixKey(script, studyKey, keyPrefix + "-id", keyPrefix + "-name");
+	}
+
+	protected static MatrixKey fetchMatrixKey(
+			final Map<String, String> script,
+			final StudyKey studyKey)
+			throws IOException
+	{
+		return fetchMatrixKey(script, studyKey, "matrix");
+	}
+
 	protected static OperationKey fetchOperationKey(Map<String, String> script, MatrixKey parentMatrixKey, String idKey, String nameKey) throws IOException {
 
 		String idValue = script.get(idKey);
