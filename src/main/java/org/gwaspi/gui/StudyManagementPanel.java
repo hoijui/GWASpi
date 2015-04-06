@@ -61,23 +61,6 @@ public class StudyManagementPanel extends JPanel {
 	private final Logger log
 			= LoggerFactory.getLogger(StudyManagementPanel.class);
 
-	// Variables declaration
-	private final JButton btn_AddStudy;
-	private final JButton btn_DeleteStudy;
-	private final JLabel lbl_Desc;
-	private final JLabel lbl_NewStudyName;
-	private final JPanel pnl_StudiesTable;
-	private final JPanel pnl_StudyDesc;
-	private final JPanel pnl_Footer;
-	private final JButton btn_Back;
-	private final JButton btn_Help;
-	private final JScrollPane scrl_Desc;
-	private final JScrollPane scrl_StudiesTable;
-	private final JTable tbl_StudiesTable;
-	private final JTextArea txtA_Desc;
-	private final JTextField txtF_NewStudyName;
-	// End of variables declaration
-
 	private static final class StudyTableModel extends AbstractTableModel {
 
 		private static final String[] COLUMN_NAMES = new String[] {
@@ -151,21 +134,22 @@ public class StudyManagementPanel extends JPanel {
 
 	public StudyManagementPanel() throws IOException {
 
-		pnl_StudyDesc = new JPanel();
-		lbl_NewStudyName = new JLabel();
-		txtF_NewStudyName = new JTextField();
+		final JPanel pnl_StudyDesc = new JPanel();
+		final JLabel lbl_NewStudyName = new JLabel();
+		final JTextField txtF_NewStudyName = new JTextField();
+		final JLabel lbl_Desc = new JLabel();
+		final JScrollPane scrl_Desc = new JScrollPane();
+		final JTextArea txtA_Desc = new JTextArea();
+		final JButton btn_DeleteStudy = new JButton();
+		final JButton btn_AddStudy = new JButton();
+		final JPanel pnl_StudiesTable = new JPanel();
+		final JPanel pnl_Footer = new JPanel();
+		final JButton btn_Help = new JButton();
+		final JButton btn_Back = new JButton();
+		final JScrollPane scrl_StudiesTable = new JScrollPane();
+		final StudyTable tbl_StudiesTable = new StudyTable();
+
 		txtF_NewStudyName.setDocument(new LimitedLengthDocument(64));
-		lbl_Desc = new JLabel();
-		scrl_Desc = new JScrollPane();
-		txtA_Desc = new JTextArea();
-		btn_DeleteStudy = new JButton();
-		btn_AddStudy = new JButton();
-		pnl_StudiesTable = new JPanel();
-		pnl_Footer = new JPanel();
-		btn_Help = new JButton();
-		btn_Back = new JButton();
-		scrl_StudiesTable = new JScrollPane();
-		tbl_StudiesTable = new StudyTable();
 		tbl_StudiesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.studies)); // NOI18N
@@ -204,13 +188,13 @@ public class StudyManagementPanel extends JPanel {
 		});
 
 		scrl_Desc.setViewportView(txtA_Desc);
-		btn_AddStudy.setAction(new AddStudyAction());
+		btn_AddStudy.setAction(new AddStudyAction(lbl_NewStudyName, txtF_NewStudyName, txtA_Desc));
 
 		pnl_StudiesTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.Study.availableStudies)); // NOI18N
 		tbl_StudiesTable.setModel(new StudyTableModel(StudyList.getStudyList()));
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
-		btn_DeleteStudy.setAction(new DeleteStudyAction());
+		btn_DeleteStudy.setAction(new DeleteStudyAction(this, tbl_StudiesTable));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT STUDY TABLE">
 		GroupLayout pnl_StudiesTableLayout = new GroupLayout(pnl_StudiesTable);
@@ -314,22 +298,33 @@ public class StudyManagementPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	private class AddStudyAction extends AbstractAction { // FIXME make static
+	private static class AddStudyAction extends AbstractAction {
 
-		AddStudyAction() {
+		private final JLabel newStudyNameLabel;
+		private final JTextField newStudyName;
+		private final JTextArea newStudyDesc;
 
+		AddStudyAction(
+				final JLabel newStudyNameLabel,
+				final JTextField newStudyName,
+				final JTextArea newStudyDesc)
+		{
 			putValue(NAME, Text.Study.addStudy);
+
+			this.newStudyNameLabel = newStudyNameLabel;
+			this.newStudyName = newStudyName;
+			this.newStudyDesc = newStudyDesc;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				String study_name = txtF_NewStudyName.getText();
+				String study_name = newStudyName.getText();
 				if (!study_name.isEmpty()) {
-					lbl_NewStudyName.setForeground(Color.black);
-					String study_description = txtA_Desc.getText();
-					if (txtA_Desc.getText().equals(Text.All.optional)) {
+					newStudyNameLabel.setForeground(Color.black);
+					String study_description = newStudyDesc.getText();
+					if (newStudyDesc.getText().equals(Text.All.optional)) {
 						study_description = "";
 					}
 
@@ -338,35 +333,41 @@ public class StudyManagementPanel extends JPanel {
 					GWASpiExplorerPanel.getSingleton().selectNode(newStudy);
 				} else {
 					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
-					lbl_NewStudyName.setForeground(Color.red);
+					newStudyNameLabel.setForeground(Color.red);
 				}
-			} catch (IOException ex) {
-				log.error(null, ex);
+			} catch (final IOException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 	}
 
-	private class DeleteStudyAction extends AbstractAction { // FIXME make static
+	private static class DeleteStudyAction extends AbstractAction {
 
-		DeleteStudyAction() {
+		private final Component dialogParent;
+		private final JTable studiesTable;
+
+		DeleteStudyAction(final Component dialogParent, final JTable studiesTable) {
 
 			putValue(NAME, Text.Study.deleteStudy);
+
+			this.dialogParent = dialogParent;
+			this.studiesTable = studiesTable;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
-			if (tbl_StudiesTable.getSelectedRow() != -1) {
-				final StudyTableModel model = (StudyTableModel) tbl_StudiesTable.getModel();
-				final int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
+			if (studiesTable.getSelectedRow() != -1) {
+				final StudyTableModel model = (StudyTableModel) studiesTable.getModel();
+				final int[] selectedStudyRows = studiesTable.getSelectedRows();
 				final List<Study> selectedStudies = new ArrayList<Study>(selectedStudyRows.length);
 				for (int i = 0; i < selectedStudyRows.length; i++) {
 					selectedStudies.add(model.getStudyAt(selectedStudyRows[i]));
 				}
 
-				final int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
+				final int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
-					final int deleteReportsOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
+					final int deleteReportsOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 					for (final Study selectedStudy : selectedStudies) {
 						final StudyKey studyKey = StudyKey.valueOf(selectedStudy);
 						if (deleteReportsOption != JOptionPane.CANCEL_OPTION) {
