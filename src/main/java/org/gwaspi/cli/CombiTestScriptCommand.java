@@ -75,7 +75,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 		try {
 			// checking study
-			StudyKey studyKey = fetchStudyKey(args, "study-id", "study-name", false);
+			StudyKey studyKey = fetchStudyKey(args);
 			checkStudyForScript(studyKey);
 
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");

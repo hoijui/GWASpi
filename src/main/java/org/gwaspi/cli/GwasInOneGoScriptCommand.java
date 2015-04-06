@@ -70,7 +70,7 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 			// checking study
-			StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+			final StudyKey studyKey = fetchStudyKey(args);
 			checkStudyForScript(studyKey);
 
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id

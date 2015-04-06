@@ -51,7 +51,7 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
 		try {
 			// checking study
-			final StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+			final StudyKey studyKey = fetchStudyKey(args, true);
 			checkStudyForScript(studyKey);
 
 			final String sampleInfoFilePath = fetchRequired(args, PARAM_SAMPLE_INFO_FILE);

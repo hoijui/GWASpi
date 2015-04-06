@@ -95,6 +95,30 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 	}
 
+	protected static StudyKey fetchStudyKey(
+			final Map<String, String> script,
+			final String keyPrefix,
+			final boolean allowNew)
+			throws IOException
+	{
+		return fetchStudyKey(script, keyPrefix + "-id", keyPrefix + "-name", allowNew);
+	}
+
+	protected static StudyKey fetchStudyKey(
+			final Map<String, String> script,
+			final boolean allowNew)
+			throws IOException
+	{
+		return fetchStudyKey(script, "study", allowNew);
+	}
+
+	protected static StudyKey fetchStudyKey(
+			final Map<String, String> script)
+			throws IOException
+	{
+		return fetchStudyKey(script, false);
+	}
+
 	protected static MatrixKey fetchMatrixKey(Map<String, String> script, StudyKey studyKey, String idKey, String nameKey) throws IOException {
 
 		String idValue = script.get(idKey);
@@ -133,35 +157,6 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(parentMatrixKey.getStudyKey(), nameValue);
 			return operationKeysByName.isEmpty() ? null : operationKeysByName.get(0);
 		}
-	}
-
-	/**
-	 * Parses the study ID, and eventually creates a new study, if requested.
-	 * @param studyIdStr the study ID parameter as given on the command-line
-	 * @param allowNew if true, then we create a new study,
-	 *   if <code>studyIdStr.contains("New Study")</code>
-	 * @return the study ID or {@link StudyKey#NULL_ID}, in case of a problem.
-	 */
-	protected static StudyKey prepareStudy(String studyIdStr, boolean allowNew) throws IOException {
-
-		StudyKey studyKey = null;
-
-		try {
-			studyKey = new StudyKey(Integer.parseInt(studyIdStr)); // Study Id
-		} catch (Exception ex) {
-			if (allowNew) {
-				if (studyIdStr.contains("New Study")) {
-					studyKey = StudyList.insertNewStudy(new Study(
-							studyIdStr/*.substring(10)*/,
-							"Study created by command-line interface"));
-					GWASpiExplorerNodes.insertStudyNode(studyKey);
-				}
-			} else {
-				System.out.println("The Study-id must be an integer value of an existing Study, \""+studyIdStr+"\" is not so!");
-			}
-		}
-
-		return studyKey;
 	}
 
 	private static boolean checkStudy(StudyKey studyKey) throws IOException {

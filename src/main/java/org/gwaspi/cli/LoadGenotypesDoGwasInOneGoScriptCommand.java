@@ -72,7 +72,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 			GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 			// checking study
-			StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+			final StudyKey studyKey = fetchStudyKey(args, true);
 			checkStudyForScript(studyKey);
 
 			ImportFormat format = ImportFormat.compareTo(args.get("format"));

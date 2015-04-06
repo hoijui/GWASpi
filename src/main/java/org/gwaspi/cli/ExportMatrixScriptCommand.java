@@ -56,7 +56,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 		try {
 			// checking study
-			final StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+			final StudyKey studyKey = fetchStudyKey(args);
 			final int matrixId = Integer.parseInt(args.get("matrix-id"));
 			final Integer operationId = fetchInteger(args, "operation-id", null);
 			final MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
