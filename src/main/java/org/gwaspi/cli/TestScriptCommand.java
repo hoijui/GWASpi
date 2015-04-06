@@ -105,10 +105,8 @@ public class TestScriptCommand extends AbstractScriptCommand {
 			checkStudyForScript(studyKey);
 
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
-			int gtFreqId = Integer.parseInt(args.get("gtfreq-id")); // Parent GtFreq operation Id
-			OperationKey gtFreqKey = new OperationKey(matrixKey, gtFreqId);
-			int hwId = Integer.parseInt(args.get("hw-id")); // Parent Hardy-Weinberg operation Id
-			OperationKey hwKey = new OperationKey(matrixKey, hwId);
+			final OperationKey gtFreqKey = fetchOperationKey(args, matrixKey, "gtfreq"); // parent GtFreq operation Id
+			final OperationKey hwKey = fetchOperationKey(args, matrixKey, "hw"); // parent Hardy-Weinberg operation Id
 
 			gwasParams.setPerformAllelicTests(testType == OPType.ALLELICTEST);
 			gwasParams.setPerformGenotypicTests(testType == OPType.GENOTYPICTEST);

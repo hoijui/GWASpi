@@ -80,7 +80,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
 
-			OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers-id", "qa-markers-name");
+			final OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers");
 
 			final Boolean perChromosome = fetchBoolean(args, "per-chromosome", null);
 
