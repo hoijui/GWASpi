@@ -640,9 +640,9 @@ public class LoadDataPanel extends JPanel {
 							final ImportFormat format = (ImportFormat) cmb_Format.getSelectedItem();
 							final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(LoadDataPanel.this);
 							MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, format);
-							if (gwasParams.isProceed()) {
-								Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-							}
+//							if (gwasParams.isProceed()) {
+//								Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//							}
 						} else if (performGwasInOneGo == JOptionPane.NO_OPTION) {
 							gwasParams.setProceed(true);
 						}

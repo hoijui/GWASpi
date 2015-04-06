@@ -479,22 +479,22 @@ public class DataSetAnalysePanel extends JPanel {
 
 				gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(observedElementKey, qaSamplesOpKey, qaMarkersOpKey));
 
-				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				final int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				if (choice == JOptionPane.NO_OPTION) {
 					// BY EXTERNAL PHENOTYPE FILE
 					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
 					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
 					if (phenotypeFile != null) {
 						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
-						if (gwasParams.isProceed()) {
-							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-						}
+//						if (gwasParams.isProceed()) {
+//							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
 					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
-					if (gwasParams.isProceed()) {
-						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-					}
+//					if (gwasParams.isProceed()) {
+//						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//					}
 				}
 
 //				if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -648,7 +648,7 @@ public class DataSetAnalysePanel extends JPanel {
 			try {
 				DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
-				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				final int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				ImportFormat technology = null;
 				if (observedElementMetadata instanceof MatrixMetadata) {
 					technology = ((MatrixMetadata) observedElementMetadata).getTechnology();
@@ -659,16 +659,16 @@ public class DataSetAnalysePanel extends JPanel {
 					if (phenotypeFile != null) {
 						final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
 						MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
-						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-						}
+//						if (gwasParams.isProceed()) {
+//							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
 					final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
 					MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
-					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-					}
+//					if (gwasParams.isProceed()) {
+//						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//					}
 				}
 
 				if (gwasParams.isProceed()) {
