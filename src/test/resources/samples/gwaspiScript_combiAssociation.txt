@@ -6,7 +6,8 @@ data-dir=${DATA_DIR}
 3.qa-markers-id=${QA_MARKERS_OPERATION_ID}
 4.per-chromosome=${PER_CHROMOSOME}
 5.genotype-encoding=${GENOTYPE_ENCODING}
-6.weights-filter-width=3
-7.markers-to-keep=20
-8.use-threshold-calibration=0
+6.genotype-encoding-p=2
+7.weights-filter-width=3
+8.markers-to-keep=20
+9.use-threshold-calibration=0
 [/script]
