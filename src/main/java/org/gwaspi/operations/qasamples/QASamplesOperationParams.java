@@ -23,6 +23,9 @@ import org.gwaspi.operations.AbstractOperationParams;
 
 public class QASamplesOperationParams extends AbstractOperationParams {
 
+	public static final String DEFAULT_NAME_POSTFIX
+			= " Samples Questions and Answers operation (basic statistics)";
+
 	public QASamplesOperationParams(DataSetKey parent, String name) {
 		super(OPType.SAMPLE_QA, parent, name);
 	}
@@ -33,6 +36,6 @@ public class QASamplesOperationParams extends AbstractOperationParams {
 
 	@Override
 	protected String getNameDefault() {
-		return "Samples Questions and Answers operation (basic statistics)";
+		return getParent().fetchName() + DEFAULT_NAME_POSTFIX;
 	}
 }

@@ -23,6 +23,9 @@ import org.gwaspi.operations.AbstractOperationParams;
 
 public class QAMarkersOperationParams extends AbstractOperationParams {
 
+	public static final String DEFAULT_NAME_POSTFIX
+			= " Markers Questions and Answers operation (basic statistics)";
+
 	public QAMarkersOperationParams(DataSetKey parent, String name) {
 		super(OPType.MARKER_QA, parent, name);
 	}
@@ -33,6 +36,6 @@ public class QAMarkersOperationParams extends AbstractOperationParams {
 
 	@Override
 	protected String getNameDefault() {
-		return "Markers Questions and Answers operation (basic statistics)";
+		return getParent().fetchName() + DEFAULT_NAME_POSTFIX;
 	}
 }
