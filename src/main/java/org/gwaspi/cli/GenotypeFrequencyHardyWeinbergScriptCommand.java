@@ -47,13 +47,15 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 		0.command=genotype_frequency_hardy_weinberg
 		1.study-id=1
 		2.matrix-id=8
-		3.gtfreq-name=alpha
+		3.gtfreq-name=alpha # [optional] [deprecated] use result-operation-name instead
 		4.use-external-phenotype-file=true
 		5.external-phenotype-file=/media/pheno_alpha
 		6.discard-by-marker-missing-ratio=true
 		7.discard-marker-missing-ratio-threshold=0.05
 		8.discard-samples-by-missing-ratio=true
 		9.discard-samples-missing-ratio-threshold=0.05
+		10.result-gtfreq-operation-name=MyGtFreqOp # [optional]
+		11.result-hw-operation-name=MyHWOp # [optional]
 		[/script]
 		*/
 		//</editor-fold>
@@ -66,7 +68,17 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			checkStudyForScript(studyKey);
 
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
-			String gtFrqName = args.get("gtfreq-name");
+
+			final String gtFrqNameDeprecated = args.get("gtfreq-name");
+			String gtFrqName = args.get("result-gtfreq-operation-name");
+			if (gtFrqName == null) {
+				gtFrqName = gtFrqNameDeprecated;
+			}
+			String hwName = args.get("result-hw-operation-name");
+			if ((hwName == null) && (gtFrqName != null)) {
+				hwName = "H&W on " + gtFrqName;
+			}
+
 			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get("use-external-phenotype-file"));
 			File phenoFile = null;
 			if (useExternalPhenoFile) {
