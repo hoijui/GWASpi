@@ -90,7 +90,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 			MarkerCensusOperationParams markerCensusOperationParams
 					= new MarkerCensusOperationParams(
 							null, // parent
-							null, // name
+							"Marker Census on " + newMatrixName, // name
 							null, // qaSamplesOp
 							samplesMissingRatioThreshold,
 							samplesHetzyRatioThreshold,

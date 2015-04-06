@@ -156,9 +156,6 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 						sampleInfoExtractor);
 				Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
 				SampleInfoList.insertSampleInfos(sampleInfos);
-
-				String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
-				markerCensusOperationParams.setName(censusName);
 			} else {
 				log.warn(Text.Operation.warnAffectionMissing);
 				return censusOpKey;
@@ -167,12 +164,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			// BY DB AFFECTION
 			// use Sample Info from the DB to extract affection state
 			Set<SampleInfo.Affection> affectionStates = SamplesParserManager.collectAffectionStates(markerCensusOperationParams.getParent());
-			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+			if (!(affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+					&& affectionStates.contains(SampleInfo.Affection.AFFECTED)))
 			{
-				String censusName = gwasParams.getFriendlyName() + " using " + NetCDFConstants.Defaults.DEFAULT_AFFECTION;
-				markerCensusOperationParams.setName(censusName);
-			} else {
 				log.warn(Text.Operation.warnAffectionMissing);
 				return censusOpKey;
 			}
