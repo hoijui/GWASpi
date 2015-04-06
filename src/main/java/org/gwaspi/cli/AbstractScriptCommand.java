@@ -178,6 +178,23 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 	}
 
+	protected static OperationKey fetchOperationKey(
+			final Map<String, String> script,
+			final MatrixKey parentMatrixKey,
+			final String keyPrefix)
+			throws IOException
+	{
+		return fetchOperationKey(script, parentMatrixKey, keyPrefix + "-id", keyPrefix + "-name");
+	}
+
+	protected static OperationKey fetchOperationKey(
+			final Map<String, String> script,
+			final MatrixKey parentMatrixKey)
+			throws IOException
+	{
+		return fetchOperationKey(script, parentMatrixKey, "operation");
+	}
+
 	private static boolean checkStudy(StudyKey studyKey) throws IOException {
 
 		boolean studyExists;
