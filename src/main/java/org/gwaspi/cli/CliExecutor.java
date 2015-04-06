@@ -62,21 +62,20 @@ public class CliExecutor {
 
 		final List<Map<String, String>> scripts = ScriptUtils.readScriptsFromFile(scriptFile);
 
-		System.out.println("\nScripts in queue: " + scripts.size());
+		System.out.println();
+		System.out.println("Scripts in queue: " + scripts.size());
 
-		// ITERATE THROUGH SCRIPTS AND LAUNCH THREAD FOR EACH
-		for (int i = 0; i < scripts.size(); i++) {
-			// TRY TO GARBAGE COLLECT BEFORE ANY OTHER THING
-			System.gc();
+		// parse and execute all scripts, one after an other, in order, in a single thread
+		for (int scriptIndex = 0; scriptIndex < scripts.size(); scriptIndex++) {
+			System.gc(); // HACK It is discouraged to do this explicitly!
 
-			// GET ARGS FOR CURRENT SCRIPT
-			Map<String, String> args = scripts.get(i);
+			final Map<String, String> args = scripts.get(scriptIndex);
 			// GET COMMAND NAME OF CURRENT SCRIPT
-			String command = args.values().iterator().next();
+			final String command = args.values().iterator().next(); // HACK this will not always work, as we now support named arguments in any order
 
-			System.out.println("Script " + i + ": " + command);
+			System.out.println("Script " + scriptIndex + ": " + command);
 
-			ScriptCommand scriptCommand = SCRIPT_COMMANDS.get(command);
+			final ScriptCommand scriptCommand = SCRIPT_COMMANDS.get(command);
 
 			if (scriptCommand == null) {
 				throw new ScriptExecutionException(
@@ -85,6 +84,7 @@ public class CliExecutor {
 				scriptCommand.execute(args);
 			}
 		}
-		System.out.println("\n");
+		System.out.println();
+		System.out.println();
 	}
 }
