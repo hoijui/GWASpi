@@ -61,10 +61,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		0.command=combi_association
 		1.study-id=1 # or "1.study-name=studyX"
 		2.matrix-id=8 # or "2.matrix-name=matrixX"; which matrix to operate on (read from).
-		3.census-operation-id=10 # or "3.census-operation-name=censusOperationX"
-		4.hw-operation-id=12 # or "4.hw-operation-name=hwOperationX"
-		5.hw-threshold=0.005 # TODO
-		6.genotype-encoding=genotypic # or "allelic", "nominal"
+		3.qa-markers-id=3 # or "3.qa-markers-name=qaMarkersOperationX"
+		4.per-chromosome=true
+		5.genotype-encoding=genotypic # or "allelic", "nominal"
+		6.genotype-encoding-p=6 # [optional] for example 1, 2 or 6
 		7.markers-to-keep=10000 # how many markers to be left with, after the filtering with the Combi method.
 		8.use-threshold-calibration=0 # whether to use resampling based threshold calibration. this feature takes a lot of computation time!
 		9.phenotype-info-file=/tmp/myPhenotypeInfo.txt # [optional]
