@@ -68,7 +68,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		7.markers-to-keep=10000 # how many markers to be left with, after the filtering with the Combi method.
 		8.use-threshold-calibration=0 # whether to use resampling based threshold calibration. this feature takes a lot of computation time!
 		9.phenotype-info-file=/tmp/myPhenotypeInfo.txt # [optional]
-		10.result-operation-name=myCombiTextOperationX # [optional]
+		10.result-operation-name=myCombiTestOperationX # [optional]
+		11.result-filter-operation-name=myCombiTestFilterOperationX # [optional]
 		[/script]
 		*/
 		//</editor-fold>
@@ -100,9 +101,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
 
-			// This might return null, as it is optional,
+			// These might return null, as it is optional,
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
+			String resultFilterOperationName = args.get("result-filter-operation-name");
 
 			final int totalMarkers = OperationsList.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
 
@@ -113,12 +115,15 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					useThresholdCalibration,
 					perChromosome,
 					resultOperationName);
+			if (resultFilterOperationName == null) {
+				resultFilterOperationName = "Filter on " + paramsTest.getName();
+			}
 			ByCombiWeightsFilterOperationParams paramsFilter = new ByCombiWeightsFilterOperationParams(
 					totalMarkers,
 					perChromosome,
 					weightsFilterWidth,
 					markersToKeep,
-					"Filter on " + resultOperationName);
+					resultFilterOperationName);
 
 			// test block
 			final CommonRunnable combiTask = new Threaded_Combi(paramsTest, paramsFilter);
