@@ -102,10 +102,20 @@ public class ScriptUtils {
 						scripts.add(script);
 						script = null;
 					} else if (!line.startsWith("#") && !line.isEmpty()) {
+						// A valid, non-commented script-argument line looks like one of these:
+						// * "0.command=combi_association"
+						// * "command=combi_association"
+						// * "0.command = combi_association"
+						// * "command = combi_association"
+						// The "0." part is the obsolete argument-index,
+						// which is only still valid syntax for backwards compatibility.
+						final int startValue = line.indexOf('=') + 1;
 						int startKey = line.indexOf('.') + 1;
-						int startValue = line.indexOf('=') + 1;
-						String key = line.substring(startKey, startValue - 1).trim();
-						String value = line.substring(startValue).trim();
+						if ((startKey < 0) || (startKey > startValue)) {
+							startKey = 0;
+						}
+						final String key = line.substring(startKey, startValue - 1).trim();
+						final String value = line.substring(startValue).trim();
 						script.put(key, value);
 					}
 				}
