@@ -101,8 +101,8 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
 		final OperationMetadata qaSamplesOperation = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
 
-		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(qaSamplesOperation.getStudyKey())));
 		final String reportPath = Study.constructReportsPath(qaSamplesOperation.getStudyKey());
+		org.gwaspi.global.Utils.createFolder(new File(reportPath));
 		final String prefix = ReportsList.getReportNamePrefix(qaSamplesOperation);
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
