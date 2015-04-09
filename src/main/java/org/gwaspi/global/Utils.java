@@ -248,10 +248,13 @@ public class Utils {
 		return manifestProperties;
 	}
 
-	public static File createFolder(File folder) throws IOException {
+	public static File createFolder(final File folder) throws IOException {
+
+		// strangely, java needs this to be able to fetch the parent and to check if the file exists
+		final File folderCanonical = folder.getCanonicalFile();
 
 		if (log.isDebugEnabled()) {
-			File parent = folder.getParentFile();
+			File parent = folderCanonical.getCanonicalFile().getParentFile();
 			List<File> systemRoots = null;
 			while (!parent.exists()) {
 				log.debug("parent folder does not exist: {}", parent.getAbsolutePath());
@@ -266,11 +269,11 @@ public class Utils {
 			}
 		}
 
-		if (!folder.exists() && !folder.mkdir()) {
-			throw new IOException("Failed to create directory " + folder.getPath());
+		if (!folderCanonical.exists() && !folderCanonical.mkdir()) {
+			throw new IOException("Failed to create directory \"" + folder.getCanonicalPath() + "\"");
 		}
 
-		return folder;
+		return folderCanonical;
 	}
 
 	public static File createFolder(String path, String folderName) throws IOException {
