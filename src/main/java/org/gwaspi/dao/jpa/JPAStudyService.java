@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -88,23 +89,26 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public List<StudyKey> getStudiesByName(final String name) throws IOException {
+	public StudyKey getStudyByName(final String name) throws IOException {
 
-		List<StudyKey> studies = Collections.EMPTY_LIST;
+		StudyKey studyKey = null;
 
 		EntityManager em = null;
 		try {
 			em = jpaUtil.open();
-			final Query query = em.createNamedQuery("study_listKeysByName");
+			final Query query = em.createNamedQuery("study_fetchKeyByName");
 			query.setParameter("name", name);
-			studies = convertFieldsToStudyKeys(query.getResultList());
+			final Integer studyId = (Integer) query.getSingleResult();
+			studyKey = new StudyKey(studyId);
+		} catch (final NoResultException ex) {
+			studyKey = null;
 		} catch (final Exception ex) {
-			LOG.error("Failed fetching all study keys by name", ex);
+			LOG.error("Failed fetching study-key by name", ex);
 		} finally {
 			jpaUtil.close(em);
 		}
 
-		return studies;
+		return studyKey;
 	}
 
 	private static List<StudyKey> convertFieldsToStudyKeys(List<Object> studyIds) {

@@ -28,7 +28,7 @@ public interface StudyService {
 
 	List<StudyKey> getStudies() throws IOException;
 
-	List<StudyKey> getStudiesByName(final String name) throws IOException;
+	StudyKey getStudyByName(String name) throws IOException;
 
 	List<Study> getStudiesInfos() throws IOException;
 

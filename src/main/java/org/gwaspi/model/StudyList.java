@@ -113,8 +113,8 @@ public class StudyList {
 		return getStudyService().getStudies();
 	}
 
-	public static List<StudyKey> getStudiesByName(final String name) throws IOException {
-		return getStudyService().getStudiesByName(name);
+	public static StudyKey getStudyByName(final String name) throws IOException {
+		return getStudyService().getStudyByName(name);
 	}
 
 	public static List<Study> getStudyList() throws IOException {
