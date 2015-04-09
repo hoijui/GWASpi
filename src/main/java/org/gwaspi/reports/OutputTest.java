@@ -113,11 +113,12 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 						+ getParams().getTestType().toString());
 		}
 		this.header = OutputQAMarkers.createReportHeaderLine(
-				createColumnHeaders(getParams().getTestType()));
+				createColumnHeaders(getParams().getTestType(), false));
 		this.testName = createTestName(getParams().getTestType());
 	}
 
-	public static String[] createColumnHeaders(final OPType associationTestType) {
+	public static String[] createColumnHeaders(final OPType associationTestType, final boolean gui)
+	{
 
 		final List<String> columns = new LinkedList<String>();
 		columns.add(Text.Reports.markerId);
@@ -146,8 +147,10 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 				throw new IllegalArgumentException("Not a supported test type: "
 						+ associationTestType.toString());
 		}
-		columns.add(Text.Reports.zoom);
-		columns.add(Text.Reports.externalResource);
+		if (gui) {
+			columns.add(Text.Reports.zoom);
+			columns.add(Text.Reports.externalResource);
+		}
 
 		return columns.toArray(new String[columns.size()]);
 	}
@@ -418,7 +421,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		private final String[] columnHeaders;
 
 		public AssociationTestReportParser(final OPType associationTestType) {
-			this.columnHeaders = createColumnHeaders(associationTestType);
+			this.columnHeaders = createColumnHeaders(associationTestType, false);
 		}
 
 		@Override

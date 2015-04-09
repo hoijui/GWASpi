@@ -355,7 +355,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected abstract OPType getAssociationTestType();
 
 	private String[] getColumns() {
-		return OutputTest.createColumnHeaders(getAssociationTestType());
+		return OutputTest.createColumnHeaders(getAssociationTestType(), true);
 	}
 
 	private int getZoomColumnIndex() {
