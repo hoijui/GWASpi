@@ -439,11 +439,12 @@ public class Config {
 	private void updateConfigDataDirs(File dataDir) throws IOException {
 
 		String lastOpenedDir = getString(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
-		String lastSelectedNode = getString(PROPERTY_LAST_SELECTED_NODE, String.valueOf(NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null)));
+		Integer lastSelectedNode = getInteger(PROPERTY_LAST_SELECTED_NODE,
+				NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null));
 
-		String lastMnhttThreshold = getString(
+		Double lastMnhttThreshold = getDouble(
 					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
-					String.valueOf(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT));
+					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT);
 		Color lastMnhttBack = getColor(
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
 					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
@@ -483,10 +484,10 @@ public class Config {
 		putString(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
 		putString(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
 		putString(PROPERTY_LAST_OPENED_DIR, lastOpenedDir);
-		putString(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
+		putInteger(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
 
 		// SET CHART PREFERENCES
-		putString(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
+		putDouble(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
 		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG, lastMnhttBack);
 		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG, lastMnhttBackAlt);
 		putColor(GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG, lastMnhttMain);
