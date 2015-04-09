@@ -48,7 +48,7 @@ public class SimpleFilterOperationMetadataFactory<P extends OperationParams>
 		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				"Filtering_by_" + filterDescription, // friendly name
+				params.getName(), // friendly name
 				"Filters the markers and/or samples by " + filterDescription, // description
 				getTypeInfo().getType(), // operationType
 				markersOriented ? numMarkers : numSamples,

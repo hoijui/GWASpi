@@ -48,7 +48,7 @@ public class CombiTestOperationMetadataFactory
 		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				parentDataSetKey, // parent data set
-				"COMBI_Test"/* + myFriendlyName*/, // friendly name
+				params.getName(), // friendly name
 				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
 				getTypeInfo().getType(), // operationType
 				markersOriented ? numMarkers : numSamples,

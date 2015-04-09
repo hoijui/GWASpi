@@ -42,7 +42,7 @@ public class HardyWeinbergOperationMetadataFactory
 		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				"Hardy-Weinberg_" + params.getName(), // friendly name
+				params.getName(), // friendly name
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + operationDataSet.getNumMarkers() + ""
 					+ "\nSamples: " + operationDataSet.getNumSamples(), // description

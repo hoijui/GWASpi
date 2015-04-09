@@ -41,7 +41,7 @@ public class QASamplesOperationMetadataFactory implements OperationMetadataFacto
 		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				"Sample QA", // friendly name
+				params.getName(), // friendly name
 				"Sample census on " + rdDataSetMetadata.getFriendlyName()
 						+ "\nSamples: " + operationDataSet.getNumSamples(), // description
 				getTypeInfo().getType(),

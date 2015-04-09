@@ -55,7 +55,7 @@ public class MarkerCensusOperationMetadataFactory
 		final int numSamples = operationDataSet.getNumSamples();
 		return new OperationMetadata(
 				operationDataSet.getParent(), // parent data set
-				"Genotypes freq. - " + params.getName(), // friendly name
+				params.getName(), // friendly name
 				description
 					+ "\nSample missing ratio threshold: " + params.getSampleMissingRatio()
 					+ "\nSample heterozygosity ratio threshold: " + params.getSampleHetzygRatio()
