@@ -32,7 +32,6 @@ import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypeEncodingParams;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_Combi;
 
 public class CombiTestScriptCommand extends AbstractScriptCommand {
@@ -127,7 +126,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			// test block
 			final CommonRunnable combiTask = new Threaded_Combi(paramsTest, paramsFilter);
-			MultiOperations.queueTask(combiTask);
+			CommonRunnable.doRunNowInThread(combiTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);
 		}

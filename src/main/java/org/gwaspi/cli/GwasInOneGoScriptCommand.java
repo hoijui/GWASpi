@@ -26,7 +26,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_GWAS;
 
 class GwasInOneGoScriptCommand extends AbstractScriptCommand {
@@ -117,7 +116,7 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			// GWAS block
 			if (gwasParams.isProceed()) {
 				final CommonRunnable gwasTask = new Threaded_GWAS(gwasParams);
-				MultiOperations.queueTask(gwasTask);
+				CommonRunnable.doRunNowInThread(gwasTask);
 			} else {
 				System.err.println("Not proceeding after trying to ensure QA operations");
 			}

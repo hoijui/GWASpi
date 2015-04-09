@@ -25,7 +25,6 @@ import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
 
 class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
@@ -127,7 +126,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 					Boolean.parseBoolean(args.get("use-dummy-samples")), // Dummy samples
 					true, // Do GWAS
 					gwasParams); // gwasParams (dummy)
-			MultiOperations.queueTask(loadGwasTask);
+			CommonRunnable.doRunNowInThread(loadGwasTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);
 		}

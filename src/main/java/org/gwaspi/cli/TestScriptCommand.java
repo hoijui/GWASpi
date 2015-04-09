@@ -31,7 +31,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_MatrixQA;
 import org.gwaspi.threadbox.Threaded_Test;
 
@@ -127,7 +126,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 						hwKey,
 						gwasParams,
 						testType);
-				MultiOperations.queueTask(testTask);
+				CommonRunnable.doRunNowInThread(testTask);
 			} else {
 				System.err.println("Not proceeding after trying to ensure QA operations");
 			}
@@ -136,7 +135,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 		}
 	}
 
-	public static void ensureQAOperations(final DataSetKey dataSetKey, final GWASinOneGOParams gwasParams) {
+	public static void ensureQAOperations(final DataSetKey dataSetKey, final GWASinOneGOParams gwasParams) throws IOException {
 
 		final List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(QA_OPERATION_TYPES, dataSetKey, true);
 
@@ -144,11 +143,11 @@ public class TestScriptCommand extends AbstractScriptCommand {
 			gwasParams.setProceed(false);
 			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 			final CommonRunnable task = new Threaded_MatrixQA(dataSetKey);
-			MultiOperations.queueTask(task);
+			CommonRunnable.doRunNowInThread(task);
 		}
 	}
 
-	public static void ensureMatrixQAs(final MatrixKey matrixKey, final GWASinOneGOParams gwasParams) {
+	public static void ensureMatrixQAs(final MatrixKey matrixKey, final GWASinOneGOParams gwasParams) throws IOException {
 		ensureQAOperations(new DataSetKey(matrixKey), gwasParams);
 	}
 }

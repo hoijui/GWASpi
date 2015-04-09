@@ -24,7 +24,6 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
 
 class LoadGenotypesScriptCommand extends AbstractScriptCommand {
@@ -83,7 +82,7 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 					Boolean.parseBoolean(args.get("use-dummy-samples")), // Dummy samples
 					false, // Do GWAS
 					gwasParams); // gwasParams (dummy)
-			MultiOperations.queueTask(loadGwasTask);
+			CommonRunnable.doRunNowInThread(loadGwasTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);
 		}
