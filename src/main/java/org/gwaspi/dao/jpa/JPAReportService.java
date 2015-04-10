@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
@@ -38,62 +37,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JPA implementation of a report service.
- * Uses abstracted DB access to store data,
- * see persistence.xml for DB settings.
  */
 public class JPAReportService implements ReportService {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAReportService.class);
 
-	private final EntityManagerFactory emf;
-
+	private final JPAUtil jpaUtil;
 
 	public JPAReportService(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-
-	private EntityManager open() {
-
-		EntityManager em = emf.createEntityManager();
-		return em;
-	}
-	private void begin(EntityManager em) {
-		em.getTransaction().begin();
-	}
-	private void commit(EntityManager em) {
-		em.getTransaction().commit();
-	}
-	private void rollback(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen() && em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				} else {
-					LOG.error("Failed to rollback a transaction: no active"
-							+ " connection or transaction");
-				}
-			} catch (PersistenceException ex) {
-				LOG.error("Failed to rollback a transaction", ex);
-			}
-		}
-	}
-	private void close(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen()) {
-					em.close();
-				}
-			} catch (IllegalStateException ex) {
-				LOG.error("Failed to close an entity manager", ex);
-			}
-		}
+		this.jpaUtil = new JPAUtil(emf);
 	}
 
 	@Override
@@ -103,12 +56,12 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			report = em.find(Report.class, reportKey);
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching a report by: " + reportKey, ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return report;
@@ -120,7 +73,7 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"report_fetchByStudyIdParentMatrixId");
 			query.setParameter("studyId", parentMatrixKey.getStudyId());
@@ -131,7 +84,7 @@ public class JPAReportService implements ReportService {
 					+ ": parent-matrix-key: " + parentMatrixKey.toRawIdString()
 					+ "; (not found)", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return reports;
@@ -143,7 +96,7 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"report_fetchByStudyIdParentMatrixIdParentOperationId");
 			query.setParameter("studyId", parentOperationKey.getStudyId());
@@ -155,7 +108,7 @@ public class JPAReportService implements ReportService {
 					+ ": parent-operation-key: " + parentOperationKey.toRawIdString()
 					+ "; (not found)", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return reports;
@@ -210,19 +163,19 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			if (report.getId() == ReportKey.NULL_ID) {
 				em.persist(report);
 			} else {
 				em.merge(report);
 			}
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a report", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 
@@ -240,20 +193,20 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			Query query = em.createNamedQuery("report_deleteByStudyIdParentMatrixId");
 			query.setParameter("studyId", parentMatrixKey.getStudyId());
 			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			query.executeUpdate();
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
-			rollback(em);
+			jpaUtil.rollback(em);
 			throw new IOException("Failed deleting reports by"
 					+ ": parent-matrix-id: " + parentMatrixKey,
 					ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 
@@ -261,19 +214,19 @@ public class JPAReportService implements ReportService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("report_deleteByStudyIdParentMatrixIdParentOperationId");
 			query.setParameter("studyId", parentOperationKey.getStudyId());
 			query.setParameter("parentMatrixId", parentOperationKey.getParentMatrixId());
 			query.setParameter("parentOperationId", parentOperationKey.getId());
 			query.executeUpdate();
 		} catch (Exception ex) {
-			rollback(em);
+			jpaUtil.rollback(em);
 			throw new IOException("Failed deleting reports by"
 					+ ": parent-operation-key: " + parentOperationKey.toRawIdString(),
 					ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 }

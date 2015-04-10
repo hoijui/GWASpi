@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -39,62 +38,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JPA implementation of a study service.
- * Uses abstracted DB access to store data,
- * see persistence.xml for DB settings.
  */
 public class JPAStudyService implements StudyService {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAStudyService.class);
 
-	private final EntityManagerFactory emf;
-
+	private final JPAUtil jpaUtil;
 
 	public JPAStudyService(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-
-	private EntityManager open() {
-
-		EntityManager em = emf.createEntityManager();
-		return em;
-	}
-	private void begin(EntityManager em) {
-		em.getTransaction().begin();
-	}
-	private void commit(EntityManager em) {
-		em.getTransaction().commit();
-	}
-	private void rollback(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen() && em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				} else {
-					LOG.error("Failed to rollback a transaction: no active"
-							+ " connection or transaction");
-				}
-			} catch (PersistenceException ex) {
-				LOG.error("Failed to rollback a transaction", ex);
-			}
-		}
-	}
-	private void close(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen()) {
-					em.close();
-				}
-			} catch (IllegalStateException ex) {
-				LOG.error("Failed to close an entity manager", ex);
-			}
-		}
+		this.jpaUtil = new JPAUtil(emf);
 	}
 
 	@Override
@@ -104,12 +57,12 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			study = em.find(Study.class, studyKey);
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching a study by: " + studyKey.toRawIdString(), ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return study;
@@ -122,13 +75,13 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("study_listKeys");
 			studies = convertFieldsToStudyKeys(query.getResultList());
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all study keys", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return studies;
@@ -141,14 +94,14 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			final Query query = em.createNamedQuery("study_listKeysByName");
 			query.setParameter("name", name);
 			studies = convertFieldsToStudyKeys(query.getResultList());
 		} catch (final Exception ex) {
 			LOG.error("Failed fetching all study keys by name", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return studies;
@@ -171,12 +124,12 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			studies = em.createNamedQuery("study_list").getResultList();
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all studies", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return studies;
@@ -187,19 +140,19 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			if (study.getId() == StudyKey.NULL_ID) {
 				em.persist(study);
 			} else {
 				throw new IllegalArgumentException("Study was already persisted!");
 			}
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a study", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return StudyKey.valueOf(study);
@@ -213,20 +166,20 @@ public class JPAStudyService implements StudyService {
 		// DELETE METADATA INFO FROM DB
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			study = em.find(Study.class, studyKey);
 			if (study == null) {
 				throw new IllegalArgumentException("No study found with this key: "
 						+ studyKey.toRawIdString());
 			}
 			em.remove(study);
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
-			rollback(em);
+			jpaUtil.rollback(em);
 			throw new IOException("Failed deleting study by: " + studyKey.toRawIdString(), ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 		List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
 
@@ -258,18 +211,18 @@ public class JPAStudyService implements StudyService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			if (study.getId() == StudyKey.NULL_ID) {
 				throw new IllegalArgumentException("Study was not yet persisted!");
 			}
 			em.merge(study);
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed updating a study", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 }

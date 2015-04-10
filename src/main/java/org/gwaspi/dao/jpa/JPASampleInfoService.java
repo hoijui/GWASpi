@@ -28,7 +28,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.NetCDFConstants.Variables;
 import org.gwaspi.dao.SampleInfoService;
@@ -43,53 +42,10 @@ public class JPASampleInfoService implements SampleInfoService {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPASampleInfoService.class);
 
-	private final EntityManagerFactory emf;
+	private final JPAUtil jpaUtil;
 
 	public JPASampleInfoService(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-
-	private EntityManager open() {
-
-		EntityManager em = emf.createEntityManager();
-		return em;
-	}
-	private void begin(EntityManager em) {
-		em.getTransaction().begin();
-	}
-	private void commit(EntityManager em) {
-		em.getTransaction().commit();
-	}
-	private void rollback(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen() && em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				} else {
-					LOG.error("Failed to rollback a transaction: no active"
-							+ " connection or transaction");
-				}
-			} catch (PersistenceException ex) {
-				LOG.error("Failed to rollback a transaction", ex);
-			}
-		}
-	}
-	private void close(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen()) {
-					em.close();
-				}
-			} catch (IllegalStateException ex) {
-				LOG.error("Failed to close an entity manager", ex);
-			}
-		}
+		this.jpaUtil = new JPAUtil(emf);
 	}
 
 	@Override
@@ -99,7 +55,7 @@ public class JPASampleInfoService implements SampleInfoService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query;
 			if (studyKey == null) {
 				query = em.createNamedQuery("sampleInfo_listKeys");
@@ -119,7 +75,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching all matrices", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return sampleKeys;
@@ -132,7 +88,7 @@ public class JPASampleInfoService implements SampleInfoService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("sampleInfo_listByStudyId");
 			query.setParameter("studyId", studyKey.getId());
 			sampleInfos = (List<SampleInfo>) query.getResultList();
@@ -143,7 +99,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching sample-info", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return sampleInfos;
@@ -156,12 +112,12 @@ public class JPASampleInfoService implements SampleInfoService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			sampleInfo = em.find(SampleInfo.class, key);
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching sample-info: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return sampleInfo;
@@ -174,7 +130,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		Collection<T> samplesVarValue;
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query;
 			if (variable.equals(Variables.VAR_SAMPLE_KEY)) { // sample ID
 				query = em.createNamedQuery("sampleInfo_listSampleIds");
@@ -195,7 +151,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		} catch (Exception ex) {
 			throw new IOException(ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		// do the picking
@@ -228,19 +184,19 @@ public class JPASampleInfoService implements SampleInfoService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			Query query = em.createNamedQuery("sampleInfo_deleteByStudyId");
 			query.setParameter("studyId", studyKey.getId());
 			query.executeUpdate();
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
-			rollback(em);
+			jpaUtil.rollback(em);
 			throw new IOException("Failed deleting sample-infos by"
 					+ ": study-id: " + studyKey.getId(),
 					ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 
@@ -250,26 +206,26 @@ public class JPASampleInfoService implements SampleInfoService {
 		for (SampleInfo sampleInfo : sampleInfos) {
 			EntityManager em = null;
 			try {
-				em = open();
-				begin(em);
+				em = jpaUtil.open();
+				jpaUtil.begin(em);
 				em.persist(sampleInfo);
-				commit(em);
+				jpaUtil.commit(em);
 			} catch (Exception ex) {
 				EntityManager emInner = null;
 				try {
-					emInner = open();
-					begin(emInner);
+					emInner = jpaUtil.open();
+					jpaUtil.begin(emInner);
 					emInner.merge(sampleInfo); // TODO rather check the id, and decide to do persist or merge
-					commit(emInner);
+					jpaUtil.commit(emInner);
 				} catch (Exception ex2) {
 					LOG.error("Failed adding a sample-info", ex);
 					LOG.error("Failed mergeing a sample-info", ex2);
-					rollback(emInner);
+					jpaUtil.rollback(emInner);
 				} finally {
-					close(emInner);
+					jpaUtil.close(emInner);
 				}
 			} finally {
-				close(em);
+				jpaUtil.close(em);
 			}
 		}
 	}

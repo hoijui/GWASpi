@@ -25,7 +25,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.DataSetKey;
@@ -41,62 +40,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JPA implementation of a matrix service.
- * Uses abstracted DB access to store data,
- * see persistence.xml for DB settings.
  */
 public class JPAMatrixService implements MatrixService {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAMatrixService.class);
 
-	private final EntityManagerFactory emf;
+	private final JPAUtil jpaUtil;
 
-
-	public JPAMatrixService(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-
-	private EntityManager open() {
-
-		EntityManager em = emf.createEntityManager();
-		return em;
-	}
-	private void begin(EntityManager em) {
-		em.getTransaction().begin();
-	}
-	private void commit(EntityManager em) {
-		em.getTransaction().commit();
-	}
-	private void rollback(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen() && em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				} else {
-					LOG.error("Failed to rollback a transaction: no active"
-							+ " connection or transaction");
-				}
-			} catch (PersistenceException ex) {
-				LOG.error("Failed to rollback a transaction", ex);
-			}
-		}
-	}
-	private void close(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen()) {
-					em.close();
-				}
-			} catch (IllegalStateException ex) {
-				LOG.error("Failed to close an entity manager", ex);
-			}
-		}
+	public JPAMatrixService(final EntityManagerFactory emf) {
+		this.jpaUtil = new JPAUtil(emf);
 	}
 
 	private static List<MatrixKey> convertMatrixIdsToKeys(final StudyKey studyKey, final List<Integer> matrixIds) {
@@ -116,7 +69,7 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("matrixMetadata_listIdsByStudyId");
 			query.setParameter("studyId", studyKey.getId());
 			List<Integer> matricesIds = query.getResultList();
@@ -127,7 +80,7 @@ public class JPAMatrixService implements MatrixService {
 //		} catch (Exception ex) {
 //			LOG.error("Failed fetching all matrices", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return matrices;
@@ -140,14 +93,14 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
 			query.setParameter("studyId", studyKey.getId());
 			matricesMetadata = query.getResultList();
 //		} catch (IOException ex) {
 //			LOG.error("Failed fetching all matrices-metadata", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return matricesMetadata;
@@ -158,19 +111,19 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			if (matrixMetadata.getMatrixId() == MatrixKey.NULL_ID) {
 				em.persist(matrixMetadata);
 			} else {
 				em.merge(matrixMetadata);
 			}
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a matrix-metadata", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return MatrixKey.valueOf(matrixMetadata);
@@ -184,22 +137,22 @@ public class JPAMatrixService implements MatrixService {
 		// DELETE METADATA INFO FROM DB
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			matrixMetadata = em.find(MatrixMetadata.class, matrixKey);
 			if (matrixMetadata == null) {
 				throw new IllegalArgumentException("No matrix found with this ID: (" + matrixKey.getStudyId() + ") " + matrixKey.getMatrixId());
 			}
 			em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
-			rollback(em);
+			jpaUtil.rollback(em);
 			throw new IOException("Failed deleting matrix by"
 					+ ": study-id: " + matrixKey.getStudyId()
 					+ ", matrix-id: " + matrixKey.getMatrixId(),
 					ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		String genotypesFolder = Study.constructGTPath(matrixMetadata.getKey().getStudyKey());
@@ -222,15 +175,15 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			em.merge(matrixMetadata);
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a matrix-metadata", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 	}
 
@@ -241,14 +194,14 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixKey.getMatrixId());
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString()
 					+ " (id not found)", ex);
-			close(em);
+			jpaUtil.close(em);
 			LOG.info("Available matrices:");
 			List<MatrixKey> matrixList = getMatrixKeys(matrixKey.getStudyKey());
 			StringBuilder matrices = new StringBuilder();
@@ -261,7 +214,7 @@ public class JPAMatrixService implements MatrixService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString(), ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return matrixMetadata;
@@ -274,7 +227,7 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("matrixMetadata_listKeysByStudyIdAndSimpleName");
 			query.setParameter("studyId", studyKey.getId());
 			query.setParameter("simpleName", simpleName);
@@ -285,7 +238,7 @@ public class JPAMatrixService implements MatrixService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName, ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return matrices;
@@ -298,7 +251,7 @@ public class JPAMatrixService implements MatrixService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery("matrixMetadata_listKeysByStudyIdAndFriendlyName");
 			query.setParameter("studyId", studyKey.getId());
 			query.setParameter("friendlyName", friendlyName);
@@ -309,7 +262,7 @@ public class JPAMatrixService implements MatrixService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName, ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return matrices;

@@ -21,7 +21,6 @@ import java.util.Collections;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,62 +39,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JPA implementation of a operation service.
- * Uses abstracted DB access to store data,
- * see persistence.xml for DB settings.
  */
 public class JPAOperationService implements OperationService {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAOperationService.class);
 
-	private final EntityManagerFactory emf;
-
+	private final JPAUtil jpaUtil;
 
 	public JPAOperationService(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-
-	private EntityManager open() {
-
-		EntityManager em = emf.createEntityManager();
-		return em;
-	}
-	private void begin(EntityManager em) {
-		em.getTransaction().begin();
-	}
-	private void commit(EntityManager em) {
-		em.getTransaction().commit();
-	}
-	private void rollback(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen() && em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				} else {
-					LOG.error("Failed to rollback a transaction: no active"
-							+ " connection or transaction");
-				}
-			} catch (PersistenceException ex) {
-				LOG.error("Failed to rollback a transaction", ex);
-			}
-		}
-	}
-	private void close(EntityManager em) {
-
-		if (em == null) {
-			LOG.error("Failed to create an entity manager");
-		} else {
-			try {
-				if (em.isOpen()) {
-					em.close();
-				}
-			} catch (IllegalStateException ex) {
-				LOG.error("Failed to close an entity manager", ex);
-			}
-		}
+		this.jpaUtil = new JPAUtil(emf);
 	}
 
 	@Override
@@ -105,12 +58,12 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			operationMetadata = em.find(OperationMetadata.class, operationKey);
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching operation-metadata by id: " + operationKey, ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operationMetadata;
@@ -142,7 +95,7 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixId");
 			query.setParameter("studyId", root.getStudyId());
@@ -151,7 +104,7 @@ public class JPAOperationService implements OperationService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operationsMetadata;
@@ -163,7 +116,7 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixIdOperationType");
 			query.setParameter("studyId", root.getStudyId());
@@ -173,7 +126,7 @@ public class JPAOperationService implements OperationService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operations", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operations;
@@ -223,7 +176,7 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixIdParentOperationId");
 			query.setParameter("studyId", parent.getStudyId());
@@ -233,7 +186,7 @@ public class JPAOperationService implements OperationService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operations", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operations;
@@ -245,7 +198,7 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdParentMatrixIdParentOperationIdOperationType");
 			query.setParameter("studyId", parent.getStudyId());
@@ -256,7 +209,7 @@ public class JPAOperationService implements OperationService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operations", ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operations;
@@ -299,7 +252,7 @@ public class JPAOperationService implements OperationService {
 		while (curOperationKey != null) {
 			EntityManager em = null;
 			try {
-				em = open();
+				em = jpaUtil.open();
 				Query query = em.createNamedQuery(
 						"operationMetadata_getTypeByStudyIdParentMatrixIdOperationId");
 				query.setParameter("studyId", curOperationKey.getStudyId());
@@ -318,7 +271,7 @@ public class JPAOperationService implements OperationService {
 				LOG.error("Failed fetching operation type", ex);
 				return Collections.EMPTY_LIST;
 			} finally {
-				close(em);
+				jpaUtil.close(em);
 			}
 		}
 
@@ -330,15 +283,15 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
-			begin(em);
+			em = jpaUtil.open();
+			jpaUtil.begin(em);
 			em.persist(operationMetadata);
-			commit(em);
+			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed persisting operation-metadata", ex);
-			rollback(em);
+			jpaUtil.rollback(em);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return OperationKey.valueOf(operationMetadata);
@@ -365,21 +318,21 @@ public class JPAOperationService implements OperationService {
 
 					EntityManager em = null;
 					try {
-						em = open();
-						begin(em);
+						em = jpaUtil.open();
+						jpaUtil.begin(em);
 						OperationMetadata operation = em.find(OperationMetadata.class, childOperationKey);
 						if (operation == null) {
 							throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 						}
 						em.remove(operation);
-						commit(em);
+						jpaUtil.commit(em);
 					} catch (Exception ex) {
-						rollback(em);
+						jpaUtil.rollback(em);
 						throw new IOException("Failed deleting child operation by"
 								+ ": operation-key: " + childOperationKey.toRawIdString(),
 								ex);
 					} finally {
-						close(em);
+						jpaUtil.close(em);
 					}
 				}
 			} else {
@@ -390,43 +343,43 @@ public class JPAOperationService implements OperationService {
 
 				EntityManager em = null;
 				try {
-					em = open();
-					begin(em);
+					em = jpaUtil.open();
+					jpaUtil.begin(em);
 					OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 					if (operation == null) {
 						throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 					}
 					em.remove(operation);
-					commit(em);
+					jpaUtil.commit(em);
 				} catch (Exception ex) {
-					rollback(em);
+					jpaUtil.rollback(em);
 					throw new IOException("Failed deleting operation by"
 							+ ": operation-key: " + operationKey.toRawIdString(),
 							ex);
 				} finally {
-					close(em);
+					jpaUtil.close(em);
 				}
 			}
 		} catch (Exception ex) {
 			// PURGE INEXISTING OPERATIONS FROM DB
 			EntityManager em = null;
 			try {
-				em = open();
-				begin(em);
+				em = jpaUtil.open();
+				jpaUtil.begin(em);
 				OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 				if (operation == null) {
 					throw new IllegalArgumentException("No operation found with this key: " + operationKey.toRawIdString());
 				}
 				em.remove(operation);
-				commit(em);
+				jpaUtil.commit(em);
 			} catch (Exception exi) {
-				rollback(em);
+				jpaUtil.rollback(em);
 				throw new IOException("Failed deleting operation by"
 						+ ": study-id: " + studyKey.getId()
 						+ ": operation-key: " + operationKey.toRawIdString(),
 						exi);
 			} finally {
-				close(em);
+				jpaUtil.close(em);
 			}
 			throw new IOException(ex);
 		}
@@ -455,7 +408,7 @@ public class JPAOperationService implements OperationService {
 
 		EntityManager em = null;
 		try {
-			em = open();
+			em = jpaUtil.open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByStudyIdFriendlyName");
 			query.setParameter("studyId", studyKey.getId());
@@ -467,7 +420,7 @@ public class JPAOperationService implements OperationService {
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-keys operation-name: " + operationName, ex);
 		} finally {
-			close(em);
+			jpaUtil.close(em);
 		}
 
 		return operations;
