@@ -108,14 +108,32 @@ public class StartGWASpi {
 		out.println(Text.App.appDescription);
 		out.println();
 		out.println("command line switches:");
-		out.println("\t--" + COMMAND_LINE_SWITCH_HELP + "\t:\t" + "Show this info and exit");
-		out.println("\t--" + COMMAND_LINE_SWITCH_VERSION + "\t:\t" + "Show the GWASpi version and exit");
-		out.println("\t--" + COMMAND_LINE_SWITCH_LICENSE + "\t:\t" + "Show the GWASpi software license and exit");
-		out.println("\t--" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
-		out.println("\t--" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
-		out.println("\t--" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
-		out.println("\t--" + COMMAND_LINE_SWITCH_IN_MEMORY + "\t:\t" + "use an in-memory data storage, isntead of the default one (in-files)");
-		out.println("\t--" + COMMAND_LINE_SWITCH_ARRAY_GENOTYPE_LISTS + "\t:\t" + "use array genotype-lists, instead of compressed ones; this results in less CPU, but more memopry usage");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_HELP,
+				"Show this info and exit");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_VERSION,
+				"Show the " + Text.App.appName + " version and exit");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_LICENSE,
+				"Show the " + Text.App.appName + " software license and exit");
+		out.format("  --%-7s <%-19s: %s\n",
+				COMMAND_LINE_SWITCH_LOG,
+				"log-file-path>",
+				"(GUI mode only) log to the specified file");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_NOLOG,
+				"(script mode only) do not log to any file");
+		out.format("  --%-7s <%-19s: %s\n",
+				COMMAND_LINE_SWITCH_SCRIPT,
+				"script-file-path>",
+				"do not show the GUI, but run the given script instead");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_IN_MEMORY,
+				"use an in-memory data storage, instead of the default DB one (on the hard-disc)");
+		out.format("  --%-28s: %s\n",
+				COMMAND_LINE_SWITCH_ARRAY_GENOTYPE_LISTS,
+				"use array genotype-lists, instead of compressed ones; this results in less CPU, but more RAM usage");
 	}
 
 	public static void printVersion(final PrintStream out) {
