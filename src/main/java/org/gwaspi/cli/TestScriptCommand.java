@@ -104,6 +104,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 			checkStudyForScript(studyKey);
 
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
+			checkMatrixForScript(matrixKey);
 			final OperationKey gtFreqKey = fetchOperationKey(args, matrixKey, "gtfreq"); // parent GtFreq operation Id
 			final OperationKey hwKey = fetchOperationKey(args, matrixKey, "hw"); // parent Hardy-Weinberg operation Id
 

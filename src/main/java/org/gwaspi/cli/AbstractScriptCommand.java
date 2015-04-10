@@ -231,6 +231,14 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 	}
 
+	protected static void checkMatrixForScript(final MatrixKey matrixKey) throws ScriptExecutionException {
+
+		if (matrixKey == null) {
+			throw new ScriptExecutionException(new IllegalArgumentException(
+					"Invalid matrix: \"" + matrixKey + "\""));
+		}
+	}
+
 	protected static String fetchRequired(final Map<String, String> args, final String argName) throws IOException {
 
 		final String value = args.get(argName);
