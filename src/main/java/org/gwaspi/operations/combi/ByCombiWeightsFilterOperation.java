@@ -128,7 +128,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		if (CombiTestMatrixOperation.spy != null) {
 			CombiTestMatrixOperation.spy.smoothedWeightsCalculated(weightsFiltered);
 		}
-		LOG.debug("filtered weights: " + weightsFiltered);
+//		LOG.debug("filtered weights: " + weightsFiltered); // this is way too verbose
 
 		List<Double> weightsAbsolute = new ArrayList<Double>(weightsFiltered.size());
 		for (Double wFiltered : weightsFiltered) {

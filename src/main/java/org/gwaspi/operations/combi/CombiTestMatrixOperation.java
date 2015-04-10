@@ -1050,7 +1050,7 @@ public class CombiTestMatrixOperation
 		}
 
 		LOG.debug("weights(encoded): " + weightsEncoded.size());
-		LOG.debug("\t" + weightsEncoded);
+//		LOG.debug("\t" + weightsEncoded); // this is way too verbose
 
 		LOG.debug("dSamples: " + dSamples);
 		LOG.debug("dEncoded: " + dEncoded);
