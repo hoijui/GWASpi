@@ -84,13 +84,24 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 				phenoFile = new File(args.get("external-phenotype-file"));
 			}
 
-			boolean markersMismatchDiscard = true;
-//			boolean markersMismatchDiscard = Boolean.parseBoolean(args.get("discard-mismached-marker"));
-//			boolean discardByMarkersMissingRatio = Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio"));
-			double markersMissingRatioThreshold = Double.parseDouble(args.get("discard-marker-missing-ratio-threshold"));
-//			boolean discardBySamplesMissingRatio = Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio"));
-			double samplesMissingRatioThreshold = Double.parseDouble(args.get("discard-samples-missing-ratio-threshold"));
-			double samplesHetzyRatioThreshold = Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold"));
+			final boolean markersMismatchDiscard = fetchBoolean(args,
+					"discard-mismached-marker",
+					MarkerCensusOperationParams.DEFAULT_DISCARD_MISMATCHES);
+//			final boolean discardByMarkersMissingRatio = fetchBoolean(args,
+//					"discard-by-marker-missing-ratio",
+//					MarkerCensusOperationParams.);
+			final double markersMissingRatioThreshold = fetchDouble(args,
+					"discard-marker-missing-ratio-threshold",
+					MarkerCensusOperationParams.DEFAULT_MARKER_MISSING_RATIO);
+//			final boolean discardBySamplesMissingRatio = fetchDouble(args,
+//					"discard-samples-by-missing-ratio",
+//					MarkerCensusOperationParams.);
+			final double samplesMissingRatioThreshold = fetchDouble(args,
+					"discard-samples-missing-ratio-threshold",
+					MarkerCensusOperationParams.DEFAULT_SAMPLE_MISSING_RATIO);
+			final double samplesHetzyRatioThreshold = fetchDouble(args,
+					"discard-samples-heterozygosity-ratio-threshold",
+					MarkerCensusOperationParams.DISABLE_SAMPLE_HETZY_RATIO);
 
 			MarkerCensusOperationParams markerCensusOperationParams
 					= new MarkerCensusOperationParams(
