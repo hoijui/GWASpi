@@ -114,6 +114,8 @@ public class StartGWASpi {
 		out.println("\t--" + COMMAND_LINE_SWITCH_LOG + " <log-file-path>" + "\t:\t" + "(GUI mode only) log to the specified file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_NOLOG + "\t:\t" + "(script mode only) do not log to any file");
 		out.println("\t--" + COMMAND_LINE_SWITCH_SCRIPT + " <script-file-path>" + "\t:\t" + "do not show the GUI, but run the given script instead");
+		out.println("\t--" + COMMAND_LINE_SWITCH_IN_MEMORY + "\t:\t" + "use an in-memory data storage, isntead of the default one (in-files)");
+		out.println("\t--" + COMMAND_LINE_SWITCH_ARRAY_GENOTYPE_LISTS + "\t:\t" + "use array genotype-lists, instead of compressed ones; this results in less CPU, but more memopry usage");
 	}
 
 	public static void printVersion(final PrintStream out) {
