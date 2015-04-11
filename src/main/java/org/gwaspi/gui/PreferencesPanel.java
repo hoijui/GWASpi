@@ -226,29 +226,29 @@ public class PreferencesPanel extends JPanel {
 				{
 					// Check if it is a valid color setting,
 					// and issue a warning if not.
-					String[] tmp = selectedPropertyValue.split(",");
-					if (tmp.length == 3) {
-						try {
-							int redInt = Integer.parseInt(tmp[0]);
-							if (redInt < 0 || redInt > 255) {
-								redInt = redInt % 255;
-							}
-							int greenInt = Integer.parseInt(tmp[1]);
-							if (greenInt < 0 || greenInt > 255) {
-								greenInt = greenInt % 255;
-							}
-							int blueInt = Integer.parseInt(tmp[2]);
-							if (blueInt < 0 || blueInt > 255) {
-								blueInt = blueInt % 255;
-							}
-						} catch (Exception ex) {
-							String warningText = Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName;
-							log.warn(warningText, ex);
-							Dialogs.showWarningDialogue(warningText);
-							proceed = false;
+					final String[] rgbVals = selectedPropertyValue.split(",");
+					try {
+						if (rgbVals.length != 3) {
+							throw new IllegalArgumentException(
+									"Needs exactly 3 int values separated by ','; found "
+											+ rgbVals.length + " values");
 						}
-					} else {
-						Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName);
+						int redInt = Integer.parseInt(rgbVals[0]);
+						if (redInt < 0 || redInt > 255) {
+							redInt = redInt % 255;
+						}
+						int greenInt = Integer.parseInt(rgbVals[1]);
+						if (greenInt < 0 || greenInt > 255) {
+							greenInt = greenInt % 255;
+						}
+						int blueInt = Integer.parseInt(rgbVals[2]);
+						if (blueInt < 0 || blueInt > 255) {
+							blueInt = blueInt % 255;
+						}
+					} catch (Exception ex) {
+						String warningText = Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName;
+						log.warn(warningText, ex);
+						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
 				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_THRESHOLD")
