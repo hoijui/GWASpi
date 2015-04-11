@@ -2,8 +2,10 @@
 
 package org.gwaspi.gui.utils;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +25,17 @@ public class URLInDefaultBrowser {
 
 	private static final Logger log = LoggerFactory.getLogger(URLInDefaultBrowser.class);
 
-	private static final String[] browsers = {"firefox", "opera", "konqueror", "epiphany",
-		"seamonkey", "galeon", "kazehakase", "mozilla", "chromium-browser", "netscape"};
+//	private static final String[] BROWSERS = {
+//		"firefox",
+//		"opera",
+//		"konqueror",
+//		"epiphany",
+//		"seamonkey",
+//		"galeon",
+//		"kazehakase",
+//		"mozilla",
+//		"chromium-browser",
+//		"netscape"};
 
 	private URLInDefaultBrowser() {
 	}
@@ -35,22 +46,25 @@ public class URLInDefaultBrowser {
 	 * @param url A web address (URL) of a web page (ex:
 	 * "http://www.google.com/")
 	 */
-	public static void browseGenericURL(String url) throws IOException {
-		if (!java.awt.Desktop.isDesktopSupported()) {
+	public static void browseGenericURL(final String url) throws IOException {
+
+		if (!Desktop.isDesktopSupported()) {
 			log.error("Desktop is not supported (fatal)");
 //			System.exit(1);
 		}
 
-		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+		final Desktop desktop = Desktop.getDesktop();
 
-		if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+		if (!desktop.isSupported(Desktop.Action.BROWSE)) {
 			log.error("Desktop doesn't support the browse action (fatal)");
 //			System.exit(1);
 		}
 
 		try {
-			if (org.gwaspi.global.Utils.checkInternetConnection() && desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-				java.net.URI uri = new java.net.URI(url);
+			if (org.gwaspi.global.Utils.checkInternetConnection()
+					&& desktop.isSupported(Desktop.Action.BROWSE))
+			{
+				final URI uri = new URI(url);
 				desktop.browse(uri);
 			} else {
 				File file = new File(url);

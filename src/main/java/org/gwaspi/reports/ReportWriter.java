@@ -85,7 +85,7 @@ public class ReportWriter {
 
 		@Override
 		public String extract(Entry<K, V> object) {
-			return separatorPrefix + org.gwaspi.global.Utils.toMeaningfullRep(object.getValue());
+			return separatorPrefix + Utils.toMeaningfullRep(object.getValue());
 		}
 	}
 
