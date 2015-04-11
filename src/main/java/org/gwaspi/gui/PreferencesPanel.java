@@ -212,7 +212,9 @@ public class PreferencesPanel extends JPanel {
 					File path = new File(selectedPropertyValue);
 					if (!path.exists()) {
 						proceed = false;
-						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + Text.App.appName + " to fail!\nPlease fix broken path: " + selectedPropertyValue);
+						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\n"
+								+ "This may cause " + Text.App.appName + " to fail!\n"
+								+ "Please fix broken path: \"" + selectedPropertyValue + "\"");
 						resetPreferencesAction.actionPerformed(null);
 					}
 				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_BCKG")
