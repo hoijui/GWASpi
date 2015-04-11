@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 @NamedQueries({
 	@NamedQuery(name = "study_listKeys",       query = "SELECT s.id FROM Study s"),
 	@NamedQuery(name = "study_list",           query = "SELECT s FROM Study s"),
+	@NamedQuery(name = "study_listKeysByName", query = "SELECT s.id FROM Study s WHERE s.name = :name"),
 	@NamedQuery(name = "study_fetchById",      query = "SELECT s FROM Study s WHERE s.id = :id"),
 })
 public class Study implements Serializable {

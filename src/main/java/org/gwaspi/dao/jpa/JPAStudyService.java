@@ -134,6 +134,26 @@ public class JPAStudyService implements StudyService {
 		return studies;
 	}
 
+	@Override
+	public List<StudyKey> getStudiesByName(final String name) throws IOException {
+
+		List<StudyKey> studies = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			final Query query = em.createNamedQuery("study_listKeysByName");
+			query.setParameter("name", name);
+			studies = convertFieldsToStudyKeys(query.getResultList());
+		} catch (final Exception ex) {
+			LOG.error("Failed fetching all study keys by name", ex);
+		} finally {
+			close(em);
+		}
+
+		return studies;
+	}
+
 	private static List<StudyKey> convertFieldsToStudyKeys(List<Object> studyIds) {
 
 		List<StudyKey> studies = new ArrayList<StudyKey>(studyIds.size());
