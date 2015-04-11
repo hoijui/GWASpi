@@ -33,7 +33,6 @@ import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.progress.NullProgressHandler;
 
 public class Util {
 
