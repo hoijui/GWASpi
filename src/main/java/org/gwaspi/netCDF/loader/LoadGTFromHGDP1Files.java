@@ -125,11 +125,11 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
-		StringBuilder sb = new StringBuilder(gtStride);
-		for (int i = 0; i < sb.capacity(); i++) {
-			sb.append('0');
-		}
+//		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
+//		StringBuilder sb = new StringBuilder(gtStride);
+//		for (int i = 0; i < sb.capacity(); i++) {
+//			sb.append('0');
+//		}
 
 		Map<MarkerKey, byte[]> tempMarkerIdMap = new LinkedHashMap<MarkerKey, byte[]>();
 		Map<SampleKey, Integer> sampleOrderMap = new LinkedHashMap<SampleKey, Integer>();

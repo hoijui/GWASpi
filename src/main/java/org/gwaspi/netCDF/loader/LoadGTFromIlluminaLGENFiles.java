@@ -129,11 +129,11 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			}
 		}
 
-		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
-		StringBuilder sb = new StringBuilder(gtStride);
-		for (int i = 0; i < sb.capacity(); i++) {
-			sb.append('0');
-		}
+//		int gtStride = NetCDFConstants.Strides.STRIDE_GT;
+//		StringBuilder sb = new StringBuilder(gtStride);
+//		for (int i = 0; i < sb.capacity(); i++) {
+//			sb.append('0');
+//		}
 
 		//GET ALLELES
 		String l;
