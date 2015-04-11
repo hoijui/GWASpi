@@ -91,8 +91,9 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 				GWASpiExplorerNodes.insertStudyNode(studyKey);
 				return studyKey;
 			} else {
-				throw new UnsupportedOperationException("Not yet implemented");
-//				return StudyList.getStudyKey(nameValue);
+				throw new IllegalStateException(
+						"Study name is supposed to be unique, but there are multiple studies with the name \""
+								+ nameValue + "\"");
 			}
 		}
 	}
