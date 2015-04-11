@@ -49,31 +49,32 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 			technology = rdMatrix1Metadata.getTechnology();
 		}
 
-		StringBuilder description = new StringBuilder();
-		description.append(params.getMatrixDescription());
-		description.append("\n\n");
-		description.append(Text.Matrix.descriptionHeader1);
-		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\n");
-		description.append("Markers: ").append(numMarkers);
-		description.append(", Samples: ").append(numSamples);
-		description.append("\n");
-		description.append(Text.Trafo.mergedFrom);
-		description.append("\nMX-");
-		description.append(params.getParent().getMatrixParent().getMatrixId());
-		description.append(" - ");
-		description.append(rdMatrix1Metadata.getFriendlyName());
-		description.append("\nMX-");
-		description.append(params.getSource2().getMatrixParent().getMatrixId());
-		description.append(" - ");
-		description.append(rdMatrix2Metadata.getFriendlyName());
-		description.append("\n\n");
-		description.append("Merge Method - ");
-		description.append(params.getHumanReadableMethodName());
-		description.append(":\n");
-		description.append(params.getMethodDescription());
-		description.append("\nGenotype encoding: ");
-		description.append(gtEncoding.toString());
+		final StringBuilder description = new StringBuilder(1024);
+		description
+				.append(params.getMatrixDescription())
+				.append("\n\n")
+				.append(Text.Matrix.descriptionHeader1)
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
+				.append('\n')
+				.append("Markers: ").append(numMarkers)
+				.append(", Samples: ").append(numSamples)
+				.append('\n')
+				.append(Text.Trafo.mergedFrom)
+				.append("\nMX-")
+				.append(params.getParent().getMatrixParent().getMatrixId())
+				.append(" - ")
+				.append(rdMatrix1Metadata.getFriendlyName())
+				.append("\nMX-")
+				.append(params.getSource2().getMatrixParent().getMatrixId())
+				.append(" - ")
+				.append(rdMatrix2Metadata.getFriendlyName())
+				.append("\n\n")
+				.append("Merge Method - ")
+				.append(params.getHumanReadableMethodName())
+				.append(":\n")
+				.append(params.getMethodDescription())
+				.append("\nGenotype encoding: ")
+				.append(gtEncoding.toString());
 
 		return new MatrixMetadata(
 				params.getParent().getMatrixParent().getStudyKey(),

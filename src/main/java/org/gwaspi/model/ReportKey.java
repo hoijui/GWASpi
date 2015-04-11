@@ -106,24 +106,26 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 
 	public String toRawIdString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append("study-id: ").append(getStudyId());
-		strRep.append(", matrix-id: ").append(getParentMatrixId());
-		strRep.append(", operation-id: ").append(getParentOperationId());
-		strRep.append(", id: ").append(getId());
+		strRep
+				.append("study-id: ").append(getStudyId())
+				.append(", matrix-id: ").append(getParentMatrixId())
+				.append(", operation-id: ").append(getParentOperationId())
+				.append(", id: ").append(getId());
 
 		return strRep.toString();
 	}
 
 	public String toIdString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append(getClass().getSimpleName());
-		strRep.append("[");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(getClass().getSimpleName())
+				.append('[')
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}
@@ -156,12 +158,13 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 	@Override
 	public String toString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append(fetchName());
-		strRep.append(" [");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(fetchName())
+				.append(" [")
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}

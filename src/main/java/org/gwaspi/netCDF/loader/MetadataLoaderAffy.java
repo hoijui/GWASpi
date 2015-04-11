@@ -116,23 +116,27 @@ public class MetadataLoaderAffy implements MetadataLoader {
 
 			if (!affyId.startsWith("AFFX-") && !inFinalList.equals("NO") && !chr.equals("---") && !snpBlackList.getAffyIdBlacklist().contains(affyId)) {
 				// chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
-				StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
-				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a1]); // 1 => pseudo-autosomal1
-				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a2]); // 2 => pseudo-autosomal2
-				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbKey.append(affy6Vals[Affymetrix_GenomeWide6.pos]); // 3 => pos
-				sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbKey.append(affyId); // 4 => markerId
+				final StringBuilder sbKey = new StringBuilder();
+				sbKey
+						.append(chr) // 0 => chr
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a1]) // 1 => pseudo-autosomal1
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affy6Vals[Affymetrix_GenomeWide6.pseudo_a2]) // 2 => pseudo-autosomal2
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affy6Vals[Affymetrix_GenomeWide6.pos]) // 3 => pos
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affyId); // 4 => markerId
 
 				// rsId;strand;alleles
-				StringBuilder sbVal = new StringBuilder(affy6Vals[Affymetrix_GenomeWide6.rsId]); // 0 => rsId
-				sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.strand]); // 1 => strand
-				sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleA]);
-				sbVal.append(affy6Vals[Affymetrix_GenomeWide6.alleleB]); // 2 => alleles
+				final StringBuilder sbVal = new StringBuilder();
+				sbVal
+						.append(affy6Vals[Affymetrix_GenomeWide6.rsId]) // 0 => rsId
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affy6Vals[Affymetrix_GenomeWide6.strand]) // 1 => strand
+						.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+						.append(affy6Vals[Affymetrix_GenomeWide6.alleleA])
+						.append(affy6Vals[Affymetrix_GenomeWide6.alleleB]); // 2 => alleles
 
 				sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 			}

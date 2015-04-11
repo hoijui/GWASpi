@@ -56,13 +56,15 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
 		super.addAdditionalBigDescriptionProperties(description, loadDescription);
 
-		description.append(loadDescription.getGtDirPath());
-		description.append(" (MAP file)\n");
-		description.append(loadDescription.getAnnotationFilePath());
-		description.append(" (PED file)\n");
+		description
+				.append(loadDescription.getGtDirPath())
+				.append(" (MAP file)\n")
+				.append(loadDescription.getAnnotationFilePath())
+				.append(" (PED file)\n");
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			description.append(loadDescription.getSampleFilePath());
-			description.append(" (Sample Info file)\n");
+			description
+					.append(loadDescription.getSampleFilePath())
+					.append(" (Sample Info file)\n");
 		}
 	}
 

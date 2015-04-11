@@ -199,10 +199,10 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 
 		// WRITE HEADER OF FILE
 		final FileWriter reportFW = new FileWriter(sampleMissOutFile);
-		final BufferedWriter reportBW = new BufferedWriter(reportFW);
+		final BufferedWriter reportWriter = new BufferedWriter(reportFW);
 
 		final String header = OutputQAMarkers.createReportHeaderLine(COLUMNS);
-		reportBW.append(header);
+		reportWriter.append(header);
 
 		// GET SAMPLE INFO FROM DB
 		for (final QASamplesOperationEntry entry : qaSamplesOperationEntries) {
@@ -221,35 +221,34 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 //			final String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
 			final String age = String.valueOf(sampleInfo.getAge());
 
-			final StringBuilder sb = new StringBuilder();
-			sb.append(familyId);
-			sb.append(sep);
-			sb.append(tempSampleKey.getSampleId());
-			sb.append(sep);
-			sb.append(fatherId);
-			sb.append(sep);
-			sb.append(motherId);
-			sb.append(sep);
-			sb.append(sex);
-			sb.append(sep);
-			sb.append(affection);
-			sb.append(sep);
-			sb.append(age);
-			sb.append(sep);
-			sb.append(category);
-			sb.append(sep);
-			sb.append(desease);
-			sb.append(sep);
-			sb.append(population);
-			sb.append(sep);
-			sb.append(entry.getMissingRatio());
-			sb.append(sep);
-			sb.append(entry.getHetzyRatio());
-			sb.append("\n");
-			reportBW.append(sb.toString());
+			reportWriter
+					.append(familyId)
+					.append(sep)
+					.append(tempSampleKey.getSampleId())
+					.append(sep)
+					.append(fatherId)
+					.append(sep)
+					.append(motherId)
+					.append(sep)
+					.append(sex)
+					.append(sep)
+					.append(affection)
+					.append(sep)
+					.append(age)
+					.append(sep)
+					.append(category)
+					.append(sep)
+					.append(desease)
+					.append(sep)
+					.append(population)
+					.append(sep)
+					.append(Double.toString(entry.getMissingRatio()))
+					.append(sep)
+					.append(Double.toString(entry.getHetzyRatio()))
+					.append('\n');
 		}
 
-		reportBW.close();
+		reportWriter.close();
 		reportFW.close();
 	}
 

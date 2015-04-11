@@ -42,16 +42,18 @@ public class MatrixDataExtractorMetadataFactory
 		final MatrixMetadata sourceMatrixMetadata
 				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
 
-		StringBuilder markerPickerCriteria = new StringBuilder();
+		final StringBuilder markerPickerCriteria = new StringBuilder();
 		for (Object value : params.getFullMarkerCriteria()) {
-			markerPickerCriteria.append(value.toString());
-			markerPickerCriteria.append(",");
+			markerPickerCriteria
+					.append(value.toString())
+					.append(',');
 		}
 
-		StringBuilder samplePickerCriteria = new StringBuilder();
+		final StringBuilder samplePickerCriteria = new StringBuilder();
 		for (Object value : params.getFullSampleCriteria()) {
-			samplePickerCriteria.append(value.toString());
-			samplePickerCriteria.append(",");
+			samplePickerCriteria
+					.append(value.toString())
+					.append(',');
 		}
 
 		if (numSamples == 0) {
@@ -61,54 +63,65 @@ public class MatrixDataExtractorMetadataFactory
 			throw new IllegalStateException("No markers selected for extraction");
 		}
 
-		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
-		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix extraction from parent Matrix MX: ")
+		final StringBuilder description = new StringBuilder(1024);
+		description
+				.append(Text.Matrix.descriptionHeader1)
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
+				.append("\nThrough Matrix extraction from parent Matrix MX: ")
 				.append(sourceMatrixMetadata.getMatrixId()).append(" - ")
-				.append(sourceMatrixMetadata.getFriendlyName());
-
-		description.append("\nMarker Filter Variable: ");
-		String pickPrefix = "All Markers";
+				.append(sourceMatrixMetadata.getFriendlyName())
+				.append("\nMarker Filter Variable: ");
+		final String markerPickPrefix;
 		if (params.getMarkerPickCase().toString().contains("EXCLUDE")) {
-			pickPrefix = "Exclude by ";
+			markerPickPrefix = "Exclude by ";
 		} else if (params.getMarkerPickCase().toString().contains("INCLUDE")) {
-			pickPrefix = "Include by ";
+			markerPickPrefix = "Include by ";
+		} else {
+			markerPickPrefix = "All Markers";
 		}
-		description.append(pickPrefix).append(params.getMarkerPickerVar().replaceAll("_", " ").toUpperCase());
+		description.append(markerPickPrefix).append(params.getMarkerPickerVar().replaceAll("_", " ").toUpperCase());
 		if (params.getMarkerCriteriaFile().isFile()) {
-			description.append("\nMarker Criteria File: ");
-			description.append(params.getMarkerCriteriaFile().getPath());
-		} else if (!pickPrefix.equals("All Markers")) {
-			description.append("\nMarker Criteria: ");
-			description.append(markerPickerCriteria.deleteCharAt(markerPickerCriteria.length() - 1));
+			description
+					.append("\nMarker Criteria File: ")
+					.append(params.getMarkerCriteriaFile().getPath());
+		} else if (!markerPickPrefix.equals("All Markers")) {
+			description
+					.append("\nMarker Criteria: ")
+					.append(markerPickerCriteria.deleteCharAt(markerPickerCriteria.length() - 1));
 		}
 
 		description.append("\nSample Filter Variable: ");
-		pickPrefix = "All Samples";
+		final String samplePickPrefix;
 		if (params.getSamplePickCase().toString().contains("EXCLUDE")) {
-			pickPrefix = "Exclude by ";
+			samplePickPrefix = "Exclude by ";
 		} else if (params.getSamplePickCase().toString().contains("INCLUDE")) {
-			pickPrefix = "Include by ";
+			samplePickPrefix = "Include by ";
+		} else {
+			samplePickPrefix = "All Samples";
 		}
-		description.append(pickPrefix).append(params.getSamplePickerVar().replaceAll("_", " ").toUpperCase());
+		description.append(samplePickPrefix).append(params.getSamplePickerVar().replaceAll("_", " ").toUpperCase());
 		if (params.getSampleCriteriaFile().isFile()) {
-			description.append("\nSample Criteria File: ");
-			description.append(params.getSampleCriteriaFile().getPath());
-		} else if (!pickPrefix.equals("All Samples")) {
-			description.append("\nSample Criteria: ");
-			description.append(samplePickerCriteria.deleteCharAt(samplePickerCriteria.length() - 1));
+			description
+					.append("\nSample Criteria File: ")
+					.append(params.getSampleCriteriaFile().getPath());
+		} else if (!samplePickPrefix.equals("All Samples")) {
+			description
+					.append("\nSample Criteria: ")
+					.append(samplePickerCriteria.deleteCharAt(samplePickerCriteria.length() - 1));
 		}
 
 		if (!params.getMatrixDescription().isEmpty()) {
-			description.append("\n\nDescription: ");
-			description.append(params.getMatrixDescription());
-			description.append("\n");
+			description
+					.append("\n\nDescription: ")
+					.append(params.getMatrixDescription())
+					.append('\n');
 		}
 //		description.append("\nGenotype encoding: ");
 //		description.append(rdMatrixMetadata.getGenotypeEncoding());
-		description.append("\n");
-		description.append("Markers: ").append(numMarkers);
-		description.append(", Samples: ").append(numSamples);
+		description
+				.append('\n')
+				.append("Markers: ").append(numMarkers)
+				.append(", Samples: ").append(numSamples);
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),

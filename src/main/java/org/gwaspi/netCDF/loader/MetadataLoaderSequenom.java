@@ -112,15 +112,17 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 			String chr = mapVals[Sequenom.annot_chr].trim();
 			String pos = mapVals[Sequenom.annot_pos].trim();
 
-			// "chr;pos;markerId"
-			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerId);
+			// chr;pos;markerId
+			final StringBuilder sbKey = new StringBuilder();
+			sbKey
+					.append(chr)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(pos)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(markerId);
 
 			// rsId
-			StringBuilder sbVal = new StringBuilder(rsId); // 0 => markerid
+			final StringBuilder sbVal = new StringBuilder(rsId); // 0 => markerid
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

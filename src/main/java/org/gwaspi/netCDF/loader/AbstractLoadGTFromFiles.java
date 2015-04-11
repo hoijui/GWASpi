@@ -206,12 +206,14 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {
 		// LOG OPERATION IN STUDY HISTORY
-		StringBuilder operation = new StringBuilder("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: ").append(startTime).append("\n");
-		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
-		operation.append("Data stored in matrix ").append(matrixName).append(".\n");
-		operation.append("Description: ").append(description).append(".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
+		final StringBuilder operationDesc = new StringBuilder(1024);
+		operationDesc
+				.append("\nLoaded raw ").append(format).append(" genotype data from path ").append(dirPath).append(".\n")
+				.append("Start Time: ").append(startTime).append('\n')
+				.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append('\n')
+				.append("Data stored in matrix ").append(matrixName).append('\n')
+				.append("Description: ").append(description).append('\n');
+		org.gwaspi.global.Utils.logOperationInStudyDesc(operationDesc.toString(), studyId);
 	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {

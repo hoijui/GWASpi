@@ -62,18 +62,21 @@ public class URLInDefaultBrowser {
 	}
 
 	public static void browseHelpURL(String helpFile) throws IOException {
+
 		//String helpDir = Config.getConfigValue("HelpDir", "");
 		String url;
 
 		if (!org.gwaspi.global.Utils.checkInternetConnection()) {
 			String[] resourceURL = URLInDefaultBrowser.class.getResource("/img/logo/logo_white.png").toString().split("/");
-			StringBuilder sb = new StringBuilder("/");
+			StringBuilder urlBuilder = new StringBuilder();
+			urlBuilder.append('/');
 			for (int i = 1; i < resourceURL.length - 4; i++) {
-				sb.append(resourceURL[i]);
-				sb.append("/");
+				urlBuilder
+						.append(resourceURL[i])
+						.append('/');
 			}
-			sb.append(HelpURLs.QryURL.helpIndex);
-			url = sb.toString();
+			urlBuilder.append(HelpURLs.QryURL.helpIndex);
+			url = urlBuilder.toString();
 		} else {
 			url = HelpURLs.baseURL + helpFile;
 		}

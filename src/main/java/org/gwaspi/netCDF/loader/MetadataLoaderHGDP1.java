@@ -105,14 +105,16 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 			String pos = markerVals[HGDP1_Standard.pos].trim();
 
 			// "chr;pos;markerId"
-			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerId);
+			final StringBuilder sbKey = new StringBuilder();
+			sbKey
+					.append(chr)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(pos)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(markerId);
 
 			// rsId
-			StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
+			final StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

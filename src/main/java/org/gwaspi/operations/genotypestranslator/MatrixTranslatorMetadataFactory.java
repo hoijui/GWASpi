@@ -57,21 +57,25 @@ public class MatrixTranslatorMetadataFactory
 					+ GenotypeEncoding.ACGT0.toString());
 		}
 
-		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
-		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
-		description.append("\nTranslation method: ").append(translationMethodDesc);
+		final StringBuilder description = new StringBuilder(1024);
+		description
+				.append(Text.Matrix.descriptionHeader1)
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
+				.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId())
+				.append(" - ").append(sourceMatrixMetadata.getFriendlyName())
+				.append("\nTranslation method: ").append(translationMethodDesc);
 		if (!params.getMatrixDescription().isEmpty()) {
-			description.append("\n\nDescription: ");
-			description.append(params.getMatrixDescription());
-			description.append("\n");
+			description
+					.append("\n\nDescription: ")
+					.append(params.getMatrixDescription())
+					.append('\n');
 		}
-		description.append("\nGenotype encoding: ");
-		description.append(GenotypeEncoding.ACGT0.toString());
-		description.append("\n");
-		description.append("Markers: ").append(numMarkers);
-		description.append(", Samples: ").append(numSamples);
+		description
+				.append("\nGenotype encoding: ")
+				.append(GenotypeEncoding.ACGT0.toString())
+				.append('\n')
+				.append("Markers: ").append(numMarkers)
+				.append(", Samples: ").append(numSamples);
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),

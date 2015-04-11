@@ -148,12 +148,14 @@ public class JPAReportService implements ReportService {
 
 	public static String extractReportNamePrefix(OperationMetadata op) {
 
-		StringBuilder prefix = new StringBuilder();
-		prefix.append("mx-");
-		prefix.append(op.getParentMatrixId());
-
-		prefix.append("_").append(op.getOperationType().toString()).append("-");
-		prefix.append(op.getId());
+		final StringBuilder prefix = new StringBuilder(128);
+		prefix
+				.append("mx-")
+				.append(op.getParentMatrixId())
+				.append('_')
+				.append(op.getOperationType().toString())
+				.append('-')
+				.append(op.getId());
 
 		return prefix.toString();
 	}

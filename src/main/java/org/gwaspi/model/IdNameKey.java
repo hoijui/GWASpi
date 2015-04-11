@@ -60,14 +60,14 @@ public class IdNameKey implements Comparable<IdNameKey>, Serializable {
 	@Override
 	public String toString() {
 
-		StringBuilder strRep = new StringBuilder(getClass().getSimpleName());
-		strRep.append("[");
+		final StringBuilder strRep = new StringBuilder(getClass().getSimpleName());
+		strRep.append('[');
 		if (isSpecifiedById()) {
 			strRep.append("id: ").append(getId());
 		} else {
 			strRep.append("name: ").append(getName());
 		}
-		strRep.append("]");
+		strRep.append(']');
 
 		return strRep.toString();
 	}

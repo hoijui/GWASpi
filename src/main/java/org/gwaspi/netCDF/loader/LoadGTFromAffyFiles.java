@@ -66,14 +66,15 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	@Override
-	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
-		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
+		super.addAdditionalBigDescriptionProperties(description, loadDescription);
 
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype files)\n");
-		descSB.append("\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Annotation file)\n");
+		description
+				.append(loadDescription.getGtDirPath())
+				.append(" (Genotype files)\n")
+				.append("\n")
+				.append(loadDescription.getAnnotationFilePath())
+				.append(" (Annotation file)\n");
 	}
 
 	@Override

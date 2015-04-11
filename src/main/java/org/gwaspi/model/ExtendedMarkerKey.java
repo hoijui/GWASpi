@@ -99,13 +99,13 @@ public class ExtendedMarkerKey implements Comparable<ExtendedMarkerKey>, Seriali
 	@Override
 	public String toString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder();
 
-		strRep.append(markerKey.toString());
-		strRep.append(" [");
-		strRep.append("chr: ").append(getChr());
-		strRep.append(", pos: ").append(getPos());
-		strRep.append("]");
+		strRep
+				.append(markerKey.toString())
+				.append(" [chr: ").append(getChr())
+				.append(", pos: ").append(getPos())
+				.append(']');
 
 		return strRep.toString();
 	}

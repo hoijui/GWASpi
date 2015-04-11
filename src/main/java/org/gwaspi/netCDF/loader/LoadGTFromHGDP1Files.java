@@ -67,13 +67,14 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	@Override
-	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
-		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
+		super.addAdditionalBigDescriptionProperties(description, loadDescription);
 
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype file)\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Marker file)\n");
+		description
+				.append(loadDescription.getGtDirPath())
+				.append(" (Genotype file)\n")
+				.append(loadDescription.getAnnotationFilePath())
+				.append(" (Marker file)\n");
 	}
 
 	@Override

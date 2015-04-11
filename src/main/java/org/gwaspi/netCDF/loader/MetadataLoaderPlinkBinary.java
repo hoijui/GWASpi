@@ -111,16 +111,19 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String pos = markerVals[Plink_Binary.bim_pos].trim();
 
 			// "chr;pos;markerId"
-			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerId);
+			final StringBuilder sbKey = new StringBuilder();
+			sbKey
+					.append(chr)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(pos)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(markerId);
 
 			// alleles (bases dictionary)
-			StringBuilder sbVal = new StringBuilder();
-			sbVal.append(markerVals[Plink_Binary.bim_allele1].trim());
-			sbVal.append(markerVals[Plink_Binary.bim_allele2].trim());
+			final StringBuilder sbVal = new StringBuilder();
+			sbVal
+					.append(markerVals[Plink_Binary.bim_allele1].trim())
+					.append(markerVals[Plink_Binary.bim_allele2].trim());
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

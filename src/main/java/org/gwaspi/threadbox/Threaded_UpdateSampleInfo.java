@@ -109,13 +109,15 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 		Study study = StudyList.getStudy(studyKey);
 
-		StringBuilder oldDesc = new StringBuilder(study.getDescription());
-		oldDesc.append("\n* Sample Info updated from: ");
-		oldDesc.append(sampleInfoFile.getPath());
-		oldDesc.append(" (");
-		oldDesc.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		oldDesc.append(") *");
-		study.setDescription(oldDesc.toString());
+		final StringBuilder newDesc = new StringBuilder();
+		newDesc
+				.append(study.getDescription())
+				.append("\n* Sample Info updated from: ")
+				.append(sampleInfoFile.getPath())
+				.append(" (")
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
+				.append(") *");
+		study.setDescription(newDesc.toString());
 		StudyList.updateStudy(study);
 
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);

@@ -43,22 +43,25 @@ public class MatrixGenotypesFlipperMetadataFactory
 		final MatrixMetadata sourceMatrixMetadata
 				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
 
-		StringBuilder description = new StringBuilder();
-		description.append(Text.Matrix.descriptionHeader1);
-		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
-		description.append("\nUsed list of markers to be flipped: ").append(params.getFlipperFile().getPath());
+		final StringBuilder description = new StringBuilder();
+		description
+				.append(Text.Matrix.descriptionHeader1)
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
+				.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId())
+				.append(" - ").append(sourceMatrixMetadata.getFriendlyName())
+				.append("\nUsed list of markers to be flipped: ").append(params.getFlipperFile().getPath());
 		if (!params.getMatrixDescription().isEmpty()) {
-			description.append("\n\nDescription: ");
-			description.append(params.getMatrixDescription());
-			description.append("\n");
+			description
+					.append("\n\nDescription: ")
+					.append(params.getMatrixDescription())
+					.append('\n');
 		}
-		description.append("\nGenotype encoding: ");
-		description.append(sourceMatrixMetadata.getGenotypeEncoding());
-		description.append("\n");
-		description.append("Markers: ").append(numMarkers);
-		description.append(", Samples: ").append(numSamples);
+		description
+				.append("\nGenotype encoding: ")
+				.append(sourceMatrixMetadata.getGenotypeEncoding())
+				.append('\n')
+				.append("Markers: ").append(numMarkers)
+				.append(", Samples: ").append(numSamples);
 
 		return new MatrixMetadata(
 				sourceMatrixMetadata.getStudyKey(),

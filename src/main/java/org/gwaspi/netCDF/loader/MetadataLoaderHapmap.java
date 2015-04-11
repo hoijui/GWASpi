@@ -116,18 +116,22 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			String pos = hapmapVals[HapmapGT_Standard.pos];
 			String rsId = hapmapVals[HapmapGT_Standard.rsId];
 
-			StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos); // 1 => pos
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(rsId); // 2 => markerId
+			final StringBuilder sbKey = new StringBuilder();
+			sbKey
+					.append(chr) // 0 => chr
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(pos) // 1 => pos
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(rsId); // 2 => markerId
 
 			// rsId;strand;alleles
-			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
-			sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
-			sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbVal.append(alleles); // 2 => alleles
+			final StringBuilder sbVal = new StringBuilder();
+			sbVal
+					.append(hapmapVals[HapmapGT_Standard.rsId]) // 0 => markerId = rsId
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(hapmapVals[HapmapGT_Standard.strand]) // 1 => strand
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(alleles); // 2 => alleles
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

@@ -125,33 +125,37 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(currentGwaspiDbVersion)) {
 			// COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
-				StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
-				description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+				final StringBuilder description = new StringBuilder(1024);
+				description
+						.append(Text.Matrix.descriptionHeader1)
+						.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				if (!loadDescription.getDescription().isEmpty()) {
-					description.append("\nDescription: ");
-					description.append(loadDescription.getDescription());
-					description.append("\n");
+					description
+							.append("\nDescription: ")
+							.append(loadDescription.getDescription())
+							.append('\n');
 				}
 	//			description.append("\nStrand: ");
 	//			description.append(strand);
 	//			description.append("\nGenotype encoding: ");
 	//			description.append(importMatrixMetadata.getGenotypeEncoding());
-				description.append("\n");
-				description.append("Technology: ");
-				description.append(importMatrixMetadata.getTechnology());
-				description.append("\n");
-				description.append("Markers: ").append(importMatrixMetadata.getNumMarkers());
-				description.append(", Samples: ").append(importMatrixMetadata.getNumSamples());
-				description.append("\n");
-				description.append(Text.Matrix.descriptionHeader2);
-				description.append(loadDescription.getFormat().toString());
-				description.append("\n");
-				description.append(Text.Matrix.descriptionHeader3);
-				description.append("\n");
-				description.append(loadDescription.getGtDirPath());
-				description.append(" (Matrix file)\n");
-				description.append(loadDescription.getSampleFilePath());
-				description.append(" (Sample Info file)\n");
+				description
+						.append('\n')
+						.append("Technology: ")
+						.append(importMatrixMetadata.getTechnology())
+						.append('\n')
+						.append("Markers: ").append(importMatrixMetadata.getNumMarkers())
+						.append(", Samples: ").append(importMatrixMetadata.getNumSamples())
+						.append('\n')
+						.append(Text.Matrix.descriptionHeader2)
+						.append(loadDescription.getFormat().toString())
+						.append('\n')
+						.append(Text.Matrix.descriptionHeader3)
+						.append('\n')
+						.append(loadDescription.getGtDirPath())
+						.append(" (Matrix file)\n")
+						.append(loadDescription.getSampleFilePath())
+						.append(" (Sample Info file)\n");
 				MatricesList.insertMatrixMetadata(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
 //						importMatrixMetadata.getSimpleName(), // XXX here is the problem!

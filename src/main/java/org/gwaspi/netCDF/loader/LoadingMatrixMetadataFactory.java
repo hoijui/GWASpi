@@ -48,26 +48,30 @@ public class LoadingMatrixMetadataFactory
 		final int numSamples = dataSet.getSampleInfos().size();
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
-		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		final StringBuilder description = new StringBuilder(1024);
+		description
+				.append(Text.Matrix.descriptionHeader1)
+				.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
-			description.append("\nDescription: ");
-			description.append(loadDescription.getDescription());
-			description.append("\n");
+			description
+					.append("\nDescription: ")
+					.append(loadDescription.getDescription())
+					.append('\n');
 		}
 //		description.append("\nStrand: ");
 //		description.append(strand);
 //		description.append("\nGenotype encoding: ");
 //		description.append(gtCode);
-		description.append("\n");
-		description.append("Markers: ").append(numMarkers);
-		description.append(", Samples: ").append(numSamples);
-		description.append("\n");
-		description.append(Text.Matrix.descriptionHeader2);
-		description.append(loadDescription.getFormat().toString());
-		description.append("\n");
-		description.append(Text.Matrix.descriptionHeader3);
-		description.append("\n");
+		description
+				.append('\n')
+				.append("Markers: ").append(numMarkers)
+				.append(", Samples: ").append(numSamples)
+				.append('\n')
+				.append(Text.Matrix.descriptionHeader2)
+				.append(loadDescription.getFormat().toString())
+				.append('\n')
+				.append(Text.Matrix.descriptionHeader3)
+				.append('\n');
 		gtLoader.addAdditionalBigDescriptionProperties(description, loadDescription);
 //		if (new File(loadDescription.getSampleFilePath()).exists()) {
 //			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary

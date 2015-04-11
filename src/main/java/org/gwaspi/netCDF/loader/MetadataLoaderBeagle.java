@@ -103,17 +103,21 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 			String pos = markerVals[Beagle_Standard.pos].trim();
 
 			// chr;pos;markerId
-			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
-			sbKey.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerId);
+			final StringBuilder sbKey = new StringBuilder();
+			sbKey
+					.append(chr)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(pos)
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(markerId);
 
 			// rsId;alleles
-			StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
-			sbVal.append(NetCDFConstants.Defaults.TMP_SEPARATOR);
-			sbVal.append(markerVals[Beagle_Standard.allele1].trim());
-			sbVal.append(markerVals[Beagle_Standard.allele2].trim()); // 1 => alleles
+			final StringBuilder sbVal = new StringBuilder();
+			sbVal
+					.append(rsId) // 0 => rsId
+					.append(NetCDFConstants.Defaults.TMP_SEPARATOR)
+					.append(markerVals[Beagle_Standard.allele1].trim())
+					.append(markerVals[Beagle_Standard.allele2].trim()); // 1 => alleles
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

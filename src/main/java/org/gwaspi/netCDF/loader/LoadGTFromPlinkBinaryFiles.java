@@ -63,10 +63,11 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
 		super.addAdditionalBigDescriptionProperties(description, loadDescription); // XXX uncomment!
 
-		description.append(loadDescription.getAnnotationFilePath());
-		description.append(" (BIM file)\n");
-		description.append(loadDescription.getGtDirPath());
-		description.append(" (BED file)\n");
+		description
+				.append(loadDescription.getAnnotationFilePath())
+				.append(" (BIM file)\n")
+				.append(loadDescription.getGtDirPath())
+				.append(" (BED file)\n");
 	}
 
 	@Override

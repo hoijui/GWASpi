@@ -99,10 +99,11 @@ public class MatrixKey implements Identifier<MatrixKey> {
 	@Override
 	public String toRawIdString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append("study-id: ").append(getStudyId());
-		strRep.append(", id: ").append(getMatrixId());
+		strRep
+				.append("study-id: ").append(getStudyId())
+				.append(", id: ").append(getMatrixId());
 
 		return strRep.toString();
 	}
@@ -110,12 +111,13 @@ public class MatrixKey implements Identifier<MatrixKey> {
 	@Override
 	public String toIdString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append(getClass().getSimpleName());
-		strRep.append("[");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(getClass().getSimpleName())
+				.append('[')
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}
@@ -149,12 +151,13 @@ public class MatrixKey implements Identifier<MatrixKey> {
 	@Override
 	public String toString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder(128);
 
-		strRep.append(fetchName());
-		strRep.append(" [");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(fetchName())
+				.append(" [")
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}

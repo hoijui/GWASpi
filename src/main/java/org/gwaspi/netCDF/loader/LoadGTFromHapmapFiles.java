@@ -76,11 +76,12 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	}
 
 	@Override
-	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
-		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
+		super.addAdditionalBigDescriptionProperties(description, loadDescription);
 
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype file)\n");
+		description
+				.append(loadDescription.getGtDirPath())
+				.append(" (Genotype file)\n");
 	}
 
 	public static File[] extractGTFilesToImport(GenotypesLoadDescription loadDescription) {

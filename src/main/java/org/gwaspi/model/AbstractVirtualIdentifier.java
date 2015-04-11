@@ -103,9 +103,9 @@ public class AbstractVirtualIdentifier<K extends Identifier<K>> implements Virtu
 			return getKey().toRawIdString();
 		}
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder();
 
-		strRep.append("virtual-id: ").append(getVirtualId());
+		strRep.append("virtual-id: ").append(getVirtualId().toString());
 
 		return strRep.toString();
 	}
@@ -113,12 +113,13 @@ public class AbstractVirtualIdentifier<K extends Identifier<K>> implements Virtu
 	@Override
 	public String toIdString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder();
 
-		strRep.append(getClass().getSimpleName());
-		strRep.append("[");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(getClass().getSimpleName())
+				.append('[')
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}
@@ -135,12 +136,13 @@ public class AbstractVirtualIdentifier<K extends Identifier<K>> implements Virtu
 	@Override
 	public String toString() {
 
-		StringBuilder strRep = new StringBuilder();
+		final StringBuilder strRep = new StringBuilder();
 
-		strRep.append(fetchName());
-		strRep.append(" [");
-		strRep.append(toRawIdString());
-		strRep.append("]");
+		strRep
+				.append(fetchName())
+				.append(" [")
+				.append(toRawIdString())
+				.append(']');
 
 		return strRep.toString();
 	}
