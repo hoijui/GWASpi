@@ -39,10 +39,10 @@ public class GwaspiSamplesParser extends AbstractSamplesParser {
 			throws IOException
 	{
 		final String[] cVals = new String[10];
-		int i = 0;
+		int valIndex = 0;
 		for (final String field : line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp, 10)) {
-			cVals[i] = field;
-			i++;
+			cVals[valIndex] = field;
+			valIndex++;
 		}
 		final SampleInfo sampleInfo = new SampleInfo(
 				studyKey,

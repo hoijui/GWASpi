@@ -72,19 +72,19 @@ public class XMLParser {
 		if (nodeList != null && nodeList.getLength() > 0) {
 			for (int nodeIndex = 0; nodeIndex < nodeList.getLength(); nodeIndex++) {
 				// get the tagName element
-				Element el = (Element) nodeList.item(nodeIndex);
+				final Element element = (Element) nodeList.item(nodeIndex);
 				// get the tagName object
 				//Employee tagObject = getEmployee(el);
 				// add it to list
-				resultList.add(el);
+				resultList.add(element);
 			}
 		}
 		return resultList;
 	}
 
-	public static String getTextValue(Element ele, String tagName) {
+	public static String getTextValue(Element parentElement, String tagName) {
 		String textVal = null;
-		final NodeList nodeList = ele.getElementsByTagName(tagName);
+		final NodeList nodeList = parentElement.getElementsByTagName(tagName);
 		if (nodeList != null && nodeList.getLength() > 0) {
 			final Element element = (Element) nodeList.item(0);
 			textVal = element.getFirstChild().getNodeValue();
@@ -92,9 +92,9 @@ public class XMLParser {
 		return textVal;
 	}
 
-	public static Date getDateValue(Element ele, String tagName) throws ParseException {
+	public static Date getDateValue(Element parentElement, String tagName) throws ParseException {
 		Date date = null;
-		final NodeList nodeList = ele.getElementsByTagName(tagName);
+		final NodeList nodeList = parentElement.getElementsByTagName(tagName);
 		if (nodeList != null && nodeList.getLength() > 0) {
 			final Element element = (Element) nodeList.item(0);
 			String textVal = element.getFirstChild().getNodeValue();

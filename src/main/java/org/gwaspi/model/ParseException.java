@@ -23,7 +23,7 @@ public class ParseException extends RuntimeException {
 		super(message);
 	}
 
-	public ParseException(String message, Throwable t) {
-		super(message, t);
+	public ParseException(String message, Throwable throwable) {
+		super(message, throwable);
 	}
 }

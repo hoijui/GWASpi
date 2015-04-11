@@ -41,15 +41,15 @@ public class LogDocument extends PlainDocument {
 		private final Document target;
 		private Encoder<ILoggingEvent> encoder;
 
-		LogBackAppender(Document target) {
+		LogBackAppender(final Document target) {
 
 			this.encoder = null;
 			this.buffer = new ByteArrayOutputStream();
 			this.target = target;
 
 			setName("Document appender");
-			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-			setContext(lc);
+			final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+			setContext(loggerContext);
 		}
 
 		@Override
@@ -57,14 +57,14 @@ public class LogDocument extends PlainDocument {
 
 			if (encoder == null) {
 				try {
-					PatternLayoutEncoder tmpEncoder = new PatternLayoutEncoder();
+					final PatternLayoutEncoder tmpEncoder = new PatternLayoutEncoder();
 					tmpEncoder.setContext(getContext());
 					tmpEncoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
 					encoder = tmpEncoder;
 
 					encoder.init(buffer);
 					encoder.start();
-				} catch (IOException ex) {
+				} catch (final IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			}
@@ -79,7 +79,7 @@ public class LogDocument extends PlainDocument {
 				try {
 					encoder.close();
 					encoder = null;
-				} catch (IOException ex) {
+				} catch (final IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			}
@@ -88,20 +88,20 @@ public class LogDocument extends PlainDocument {
 		}
 
 		@Override
-		public void append(ILoggingEvent event) {
+		public void append(final ILoggingEvent event) {
 
 			if (encoder != null) {
 				try {
 					encoder.doEncode(event);
 					buffer.flush();
-					String line = buffer.toString();
+					final String line = buffer.toString();
 					buffer.reset();
 					try {
 						target.insertString(target.getLength(), line, null);
-					} catch (BadLocationException ex) {
+					} catch (final BadLocationException ex) {
 						throw new RuntimeException(ex);
 					}
-				} catch (IOException ex) {
+				} catch (final IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			}
@@ -114,7 +114,7 @@ public class LogDocument extends PlainDocument {
 
 		this.logBackAppender = new LogBackAppender(this);
 		this.logBackAppender.start();
-		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-		lc.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(this.logBackAppender);
+		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(this.logBackAppender);
 	}
 }

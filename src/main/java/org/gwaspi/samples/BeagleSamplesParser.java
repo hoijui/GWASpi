@@ -38,15 +38,15 @@ public class BeagleSamplesParser extends AbstractSamplesParser {
 		String affectionHeader = "";
 		boolean gotAffection = false;
 		while (!gotAffection) {
-			String l = sampleInfoBR.readLine();
-			if (l == null) {
+			final String line = sampleInfoBR.readLine();
+			if (line == null) {
 				break;
 			}
-			if (l.startsWith("I")) {
-				sampleIdHeader = l;
+			if (line.startsWith("I")) {
+				sampleIdHeader = line;
 			}
-			if (l.startsWith("A")) {
-				affectionHeader = l;
+			if (line.startsWith("A")) {
+				affectionHeader = line;
 				gotAffection = true;
 			}
 		}

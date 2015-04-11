@@ -144,9 +144,9 @@ public class SamplesParserManager {
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		String header = inputBufferReader.readLine(); // ignore header block
-		String l;
-		while ((l = inputBufferReader.readLine()) != null) {
-			String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
+		String line;
+		while ((line = inputBufferReader.readLine()) != null) {
+			String[] cVals = line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 			result.add(Affection.parse(cVals[GWASpi.affection]));
 		}
 

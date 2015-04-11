@@ -31,33 +31,32 @@ public class ComparatorChrAutPosMarkerIdAsc
 	private static final Pattern SIMPLE_INTEGER = Pattern.compile("[0-9]{1,}");
 
 	@Override
-	public int compare(String a, String b) {
+	public int compare(final String strA, final String strB) {
 		// a & b have this format: "chr;[pseudo-autosomal1;pseudo-autosomal2;]pos;markerId"
 
-		String[] aVals = a.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
-		String[] bVals = b.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
+		final String[] aVals = strA.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
+		final String[] bVals = strB.split(NetCDFConstants.Defaults.TMP_SEPARATOR);
 
-		String chrA = aVals[0];
-		String chrB = bVals[0];
+		final String chrA = aVals[0];
+		final String chrB = bVals[0];
 
-		Matcher mA = SIMPLE_INTEGER.matcher(chrA);
-		Matcher mB = SIMPLE_INTEGER.matcher(chrB);
-
+		final Matcher matcherA = SIMPLE_INTEGER.matcher(chrA);
+		final Matcher matcherB = SIMPLE_INTEGER.matcher(chrB);
 
 		// Check if contains pseudo-autosomal info
 		if (aVals.length == 5) { // Pseudo-autosomal!  "chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			// If yes compare chromosome(integer)
-			if (mA.matches() && mB.matches()) { // Both chr are Int
-				int intA = Integer.parseInt(chrA);
-				int intB = Integer.parseInt(chrB);
+			if (matcherA.matches() && matcherB.matches()) { // Both chr are Int
+				final int intA = Integer.parseInt(chrA);
+				final int intB = Integer.parseInt(chrB);
 				if (intA == intB) { // same chr, compare positions
-					// if equal compare psa
-					String autosomalA = aVals[1] + aVals[2];
-					String autosomalB = bVals[1] + bVals[2];
+					// if equal compare pseudo-autosomal
+					final String autosomalA = aVals[1] + aVals[2];
+					final String autosomalB = bVals[1] + bVals[2];
 					if (autosomalA.equals(autosomalB)) { // same pseudo-autosomal status
 						// if equal compare pos
-						int posA = Integer.parseInt(aVals[3]);
-						int posB = Integer.parseInt(bVals[3]);
+						final int posA = Integer.parseInt(aVals[3]);
+						final int posB = Integer.parseInt(bVals[3]);
 						if (posA == posB) { // Same position!
 							// if equal compare markerId
 							return aVals[4].compareTo(bVals[4]); // return comparison between markerIds
@@ -72,12 +71,12 @@ public class ComparatorChrAutPosMarkerIdAsc
 				}
 			} else if (chrA.equals(chrB)) { // Chromosmes are Strings
 				// If chromosomes are equal, compare psa
-				String autosomalA = aVals[1] + aVals[2];
-				String autosomalB = bVals[1] + bVals[2];
+				final String autosomalA = aVals[1] + aVals[2];
+				final String autosomalB = bVals[1] + bVals[2];
 				if (autosomalA.equals(autosomalB)) { // same pseudo-autosomal status
-					//if equal compare pos
-					int posA = Integer.parseInt(aVals[3]);
-					int posB = Integer.parseInt(bVals[3]);
+					// if equal compare pos
+					final int posA = Integer.parseInt(aVals[3]);
+					final int posB = Integer.parseInt(bVals[3]);
 					if (posA == posB) { // Same position!
 						// if equal compare markerId
 						return aVals[4].compareTo(bVals[4]); // return comparison between markerIds
@@ -88,17 +87,17 @@ public class ComparatorChrAutPosMarkerIdAsc
 					return autosomalA.compareTo(autosomalB);
 				}
 			} else { // different chr
-				return a.compareTo(b); // compare strings
+				return strA.compareTo(strB); // compare strings
 			}
 		} else { // Normal autosomal  "chr;pos;markerId"
 			// compare chromosome(integer)
-			if (mA.matches() && mB.matches()) { // Both chr are Int
-				int intA = Integer.parseInt(chrA);
-				int intB = Integer.parseInt(chrB);
+			if (matcherA.matches() && matcherB.matches()) { // Both chr are Int
+				final int intA = Integer.parseInt(chrA);
+				final int intB = Integer.parseInt(chrB);
 				if (intA == intB) { // same chr, compare positions
 					// if equal compare pos
-					int posA = Integer.parseInt(aVals[1]);
-					int posB = Integer.parseInt(bVals[1]);
+					final int posA = Integer.parseInt(aVals[1]);
+					final int posB = Integer.parseInt(bVals[1]);
 					if (posA == posB) { // Same position!
 						// if equal compare markerId
 						return aVals[2].compareTo(bVals[2]); // return comparison between markerIds
@@ -110,8 +109,8 @@ public class ComparatorChrAutPosMarkerIdAsc
 				}
 			} else if (chrA.equals(chrB)) { // Chromosmes are Strings
 				// if equal compare pos
-				int posA = Integer.parseInt(aVals[1]);
-				int posB = Integer.parseInt(bVals[1]);
+				final int posA = Integer.parseInt(aVals[1]);
+				final int posB = Integer.parseInt(bVals[1]);
 				if (posA == posB) { // Same position!
 					// if equal compare markerId
 					return aVals[2].compareTo(bVals[2]); // return comparison between markerIds
@@ -119,7 +118,7 @@ public class ComparatorChrAutPosMarkerIdAsc
 					return (posA - posB);
 				}
 			} else { // different chr
-				return a.compareTo(b); // compare strings
+				return strA.compareTo(strB); // compare strings
 			}
 		}
 	}

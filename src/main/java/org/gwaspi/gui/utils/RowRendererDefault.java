@@ -96,20 +96,20 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 	private static void setColors(DefaultTableCellRenderer tableCellRenderer, boolean selected, int row) {
 
-		Color bg;
+		final Color background;
 		if (!selected) {
-			bg = (row % 2 == 0 ? GlobalConstants.ALTERNATE_ROW : GlobalConstants.BACKGROUND);
+			background = (row % 2 == 0 ? GlobalConstants.ALTERNATE_ROW : GlobalConstants.BACKGROUND);
 		} else {
-			bg = GlobalConstants.SELECTION_BACKGROUND;
+			background = GlobalConstants.SELECTION_BACKGROUND;
 		}
-		tableCellRenderer.setBackground(bg);
+		tableCellRenderer.setBackground(background);
 
-		Color fg;
+		final Color foreground;
 		if (selected) {
-			fg = GlobalConstants.SELECTION_FOREGROUND;
+			foreground = GlobalConstants.SELECTION_FOREGROUND;
 		} else {
-			fg = GlobalConstants.FOREGROUND;
+			foreground = GlobalConstants.FOREGROUND;
 		}
-		tableCellRenderer.setForeground(fg);
+		tableCellRenderer.setForeground(foreground);
 	}
 }

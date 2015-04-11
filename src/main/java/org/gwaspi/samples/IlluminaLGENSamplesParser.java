@@ -57,10 +57,10 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 					}
 				}
 
-				String l;
+				String line;
 				while (inputBufferReader.ready()) {
-					l = inputBufferReader.readLine();
-					String[] cVals = l.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
+					line = inputBufferReader.readLine();
+					String[] cVals = line.split(ImportConstants.Separators.separators_CommaSpaceTab_rgxp);
 					SampleInfo sampleInfo = new SampleInfo(
 							studyKey,
 							cVals[ImportConstants.Annotation.Plink_LGEN.lgen_sampleId],
