@@ -60,13 +60,16 @@ public class HapmapSamplesParser implements SamplesParser {
 						try {
 							inputBufferReader.close();
 						} catch (IOException ex) {
-							LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+							LOG.warn(
+									"Failed to close buffered file input stream when scanning samples: "
+											+ sampleFile.getCanonicalPath(), ex);
 						}
 					} else if (inputFileReader != null) {
 						try {
 							inputFileReader.close();
 						} catch (IOException ex) {
-							LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+							LOG.warn("Failed to close file input stream when scanning samples: "
+									+ sampleFile.getCanonicalPath(), ex);
 						}
 					}
 				}
@@ -90,13 +93,16 @@ public class HapmapSamplesParser implements SamplesParser {
 					try {
 						inputBufferReader.close();
 					} catch (IOException ex) {
-						LOG.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						LOG.warn(
+								"Failed to close buffered file input stream when scanning samples: "
+										+ sampleFile.getCanonicalPath(), ex);
 					}
 				} else if (inputFileReader != null) {
 					try {
 						inputFileReader.close();
 					} catch (IOException ex) {
-						LOG.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						LOG.warn("Failed to close file input stream when scanning samples: "
+								+ sampleFile.getCanonicalPath(), ex);
 					}
 				}
 			}

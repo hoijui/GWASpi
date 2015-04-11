@@ -80,13 +80,16 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 					try {
 						inputBufferReader.close();
 					} catch (IOException ex) {
-						log.warn("Failed to close buffered file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						log.warn(
+								"Failed to close buffered file input stream when scanning samples: "
+										+ sampleFile.getCanonicalPath(), ex);
 					}
 				} else if (inputFileReader != null) {
 					try {
 						inputFileReader.close();
 					} catch (IOException ex) {
-						log.warn("Failed to close file input stream when scanning samples: " + String.valueOf(sampleFile), ex);
+						log.warn("Failed to close file input stream when scanning samples: "
+								+ sampleFile.getCanonicalPath(), ex);
 					}
 				}
 			}
