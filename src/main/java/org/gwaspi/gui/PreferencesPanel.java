@@ -251,25 +251,11 @@ public class PreferencesPanel extends JPanel {
 						Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName);
 						proceed = false;
 					}
-				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
-					try {
-						double tmpNb = Double.parseDouble(selectedPropertyValue);
-					} catch (Exception ex) {
-						String warningText = Text.App.warnMustBeNumeric + "\nField: " + selectedPropertyName;
-						log.warn(warningText, ex);
-						Dialogs.showWarningDialogue(warningText);
-						proceed = false;
-					}
-				} else if (selectedPropertyName.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
-					try {
-						double tmpNb = Double.parseDouble(selectedPropertyValue);
-					} catch (Exception ex) {
-						String warningText = Text.App.warnMustBeNumeric + "\nField: " + selectedPropertyName;
-						log.warn(warningText, ex);
-						Dialogs.showWarningDialogue(warningText);
-						proceed = false;
-					}
-				} else if (selectedPropertyName.equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
+				} else if (selectedPropertyName.equals("CHART_MANHATTAN_PLOT_THRESHOLD")
+						|| selectedPropertyName.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
+						|| selectedPropertyName.equals("CHART_SAMPLEQA_MISSING_THRESHOLD"))
+				{
+					// Check if it is a number
 					try {
 						double tmpNb = Double.parseDouble(selectedPropertyValue);
 					} catch (Exception ex) {
