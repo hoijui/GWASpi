@@ -21,12 +21,15 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 
+/**
+ * @deprecated unused TODO remove this class(?)
+ */
 class ComparatorPvalAsc implements Comparator<Map.Entry>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public int compare(Map.Entry entry1, Map.Entry entry2) {
+	public int compare(final Map.Entry entry1, final Map.Entry entry2) {
 		int diff = ((Comparable) entry1.getValue()).compareTo(entry2.getValue());
 		if (diff == 0) {
 			diff = ((Comparable) entry1.getKey()).compareTo(entry2.getKey());
