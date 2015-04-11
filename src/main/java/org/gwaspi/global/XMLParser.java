@@ -62,7 +62,6 @@ public class XMLParser {
 
 	public static List<Element> parseDocument(Document dom, String tagName) {
 		List<Element> resultList = new ArrayList<Element>();
-		Object tagObject = new Object();
 
 		// get the root element
 		Element docEle = dom.getDocumentElement();
