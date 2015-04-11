@@ -84,6 +84,7 @@ public class CliExecutor {
 				scriptCommand.execute(args);
 			}
 		}
+		System.out.println("done. (all scripts executed)");
 		System.out.println();
 		System.out.println();
 	}

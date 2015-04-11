@@ -277,5 +277,6 @@ public class StartGWASpi {
 
 		StartGWASpi startGWASpi = new StartGWASpi();
 		startGWASpi.start(Arrays.asList(args));
+		log.info("closing ...");
 	}
 }
