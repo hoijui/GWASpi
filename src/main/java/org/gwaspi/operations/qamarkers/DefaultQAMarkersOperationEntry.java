@@ -24,6 +24,8 @@ import org.gwaspi.operations.AbstractOperationDataEntry;
 public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey>
 		implements QAMarkersOperationEntry, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private final boolean mismatchState;
 	private final byte majorAllele;
 	private final double majorAlleleFrequency;

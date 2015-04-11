@@ -30,6 +30,8 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	class KnownAllelesExtractor implements Extractor<MarkerCensusOperationEntry, byte[]>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public byte[] extract(MarkerCensusOperationEntry from) {
 			return from.getKnownAlleles();
@@ -41,6 +43,8 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	class CensusFullExtractor implements Extractor<MarkerCensusOperationEntry, CensusFull>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public CensusFull extract(MarkerCensusOperationEntry from) {
 			return from.getCensus();
@@ -50,6 +54,8 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 			= new CensusFullExtractor();
 
 	class CensusExtractor implements Extractor<MarkerCensusOperationEntry, Census>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Category category;
 

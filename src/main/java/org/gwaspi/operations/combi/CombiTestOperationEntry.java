@@ -26,6 +26,8 @@ public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class MissingRatioExtractor implements Extractor<CombiTestOperationEntry, Double>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(CombiTestOperationEntry from) {
 			return from.getWeight();

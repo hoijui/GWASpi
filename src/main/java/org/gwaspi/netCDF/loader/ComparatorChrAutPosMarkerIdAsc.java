@@ -26,6 +26,8 @@ import org.gwaspi.constants.NetCDFConstants;
 public class ComparatorChrAutPosMarkerIdAsc
 		implements Comparator<String>, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private static final Pattern SIMPLE_INTEGER = Pattern.compile("[0-9]{1,}");
 
 	@Override

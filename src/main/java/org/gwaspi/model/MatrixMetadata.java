@@ -64,6 +64,8 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 })
 public class MatrixMetadata implements DataSetMetadata, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private MatrixKey key;
 	private String friendlyName;
 	private String simpleName;

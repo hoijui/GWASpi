@@ -26,6 +26,8 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
 	class MissingRatioExtractor implements Extractor<QASamplesOperationEntry, Double>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(QASamplesOperationEntry from) {
 			return from.getMissingRatio();
@@ -35,6 +37,8 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
 	class MissingCountExtractor implements Extractor<QASamplesOperationEntry, Integer>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Integer extract(QASamplesOperationEntry from) {
 			return from.getMissingCount();
@@ -44,6 +48,8 @@ public interface QASamplesOperationEntry extends OperationDataEntry<SampleKey> {
 
 	class HetzyRatioExtractor implements Extractor<QASamplesOperationEntry, Double>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(QASamplesOperationEntry from) {
 			return from.getHetzyRatio();

@@ -28,6 +28,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	class MismatchStateExtractor implements Extractor<QAMarkersOperationEntry, Boolean>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Boolean extract(QAMarkersOperationEntry from) {
 			return from.getMismatchState();
@@ -36,6 +38,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	Extractor<QAMarkersOperationEntry, Boolean> TO_MISMATCH_STATE = new MismatchStateExtractor();
 
 	class MajorAlleleExtractor implements Extractor<QAMarkersOperationEntry, Byte>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Byte extract(QAMarkersOperationEntry from) {
@@ -47,6 +51,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	class MajorAlleleFrequencyExtractor implements Extractor<QAMarkersOperationEntry, Double>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
 			return from.getMajorAlleleFrequency();
@@ -56,6 +62,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 			= new MajorAlleleFrequencyExtractor();
 
 	class MinorAlleleExtractor implements Extractor<QAMarkersOperationEntry, Byte>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Byte extract(QAMarkersOperationEntry from) {
@@ -67,6 +75,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	class MinorAlleleFrequencyExtractor implements Extractor<QAMarkersOperationEntry, Double>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
 			return from.getMinorAlleleFrequency();
@@ -77,6 +87,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class AlleleAAExtractor implements Extractor<QAMarkersOperationEntry, Integer>, Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
 			return from.getAlleleAA();
@@ -85,6 +97,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	Extractor<QAMarkersOperationEntry, Integer> TO_ALLELE_AA = new AlleleAAExtractor();
 
 	class AlleleAaExtractor implements Extractor<QAMarkersOperationEntry, Integer>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
@@ -95,6 +109,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class AlleleaaExtractor implements Extractor<QAMarkersOperationEntry, Integer>, Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
 			return from.getAlleleaa();
@@ -104,6 +120,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class MissingCountExtractor implements Extractor<QAMarkersOperationEntry, Integer>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Integer extract(QAMarkersOperationEntry from) {
 			return from.getMissingCount();
@@ -113,6 +131,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class MissingRatioExtractor implements Extractor<QAMarkersOperationEntry, Double>, Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Double extract(QAMarkersOperationEntry from) {
 			return from.getMissingRatio();
@@ -121,6 +141,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	Extractor<QAMarkersOperationEntry, Double> TO_MISSING_RATIO = new MissingRatioExtractor();
 
 	class AlleleCountsExtractor implements Extractor<QAMarkersOperationEntry, int[]>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int[] extract(QAMarkersOperationEntry from) {
@@ -132,6 +154,8 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	class GenotypeCountsExtractor implements Extractor<QAMarkersOperationEntry, int[]>,
 			Serializable
 	{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public int[] extract(QAMarkersOperationEntry from) {
 			return from.getGenotypeCounts();

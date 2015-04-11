@@ -33,6 +33,8 @@ import java.util.List;
  */
 public class ExtractorList<I, O> extends AbstractList<O> implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private final List<? extends I> originalItems;
 	private final Extractor<I, O> extractor;
 

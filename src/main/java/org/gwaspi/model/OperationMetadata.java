@@ -64,6 +64,8 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 })
 public class OperationMetadata implements DataSetMetadata, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private OperationKey key;
 	private String name; // == Operation.friendlyName == OperationMetadata.opName
 	private String simpleName;

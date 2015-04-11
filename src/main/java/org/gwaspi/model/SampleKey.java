@@ -29,6 +29,8 @@ import javax.persistence.Transient;
  */
 public class SampleKey implements Comparable<SampleKey>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final String SAMPLE_NULL_ID = "-1";
 
 	/**

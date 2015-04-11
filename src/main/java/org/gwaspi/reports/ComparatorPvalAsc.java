@@ -23,6 +23,8 @@ import java.util.Map;
 
 class ComparatorPvalAsc implements Comparator<Map.Entry>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public int compare(Map.Entry entry1, Map.Entry entry2) {
 		int diff = ((Comparable) entry1.getValue()).compareTo(entry2.getValue());

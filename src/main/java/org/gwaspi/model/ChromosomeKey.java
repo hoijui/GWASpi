@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public final class ChromosomeKey implements Comparable<ChromosomeKey>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private final String chromosome;
 
 	public ChromosomeKey(String chromosome) {

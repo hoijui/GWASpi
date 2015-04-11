@@ -27,6 +27,8 @@ import java.io.Serializable;
  */
 public class Genotype implements Serializable, Comparable<Genotype> {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final Genotype INVALID = new Genotype(new byte[] {'0', '0'});
 
 	private final byte[] rawGt;

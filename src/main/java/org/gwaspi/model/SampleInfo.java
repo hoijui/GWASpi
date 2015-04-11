@@ -48,6 +48,8 @@ import org.gwaspi.global.Extractor;
 })
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final int ORDER_NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
 	public static final Extractor<SampleInfo, SampleKey> TO_SAMPLE_KEY

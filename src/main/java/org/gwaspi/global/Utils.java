@@ -813,6 +813,8 @@ public class Utils {
 
 	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>>, Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		private final int multiplier;
 
 		MapValueComparator(boolean ascending) {

@@ -28,6 +28,8 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
  */
 public class CensusFull implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final class AllCensusExtractor extends AbstractObjectEnumeratedValueExtractor<CensusFull> {
 
 		@Override

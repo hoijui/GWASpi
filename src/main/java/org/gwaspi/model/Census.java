@@ -25,6 +25,8 @@ import java.util.NoSuchElementException;
  */
 public class Census implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final class CensusExtractor4 extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override

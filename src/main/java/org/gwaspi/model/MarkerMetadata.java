@@ -23,6 +23,8 @@ import org.gwaspi.global.Extractor;
 
 public class MarkerMetadata implements Serializable, Comparable<MarkerMetadata> {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final Extractor<MarkerMetadata, String> TO_MARKER_ID
 			= new Extractor<MarkerMetadata, String>()
 	{

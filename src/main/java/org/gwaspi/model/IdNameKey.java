@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class IdNameKey implements Comparable<IdNameKey>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
 	private final int id;

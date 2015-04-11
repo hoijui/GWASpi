@@ -27,6 +27,8 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	class PValueComparator implements Comparator<TrendTestOperationEntry>, Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public int compare(TrendTestOperationEntry entry1, TrendTestOperationEntry entry2) {
 			return Double.compare(entry1.getP(), entry2.getP());

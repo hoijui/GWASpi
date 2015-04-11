@@ -25,6 +25,8 @@ import java.util.Comparator;
  */
 public class GenotypeComparator implements Comparator<byte[]>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public int compare(byte[] gt1, byte[] gt2) {
 		return 256 * (gt1[0] - gt2[0]) + (gt1[1] - gt2[1]);

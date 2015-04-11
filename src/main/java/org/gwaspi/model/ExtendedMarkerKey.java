@@ -26,6 +26,8 @@ import javax.persistence.Transient;
  */
 public class ExtendedMarkerKey implements Comparable<ExtendedMarkerKey>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private MarkerKey markerKey;
 	private String chr;
 	private int pos;

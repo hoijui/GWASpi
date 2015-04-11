@@ -26,6 +26,8 @@ import javax.persistence.Transient;
  */
 public class ReportKey implements Comparable<ReportKey>, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
 	private static final String NAME_UNKNOWN = "<report-name-unknown>";

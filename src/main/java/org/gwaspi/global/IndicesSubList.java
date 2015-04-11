@@ -30,6 +30,8 @@ import java.util.List;
  */
 public class IndicesSubList<T> extends AbstractList<T> implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	private final List<T> backend;
 	private final List<Integer> indices;
 
