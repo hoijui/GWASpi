@@ -418,6 +418,11 @@
 			<version>3.13-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>de.bwaldvogel</groupId>
+			<artifactId>liblinear</artifactId>
+			<version>1.95</version>
+		</dependency>
+		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
 			<version>4.2-min</version>

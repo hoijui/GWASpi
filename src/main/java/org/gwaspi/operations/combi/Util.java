@@ -438,7 +438,9 @@ public class Util {
 
 	public static void runEncodingAndSVM(
 			final GenotypeEncoder genotypeEncoder,
-			final GenotypeEncodingParams genotypeEncodingParams)
+			final GenotypeEncodingParams genotypeEncodingParams,
+			final SolverLibrary solverLibrary,
+			final SolverParams solverParams)
 	{
 		List<MarkerKey> markerKeys;
 		List<Byte> majorAlleles;
@@ -471,6 +473,9 @@ public class Util {
 					markerGenotypes,
 					genotypeEncoder,
 					genotypeEncodingParams,
+					solverLibrary,
+					solverParams,
+					null,
 					null,
 					null,
 					new CombiTestMatrixOperation.SvmProgressHandler());

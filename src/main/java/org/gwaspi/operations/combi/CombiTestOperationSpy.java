@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.combi;
 
+import de.bwaldvogel.liblinear.Model;
 import java.util.List;
 import libsvm.svm_model;
 import org.gwaspi.model.GenotypesList;
@@ -39,7 +40,7 @@ public interface CombiTestOperationSpy {
 
 	void kernelCalculated(float[][] K);
 
-	void svmModelTrained(svm_model svmModel);
+	void svmModelTrained(svm_model svmModel, Model svmModelLinear);
 
 	void originalSpaceWeightsCalculated(List<Double> weightsEncoded);
 

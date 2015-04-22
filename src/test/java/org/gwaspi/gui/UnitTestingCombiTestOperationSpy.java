@@ -17,12 +17,14 @@
 
 package org.gwaspi.gui;
 
+import de.bwaldvogel.liblinear.Model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import libsvm.svm_model;
 import libsvm.svm_node;
 import org.gwaspi.model.GenotypesList;
@@ -32,12 +34,15 @@ import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationSpy;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypeEncodingParams;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.MarkerGenotypesEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
+import org.gwaspi.operations.combi.SolverLibrary;
+import org.gwaspi.operations.combi.SolverParams;
 import org.gwaspi.operations.combi.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,20 +141,25 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	}
 
 	@Override
-	public void svmModelTrained(svm_model svmModel) {
+	public void svmModelTrained(final svm_model svmModel, final Model svmModelLinear) {
 
-		// check if the alphas are equivalent to the ones calculated with matlab
+		// this method checks if the alphas are equivalent to the ones calculated with matlab
+
+		final Map<Integer, Double> extractedNonZeroAlphas;
+		if (svmModelLinear == null) {
+			extractedNonZeroAlphas = CombiTestMatrixOperation.extractNonZeroAlphas(svmModel);
+		} else {
+			throw new IllegalStateException("libLinear does not produce alphas, cause it is not kernel-based, but feature matrix based (only)");
+		}
 		List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-			myAlphas.set(index, value);
+		for (final Map.Entry<Integer, Double> alphaIndexValue : extractedNonZeroAlphas.entrySet()) {
+			myAlphas.set(alphaIndexValue.getKey(), -alphaIndexValue.getValue());
 		}
 
-		double[][] alphas = svmModel.sv_coef;
-		svm_node[][] SVs = svmModel.SV;
-		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.toString(alphas[0]));
-		LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
+//		double[][] alphas = svmModel.sv_coef;
+//		svm_node[][] SVs = svmModel.SV;
+//		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.toString(alphas[0]));
+//		LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
 		File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
 		List<List<Double>> correctAlphasSparse = Util.parsePlainTextMatrix(correctAlphasFile, false);
@@ -217,11 +227,14 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
 //		final int weightsFilterWidth = 3; // TODO or 35, if we have more markers
 		final GenotypeEncodingParams genotypeEncodingParams = new GenotypeEncodingParams();
+		final SolverLibrary solverLibrary = SolverLibrary.LIB_SVM;
+		final SolverParams solverParams
+				= CombiTestOperationParams.getSolverParamsDefault(solverLibrary);
 
 //		runSVM(genotypeEncoder);
 
 		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
-		Util.runEncodingAndSVM(genotypeEncoder, genotypeEncodingParams); // FIXME
+		Util.runEncodingAndSVM(genotypeEncoder, genotypeEncodingParams, solverLibrary, solverParams); // FIXME
 
 //		List<List<Double>> X = new ArrayList<List<Double>>(2);
 //		X.add(Arrays.asList(new Double[] {1.0, 0.0}));

@@ -17,6 +17,13 @@
 
 package org.gwaspi.operations.combi;
 
+import de.bwaldvogel.liblinear.Feature;
+import de.bwaldvogel.liblinear.FeatureNode;
+import de.bwaldvogel.liblinear.Linear;
+import de.bwaldvogel.liblinear.Model;
+import de.bwaldvogel.liblinear.Parameter;
+import de.bwaldvogel.liblinear.Problem;
+import de.bwaldvogel.liblinear.SolverType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -321,6 +328,7 @@ public class CombiTestMatrixOperation
 			weights = new ArrayList<Double>(Collections.nCopies(parentDataSetSource.getNumMarkers(), -1.0));
 			float[][] recyclableKernelMatrix = null;
 			svm_problem recyclableProblem = null;
+			Problem recyclableProblemLinear = null;
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 			int chromoIndex = 0;
 			for (final Map.Entry<String, List<Integer>> markerChromosomeIndices : markersChromosomeToIndices.entrySet()) {
@@ -357,13 +365,17 @@ public class CombiTestMatrixOperation
 						markersGenotypesSource,
 						getParams().getEncoder(),
 						getParams().getEncodingParams(),
+						getParams().getSolverLibrary(),
+						getParams().getSolverParams(),
 						recyclableKernelMatrix,
 						recyclableProblem,
+						recyclableProblemLinear,
 						phSvmChromosome);
 				phSvmChromosome.setNewStatus(ProcessStatus.FINALIZING);
 				final List<Double> chromosomeWeights = svmResults.getWeights();
 				recyclableKernelMatrix = svmResults.getRecyclableKernelMatrix();
 				recyclableProblem = svmResults.getRecyclableProblem();
+				recyclableProblemLinear = svmResults.getRecyclableProblemLinear();
 
 				int chromosomeMarkerIndex = 0;
 				for (final Integer genomeMarkerIndex : markerIndices) {
@@ -406,6 +418,9 @@ public class CombiTestMatrixOperation
 					markersGenotypesSource,
 					getParams().getEncoder(),
 					getParams().getEncodingParams(),
+					getParams().getSolverLibrary(),
+					getParams().getSolverParams(),
+					null,
 					null,
 					null,
 					svmPHs.get(0));
@@ -538,15 +553,18 @@ public class CombiTestMatrixOperation
 		private final List<Double> weights;
 		private final float[][] recyclableKernelMatrix;
 		private final svm_problem recyclableProblem;
+		private final Problem recyclableProblemLinear;
 
 		RunSVMResults(
 				final List<Double> weights,
 				final float[][] recyclableKernelMatrix,
-				final svm_problem recyclableProblem)
+				final svm_problem recyclableProblem,
+				final Problem recyclableProblemLinear)
 		{
 			this.weights = weights;
 			this.recyclableKernelMatrix = recyclableKernelMatrix;
 			this.recyclableProblem = recyclableProblem;
+			this.recyclableProblemLinear = recyclableProblemLinear;
 		}
 
 		public List<Double> getWeights() {
@@ -560,6 +578,10 @@ public class CombiTestMatrixOperation
 		public svm_problem getRecyclableProblem() {
 			return recyclableProblem;
 		}
+
+		public Problem getRecyclableProblemLinear() {
+			return recyclableProblemLinear;
+		}
 	}
 
 	static RunSVMResults runEncodingAndSVM(
@@ -572,8 +594,11 @@ public class CombiTestMatrixOperation
 			List<GenotypesList> markerGTs,
 			GenotypeEncoder genotypeEncoder,
 			final GenotypeEncodingParams genotypeEncodingParams,
+			final SolverLibrary solverLibrary,
+			final SolverParams solverParams,
 			final float[][] recyclableKernelMatrix,
 			final svm_problem recyclableProblem,
+			final Problem recyclableProblemLinear,
 			final SvmProgressHandler svmPH)
 			throws IOException
 	{
@@ -581,7 +606,16 @@ public class CombiTestMatrixOperation
 		final int n = sampleKeys.size();
 
 		LOG.debug("create SVM parameters");
-		svm_parameter libSvmParameters = createLibSvmParameters();
+		final boolean useLibSvm = (solverLibrary == SolverLibrary.LIB_SVM);
+		final svm_parameter libSvmParameters;
+		final Parameter libLinearParameters;
+		if (useLibSvm) {
+			libSvmParameters = createLibSvmParameters(solverParams);
+			libLinearParameters = null;
+		} else {
+			libSvmParameters = null;
+			libLinearParameters = createLibLinearParameters(solverParams);
+		}
 
 		LOG.debug("encode affection states");
 		Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
@@ -606,22 +640,47 @@ public class CombiTestMatrixOperation
 			spy.initializing(markerKeys, majorAlleles, minorAlleles, markerGenotypesCounts, sampleKeys, sampleAffections, markerGTs, genotypeEncoder, markerGenotypesEncoder);
 		}
 
-		final float[][] kernelMatrix = encodeFeaturesAndCalculateKernel(markerGenotypesEncoder, recyclableKernelMatrix, svmPH.getCreatingKernelMatrixPH());
+		final float[][] kernelMatrix;
+		if (useLibSvm) {
+			kernelMatrix = encodeFeaturesAndCalculateKernel(markerGenotypesEncoder, recyclableKernelMatrix, svmPH.getCreatingKernelMatrixPH());
 
-		if (spy != null) {
-			spy.kernelCalculated(kernelMatrix);
+			if (spy != null) {
+				spy.kernelCalculated(kernelMatrix);
+			}
+		} else {
+			kernelMatrix = null;
 		}
 
-		final svm_problem libSvmProblem = createLibSvmProblem(
-				kernelMatrix,
-				encodedAffectionStates.values(),
+		final Object libXProblem = createLibSvmOrLinearProblem(
+					markerGenotypesEncoder,
+					kernelMatrix,
+					encodedAffectionStates.values(),
+					libSvmParameters,
+					libLinearParameters,
+					recyclableProblem,
+					recyclableProblemLinear,
+					svmPH.getTranscribeKernelMatrixPH(),
+					useLibSvm);
+		final svm_problem libSvmProblem;
+		final Problem libLinearProblem;
+		if (useLibSvm) {
+			libSvmProblem = (svm_problem) libXProblem;
+			libLinearProblem = null;
+		} else {
+			libSvmProblem = null;
+			libLinearProblem = (Problem) libXProblem;
+		}
+
+		final List<Double> weights = runSVM(
+				markerGenotypesEncoder,
+				libSvmProblem,
+				libLinearProblem,
 				libSvmParameters,
-				recyclableProblem,
-				svmPH.getTranscribeKernelMatrixPH());
+				libLinearParameters,
+				genotypeEncoder,
+				svmPH);
 
-		final List<Double> weights = runSVM(markerGenotypesEncoder, libSvmProblem, genotypeEncoder, svmPH);
-
-		return new RunSVMResults(weights, kernelMatrix, libSvmProblem);
+		return new RunSVMResults(weights, kernelMatrix, libSvmProblem, libLinearProblem);
 	}
 
 	/**
@@ -797,94 +856,172 @@ public class CombiTestMatrixOperation
 		}
 	}
 
-	private static svm_problem createLibSvmProblem(
+	private static void createAndAddKernelNode(
+			final svm_problem probSvm,
+			final Problem probLinear,
+			final int index1,
+			final int index2,
+			final double value,
+			final boolean useLibSvm)
+	{
+		if (useLibSvm) {
+			final svm_node sampleIndexNode = new svm_node();
+			sampleIndexNode.index = index2;
+			sampleIndexNode.value = value;
+			probSvm.x[index1][index2] = sampleIndexNode;
+		} else {
+			final Feature sampleIndexNode = new FeatureNode(index2, value);
+			probLinear.x[index1][index2 - 1] = sampleIndexNode;
+		}
+	}
+
+	private static Object createLibSvmOrLinearProblem(
+			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			final float[][] kernelMatrix,
 			final Collection<Double> labels,
 			final svm_parameter libSvmParameters,
+			final Parameter libLinearParameters,
 			final svm_problem recyclableProblem,
-			final ProgressHandler<Integer> transcribeKernelMatrixPH)
+			final Problem recyclableProblemLinear,
+			final ProgressHandler<Integer> transcribeKernelMatrixPH,
+			final boolean useLibSvm)
 			throws IOException
 	{
-		final svm_problem prob;
+		final svm_problem probSvm;
+		final Problem probLinear;
 
-		if (recyclableProblem == null) {
-			prob = new svm_problem();
+		if (useLibSvm) {
+			if (recyclableProblem == null) {
+				probSvm = new svm_problem();
+			} else {
+				probSvm = recyclableProblem;
+			}
+			probLinear = null;
 		} else {
-			prob = recyclableProblem;
+			probSvm = null;
+			if (recyclableProblemLinear == null) {
+				probLinear = new Problem();
+			} else {
+				probLinear = recyclableProblemLinear;
+			}
 		}
 
 		final int n = labels.size();
 
 		// prepare the features
-		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-			// transfer the kernel
-			final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
-			final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
-			LOG.debug("libSVM preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
+		if (useLibSvm && (libSvmParameters.kernel_type != svm_parameter.PRECOMPUTED)) {
+			throw new IllegalStateException("unsupported lib{SVM, Linear} kernel type: " + libSvmParameters.kernel_type);
+		}
+		// transfer the kernel
+		final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
+		final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
+		LOG.debug("lib{SVM, Linear} preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
-			if ((prob.x != null) && (prob.x.length >= n) && (prob.x[0].length >= (1 + n))) {
+		if (useLibSvm) {
+			if ((probSvm.x != null) && (probSvm.x.length >= n) && (probSvm.x[0].length >= (1 + n))) {
 				LOG.debug("libSVM preparation: recycle kernel memory");
 			} else {
 				LOG.debug("libSVM preparation: allocate kernel memory");
 				try {
-					prob.x = new svm_node[n][1 + n];
-				} catch (OutOfMemoryError er) {
+					probSvm.x = new svm_node[n][1 + n];
+				} catch (final OutOfMemoryError er) {
 					throw new IOException(er);
 				}
 			}
+		} else {
+			final int numFeatures = markerGenotypesEncoder.getNumFeatures();
+			if ((probLinear.x != null) && (probLinear.x.length >= n) && (probLinear.x[0].length >= numFeatures)) {
+				LOG.debug("libLinear preparation: recycle features memory");
+			} else {
+				LOG.debug("libLinear preparation: allocate features memory");
+				try {
+					probLinear.x = new Feature[n][numFeatures];
+				} catch (final OutOfMemoryError er) {
+					throw new IOException(er);
+				}
+			}
+		}
 
-			LOG.debug("libSVM preparation: store the kernel elements");
-			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.INITIALIZING);
-			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.RUNNING);
-			for (int si = 0; si < n; si++) {
-				// This is required by the libSVM standard for a PRECOMPUTED kernel
-				svm_node sampleIndexNode = new svm_node();
-				sampleIndexNode.index = 0;
-				sampleIndexNode.value = si + 1;
-				prob.x[si][0] = sampleIndexNode;
+		LOG.debug("lib{SVM, Linear} preparation: store the kernel elements");
+		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.INITIALIZING);
+		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.RUNNING);
+		for (int si = 0; si < n; si++) {
+			if (useLibSvm) {
+				// This is required by the libSVM standard for a PRECOMPUTED kernel, not for libLinear
+				createAndAddKernelNode(probSvm, probLinear, si, 0, si + 1, useLibSvm);
 
 				for (int s2i = si; s2i < n; s2i++) {
 					final double kernelValue = kernelMatrix[s2i][si]; // XXX or indices other way around?
 
-					svm_node curNode = new svm_node();
-					curNode.index = 1 + s2i;
-					curNode.value = kernelValue;
-					prob.x[si][1 + s2i] = curNode;
+					createAndAddKernelNode(probSvm, probLinear, si, 1 + s2i, kernelValue, useLibSvm);
 					if (si != s2i) {
 						// because the matrix is symmetric
-						svm_node curNodeT = new svm_node();
-						curNodeT.index = 1 + si;
-						curNodeT.value = kernelValue;
-						prob.x[s2i][1 + si] = curNodeT;
+						createAndAddKernelNode(probSvm, probLinear, s2i, 1 + si, kernelValue, useLibSvm);
 					}
 				}
+			} else {
+				for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
+					final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
+					final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
 
-				transcribeKernelMatrixPH.setProgress(si + 1);
+					final int featuresOffset = fci * markerGenotypesEncoder.getMaxChunkSize();
+					for (int sampleIndex = 0; sampleIndex < n; sampleIndex++) {
+						for (int localFeatureIndex = 0; localFeatureIndex < numFeaturesInChunk; localFeatureIndex++) {
+							probLinear.x[sampleIndex][featuresOffset + localFeatureIndex]
+									= new FeatureNode(1 + featuresOffset + localFeatureIndex, featuresChunk[sampleIndex][localFeatureIndex]);
+						}
+					}
+				}
 			}
-			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.FINALIZING);
-			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.COMPLEETED);
-		} else {
-			throw new IllegalStateException("unsupported libSVM kernel type: " + libSvmParameters.kernel_type);
+
+			transcribeKernelMatrixPH.setProgress(si + 1);
 		}
+		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.FINALIZING);
+		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		// prepare the labels
-		LOG.debug("libSVM preparation: store the labels");
-		prob.l = n;
-		if ((prob.y != null) && (prob.y.length >= prob.l)) {
-			LOG.debug("libSVM preparation: recycle labels memory");
+		LOG.debug("lib{SVM, Linear} preparation: store the labels");
+		final int l = n;
+		double[] y;
+		if (useLibSvm) {
+			probSvm.l = l;
+			y = probSvm.y;
 		} else {
-			prob.y = new double[prob.l];
+			probLinear.l = n;
+			probLinear.n = markerGenotypesEncoder.getNumFeatures();
+			y = probLinear.y;
+		}
+		if ((y != null) && (y.length >= l)) {
+			LOG.debug("lib{SVM, Linear} preparation: recycle labels memory");
+		} else {
+			y = new double[l];
+			if (useLibSvm) {
+				probSvm.y = y;
+			} else {
+				probLinear.y = y;
+			}
 		}
 		Iterator<Double> itY = labels.iterator();
-		for (int si = 0; si < prob.l; si++) {
-			double y = itY.next();
-			prob.y[si] = y;
+		for (int si = 0; si < l; si++) {
+			final double label = itY.next();
+			y[si] = label;
 		}
 
+		final Object prob;
+		if (useLibSvm) {
+			prob = probSvm;
+		} else {
+			prob = probLinear;
+		}
 		return prob;
 	}
 
-	private static svm_parameter createLibSvmParameters() {
+	private static Parameter createLibLinearParameters(final SolverParams solverParams) {
+
+		return new Parameter(SolverType.L2R_L1LOSS_SVC_DUAL, solverParams.getC(), solverParams.getEps()/*, p*/);
+	}
+
+	private static svm_parameter createLibSvmParameters(final SolverParams solverParams) {
 
 		svm_parameter svmParams = new svm_parameter();
 
@@ -906,9 +1043,9 @@ public class CombiTestMatrixOperation
 		// The cache size in MB
 		svmParams.cache_size = 40; // TODO make configurable, or at least dynamic (depending on available memory and/or problem size)
 		// stopping criteria
-		svmParams.eps = 1E-7;
+		svmParams.eps = solverParams.getEps();
 		// for C_SVC, EPSILON_SVR and NU_SVR
-		svmParams.C = 1.0;
+		svmParams.C = solverParams.getC();
 		// for C_SVC
 		svmParams.nr_weight = 0;
 		// for C_SVC
@@ -977,7 +1114,7 @@ public class CombiTestMatrixOperation
 					// because we want the absolute sum (i forgot again why so :/ )
 //					final double y = ...;
 //					final double alphaYXi = -alpha * y * x; // XXX why here change sign again?!?!
-					final double alphaYXi = -alpha * x; // XXX why here change sign again?!?!
+					final double alphaYXi = alpha * x;
 					weights[di] += alphaYXi;
 				}
 			}
@@ -997,53 +1134,83 @@ public class CombiTestMatrixOperation
 	}
 
 	/**
-	 * @return sample index and value of non-zero alphas
+	 * @return feature index and value of non-zero alphas
 	 */
-	private static Map<Integer, Double> extractNonZeroAlphas(final svm_model svmModel) {
+	public static Map<Integer, Double> extractNonZeroAlphas(final svm_model svmModel) {
 
-		// sample index and value of non-zero alphas
-		Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[0].length);
-		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i];
-			int index = (int) svmModel.SV[i][0].value - 1; // NOTE this only works with PRECOMPUTED!
-			nonZeroAlphas.put(index, value);
+		final int numClasses = svmModel.sv_coef.length + 1;
+		final int classIndex = 0;
+		final int numFeatures = svmModel.sv_coef[classIndex].length;
+		final Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[classIndex].length);
+		for (int nzai = 0; nzai < svmModel.sv_coef[classIndex].length; nzai++) {
+			final int featureIndex = (int) svmModel.SV[nzai][classIndex].value - 1; // NOTE this only works with PRECOMPUTED!
+			final double featureValue = svmModel.sv_coef[classIndex][nzai];
+			nonZeroAlphas.put(featureIndex, featureValue);
 		}
 
 		return nonZeroAlphas;
 	}
 
+	public static List<Double> extractFeatureWeights(final Model svmModel) {
+
+		final double[] featureWeightsRaw = svmModel.getFeatureWeights();
+		final List<Double> featureWeights = new ArrayList<Double>(featureWeightsRaw.length);
+		for (int featureIndex = 0; featureIndex < featureWeightsRaw.length; featureIndex++) {
+			featureWeights.add(featureWeightsRaw[featureIndex]);
+		}
+
+		return featureWeights;
+	}
+
 	private static List<Double> runSVM(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
-			svm_problem libSvmProblem,
+			final svm_problem libSvmProblem,
+			final Problem libLinearProblem,
+			final svm_parameter libSvmParameters,
+			final Parameter libLinearParameters,
 			GenotypeEncoder genotypeEncoder,
 			final SvmProgressHandler svmPH)
 	{
+		final boolean useLibSvm = (libSvmProblem != null);
 		final ProgressHandler<?> trainSVMPH = svmPH.getTrainSVMPH();
 		trainSVMPH.setNewStatus(ProcessStatus.INITIALIZING);
 		// dimension of the encoded samples space (== #markers * encoding-factor)
 		final int dEncoded = markerGenotypesEncoder.getNumFeatures();
 		final int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
-		final int n = libSvmProblem.x.length;
-
-		LOG.debug("create SVM parameters");
-		svm_parameter libSvmParameters = createLibSvmParameters();
+		final int n = useLibSvm ? libSvmProblem.x.length : libLinearProblem.x.length;
 
 		LOG.debug("train the SVM model");
 		trainSVMPH.setNewStatus(ProcessStatus.RUNNING);
-		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
+		final svm_model svmModel;
+		final Model svmModelLinear;
+		if (useLibSvm) {
+			svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
+			svmModelLinear = null;
+		} else {
+			svmModel = null;
+			svmModelLinear = Linear.train(libLinearProblem, libLinearParameters);
+		}
 		trainSVMPH.setNewStatus(ProcessStatus.FINALIZING);
 
-		if (spy != null) {
-			spy.svmModelTrained(svmModel);
+		final List<Double> weightsEncoded;
+		if (useLibSvm) {
+			if (spy != null) {
+				spy.svmModelTrained(svmModel, svmModelLinear);
+			}
+			// sample index and value of non-zero alphas
+			final Map<Integer, Double> nonZeroAlphas;
+			nonZeroAlphas = extractNonZeroAlphas(svmModel);
+			trainSVMPH.setNewStatus(ProcessStatus.COMPLEETED);
+
+			LOG.debug("calculate original space weights from alphas");
+			weightsEncoded = calculateOriginalSpaceWeights(
+					nonZeroAlphas,
+					markerGenotypesEncoder,
+					useLibSvm ? libSvmProblem.y : libLinearProblem.y,
+					svmPH.getCalculateOriginalSpaceWeightsPH());
+		} else {
+			weightsEncoded = extractFeatureWeights(svmModelLinear);
 		}
-
-		// sample index and value of non-zero alphas
-		Map<Integer, Double> nonZeroAlphas = extractNonZeroAlphas(svmModel);
-		trainSVMPH.setNewStatus(ProcessStatus.COMPLEETED);
-
-		LOG.debug("calculate original space weights from alphas");
-		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				nonZeroAlphas, markerGenotypesEncoder, libSvmProblem.y, svmPH.getCalculateOriginalSpaceWeightsPH());
 
 		if (spy != null) {
 			spy.originalSpaceWeightsCalculated(weightsEncoded);

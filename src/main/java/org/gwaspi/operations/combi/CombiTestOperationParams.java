@@ -52,6 +52,10 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	 * Whether to use run the SVM once per chromosome, or rather over the whole genome at once.
 	 */
 	private final Boolean perChromosome;
+	/** Indicates the SVM solver library to use for generating the SNP/marker weights */
+	private final SolverLibrary solverLibrary;
+	/** The SVM solver parameters to use for generating the SNP/marker weights */
+	private final SolverParams solverParams;
 
 	public CombiTestOperationParams(
 			OperationKey qaMarkersOperationKey,
@@ -59,6 +63,8 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 			final GenotypeEncodingParams encodingParams,
 			Boolean useThresholdCalibration,
 			final Boolean perChromosome,
+			final SolverLibrary solverLibrary,
+			final SolverParams solverParams,
 			String name)
 	{
 		super(OPType.COMBI_ASSOC_TEST, new DataSetKey(qaMarkersOperationKey), name);
@@ -75,12 +81,20 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 		this.perChromosome = (perChromosome == null)
 				? isPerChromosomeDefault()
 				: perChromosome;
+		this.solverLibrary = (solverLibrary == null)
+				? getSolverLibraryDefault()
+				: solverLibrary;
+		this.solverParams = (solverParams == null)
+				? getSolverParamsDefault(this.solverLibrary)
+				: solverParams;
 	}
 
 	public CombiTestOperationParams(OperationKey qaMarkersOperationKey) {
 
 		this(
 				qaMarkersOperationKey,
+				null,
+				null,
 				null,
 				null,
 				null,
@@ -150,6 +164,36 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 
 	public static boolean isPerChromosomeDefault() {
 		return true;
+	}
+
+	public SolverLibrary getSolverLibrary() {
+		return solverLibrary;
+	}
+
+	public static SolverLibrary getSolverLibraryDefault() {
+		return SolverLibrary.LIB_SVM;
+	}
+
+	public SolverParams getSolverParams() {
+		return solverParams;
+	}
+
+	public static SolverParams getSolverParamsDefault(final SolverLibrary solverLibrary) {
+
+		final SolverParams solverParamsDefault;
+		switch (solverLibrary) {
+			case LIB_SVM:
+				solverParamsDefault = new SolverParams(1E-3, 1E-5); // TODO
+				break;
+			case LIB_LINEAR:
+				solverParamsDefault = new SolverParams(1E-2, 1E-4); // TODO
+				break;
+			default:
+				throw new UnsupportedOperationException(
+						"No default solver parameters given for solver " + solverLibrary.name());
+		}
+
+		return solverParamsDefault;
 	}
 
 	@Override

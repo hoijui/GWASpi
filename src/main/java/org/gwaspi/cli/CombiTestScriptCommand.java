@@ -31,6 +31,8 @@ import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypeEncodingParams;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
+import org.gwaspi.operations.combi.SolverLibrary;
+import org.gwaspi.operations.combi.SolverParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.Threaded_Combi;
 
@@ -103,6 +105,11 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 				genotypeEncodingParams = new GenotypeEncodingParams(genotypeEncodindP);
 			}
 
+			final String svmLibraryStr = args.get("svm-library");
+			final SolverLibrary svmLibrary = (svmLibraryStr == null) ? null
+					: SolverLibrary.valueOf(svmLibraryStr);
+			final Double svmEps = fetchDouble(args, "svm-eps", null);
+			final Double svmC = fetchDouble(args, "svm-C", null);
 
 			final Integer weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
 
@@ -123,6 +130,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					genotypeEncodingParams,
 					useThresholdCalibration,
 					perChromosome,
+					svmLibrary,
+					new SolverParams(svmEps, svmC),
 					resultOperationName);
 			if (resultFilterOperationName == null) {
 				resultFilterOperationName = "Filter on " + paramsTest.getName();

@@ -20,6 +20,8 @@ package org.gwaspi.operations.combi;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -92,6 +94,21 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JCheckBox perChromosomeValue;
 	private final JCheckBox perChromosomeDefault;
 
+	private final JLabel svmLibraryLabel;
+	private final JPanel svmLibraryP;
+	private final JComboBox svmLibraryValue;
+	private final JCheckBox svmLibraryDefault;
+
+	private final JLabel svmEpsLabel;
+	private final JPanel svmEpsP;
+	private final JSpinner svmEpsValue;
+	private final JCheckBox svmEpsDefault;
+
+	private final JLabel svmCLabel;
+	private final JPanel svmCP;
+	private final JSpinner svmCValue;
+	private final JCheckBox svmCDefault;
+
 	private final JLabel resultMatrixLabel;
 	private final JPanel resultMatrixP;
 	private final JTextField resultMatrixValue;
@@ -128,6 +145,21 @@ public class CombiTestParamsGUI extends JPanel {
 		this.perChromosomeValue = new JCheckBox();
 		this.perChromosomeDefault = new JCheckBox();
 
+		this.svmLibraryLabel = new JLabel();
+		this.svmLibraryP = new JPanel();
+		this.svmLibraryValue = new JComboBox();
+		this.svmLibraryDefault = new JCheckBox();
+
+		this.svmEpsLabel = new JLabel();
+		this.svmEpsP = new JPanel();
+		this.svmEpsValue = new JSpinner();
+		this.svmEpsDefault = new JCheckBox();
+
+		this.svmCLabel = new JLabel();
+		this.svmCP = new JPanel();
+		this.svmCValue = new JSpinner();
+		this.svmCDefault = new JCheckBox();
+
 		this.resultMatrixLabel = new JLabel();
 		this.resultMatrixP = new JPanel();
 		this.resultMatrixValue = new JTextField();
@@ -146,6 +178,15 @@ public class CombiTestParamsGUI extends JPanel {
 		this.perChromosomeP.add(this.perChromosomeValue);
 		this.perChromosomeP.add(this.perChromosomeDefault);
 
+		this.svmLibraryP.add(this.svmLibraryValue);
+		this.svmLibraryP.add(this.svmLibraryDefault);
+
+		this.svmEpsP.add(this.svmEpsValue);
+		this.svmEpsP.add(this.svmEpsDefault);
+
+		this.svmCP.add(this.svmCValue);
+		this.svmCP.add(this.svmCDefault);
+
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
 
@@ -156,6 +197,9 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(genotypeEncoderPLabel, genotypeEncoderPPanel);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
 		labelsAndComponents.put(perChromosomeLabel, perChromosomeP);
+		labelsAndComponents.put(svmLibraryLabel, svmLibraryP);
+		labelsAndComponents.put(svmEpsLabel, svmEpsP);
+		labelsAndComponents.put(svmCLabel, svmCP);
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
 		GroupLayout layout = new GroupLayout(this);
 		createLayout(layout, labelsAndComponents);
@@ -224,6 +268,42 @@ public class CombiTestParamsGUI extends JPanel {
 		this.perChromosomeValue.setToolTipText(perChromosomeTooltip);
 		this.perChromosomeP.setToolTipText(perChromosomeTooltip);
 
+		this.svmLibraryLabel.setText("Solver library");
+		this.svmLibraryLabel.setLabelFor(this.svmLibraryValue);
+		this.svmLibraryP.setLayout(contentPanelLayout);
+		final String svmLibraryTooltip
+				= "which (SVM) solver library to use for generating the marker weights";
+		this.svmLibraryLabel.setToolTipText(svmLibraryTooltip);
+		this.svmLibraryValue.setToolTipText(svmLibraryTooltip);
+		this.svmLibraryP.setToolTipText(svmLibraryTooltip);
+
+		final SolverParams solverParamsDefault
+				= CombiTestOperationParams.getSolverParamsDefault(
+						CombiTestOperationParams.getSolverLibraryDefault());
+		this.svmEpsLabel.setText("SVM 'epsilon'");
+		this.svmEpsLabel.setLabelFor(this.svmEpsValue);
+		this.svmEpsP.setLayout(contentPanelLayout);
+		this.svmEpsValue.setModel(new SpinnerNumberModel(
+				solverParamsDefault.getEps(), 1E-20, 1E-2, 1E-7));
+		this.svmEpsValue.setEditor(new JSpinner.NumberEditor(this.svmEpsValue, "0.0######E0"));
+		final String svmEpsTooltip
+				= "which epsilon value to use to train the SVM solver; "
+				+ "how closely should the data be fitted with the model";
+		this.svmEpsLabel.setToolTipText(svmEpsTooltip);
+		this.svmEpsValue.setToolTipText(svmEpsTooltip);
+		this.svmEpsP.setToolTipText(svmEpsTooltip);
+
+		this.svmCLabel.setText("SVM 'C'");
+		this.svmCLabel.setLabelFor(this.svmCValue);
+		this.svmCP.setLayout(contentPanelLayout);
+		this.svmCValue.setModel(new SpinnerNumberModel(
+				solverParamsDefault.getC(), 1E-20, 1.0, 1E-5));
+		this.svmCValue.setEditor(new JSpinner.NumberEditor(this.svmCValue, "0.0######E0"));
+		final String svmCTooltip = "which C value to use to train the SVM solver";
+		this.svmCLabel.setToolTipText(svmCTooltip);
+		this.svmCValue.setToolTipText(svmCTooltip);
+		this.svmCP.setToolTipText(svmCTooltip);
+
 		this.resultMatrixLabel.setText("Result matrix name");
 		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
 		this.resultMatrixP.setLayout(contentPanelLayout);
@@ -275,6 +355,38 @@ public class CombiTestParamsGUI extends JPanel {
 				CombiTestOperationParams.isPerChromosomeDefault()));
 		perChromosomeDefault.setEnabled(false);
 
+		svmLibraryValue.setModel(new DefaultComboBoxModel(SolverLibrary.values()));
+		svmLibraryValue.setSelectedItem(params.getSolverLibrary());
+		svmLibraryValue.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(final ItemEvent evt) {
+
+				final SpinnerDefaultAction actionEps
+						= (SpinnerDefaultAction) svmEpsDefault.getAction();
+				final SpinnerDefaultAction actionC
+						= (SpinnerDefaultAction) svmCDefault.getAction();
+
+				final SolverParams solverParamsDefault
+						= CombiTestOperationParams.getSolverParamsDefault(
+								(SolverLibrary) svmLibraryValue.getSelectedItem());
+
+				actionEps.setDefault(solverParamsDefault.getEps());
+				actionC.setDefault(solverParamsDefault.getC());
+			}
+
+		});
+		svmLibraryDefault.setAction(new ComboBoxDefaultAction(svmLibraryValue,
+				CombiTestOperationParams.getSolverLibraryDefault()));
+
+		final SolverParams solverParamsDefault
+				= CombiTestOperationParams.getSolverParamsDefault(params.getSolverLibrary());
+		svmEpsValue.setValue(params.getSolverParams().getEps());
+		svmEpsDefault.setAction(new SpinnerDefaultAction(svmEpsValue, solverParamsDefault.getEps()));
+
+		svmCValue.setValue(params.getSolverParams().getC());
+		svmCDefault.setAction(new SpinnerDefaultAction(svmCValue, solverParamsDefault.getC()));
+
 		resultMatrixValue.setText(params.getName());
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
 
@@ -320,6 +432,10 @@ public class CombiTestParamsGUI extends JPanel {
 				new GenotypeEncodingParams((Double) genotypeEncoderPValue.getValue()),
 				useThresholdCalibrationValue.isSelected(),
 				perChromosomeValue.isSelected(),
+				(SolverLibrary) svmLibraryValue.getSelectedItem(),
+				new SolverParams(
+						(Double) svmEpsValue.getValue(),
+						(Double) svmCValue.getValue()),
 				resultMatrixValue.getText()
 				);
 
@@ -390,6 +506,8 @@ public class CombiTestParamsGUI extends JPanel {
 				new GenotypeEncodingParams(),
 				Boolean.TRUE, // useThresholdCalibration
 				Boolean.TRUE, // perChromosome
+				SolverLibrary.LIB_SVM,
+				new SolverParams(),
 				"my name is... my name is... my name is ..");
 		CombiTestOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
 	}
