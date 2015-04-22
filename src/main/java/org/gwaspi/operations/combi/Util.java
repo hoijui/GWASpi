@@ -250,12 +250,17 @@ public class Util {
 		return transposed;
 	}
 
-	public static void abs(List<List<Double>> matrix) {
+	public static void absVector(final List<Double> vector) {
+
+		for (int index = 0; index < vector.size(); index++) {
+			vector.set(index, Math.abs(vector.get(index)));
+		}
+	}
+
+	public static void absMatrix(final List<List<Double>> matrix) {
 
 		for (final List<Double> row : matrix) {
-			for (int c = 0; c < row.size(); c++) {
-				row.set(c, Math.abs(row.get(c)));
-			}
+			absVector(row);
 		}
 	}
 
