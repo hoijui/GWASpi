@@ -78,6 +78,9 @@ class JPAUtil {
 		} else {
 			try {
 				if (em.isOpen()) {
+					if (em.getTransaction().isActive()) {
+						throw new IllegalStateException("Trying to close an EntityManager with an active transaction");
+					}
 					em.close();
 				}
 			} catch (final IllegalStateException ex) {
