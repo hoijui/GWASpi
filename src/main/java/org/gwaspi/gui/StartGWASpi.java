@@ -34,6 +34,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,6 +219,7 @@ public class StartGWASpi {
 						throw new IOException("Failed to execute script(s) from file '" + scriptFile + "'", ex);
 					}
 				}
+				StudyList.clearListsInternalServices(); // NOTE This is probably not required
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
 			}
