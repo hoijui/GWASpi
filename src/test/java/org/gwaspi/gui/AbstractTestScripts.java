@@ -25,14 +25,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.dao.jpa.JPAUtil;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.StudyList;
@@ -219,12 +218,7 @@ public abstract class AbstractTestScripts {
 	@AfterClass
 	public static void cleanupTempData() throws IOException {
 
-		// Delete and shutdown the (in-memory) database
-		try {
-			DriverManager.getConnection("jdbc:derby:memory:gwaspi;drop=true"); // HACK
-		} catch (SQLException ex) {
-			log.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
-		}
+		JPAUtil.shutdown();
 		Config.getSingleton().putBoolean(Config.PROPERTY_STORAGE_IN_MEMORY, false); // HACK
 
 		MatrixInMemoryDataSetSource.clearAllInMemoryStorage();
