@@ -60,6 +60,7 @@ class JPAUtil {
 			try {
 				if (em.isOpen() && em.getTransaction().isActive()) {
 					em.getTransaction().rollback();
+					close(em);
 				} else {
 					LOG.error("Failed to rollback a transaction: no active"
 							+ " connection or transaction");
