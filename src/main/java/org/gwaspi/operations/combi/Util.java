@@ -230,7 +230,7 @@ public class Util {
 
 		final double diff = Math.abs(valA - valB);
 		final double relativeDiff = Math.abs((valA - valB) / (valA + valB));
-		return !(diff > 0.00000000001) || Double.isNaN(relativeDiff) || !(relativeDiff > 0.015); // TODO get rid of magic values, and possibly make them configurable
+		return (diff < 0.00000000001) || Double.isNaN(relativeDiff) || (relativeDiff < 0.015); // TODO get rid of magic values, and possibly make them configurable
 	}
 
 	public static List<List<Double>> transpose(List<List<Double>> matrix) {
