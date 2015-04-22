@@ -97,9 +97,10 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		// check if feature matrix is equivalent to the one calculated with matlab
 		File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
-		List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
+		final List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
+
 		// load all features into memory
-		List<List<Double>> X = new ArrayList<List<Double>>(n);
+		final List<List<Double>> X = new ArrayList<List<Double>>(n);
 		final int dEncoded = dSamples * genotypeEncoder.getEncodingFactor();
 		for (int si = 0; si < n; si++) {
 			X.add(new ArrayList<Double>(dEncoded));
@@ -114,7 +115,8 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 				}
 			}
 		}
-		List<List<Double>> xValuesTrans = Util.transpose(X);
+		final List<List<Double>> xValuesTrans = Util.transpose(X);
+
 		LOG.debug("\ncompare feature matrices ...");
 		Util.compareMatrices(correctFeatures, xValuesTrans);
 		LOG.debug("done. they are equal! good!\n");
