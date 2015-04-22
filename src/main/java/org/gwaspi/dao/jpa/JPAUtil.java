@@ -17,9 +17,12 @@
 
 package org.gwaspi.dao.jpa;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
+import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +38,34 @@ public class JPAUtil {
 	private final EntityManagerFactory emf;
 
 	public JPAUtil(final EntityManagerFactory emf) {
+
 		this.emf = emf;
 	}
+
+	/**
+	 * Delete and shutdown the (in-memory) database.
+	 */
+	public static void shutdown() {
+
+		final boolean inMemoryDb = Config.getSingleton().getBoolean(
+				Config.PROPERTY_STORAGE_IN_MEMORY,
+				true);
+		if (inMemoryDb) {
+			try {
+				// give the Derby DB backend a little time to finnish ongoing transactions and stuff
+				Thread.sleep(1000);
+			} catch (final InterruptedException ex) {
+				LOG.debug("while giving time to the DB backend to cleanup: {}", ex.getMessage());
+			}
+
+			try {
+				DriverManager.getConnection("jdbc:derby:memory:gwaspi;drop=true");
+			} catch (final SQLException ex) {
+				LOG.info("while shutting down in-memory Derby DB: {}", ex.getMessage());
+			}
+		}
+	}
+
 
 	public EntityManager open() {
 
