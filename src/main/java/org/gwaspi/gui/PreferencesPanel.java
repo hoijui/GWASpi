@@ -367,44 +367,12 @@ public class PreferencesPanel extends JPanel {
 							"Choose a new " + Text.App.appName + " data directory",
 							preferencesTable);
 
+					if (newDataDir == null) {
+						return;
+					}
+
 					try {
-						File origFile = new File(currentDataDirPath + "/datacenter");
-						File newFile = new File(newDataDir.getPath() + "/datacenter");
-						if (origFile.exists()) {
-							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-						}
-						Config.setDBSystemDir(newFile.getPath());
-						Config.setDBSystemDir(newFile.getPath());
-
-						origFile = new File(currentDataDirPath + "/genotypes");
-						newFile = new File(newDataDir.getPath() + "/genotypes");
-						if (origFile.exists()) {
-							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-						}
-						Config.getSingleton().putString(Config.PROPERTY_GENOTYPES_DIR, newFile.getPath());
-
-//						origFile = new File(currentDataDirPath + "/help");
-//						newFile = new File(newDataDir.getPath() + "/help");
-//						if (origFile.exists()) {
-//							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-//						}
-//						Config.setConfigValue("OfflineHelpDir", newFile.getPath());
-
-						origFile = new File(currentDataDirPath + "/export");
-						newFile = new File(newDataDir.getPath() + "/export");
-						if (origFile.exists()) {
-							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-						}
-						Config.getSingleton().putString(Config.PROPERTY_EXPORT_DIR, newFile.getPath());
-
-						origFile = new File(currentDataDirPath + "/reports");
-						newFile = new File(newDataDir.getPath() + "/reports");
-						if (origFile.exists()) {
-							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-						}
-						Config.getSingleton().putString(Config.PROPERTY_REPORTS_DIR, newFile.getPath());
-						Config.getSingleton().putString(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
-						Config.getSingleton().putString(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
+						Config.getSingleton().moveDataDir(currentDataDir, newDataDir);
 
 						GWASpiExplorerPanel.getSingleton().setPnlContent(new PreferencesPanel());
 						GWASpiExplorerPanel.getSingleton().getScrlContent().setViewportView(GWASpiExplorerPanel.getSingleton().getPnlContent());

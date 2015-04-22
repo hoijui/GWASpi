@@ -32,14 +32,10 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import org.gwaspi.cli.ScriptUtils;
 import org.gwaspi.constants.GlobalConstants;
-import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
-import org.gwaspi.reports.GenericReportGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -305,7 +301,7 @@ public class Config {
 
 					if (dataDir != null) {
 						try {
-							createDataStructure(dataDir);
+							createDataStructure(dataDir, true);
 							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 							isInitiated = true;
 						} catch (final Exception ex) {
@@ -318,26 +314,21 @@ public class Config {
 					if (!derbyCenter.exists()) {
 						int recreateDataFolder = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
 						if (recreateDataFolder == JOptionPane.OK_OPTION) {
-							createDataStructure(dirToData);
+							createDataStructure(dirToData, true);
 							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.NO_OPTION) {
 							dirToData = Dialogs.selectDirectoryDialog(
 									dirToData,
 									"Choose your " + Text.App.appName + " data directory",
 									dialogParent);
-							createDataStructure(dirToData);
+							createDataStructure(dirToData, true);
 							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.CANCEL_OPTION) {
 							throw new RuntimeException("The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable, and the user chose not to create it");
 						}
 					}
 
-//					if (getString(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
 					updateConfigDataDirs(dirToData);
-//					} else {
-					setDBSystemDir(derbyCenter.getPath());
-//					}
-
 					isInitiated = true;
 				}
 			} else { // CLI & THREAD MODE
@@ -347,18 +338,14 @@ public class Config {
 						// 1st line contains data path
 						File dataDir = new File(ScriptUtils.readDataDirFromScript(scriptFile));
 						log.info("Using database path: {}", dataDir.getAbsolutePath());
-						if (dataDir.exists()) {
-							// assume the existing dir contains a database
-							// with valid structure already
-							initDataBaseVars(dataDir);
+
+						try {
+							// create the data-structure, if it does not yet exist;
+							// otherwise just set the config values
+							createDataStructure(dataDir, false);
 							isInitiated = true;
-						} else {
-							try {
-								createDataStructure(dataDir);
-								isInitiated = true;
-							} catch (final Exception ex) {
-								log.error(Text.App.warnUnableToInitForFirstTime, ex);
-							}
+						} catch (final IOException ex) {
+							log.error(Text.App.warnUnableToInitForFirstTime, ex);
 						}
 						if (isInitiated) {
 							log.info("Databases and working folders initialized successfully!");
@@ -367,9 +354,8 @@ public class Config {
 						throw new IllegalStateException("Unable to determine a data directory path");
 					}
 				} else {
-					if (getString(PROPERTY_GENOTYPES_DIR, "").isEmpty()) {
-						updateConfigDataDirs(dirToData);
-						createDataStructure(dirToData);
+					if (getString(PROPERTY_GENOTYPES_DIR, null) == null) {
+						createDataStructure(dirToData, true);
 					}
 					isInitiated = true;
 				}
@@ -382,20 +368,10 @@ public class Config {
 		return isInitiated;
 	}
 
-	protected File initDataBaseVars(File dataDir) {
-
-//		clearConfigFile();
-		putString(PROPERTY_DATA_DIR, dataDir.getPath());
-		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
-		setDBSystemDir(derbyCenter.getPath());
-
-		return derbyCenter;
-	}
-
 	private static Document getLocalVersionDom() throws IOException {
 
-		URL localVersionPath = Config.class.getResource(GlobalConstants.LOCAL_VERSION_XML);
-		Document localDom;
+		final URL localVersionPath = Config.class.getResource(GlobalConstants.LOCAL_VERSION_XML);
+		final Document localDom;
 		try {
 			localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 		} catch (final URISyntaxException ex) {
@@ -405,13 +381,46 @@ public class Config {
 		return localDom;
 	}
 
-	protected void createDataStructure(File dataDir) throws IOException {
+	private static Element getLocalDomElementZero() throws IOException {
 
-		Utils.createFolder(dataDir);
+		Element elementZero = null;
 
-		File derbyCenter = initDataBaseVars(dataDir);
+		final Document localDom = getLocalVersionDom();
+		if (localDom != null) { // Found local version info
+			final List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
+			elementZero = localElements.get(0);
+		}
 
-		if (!derbyCenter.exists()) {
+		return elementZero;
+	}
+
+	/**
+	 * HACK rather get it from the pom.xml
+	 * @return
+	 * @throws IOException
+	 */
+	private static String getLocalVersionFromDom(final Element elementZero) throws IOException {
+
+		String localVersion = null;
+
+		if (elementZero != null) { // Found local version info
+			localVersion = XMLParser.getTextValue(elementZero, Text.App.appName + "_DB_Version");
+		}
+
+		return localVersion;
+	}
+
+	private static String getLocalVersionFromDom() throws IOException {
+		return getLocalVersionFromDom(getLocalDomElementZero());
+	}
+
+	private void createDataStructure(final File dataDir, final boolean createInitialStudy) throws IOException {
+
+		final File dataDirCanonical = dataDir.getCanonicalFile();
+		final boolean dbDirExisted = initStructureConfig(dataDirCanonical, true);
+		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, getLocalVersionFromDom());
+
+		if (!dbDirExisted && createInitialStudy) {
 			// HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
 			StudyKey newStudy = StudyList.insertNewStudy(new Study("Study 1", ""));
 			// We do not have to add it to the GUI,
@@ -419,104 +428,82 @@ public class Config {
 			// and it will be read from the DB and added there later on
 //			GWASpiExplorerNodes.insertStudyNode(newStudy);
 		}
-
-		Utils.createFolder(dataDir.getPath(), "genotypes");
-		Utils.createFolder(dataDir.getPath(), "help");
-		Utils.createFolder(dataDir.getPath(), "export");
-		Utils.createFolder(dataDir.getPath(), "reports");
-		Utils.createFolder(dataDir.getPath() + "/reports", "log");
-
-		putString(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
-		putString(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
-		putString(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
-		putString(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
-
-		Document localDom = getLocalVersionDom();
-		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
 	}
 
-	private void updateConfigDataDirs(File dataDir) throws IOException {
+	private File copySubDirIfExists(final File dirSrc, final File dirDst, final String subDirName) throws IOException {
 
-		String lastOpenedDir = getString(PROPERTY_LAST_OPENED_DIR, GlobalConstants.HOMEDIR);
-		Integer lastSelectedNode = getInteger(PROPERTY_LAST_SELECTED_NODE,
-				NodeElementInfo.createUniqueId(GWASpiExplorerNodes.NodeElementInfo.NodeType.ROOT, null));
+		final File srcFile = new File(dirSrc, subDirName);
+		final File dstFile = new File(dirDst, subDirName);
+		if (srcFile.exists()) {
+			org.gwaspi.global.Utils.copyFileRecursive(srcFile, dstFile);
+		}
 
-		Double lastMnhttThreshold = getDouble(
-					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT);
-		Color lastMnhttBack = getColor(
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
-		Color lastMnhttBackAlt = getColor(
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
-		Color lastMnhttMain = getColor(
-					GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG,
-					GenericReportGenerator.PLOT_MANHATTAN_MAIN_DEFAULT);
+		return dstFile;
+	}
 
-		Color lastQQBack = getColor(
-					GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG,
-					GenericReportGenerator.PLOT_QQ_BACKGROUND_DEFAULT);
-		Color lastQQActual = getColor(
-					GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG,
-					GenericReportGenerator.PLOT_QQ_ACTUAL_DEFAULT);
-		Color lastQQMu = getColor(
-					GenericReportGenerator.PLOT_QQ_MU_CONFIG,
-					GenericReportGenerator.PLOT_QQ_MU_DEFAULT);
-		Color lastQQSigma = getColor(
-					GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG,
-					GenericReportGenerator.PLOT_QQ_SIGMA_DEFAULT);
+	public void copyDataDir(final File dataDirOld, final File dataDirNew) throws IOException {
 
-		String lastSampleQAHetzyg = getString(
-				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
-				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT));
-		String lastSampleQAMissingratio = getString(
-				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
-				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT));
+		final File newDbDir = copySubDirIfExists(dataDirOld, dataDirNew, "datacenter");
+		Config.setDBSystemDir(newDbDir.getPath());
 
-//		clearConfigFile();
-		putString(PROPERTY_DATA_DIR, dataDir.getPath());
-		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
+		copySubDirIfExists(dataDirOld, dataDirNew, "genotypes");
+		copySubDirIfExists(dataDirOld, dataDirNew, "export");
+		copySubDirIfExists(dataDirOld, dataDirNew, "reports");
+	}
 
-		putString(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
-		putString(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
-		putString(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
-		putString(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
-		putString(PROPERTY_LAST_OPENED_DIR, lastOpenedDir);
-		putInteger(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
+	public void moveDataDir(final File dataDirOld, final File dataDirNew) throws IOException {
 
-		// SET CHART PREFERENCES
-		putDouble(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
-		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG, lastMnhttBack);
-		putColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG, lastMnhttBackAlt);
-		putColor(GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG, lastMnhttMain);
+		copyDataDir(dataDirOld, dataDirNew);
+		initStructureConfig(dataDirNew, false);
+	}
 
-		putColor(GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG, lastQQBack);
-		putColor(GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG, lastQQActual);
-		putColor(GenericReportGenerator.PLOT_QQ_MU_CONFIG, lastQQMu);
-		putColor(GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG, lastQQSigma);
+	private boolean initStructureConfig(final File dataDir, final boolean createFsStructure) throws IOException {
 
-		putString(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG, lastSampleQAHetzyg);
-		putString(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG, lastSampleQAMissingratio);
+		final boolean dbDirExisted;
 
-		Document localDom = getLocalVersionDom();
-		List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
+		final File genotypesDir = new File(dataDir, "genotypes");
+		final File helpDir = new File(dataDir, "help");
+		final File exportDir = new File(dataDir, "export");
+		final File reportsDir = new File(dataDir, "reports");
+		final File reportsLogDir = new File(reportsDir, "log");
+		final File dbDir = new File(reportsDir, "datacenter");
 
-		setDBSystemDir(derbyCenter.getPath());
+		dbDirExisted = dbDir.exists();
+
+		if (createFsStructure) {
+			Utils.createFolder(dataDir);
+			Utils.createFolder(genotypesDir);
+			Utils.createFolder(helpDir);
+			Utils.createFolder(exportDir);
+			Utils.createFolder(reportsDir);
+			Utils.createFolder(reportsLogDir);
+		}
+
+		putString(PROPERTY_GENOTYPES_DIR, genotypesDir.getPath());
+		putString(PROPERTY_EXPORT_DIR, exportDir.getPath());
+		putString(PROPERTY_REPORTS_DIR, reportsDir.getPath());
+		putString(PROPERTY_LOG_DIR, reportsLogDir.getPath());
+		setDBSystemDir(dbDir.getPath());
+
+		return dbDirExisted;
+	}
+
+	public void updateConfigDataDirs(final File dataDir) throws IOException {
+
+		initStructureConfig(dataDir, false);
+		putString(PROPERTY_CURRENT_GWASPIDB_VERSION, getLocalVersionFromDom());
 	}
 
 	public void checkUpdates() throws IOException, ParseException {
 
 		if (Utils.checkInternetConnection()) {
-			Document localDom = getLocalVersionDom();
+			final Element localElementZero = getLocalDomElementZero();
 
-			if (localDom != null) { // Found local version info
+			if (localElementZero != null) { // Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");
 
-				List<Element> localElements = XMLParser.parseDocument(localDom, Text.App.appName);
-				putString(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), Text.App.appName + "_DB_Version"));
+				final String localVersionFromDom = getLocalVersionFromDom(localElementZero);
+				putString(PROPERTY_CURRENT_GWASPIDB_VERSION, localVersionFromDom);
 
 				URL remoteVersionPath = new URL(GlobalConstants.REMOTE_VERSION_XML);
 				Document remoteDom = null;
@@ -532,8 +519,8 @@ public class Config {
 				if (remoteDom != null) { // Found remote version info
 					// Retrieve data from XML files
 
-					Date localUpdateDate = XMLParser.getDateValue(localElements.get(0), "Date");
-					String localVersionNumber = XMLParser.getTextValue(localElements.get(0), "Number");
+					Date localUpdateDate = XMLParser.getDateValue(localElementZero, "Date");
+					String localVersionNumber = XMLParser.getTextValue(localElementZero, "Number");
 
 					List<Element> remoteElements = XMLParser.parseDocument(remoteDom, Text.App.appName);
 					Date remoteUpdateDate = XMLParser.getDateValue(remoteElements.get(0), "Date");
