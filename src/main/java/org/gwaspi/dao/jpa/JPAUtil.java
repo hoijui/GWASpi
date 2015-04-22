@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * Uses abstracted DB access to store data,
  * see persistence.xml for DB settings.
  */
-class JPAUtil {
+public class JPAUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JPAUtil.class);
 
