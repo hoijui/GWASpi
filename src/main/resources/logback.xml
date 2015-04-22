@@ -19,6 +19,7 @@
 	<!-- Disable debugging messages for certain dependencies -->
 	<logger name="java.sql" level="WARN"/>
 	<logger name="org.hibernate" level="WARN"/>
+	<logger name="org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl" level="ERROR"/>
 	<logger name="org.apache" level="WARN"/>
 	<logger name="org.jboss" level="WARN"/>
 	<logger name="ucar.nc2" level="WARN"/>
