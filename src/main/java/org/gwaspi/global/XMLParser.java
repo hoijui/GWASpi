@@ -17,6 +17,7 @@
 
 package org.gwaspi.global;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,11 +27,13 @@ import java.util.Date;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XMLParser {
 
@@ -51,9 +54,13 @@ public class XMLParser {
 
 			// parse using builder to get DOM representation of the XML file
 			dom = documentBuilder.parse(xmlUrl);
-		} catch (UnknownHostException ex) {
+		} catch (final UnknownHostException ex) {
 			log.debug("UnknownHostException: {}", ex.getMessage());
-		} catch (Exception ex) {
+		} catch (final ParserConfigurationException ex) {
+			log.error(null, ex);
+		} catch (final SAXException ex) {
+			log.error(null, ex);
+		} catch (final IOException ex) {
 			log.error(null, ex);
 		}
 
