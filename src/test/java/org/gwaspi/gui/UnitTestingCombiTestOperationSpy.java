@@ -166,16 +166,19 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	}
 
 	@Override
-	public void originalSpaceWeightsCalculated(List<Double> weightsEncoded) {
+	public void originalSpaceWeightsCalculated(final List<Double> weightsEncoded) {
 
+		final List<Double> weightsEncodedCopy = new ArrayList<Double>(weightsEncoded);
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
-		File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
-		List<Double> mlWeightsRaw = Util.parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
+		final File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
+		final List<Double> mlWeightsRaw = Util.parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
+		Util.absVector(weightsEncodedCopy);
+		Util.absVector(mlWeightsRaw);
 
 		LOG.debug("\ncorrect weights raw: (" + mlWeightsRaw.size() + ") " + mlWeightsRaw);
-		LOG.debug("weights raw: (" + weightsEncoded.size() + ") " + weightsEncoded);
-		LOG.debug("compare raw, encoded weights vectors ...");
-		Util.compareVectors(mlWeightsRaw, weightsEncoded);
+		LOG.debug("weights raw: (" + weightsEncodedCopy.size() + ") " + weightsEncodedCopy);
+		LOG.debug("compare absolute values raw, encoded weights vectors ...");
+		Util.compareVectors(mlWeightsRaw, weightsEncodedCopy);
 		LOG.debug("done. they are equal! good!\n");
 	}
 
