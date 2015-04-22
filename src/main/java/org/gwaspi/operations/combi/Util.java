@@ -219,7 +219,6 @@ public class Util {
 					"vector A differs from vector B at (%d): %f, %f",
 					y, valA, valB));
 			}
-
 		}
 	}
 
