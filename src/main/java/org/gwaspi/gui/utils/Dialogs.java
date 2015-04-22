@@ -59,57 +59,68 @@ public class Dialogs {
 	private Dialogs() {
 	}
 
+	private static List<String> generateOperationsNames(final List<OperationMetadata> operations) {
+
+		final List<String> operationNames = new ArrayList<String>(operations.size());
+
+		final StringBuilder operationName = new StringBuilder(128);
+		for (final OperationMetadata operation : operations) {
+			operationName.setLength(0);
+			operationName
+					.append("OP: ")
+					.append(operation.getId())
+					.append(" - ")
+					.append(operation.getFriendlyName());
+			operationNames.add(operationName.toString());
+		}
+
+		return operationNames;
+	}
+
+	private static List<String> generateMatrixNames(final List<MatrixMetadata> matrices) {
+
+		final List<String> matrixNames = new ArrayList<String>(matrices.size());
+
+		final StringBuilder matrixName = new StringBuilder(128);
+		for (final MatrixMetadata matrix : matrices) {
+			matrixName.setLength(0);
+			matrixName
+					.append("SID: ")
+					.append(matrix.getStudyKey().getId())
+					.append(" - MX: ")
+					.append(matrix.getFriendlyName());
+			matrixNames.add(matrixName.toString());
+		}
+
+		return matrixNames;
+	}
+
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
 	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, OPType filterOpType) throws IOException {
-		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
 
+		OperationMetadata selectedOp = null;
+
+		final List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
 		if (!operationsList.isEmpty()) {
-			List<String> operationsNames = new ArrayList<String>();
-			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
-			for (OperationMetadata op : operationsList) {
-				if (op.getOperationType().equals(filterOpType)) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("OP: ");
-					sb.append(op.getId());
-					sb.append(" - ");
-					sb.append(op.getFriendlyName());
-					operationsNames.add(sb.toString());
-					operationAL.add(op);
+			final List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
+			for (final OperationMetadata operation : operationsList) {
+				if (operation.getOperationType().equals(filterOpType)) {
+					selectedOperations.add(operation);
 				}
 			}
 
-			String selectedRow = (String) JOptionPane.showInputDialog(
-					null,
-					"Choose Operation to use...",
-					"Available Census",
-					JOptionPane.QUESTION_MESSAGE,
-					null,
-					operationsNames.toArray(new Object[operationsNames.size()]),
-					0);
-
-			if (selectedRow != null) {
-				selectedOP = operationAL.get(operationsNames.indexOf(selectedRow));
-			}
+			selectedOp = showOperationCombo(selectedOperations, "Operation");
 		}
 
-		return selectedOP;
+		return selectedOp;
 	}
 
 	public static OperationMetadata showOperationCombo(List<OperationMetadata> operations, String title) throws IOException {
 
-		OperationMetadata selectedOP = null;
+		OperationMetadata selectedOp = null;
 
 		if (!operations.isEmpty()) {
-			List<String> operationNames = new ArrayList<String>();
-			for (OperationMetadata op : operations) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("OP: ");
-				sb.append(op.getId());
-				sb.append(" - ");
-				sb.append(op.getFriendlyName());
-				operationNames.add(sb.toString());
-			}
+			final List<String> operationNames = generateOperationsNames(operations);
 
 			final String selectedRow = (String) JOptionPane.showInputDialog(
 					null,
@@ -121,48 +132,30 @@ public class Dialogs {
 					0);
 
 			if (selectedRow != null) {
-				selectedOP = operations.get(operationNames.indexOf(selectedRow));
+				selectedOp = operations.get(operationNames.indexOf(selectedRow));
 			}
 		}
 
-		return selectedOP;
+		return selectedOp;
 	}
 
 	public static OperationMetadata showOperationSubOperationsCombo(OperationKey parentOpKey, OPType filterOpType, String title) throws IOException {
 
-		OperationMetadata selectedSubOp = null;
+		OperationMetadata selectedOp = null;
 		List<OperationMetadata> operationsList = OperationsList.getChildrenOperationsMetadata(parentOpKey);
 
 		if (!operationsList.isEmpty()) {
-			List<String> operationsNames = new ArrayList<String>();
-			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
+			List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
 			for (OperationMetadata op : operationsList) {
 				if (op.getOperationType().equals(filterOpType)) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("OP: ");
-					sb.append(op.getId());
-					sb.append(" - ");
-					sb.append(op.getFriendlyName());
-					operationsNames.add(sb.toString());
-					operationAL.add(op);
+					selectedOperations.add(op);
 				}
 			}
 
-			String selectedRow = (String) JOptionPane.showInputDialog(
-					null,
-					"Choose " + title + " to use...",
-					"Available Operations",
-					JOptionPane.QUESTION_MESSAGE,
-					null,
-					operationsNames.toArray(new Object[operationsNames.size()]),
-					0);
-
-			if (selectedRow != null) {
-				selectedSubOp = operationAL.get(operationsNames.indexOf(selectedRow));
-			}
+			selectedOp = showOperationCombo(selectedOperations, title);
 		}
 
-		return selectedSubOp;
+		return selectedOp;
 	}
 
 	public static ImportFormat showTechnologySelectCombo() {
@@ -261,15 +254,9 @@ public class Dialogs {
 	 */
 	public static int showMatrixSelectCombo(StudyKey studyKey) throws IOException {
 		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyKey);
-		List<String> matrixNames = new ArrayList<String>(matrices.size());
+		final List<String> matrixNames = generateMatrixNames(matrices);
 		List<Integer> matrixIDs = new ArrayList<Integer>(matrices.size());
 		for (MatrixMetadata matrixMetadata : matrices) {
-			StringBuilder mn = new StringBuilder();
-			mn.append("SID: ");
-			mn.append(matrixMetadata.getStudyKey().getId());
-			mn.append(" - MX: ");
-			mn.append(matrixMetadata.getFriendlyName());
-			matrixNames.add(mn.toString());
 			matrixIDs.add(matrixMetadata.getMatrixId());
 		}
 
