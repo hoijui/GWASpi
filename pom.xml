@@ -345,6 +345,16 @@
 				</executions>
 				<configuration>
 					<mainClass>${project.mainClass}</mainClass>
+					<!--
+						NOTE
+						We need the following two lines so the Derby DB withing Hibernate
+						does not prevent the JVM from exiting at the end of a scripted/non-GUI
+						run of GWASpi.
+						It is related to a "bug" in `java.util.Timer`; more about that here:
+						http://mojo.codehaus.org/exec-maven-plugin/java-mojo.html#stopUnresponsiveDaemonThreads
+					-->
+					<daemonThreadJoinTimeout>1000</daemonThreadJoinTimeout>
+					<stopUnresponsiveDaemonThreads>true</stopUnresponsiveDaemonThreads>
 				</configuration>
 			</plugin>
 
