@@ -26,6 +26,8 @@ import javax.swing.JToggleButton;
  * Allows to reset the value of a component to its default.
  * In case of a toggle-button as actuator, it also buffers the custom value,
  * and later goes back to that value.
+ * @param <C> GUI container
+ * @param <V> value
  */
 public abstract class AbstractDefaultAction<C extends JComponent, V> extends AbstractAction {
 
@@ -34,8 +36,11 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 	private final V defaultValue;
 	private V customValue;
 
-	public AbstractDefaultAction(C valueComponent, V defaultValue, boolean makeUneditable) {
-
+	public AbstractDefaultAction(
+			final C valueComponent,
+			final V defaultValue,
+			final boolean makeUneditable)
+	{
 		this.valueComponent = valueComponent;
 		this.makeUneditable = makeUneditable;
 		this.defaultValue = defaultValue;
@@ -49,7 +54,7 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 		setEditable(!isDefaultValue);
 	}
 
-	public AbstractDefaultAction(C valueComponent, V defaultValue) {
+	public AbstractDefaultAction(final C valueComponent, final V defaultValue) {
 		this(valueComponent, defaultValue, false);
 	}
 
@@ -63,19 +68,20 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 		return valueComponent;
 	}
 
-	private void setEditable(boolean editable) {
+	private void setEditable(final boolean editable) {
 
 		if (makeUneditable) {
 			setValueComponentEditable(editable);
 		}
 	}
 
+
 	@Override
-	public void actionPerformed(ActionEvent evt) {
+	public void actionPerformed(final ActionEvent evt) {
 
 		if (evt.getSource() instanceof JToggleButton) {
 			// if our source is a JToggleButton, JCheckBox or a JRadioButton ...
-			JToggleButton sourceToggleButton = (JToggleButton) evt.getSource();
+			final JToggleButton sourceToggleButton = (JToggleButton) evt.getSource();
 			setEditable(!sourceToggleButton.isSelected());
 			if (sourceToggleButton.isSelected()) {
 				// put the custom value into a buffer,
