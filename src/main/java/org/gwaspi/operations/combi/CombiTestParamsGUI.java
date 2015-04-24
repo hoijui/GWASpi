@@ -41,6 +41,7 @@ import javax.swing.event.ChangeListener;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
+import org.gwaspi.gui.utils.CheckBoxDefaultAction;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
@@ -89,6 +90,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel perChromosomeLabel;
 	private final JPanel perChromosomeP;
 	private final JCheckBox perChromosomeValue;
+	private final JCheckBox perChromosomeDefault;
 
 	private final JLabel resultMatrixLabel;
 	private final JPanel resultMatrixP;
@@ -124,6 +126,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.perChromosomeLabel = new JLabel();
 		this.perChromosomeP = new JPanel();
 		this.perChromosomeValue = new JCheckBox();
+		this.perChromosomeDefault = new JCheckBox();
 
 		this.resultMatrixLabel = new JLabel();
 		this.resultMatrixP = new JPanel();
@@ -141,6 +144,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
 
 		this.perChromosomeP.add(this.perChromosomeValue);
+		this.perChromosomeP.add(this.perChromosomeDefault);
 
 		this.resultMatrixP.add(this.resultMatrixValue);
 		this.resultMatrixP.add(this.resultMatrixDefault);
@@ -207,6 +211,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.perChromosomeLabel.setText("run per chromosome");
 		this.perChromosomeLabel.setLabelFor(this.perChromosomeValue);
 		this.perChromosomeP.setLayout(contentPanelLayout);
+		this.perChromosomeDefault.setEnabled(false);
 		final String perChromosomeTooltip = "train SVM once per chromosome (or genome wide)";
 		this.perChromosomeLabel.setToolTipText(perChromosomeTooltip);
 		this.perChromosomeValue.setToolTipText(perChromosomeTooltip);
@@ -256,6 +261,9 @@ public class CombiTestParamsGUI extends JPanel {
 		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
 
 		perChromosomeValue.setSelected(params.isPerChromosome());
+		perChromosomeDefault.setAction(new CheckBoxDefaultAction(perChromosomeValue,
+				CombiTestOperationParams.isPerChromosomeDefault()));
+		perChromosomeDefault.setEnabled(false);
 
 		resultMatrixValue.setText(params.getName());
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));
