@@ -182,7 +182,9 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderPLabel.setText("p parameter used to calculate the standard deviation used for whitening the data");
 		this.genotypeEncoderPLabel.setLabelFor(this.genotypeEncoderPValue);
 		this.genotypeEncoderPPanel.setLayout(contentPanelLayout);
-		this.genotypeEncoderPValue.setModel(new SpinnerNumberModel(CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation(), -100.0, 100.0, 1.0));
+		this.genotypeEncoderPValue.setModel(new SpinnerNumberModel(
+				CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation(),
+				-100.0, 100.0, 1.0));
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
@@ -251,12 +253,15 @@ public class CombiTestParamsGUI extends JPanel {
 
 		qaMarkersOperationValue.setSelectedItem(params.getQAMarkerOperationKey());
 
-		genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+		genotypeEncoderValue.setModel(new DefaultComboBoxModel(
+				CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		genotypeEncoderValue.setSelectedItem(params.getEncoder());
-		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue, CombiTestOperationParams.getEncoderDefault()));
+		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue,
+				CombiTestOperationParams.getEncoderDefault()));
 
 		genotypeEncoderPValue.setValue(params.getEncodingParams().getPStandardDeviation());
-		genotypeEncoderPDefault.setAction(new SpinnerDefaultAction(genotypeEncoderPValue, CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation()));
+		genotypeEncoderPDefault.setAction(new SpinnerDefaultAction(genotypeEncoderPValue,
+				CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation()));
 
 		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
 
@@ -281,10 +286,12 @@ public class CombiTestParamsGUI extends JPanel {
 		GroupLayout.ParallelGroup horizontalLabelsG = layout.createParallelGroup();
 		GroupLayout.ParallelGroup horizontalComponentsG = layout.createParallelGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
-			horizontalLabelsG.addComponent(labelAndComponent.getKey(), GroupLayout.Alignment.TRAILING);
+			horizontalLabelsG.addComponent(labelAndComponent.getKey(),
+					GroupLayout.Alignment.TRAILING);
 			// The following is better done manually, earlier
 //			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
-			horizontalComponentsG.addComponent(labelAndComponent.getValue(), GroupLayout.Alignment.LEADING);
+			horizontalComponentsG.addComponent(labelAndComponent.getValue(),
+					GroupLayout.Alignment.LEADING);
 		}
 		horizontalG.addGroup(horizontalLabelsG);
 		horizontalG.addGroup(horizontalComponentsG);
@@ -314,8 +321,11 @@ public class CombiTestParamsGUI extends JPanel {
 		return params;
 	}
 
-	public static CombiTestOperationParams chooseParams(Component parentComponent, CombiTestOperationParams paramsInitialValues, List<OperationKey> parentCandidates) {
-
+	public static CombiTestOperationParams chooseParams(
+			final Component parentComponent,
+			final CombiTestOperationParams paramsInitialValues,
+			final List<OperationKey> parentCandidates)
+	{
 		CombiTestParamsGUI paramsEditor = new CombiTestParamsGUI();
 		paramsEditor.setParentCandidates(parentCandidates);
 		paramsEditor.setCombiTestParams(paramsInitialValues);
