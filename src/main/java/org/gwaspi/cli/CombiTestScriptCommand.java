@@ -94,9 +94,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 				genotypeEncodingParams = new GenotypeEncodingParams(genotypeEncodindP);
 			}
 
-			final int weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
 
-			final int markersToKeep = fetchInteger(args, "markers-to-keep", null);
+			final Integer weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
+
+			final Integer markersToKeep = fetchInteger(args, "markers-to-keep", null);
 
 			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
 
