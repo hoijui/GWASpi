@@ -179,12 +179,17 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP.setLayout(contentPanelLayout);
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 
-		this.genotypeEncoderPLabel.setText("p parameter used to calculate the standard deviation used for whitening the data");
+		this.genotypeEncoderPLabel.setText("data whitening 'p'");
 		this.genotypeEncoderPLabel.setLabelFor(this.genotypeEncoderPValue);
 		this.genotypeEncoderPPanel.setLayout(contentPanelLayout);
 		this.genotypeEncoderPValue.setModel(new SpinnerNumberModel(
 				CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation(),
 				-100.0, 100.0, 1.0));
+		final String genotypeEncoderPTooltip
+				= "p parameter used to calculate the standard deviation used for whitening the data";
+		this.genotypeEncoderPLabel.setToolTipText(genotypeEncoderPTooltip);
+		this.genotypeEncoderPValue.setToolTipText(genotypeEncoderPTooltip);
+		this.genotypeEncoderPPanel.setToolTipText(genotypeEncoderPTooltip);
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
