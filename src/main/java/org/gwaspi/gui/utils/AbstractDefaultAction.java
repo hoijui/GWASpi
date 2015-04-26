@@ -33,7 +33,7 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 
 	private final C valueComponent;
 	private final boolean makeUneditable;
-	private final V defaultValue;
+	private V defaultValue;
 	private V customValue;
 
 	public AbstractDefaultAction(
@@ -75,6 +75,22 @@ public abstract class AbstractDefaultAction<C extends JComponent, V> extends Abs
 		}
 	}
 
+	public void setDefault(final V defaultValue) {
+
+		if (!this.defaultValue.equals(defaultValue)) {
+			// check if we were on the default value ...
+			final boolean onDefault = this.defaultValue.equals(getValue());
+			this.defaultValue = defaultValue;
+			if (onDefault) {
+				// .. and if so, set the value to the new defautl value
+				setValue(defaultValue);
+			} else if (defaultValue.equals(getValue())) {
+				// if the new default value coinsides wit the current value,
+				// make sure the indicator shows that we are on the default value
+				setValue(defaultValue);
+			}
+		}
+	}
 
 	@Override
 	public void actionPerformed(final ActionEvent evt) {
