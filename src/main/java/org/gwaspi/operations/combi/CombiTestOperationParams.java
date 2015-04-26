@@ -77,8 +77,8 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 				: perChromosome;
 	}
 
-	public CombiTestOperationParams(OperationKey qaMarkersOperationKey)
-	{
+	public CombiTestOperationParams(OperationKey qaMarkersOperationKey) {
+
 		this(
 				qaMarkersOperationKey,
 				null,
