@@ -904,7 +904,7 @@ public class CombiTestMatrixOperation
 
 		// these are for training only
 		// The cache size in MB
-		svmParams.cache_size = 40;
+		svmParams.cache_size = 40; // TODO make configurable, or at least dynamic (depending on available memory and/or problem size)
 		// stopping criteria
 		svmParams.eps = 1E-7;
 		// for C_SVC, EPSILON_SVR and NU_SVR
