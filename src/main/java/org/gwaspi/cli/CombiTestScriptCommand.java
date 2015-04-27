@@ -83,6 +83,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
 
 			final OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers");
+			final int totalMarkers
+					= OperationsList.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
 
 			final Boolean perChromosome = fetchBoolean(args, "per-chromosome", null);
 
@@ -113,7 +115,19 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			final Integer weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
 
-			final Integer markersToKeep = fetchInteger(args, "markers-to-keep", null);
+			Integer markersToKeep = fetchInteger(args, "markers-to-keep", null);
+			final Double markersToKeepRelative = fetchDouble(args, "markers-to-keep-relative", null);
+			if ((markersToKeep != null) && (markersToKeepRelative != null)) {
+				throw new ScriptExecutionException(
+						"You may specify at most one of \"markers-to-keep\" "
+								+ "and \"markers-to-keep-relative\".");
+			} else if (markersToKeepRelative != null) {
+				if ((markersToKeepRelative <= 0.0) || (markersToKeepRelative > 1.0)) {
+					throw new ScriptExecutionException(
+							"The valid range for \"markers-to-keep-relative\" is (0.0, 1.0].");
+				}
+				markersToKeep = (int) Math.ceil(totalMarkers * markersToKeepRelative);
+			}
 
 			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
 
@@ -121,8 +135,6 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			// which will lead to using the default name
 			String resultOperationName = args.get("result-operation-name");
 			String resultFilterOperationName = args.get("result-filter-operation-name");
-
-			final int totalMarkers = OperationsList.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
 
 			CombiTestOperationParams paramsTest = new CombiTestOperationParams(
 					qaMarkersOperationKey,
