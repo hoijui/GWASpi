@@ -144,7 +144,7 @@ public class Threaded_Test extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		OperationKey testOpKey = OperationManager.performCleanTests(

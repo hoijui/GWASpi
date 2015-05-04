@@ -114,17 +114,17 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		// tests (need newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if ((censusOpKey != null) && (hwOpKey != null)) {
-			// NOTE ABORTION_POINT We could be gracefully abort here
+			// NOTE ABORTION_POINT We could be gracefully aborted here
 			if (gwasParams.isPerformAllelicTests()) {
 				performTest(gwasParams, censusOpKey, hwOpKey, OPType.ALLELICTEST, superProgressSource, PLACEHOLDER_PS_ALLELIC_TEST);
 			}
 
-			// NOTE ABORTION_POINT We could be gracefully abort here
+			// NOTE ABORTION_POINT We could be gracefully aborted here
 			if (gwasParams.isPerformGenotypicTests()) {
 				performTest(gwasParams, censusOpKey, hwOpKey, OPType.GENOTYPICTEST, superProgressSource, PLACEHOLDER_PS_GENOTYPIC_TEST);
 			}
 
-			// NOTE ABORTION_POINT We could be gracefully abort here
+			// NOTE ABORTION_POINT We could be gracefully aborted here
 			if (gwasParams.isPerformTrendTests()) {
 				performTest(gwasParams, censusOpKey, hwOpKey, OPType.TRENDTEST, superProgressSource, PLACEHOLDER_PS_TREND_TEST);
 			}

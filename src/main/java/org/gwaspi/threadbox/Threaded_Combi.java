@@ -124,14 +124,14 @@ public class Threaded_Combi extends CommonRunnable {
 		// XXX TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 //		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		final MatrixOperation combiTestOperation = new CombiTestMatrixOperation(paramsTest);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, combiTestOperation.getProgressSource(), null);
 		final OperationKey combiTestOpKey = OperationManager.performOperationCreatingOperation(combiTestOperation);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		paramsFilter.setParent(new DataSetKey(combiTestOpKey));
 		final MatrixOperation byCombiWeightsFilterOperation = new ByCombiWeightsFilterOperation(paramsFilter);
@@ -145,14 +145,14 @@ public class Threaded_Combi extends CommonRunnable {
 		final OperationKey qaSamplesOpKey = threaded_MatrixQA.getSamplesQAOperationKey();
 		final OperationKey qaMarkersOpKey = threaded_MatrixQA.getMarkersQAOperationKey();
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
 		final MatrixOperation markerCensusOperation = new MarkerCensusOperation(markerCensusParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
 		final OperationKey markerCensusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		final TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
 		final MatrixOperation testOperation = new TrendTestOperation(trendTestParams);

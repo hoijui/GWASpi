@@ -161,7 +161,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getAnnotationFilePath(),
 				sampleInfoExtractor);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		LoadManager.dispatchLoadByFormat(
 				loadDescription,

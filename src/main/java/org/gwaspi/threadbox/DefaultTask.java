@@ -157,7 +157,7 @@ public class DefaultTask implements Task {
 			org.gwaspi.global.Utils.sysoutStart(getTask().getDetailedName());
 			Config.getSingleton().initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
 
-			// NOTE ABORTION_POINT We could be gracefully abort here
+			// NOTE ABORTION_POINT We could be gracefully aborted here
 
 			getTask().run();
 			if (Thread.currentThread().isInterrupted()) {

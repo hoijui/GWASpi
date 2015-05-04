@@ -131,7 +131,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
 		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 		// GENOTYPE FREQ. BY PHENOFILE OR DB AFFECTION
@@ -210,7 +210,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		markerCensusOperationKey = checkPerformMarkerCensus(getLog(), gwasParams);
 
-		// NOTE ABORTION_POINT We could be gracefully abort here
+		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		// HW ON GENOTYPE FREQ.
 		if (markerCensusOperationKey == null) {
