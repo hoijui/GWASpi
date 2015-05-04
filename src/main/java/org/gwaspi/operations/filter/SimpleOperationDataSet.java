@@ -22,7 +22,5 @@ import org.gwaspi.operations.OperationDataSet;
 
 public interface SimpleOperationDataSet extends OperationDataSet<SimpleOperationEntry> {
 
-	boolean isDataLeft() throws IOException;
-
 	void addEntry(SimpleOperationEntry entry) throws IOException;
 }

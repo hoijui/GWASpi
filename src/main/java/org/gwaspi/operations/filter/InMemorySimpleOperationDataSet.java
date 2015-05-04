@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.filter;
 
-import java.io.IOException;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.operations.AbstractInMemoryOperationDataSet;
@@ -36,10 +35,5 @@ public class InMemorySimpleOperationDataSet extends AbstractInMemoryOperationDat
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return typeInfo;
-	}
-
-	@Override
-	public boolean isDataLeft() throws IOException {
-		return ((getNumMarkers() > 0) && (getNumSamples() > 0));
 	}
 }

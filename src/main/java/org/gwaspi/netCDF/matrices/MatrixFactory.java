@@ -52,6 +52,10 @@ public class MatrixFactory {
 		return matrixName;
 	}
 
+	public static boolean isDataLeft(final DataSetSource dataSetSource) throws IOException {
+		return ((dataSetSource.getNumMarkers() > 0) && (dataSetSource.getNumSamples() > 0));
+	}
+
 	public static DataSetSource generateDataSetSource(DataSetKey dataSetKey) {
 
 		try {

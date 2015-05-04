@@ -27,9 +27,10 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.operations.filter.SimpleOperationDataSet;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -112,11 +113,11 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 
-		SimpleOperationDataSet filteredOperationDataSet
-				= (SimpleOperationDataSet) OperationManager.generateOperationDataSet(getParams().getParent().getOperationParent());
+		final DataSetSource inputDataSet
+				= MatrixFactory.generateDataSetSource(getParams().getParent());
 
 		// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-		if (!filteredOperationDataSet.isDataLeft()) {
+		if (!MatrixFactory.isDataLeft(inputDataSet)) {
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
 			return resultOpKey;
 		}
@@ -126,12 +127,12 @@ public abstract class AbstractTestMatrixOperation<D extends CommonTestOperationD
 
 		OperationDataSet dataSet = generateFreshOperationDataSet();
 
-		dataSet.setNumMarkers(filteredOperationDataSet.getNumMarkers());
-		dataSet.setNumSamples(filteredOperationDataSet.getNumSamples());
-		dataSet.setNumChromosomes(filteredOperationDataSet.getNumChromosomes());
+		dataSet.setNumMarkers(inputDataSet.getNumMarkers());
+		dataSet.setNumSamples(inputDataSet.getNumSamples());
+		dataSet.setNumChromosomes(inputDataSet.getNumChromosomes());
 
 		Map<Integer, MarkerKey> censusOpMarkers = markerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
-		Map<Integer, MarkerKey> wrMarkerKeysFiltered = filteredOperationDataSet.getMarkersKeysSource().getIndicesMap();
+		Map<Integer, MarkerKey> wrMarkerKeysFiltered = inputDataSet.getMarkersKeysSource().getIndicesMap();
 
 		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		Iterator<Census> wrCaseMarkerCensusesIt = markerCensusOperationDataSet.getCensus(Category.CASE).iterator();

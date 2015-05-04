@@ -52,11 +52,6 @@ public class NetCdfSimpleOperationDataSet extends AbstractNetCdfOperationDataSet
 	}
 
 	@Override
-	public boolean isDataLeft() throws IOException {
-		return ((getNumMarkers() > 0) && (getNumSamples() > 0));
-	}
-
-	@Override
 	protected void supplementNetCdfHandler(
 			NetcdfFileWriteable ncFile,
 			OperationMetadata operationMetadata,
