@@ -562,31 +562,36 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 		}
 	}
 
-	private double norm2(List<Double> numbers) {
+	private double norm(final List<Double> numbers, final double pNorm) {
+
+		final double pNormInv = 1.0 / pNorm;
 
 		double norm = 0.0;
-		for (Double number : numbers) {
-			norm += number * number;
+		for (final Double number : numbers) {
+			norm += Math.pow(number, pNorm);
 		}
-		norm = Math.sqrt(norm);
+		norm = Math.pow(norm, pNormInv);
 
 		return norm;
 	}
 
 	@Override
-	public void decodeWeights(List<Double> encodedWeights,
-			List<Double> decodedWeights)
+	public void decodeWeights(
+			final List<Double> encodedWeights,
+			final List<Double> decodedWeights)
 	{
-		final double norm = norm2(encodedWeights);
+		final double pNorm = 2.0; // FIXME change this for a p-norm with p != 2 || maybe make configurable? is called 'svm_p' in the octave/matlab scripts
+		final double norm = norm(encodedWeights, pNorm);
 		final int encodingFactor = getEncodingFactor();
+		final double pNormInv = 1.0 / pNorm;
 		for (int ewi = 0; ewi < encodedWeights.size(); ewi += encodingFactor) {
 			double sum = 0.0;
 			for (int lwi = 0; lwi < encodingFactor; lwi++) {
 				final double wEncNormalized = Math.abs(encodedWeights.get(ewi + lwi)) / norm;
-				sum += wEncNormalized * wEncNormalized; // NOTE change this for a p-norm with p != 2
+				sum += Math.pow(wEncNormalized, pNorm);
 			}
 //			final double wDecNormalized = sum / encodingFactor;
-			final double wDecNormalized = Math.sqrt(sum); // NOTE change this for a p-norm with p != 2
+			final double wDecNormalized = Math.pow(sum, pNormInv);
 			decodedWeights.add(wDecNormalized);
 		}
 
