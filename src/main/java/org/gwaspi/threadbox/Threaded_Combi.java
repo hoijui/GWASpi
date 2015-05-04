@@ -137,8 +137,9 @@ public class Threaded_Combi extends CommonRunnable {
 		final MatrixOperation byCombiWeightsFilterOperation = new ByCombiWeightsFilterOperation(paramsFilter);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_FILTER, byCombiWeightsFilterOperation.getProgressSource(), null);
 		final OperationKey combiFilterOpKey = OperationManager.performOperationCreatingOperation(byCombiWeightsFilterOperation);
+		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
 
-		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(new DataSetKey(combiFilterOpKey), false);
+		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(combiFilterDataSetKey, false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
 		CommonRunnable.doRunNowInThread(threaded_MatrixQA);
@@ -147,7 +148,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
-		MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(new DataSetKey(combiFilterOpKey), qaSamplesOpKey, qaMarkersOpKey);
+		final MarkerCensusOperationParams markerCensusParams = new MarkerCensusOperationParams(combiFilterDataSetKey, qaSamplesOpKey, qaMarkersOpKey);
 		final MatrixOperation markerCensusOperation = new MarkerCensusOperation(markerCensusParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
 		final OperationKey markerCensusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
