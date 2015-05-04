@@ -155,7 +155,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
-		final TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterOpKey, null, markerCensusOpKey);
+		final TrendTestOperationParams trendTestParams = new TrendTestOperationParams(combiFilterDataSetKey, null, markerCensusOpKey);
 		final MatrixOperation testOperation = new TrendTestOperation(trendTestParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TREND_TEST, testOperation.getProgressSource(), null);
 		final OperationKey trendTestOpKey = OperationManager.performOperationCreatingOperation(testOperation);

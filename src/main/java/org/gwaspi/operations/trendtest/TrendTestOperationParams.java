@@ -26,22 +26,46 @@ public class TrendTestOperationParams extends AbstractOperationParams {
 
 	private final OperationKey markerCensusOpKey;
 
-	public TrendTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
-		super(type, new DataSetKey(hardyWeinbergExcludeOpKey), name);
+	/**
+	 * Creates parameters for a test operation.
+	 * @param type
+	 * @param parent this is used as a source for the list of markers to keep only
+	 * @param name
+	 * @param markerCensusOpKey this is used as a source of data,
+	 *   and has to include at least those markers that appear in parent.
+	 */
+	public TrendTestOperationParams(
+			final OPType type,
+			final DataSetKey parent,
+			final String name,
+			final OperationKey markerCensusOpKey)
+	{
+		super(type, parent, name);
 
 		this.markerCensusOpKey = markerCensusOpKey;
 	}
 
-	public TrendTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOpKey) {
-		this(type, hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
+	public TrendTestOperationParams(
+			final OPType type,
+			final DataSetKey parent,
+			final OperationKey markerCensusOpKey)
+	{
+		this(type, parent, null, markerCensusOpKey);
 	}
 
-	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOpKey) {
-		this(OPType.TRENDTEST, hardyWeinbergExcludeOpKey, name, markerCensusOpKey);
+	public TrendTestOperationParams(
+			final DataSetKey parent,
+			final String name,
+			final OperationKey markerCensusOpKey)
+	{
+		this(OPType.TRENDTEST, parent, name, markerCensusOpKey);
 	}
 
-	public TrendTestOperationParams(OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOpKey) {
-		this(OPType.TRENDTEST, hardyWeinbergExcludeOpKey, null, markerCensusOpKey);
+	public TrendTestOperationParams(
+			final DataSetKey parent,
+			final OperationKey markerCensusOpKey)
+	{
+		this(OPType.TRENDTEST, parent, null, markerCensusOpKey);
 	}
 
 	public OperationKey getMarkerCensus() {

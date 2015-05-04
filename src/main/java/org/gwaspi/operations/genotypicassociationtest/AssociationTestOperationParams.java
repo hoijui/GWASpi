@@ -18,6 +18,7 @@
 package org.gwaspi.operations.genotypicassociationtest;
 
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.reports.OutputTest;
@@ -28,12 +29,21 @@ import org.gwaspi.reports.OutputTest;
  */
 public class AssociationTestOperationParams extends TrendTestOperationParams {
 
-	public AssociationTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, String name, OperationKey markerCensusOPKey) {
-		super(type, hardyWeinbergExcludeOpKey, name, markerCensusOPKey);
+	public AssociationTestOperationParams(
+			final OPType type,
+			final DataSetKey parent,
+			final String name,
+			final OperationKey markerCensusOPKey)
+	{
+		super(type, parent, name, markerCensusOPKey);
 	}
 
-	public AssociationTestOperationParams(final OPType type, OperationKey hardyWeinbergExcludeOpKey, OperationKey markerCensusOPKey) {
-		this(type, hardyWeinbergExcludeOpKey, null, markerCensusOPKey);
+	public AssociationTestOperationParams(
+			final OPType type,
+			final DataSetKey parent,
+			final OperationKey markerCensusOPKey)
+	{
+		this(type, parent, null, markerCensusOPKey);
 	}
 
 	@Override

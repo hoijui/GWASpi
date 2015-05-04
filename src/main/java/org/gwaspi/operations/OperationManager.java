@@ -223,14 +223,15 @@ public class OperationManager {
 				new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, hwThreshold));
 		superProgressSource.replaceSubProgressSource(ByHardyWeinbergThresholdFilterOperation.PLACEHOLDER_PS_HW_TF, excludeOperation.getProgressSource(), null);
 		final OperationKey excludeOperationKey = performOperationCreatingOperation(excludeOperation);
+		final DataSetKey excludeOperationDataSetKey = new DataSetKey(excludeOperationKey);
 
 		// run the test
 		final MatrixOperation operation;
 		if (testType == OPType.TRENDTEST) {
-			operation = new TrendTestOperation(new TrendTestOperationParams(excludeOperationKey, censusOpKey));
+			operation = new TrendTestOperation(new TrendTestOperationParams(excludeOperationDataSetKey, censusOpKey));
 		} else {
 			final AssociationTestOperationParams params
-					= new AssociationTestOperationParams(testType, excludeOperationKey, censusOpKey);
+					= new AssociationTestOperationParams(testType, excludeOperationDataSetKey, censusOpKey);
 			if (testType == OPType.ALLELICTEST) {
 				operation = new AllelicAssociationTestOperation(params);
 			} else {
