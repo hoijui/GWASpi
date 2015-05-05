@@ -605,7 +605,9 @@ public class CombiTestMatrixOperation
 		final int dSamples = markerKeys.size();
 		final int n = sampleKeys.size();
 
-		LOG.debug("create SVM parameters");
+		LOG.debug("creating solver parameters ...");
+		LOG.debug("solver param: eps: {}", solverParams.getEps());
+		LOG.debug("solver param: C:   {}", solverParams.getC());
 		final boolean useLibSvm = (solverLibrary == SolverLibrary.LIB_SVM);
 		final svm_parameter libSvmParameters;
 		final Parameter libLinearParameters;
