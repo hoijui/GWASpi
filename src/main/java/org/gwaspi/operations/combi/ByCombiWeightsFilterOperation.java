@@ -69,7 +69,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 						"Removes all markers that have a COMBI weight smaller then a given threshold.")));
 	}
 
-	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2;
+	private static final int WEIGHTS_MOVING_AVERAGE_FILTER_NORM = 2; // TODO maybe make configurable? is called 'smoothing_filter_p_pnorm' in the octave/matlab scripts
 
 	private ProgressHandler filterPH;
 
