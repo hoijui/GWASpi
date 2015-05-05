@@ -21,9 +21,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.DefaultOperationTypeInfo;
@@ -114,13 +117,62 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			throws IOException
 	{
 		filterPH.setNewStatus(ProcessStatus.INITIALIZING);
-		final int markersToKeep = getParams().getMarkersToKeep();
 
 		CombiTestOperationDataSet combiTestOperationDataSet
 				= (CombiTestOperationDataSet) getParentDataSetSource();
 
-		Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys = combiTestOperationDataSet.getMarkersKeysSource().getIndicesMap();
+		final Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys = combiTestOperationDataSet.getMarkersKeysSource().getIndicesMap();
 		final List<Double> rawWeights = combiTestOperationDataSet.getWeights();
+
+		if (getParams().isPerChromosome()) {
+			final Map<String, Map<Integer, MarkerKey>> chromParentMarkersOrigIndicesAndKeys
+					= new LinkedHashMap<String, Map<Integer, MarkerKey>>(22);
+			final Map<String, List<Double>> chromRawWeights
+					= new LinkedHashMap<String, List<Double>>(22);
+			for (final ChromosomeKey chromosomeKey : combiTestOperationDataSet.getChromosomesKeysSource()) {
+				chromParentMarkersOrigIndicesAndKeys.put(chromosomeKey.getChromosome(), new LinkedHashMap<Integer, MarkerKey>());
+				chromRawWeights.put(chromosomeKey.getChromosome(), new LinkedList<Double>());
+			}
+
+			final Iterator<String> chromosomesIt = combiTestOperationDataSet.getMarkersMetadatasSource().getChromosomes().iterator();
+			final Iterator<Double> rawWeightsIt = rawWeights.iterator();
+			if (!getParams().isPerChromosome()) {
+				filterPH.setNewStatus(ProcessStatus.RUNNING);
+			}
+			for (final Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
+				final String curChrom = chromosomesIt.next();
+				final double curCombiWeight = rawWeightsIt.next();
+				chromParentMarkersOrigIndicesAndKeys.get(curChrom).put(parentMarkersEntry.getKey(), parentMarkersEntry.getValue());
+				chromRawWeights.get(curChrom).add(curCombiWeight);
+			}
+			filterPH.setNewStatus(ProcessStatus.RUNNING);
+			for (final ChromosomeKey chromosomeKey : combiTestOperationDataSet.getChromosomesKeysSource()) {
+				filterMarkers(
+						filteredMarkerOrigIndicesAndKeys,
+						chromParentMarkersOrigIndicesAndKeys.get(chromosomeKey.getChromosome()),
+						chromRawWeights.get(chromosomeKey.getChromosome()));
+			}
+		} else {
+			filterMarkers(filteredMarkerOrigIndicesAndKeys, parentMarkersOrigIndicesAndKeys, rawWeights);
+		}
+		// NOTE Here we would report 100% compleetion (see also the note above),
+		//   but this would create insufficient completion-fraction values
+		//   in the parent SuperProgressSource.
+//		filterPH.setProgress(0);
+		filterPH.setNewStatus(ProcessStatus.FINALIZING);
+
+		// we use all samples from the parent
+		filteredSampleOrigIndicesAndKeys.putAll(combiTestOperationDataSet.getSamplesKeysSource().getIndicesMap()); // XXX could be done more efficiently, without loading all the keys first, but by just signaling to the method caller, that we use all samples somehow
+		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
+	}
+
+	private void filterMarkers(
+			final Map<Integer, MarkerKey> filteredMarkerOrigIndicesAndKeys,
+			final Map<Integer, MarkerKey> parentMarkersOrigIndicesAndKeys,
+			final List<Double> rawWeights)
+			throws IOException
+	{
+		final int markersToKeep = getParams().getMarkersToKeep(parentMarkersOrigIndicesAndKeys.size());
 
 		LOG.info("apply moving average filter (p-norm filter) on the weights");
 		List<Double> weightsFiltered = applyMovingAverageFilter(rawWeights, getParams().getWeightsFilterWidth());
@@ -142,27 +194,20 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		final double thresholdWeight = combiWeightsSorted.get(Math.max(0, combiWeightsSorted.size() - markersToKeep - 1));
 
 		Iterator<Double> combiWeightsIt = weightsAbsolute.iterator();
-		filterPH.setNewStatus(ProcessStatus.RUNNING);
-		for (Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
+		if (!getParams().isPerChromosome()) {
+			filterPH.setNewStatus(ProcessStatus.RUNNING);
+		}
+		for (final Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
-			if (curCombiWeight > thresholdWeight) { // XXX; do not filter out, just set P value to 1! -> requries to create a new list of P values... where do we get the old ones from?
-					filteredMarkerOrigIndicesAndKeys.put(
-							parentMarkersEntry.getKey(),
-							parentMarkersEntry.getValue());
+			if (curCombiWeight > thresholdWeight) {
+				filteredMarkerOrigIndicesAndKeys.put(
+						parentMarkersEntry.getKey(),
+						parentMarkersEntry.getValue());
 			}
 			// NOTE We omit progress reporting, because it would be too huge
 			//   a percentual performance penalty for this leight-weight operation.
 //			filterPH.setProgress(mi);
 		}
-		// NOTE Here we would report 100% compleetion (see also the note above),
-		//   but this would create insufficient completion-fraction values
-		//   in the parent SuperProgressSource.
-//		filterPH.setProgress(0);
-		filterPH.setNewStatus(ProcessStatus.FINALIZING);
-
-		// we use all samples from the parent
-		filteredSampleOrigIndicesAndKeys.putAll(combiTestOperationDataSet.getSamplesKeysSource().getIndicesMap()); // XXX could be done more efficiently, without loading all the keys first, but by just signaling to the method caller, that we use all samples somehow
-		filterPH.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
 	/**

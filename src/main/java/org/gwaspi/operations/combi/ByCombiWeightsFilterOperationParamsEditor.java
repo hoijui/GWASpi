@@ -202,7 +202,8 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 				(OperationKey) combiOperationValue.getSelectedItem(),
 				perChromosomeValue.isSelected(),
 				(Integer) weightsFilterWidthValue.getValue(),
-				(Integer) markersToKeepValue.getValue(),
+				null, // markersToKeep absolute
+				(Double) markersToKeepValue.getFractionValue(),
 				resultMatrixValue.getText()
 				);
 
@@ -272,7 +273,8 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 				parentOperationKey,
 				true, // perChromosome
 				35, // weightsFilterWidth
-				20, // markersToKeep
+				null, // markersToKeep
+				null, // markersToKeepFraction
 				"my name is... my name is... my name is ..");
 		ByCombiWeightsFilterOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
 	}

@@ -116,18 +116,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			final Integer weightsFilterWidth = fetchInteger(args, "weights-filter-width", null);
 
 			Integer markersToKeep = fetchInteger(args, "markers-to-keep", null);
-			final Double markersToKeepRelative = fetchDouble(args, "markers-to-keep-relative", null);
-			if ((markersToKeep != null) && (markersToKeepRelative != null)) {
-				throw new ScriptExecutionException(
-						"You may specify at most one of \"markers-to-keep\" "
-								+ "and \"markers-to-keep-relative\".");
-			} else if (markersToKeepRelative != null) {
-				if ((markersToKeepRelative <= 0.0) || (markersToKeepRelative > 1.0)) {
-					throw new ScriptExecutionException(
-							"The valid range for \"markers-to-keep-relative\" is (0.0, 1.0].");
-				}
-				markersToKeep = (int) Math.ceil(totalMarkers * markersToKeepRelative);
-			}
+			final Double markersToKeepFraction = fetchDouble(args, "markers-to-keep-fraction", null);
 
 			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
 
@@ -153,6 +142,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					perChromosome,
 					weightsFilterWidth,
 					markersToKeep,
+					markersToKeepFraction,
 					resultFilterOperationName);
 
 			// test block

@@ -40,8 +40,17 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	/**
 	 * How many markers to be left with,
 	 * after the filtering with the COMBI method.
+	 * It is set to -1 if {@link #markersToKeepFraction} should be used instead.
+	 * NOTE This value is used as per sub-data-set,
+	 *   whether it is the whole genome or just the data of a single chromosome!
 	 */
 	private final int markersToKeep;
+	/**
+	 * How many markers to be left with, as a fraction of the (sub-)data-set,
+	 * after the filtering with the COMBI method.
+	 * @see #markersToKeep
+	 */
+	private final double markersToKeepFraction;
 
 	ByCombiWeightsFilterOperationParams(
 			Integer totalMarkers,
@@ -49,11 +58,24 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
+			final Double markersToKeepFraction,
 			String name)
 	{
 		super(OPType.FILTER_BY_WEIGHTS, new DataSetKey(combiParentOpKey), name);
 
 		this.totalMarkers = totalMarkers;
+
+		if ((markersToKeep != null) && (markersToKeepFraction != null)) {
+			throw new IllegalArgumentException(
+					"You may specify at most one of \"markersToKeep\" "
+							+ "and \"markersToKeepFraction\".");
+		} else if (markersToKeepFraction != null) {
+			if ((markersToKeepFraction <= 0.0) || (markersToKeepFraction > 1.0)) {
+				throw new IllegalArgumentException(
+						"The valid range for \"markersToKeepFraction\" is (0.0, 1.0].");
+			}
+			markersToKeep = (int) Math.ceil(totalMarkers * markersToKeepFraction);
+		}
 
 		this.perChromosome = (perChromosome == null)
 				? isPerChromosomeDefault()
@@ -62,10 +84,13 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 				|| (weightsFilterWidth <= 0) || (weightsFilterWidth >= totalMarkers))
 				? getWeightsFilterWidthDefault()
 				: weightsFilterWidth;
-		this.markersToKeep = ((markersToKeep == null)
-				|| (markersToKeep <= 0) || (markersToKeep >= totalMarkers))
-				? getMarkersToKeepDefault()
+		this.markersToKeep =
+				((markersToKeep == null) || (markersToKeep <= 0) || (markersToKeep >= totalMarkers))
+				? -1
 				: markersToKeep;
+		this.markersToKeepFraction = ((this.markersToKeep == -1) && (markersToKeepFraction == null))
+				? getMarkersToKeepFractionDefault()
+				: markersToKeepFraction;
 	}
 
 	public ByCombiWeightsFilterOperationParams(
@@ -73,9 +98,10 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
+			final Double markersToKeepFraction,
 			String name)
 	{
-		this(null, combiParentOpKey, perChromosome, weightsFilterWidth, markersToKeep, name);
+		this(null, combiParentOpKey, perChromosome, weightsFilterWidth, markersToKeep, markersToKeepFraction, name);
 	}
 
 	public ByCombiWeightsFilterOperationParams(
@@ -83,14 +109,16 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 			final Boolean perChromosome,
 			Integer weightsFilterWidth,
 			Integer markersToKeep,
+			final Double markersToKeepFraction,
 			String name)
 	{
-		this(totalMarkers, null, perChromosome, weightsFilterWidth, markersToKeep, name);
+		this(totalMarkers, null, perChromosome, weightsFilterWidth, markersToKeep, markersToKeepFraction, name);
 	}
 
 	public ByCombiWeightsFilterOperationParams(OperationKey combiParentOpKey) {
 		this(
 				combiParentOpKey,
+				null,
 				null,
 				null,
 				null,
@@ -101,6 +129,7 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 	public ByCombiWeightsFilterOperationParams(int totalMarkers) {
 		this(
 				totalMarkers,
+				null,
 				null,
 				null,
 				null,
@@ -136,17 +165,37 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 		return markersToKeep;
 	}
 
+	public int getMarkersToKeepDefault() { // XXX review this mechanism with marius
+
+		return Math.min(getTotalMarkers(), Math.min(20, Math.max(3,
+				(int) Math.ceil(getTotalMarkers() * getMarkersToKeepFractionDefault()))));
+	}
+
+	public double getMarkersToKeepFraction() {
+		return markersToKeepFraction;
+	}
+
+	public double getMarkersToKeepFractionDefault() { // XXX review this with marius
+		return 0.02;
+	}
+
+	public int getMarkersToKeep(final int totalMarkers) {
+
+		final int relativeMarkersToKeep;
+		if (getMarkersToKeep() == -1) {
+			relativeMarkersToKeep = (int) Math.ceil(getMarkersToKeepFraction() * totalMarkers);
+		} else {
+			relativeMarkersToKeep = getMarkersToKeep();
+		}
+
+		return relativeMarkersToKeep;
+	}
+
 	public boolean isPerChromosome() {
 		return perChromosome;
 	}
 
 	public static boolean isPerChromosomeDefault() {
 		return true;
-	}
-
-	public int getMarkersToKeepDefault() { // XXX review this mechanism with marius
-
-		return Math.min(getTotalMarkers(), Math.min(20, Math.max(3,
-				(int) Math.ceil(getTotalMarkers() * 0.02))));
 	}
 }
