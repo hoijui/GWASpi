@@ -84,7 +84,13 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			final Boolean perChromosome = fetchBoolean(args, "per-chromosome", null);
 
-			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
+			final String genotypeEncoderStr = args.get("genotype-encoding");
+			final GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(genotypeEncoderStr);
+			if ((genotypeEncoderStr != null) && (genotypeEncoder == null)) {
+				throw new ScriptExecutionException(
+						"Unsupported genotype encoding specified in script: \""
+								+ genotypeEncoderStr + "\"");
+			}
 
 			final Double genotypeEncodindP = fetchDouble(args, "genotype-encoding-p", null);
 			final GenotypeEncodingParams genotypeEncodingParams;
