@@ -346,23 +346,27 @@ public class Dialogs {
 		fc.setCurrentDirectory(new File(tmpDir));
 //		}
 
-		fc.setFileFilter(new FileFilter() {
-			@Override
-			public boolean accept(File f) {
-				return f.getName().toLowerCase().endsWith(filter) || f.isDirectory();
-			}
-
-			@Override
-			public String getDescription() {
-				String filterDesc;
-				if (filter.isEmpty()) {
-					filterDesc = "All files";
-				} else {
-					filterDesc = filter + " files";
+		if ((filter != null) && !filter.isEmpty()) {
+			fc.setFileFilter(new FileFilter() {
+				@Override
+				public boolean accept(final File file) {
+					return file.getName().toLowerCase().endsWith(filter) || file.isDirectory();
 				}
-				return filterDesc;
-			}
-		});
+
+				@Override
+				public String getDescription() {
+
+					final String filterDesc;
+					if (filter.isEmpty()) {
+						filterDesc = "All files";
+					} else {
+						filterDesc = "\"*" + filter + "\" files";
+					}
+
+					return filterDesc;
+				}
+			});
+		}
 		final Component windowAncestor = SwingUtilities.getWindowAncestor(textField);
 		int returnVal = fc.showOpenDialog(windowAncestor);
 
