@@ -21,8 +21,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -51,7 +49,6 @@ import javax.swing.JTable;
 import javax.swing.JFormattedTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
@@ -67,6 +64,7 @@ import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererAssociationTestWithZoomAndQueryDB;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -129,17 +127,7 @@ public abstract class Report_Analysis extends JPanel {
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		final Integer actualNRows = (nRows == null) ? 100 : nRows;
 		txt_NRows.setValue(actualNRows);
-		txt_NRows.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_NRows.selectAll();
-					}
-				});
-			}
-		});
+		txt_NRows.addFocusListener(new SelectAllTextFocusListener());
 		lbl_suffix1 = new JLabel();
 		txt_PvalThreshold = new JFormattedTextField();
 		btn_Get = new JButton();

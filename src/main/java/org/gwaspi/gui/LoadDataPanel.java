@@ -21,8 +21,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +50,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
+import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
@@ -141,29 +140,7 @@ public class LoadDataPanel extends JPanel {
 		txtA_NewMatrixDescription.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
-		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
-							txtA_NewMatrixDescription.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_NewMatrixDescription.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_NewMatrixDescription.addFocusListener(new SelectAllTextFocusListener(Text.All.optional));
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NAME & DESC">
@@ -216,47 +193,17 @@ public class LoadDataPanel extends JPanel {
 
 		lbl_File1.setText(Text.All.file1);
 		txt_File1.setEnabled(false);
-		txt_File1.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_File1.selectAll();
-					}
-				});
-			}
-		});
+		txt_File1.addFocusListener(new SelectAllTextFocusListener());
 		btn_File1.setAction(new LoadDataPanel.Browse1Action());
 
 		lbl_File2.setText(Text.All.file2);
 		txt_File2.setEnabled(false);
-		txt_File2.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_File2.selectAll();
-					}
-				});
-			}
-		});
+		txt_File2.addFocusListener(new SelectAllTextFocusListener());
 		btn_File2.setAction(new LoadDataPanel.Browse2Action());
 
 		lbl_FileSampleInfo.setText(Text.All.file3);
 		txt_FileSampleInfo.setEnabled(false);
-		txt_FileSampleInfo.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_FileSampleInfo.selectAll();
-					}
-				});
-			}
-		});
+		txt_FileSampleInfo.addFocusListener(new SelectAllTextFocusListener());
 
 		btn_FileSampleInfo.setAction(browseSampleInfoAction);
 

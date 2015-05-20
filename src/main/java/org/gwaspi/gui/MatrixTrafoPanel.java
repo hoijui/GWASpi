@@ -21,8 +21,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.AbstractAction;
@@ -37,13 +35,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -146,29 +144,7 @@ public class MatrixTrafoPanel extends JPanel {
 				Text.All.description));
 		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
-		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
-							txtA_NewMatrixDescription.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_NewMatrixDescription.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_NewMatrixDescription.addFocusListener(new SelectAllTextFocusListener(Text.All.optional));
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">

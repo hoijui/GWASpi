@@ -18,8 +18,6 @@
 package org.gwaspi.gui.reports;
 
 import java.awt.Component;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -34,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
@@ -42,6 +39,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
@@ -85,17 +83,7 @@ public class AbstractReportSummary extends JPanel {
 		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.setValue(100);
-		txt_NRows.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txt_NRows.selectAll();
-					}
-				});
-			}
-		});
+		txt_NRows.addFocusListener(new SelectAllTextFocusListener());
 		lbl_suffix1 = new JLabel();
 		btn_Get = new JButton();
 		scrl_ReportTable = new JScrollPane();

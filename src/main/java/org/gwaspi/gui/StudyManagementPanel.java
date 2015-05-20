@@ -20,8 +20,6 @@ package org.gwaspi.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.gwaspi.global.Text;
@@ -47,6 +44,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -163,29 +161,7 @@ public class StudyManagementPanel extends JPanel {
 		txtA_Desc.setColumns(20);
 		txtA_Desc.setRows(5);
 		txtA_Desc.setText(Text.All.optional);
-		txtA_Desc.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if (txtA_Desc.getText().equals(Text.All.optional)) {
-							txtA_Desc.selectAll();
-						}
-					}
-				});
-			}
-
-			@Override
-			public void focusLost(FocusEvent evt) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						txtA_Desc.select(0, 0);
-					}
-				});
-			}
-		});
+		txtA_Desc.addFocusListener(new SelectAllTextFocusListener(Text.All.optional));
 
 		scrl_Desc.setViewportView(txtA_Desc);
 		btn_AddStudy.setAction(new AddStudyAction(lbl_NewStudyName, txtF_NewStudyName, txtA_Desc));
