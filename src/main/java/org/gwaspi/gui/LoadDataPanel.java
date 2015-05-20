@@ -292,62 +292,6 @@ public class LoadDataPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="expanded" desc="LAYOUT GIF">
-//		GroupLayout pnl_GifLeftLayout = new GroupLayout(pnl_GifLeft);
-//		pnl_GifLeft.setLayout(pnl_GifLeftLayout);
-//		pnl_GifLeftLayout.setHorizontalGroup(
-//				pnl_GifLeftLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGap(0, 308, Short.MAX_VALUE)
-//				);
-//		pnl_GifLeftLayout.setVerticalGroup(
-//				pnl_GifLeftLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGap(0, 100, Short.MAX_VALUE)
-//				);
-//
-//		GroupLayout pnl_GifCenterLayout = new GroupLayout(pnl_GifCenter);
-//		pnl_GifCenter.setLayout(pnl_GifCenterLayout);
-//		pnl_GifCenterLayout.setHorizontalGroup(
-//				pnl_GifCenterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addComponent(scrl_Gif, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-//				);
-//		pnl_GifCenterLayout.setVerticalGroup(
-//				pnl_GifCenterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addComponent(scrl_Gif, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-//				);
-//
-//		GroupLayout pnl_GifRightLayout = new GroupLayout(pnl_GifRight);
-//		pnl_GifRight.setLayout(pnl_GifRightLayout);
-//		pnl_GifRightLayout.setHorizontalGroup(
-//				pnl_GifRightLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGap(0, 284, Short.MAX_VALUE)
-//				);
-//		pnl_GifRightLayout.setVerticalGroup(
-//				pnl_GifRightLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGap(0, 100, Short.MAX_VALUE)
-//				);
-//
-//		GroupLayout pnl_GifLayout = new GroupLayout(pnl_Gif);
-//		pnl_Gif.setLayout(pnl_GifLayout);
-//		pnl_GifLayout.setHorizontalGroup(
-//				pnl_GifLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGroup(pnl_GifLayout.createSequentialGroup()
-//				.addContainerGap()
-//				.addComponent(pnl_GifLeft, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//				.addGap(18, 18, 18)
-//				.addComponent(pnl_GifCenter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//				.addGap(18, 18, 18)
-//				.addComponent(pnl_GifRight, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//				.addGap(21, 21, 21))
-//				);
-//		pnl_GifLayout.setVerticalGroup(
-//				pnl_GifLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//				.addGroup(pnl_GifLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-//				.addComponent(pnl_GifRight, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//				.addComponent(pnl_GifLeft, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-//				.addComponent(pnl_GifCenter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-//				);
-		//</editor-fold>
-
 		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
