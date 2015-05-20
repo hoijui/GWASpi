@@ -106,15 +106,5 @@ public class MultiOperations {
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(true);
 		}
 	}
-
-	/** @deprecated */
-	public static void updateProcessOverviewStartNext() throws IOException {
-//		SwingWorkerItemList.startNext();
-	}
-
-	/** @deprecated */
-	public static void updateProcessOverviewDeleteNext() throws IOException {
-//		SwingDeleterItemList.deleteAllListed();
-	}
 	//</editor-fold>
 }

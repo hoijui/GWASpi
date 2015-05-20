@@ -697,7 +697,6 @@ public class DataSetAnalysePanel extends JPanel {
 						MultiOperations.queueTask(gwasTask);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
-						MultiOperations.updateProcessOverviewStartNext();
 					}
 				}
 			} catch (IOException ex) {
