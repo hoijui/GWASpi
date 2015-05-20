@@ -90,6 +90,9 @@ public class LoadDataPanel extends JPanel {
 	private final JTextField txt_File1;
 	private final JTextField txt_File2;
 	private final JTextField txt_FileSampleInfo;
+	private String flt_File1;
+	private String flt_File2;
+	private String flt_FileSampleInfo;
 	private final JTextField txt_NewMatrixName;
 	private boolean dummySamples = true;
 	private final StudyKey studyKey;
@@ -113,12 +116,15 @@ public class LoadDataPanel extends JPanel {
 		lbl_File1 = new JLabel();
 		txt_File1 = new JTextField();
 		btn_File1 = new JButton();
+		flt_File1 = "";
 		lbl_File2 = new JLabel();
 		txt_File2 = new JTextField();
 		btn_File2 = new JButton();
+		flt_File2 = "";
 		lbl_FileSampleInfo = new JLabel();
 		txt_FileSampleInfo = new JTextField();
 		btn_FileSampleInfo = new JButton();
+		flt_FileSampleInfo = "";
 		pnl_Footer = new JPanel();
 		btn_Back = new JButton();
 		btn_Go = new JButton();
@@ -336,6 +342,9 @@ public class LoadDataPanel extends JPanel {
 			switch ((ImportFormat) cmb_Format.getSelectedItem()) {
 				case Affymetrix_GenomeWide6:
 					fieldObligatoryState = new boolean[]{true, true, false};
+					flt_File1 = ""; // TODO
+					flt_File2 = ""; // TODO
+					flt_FileSampleInfo = ""; // TODO
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -352,6 +361,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case PLINK:
 					fieldObligatoryState = new boolean[]{true, true, false};
+					flt_File1 = ".map";
+					flt_File2 = ".ped";
+					flt_FileSampleInfo = ""; // XXX or ".txt"?
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -368,6 +380,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case PLINK_Binary:
 					fieldObligatoryState = new boolean[]{true, true, true};
+					flt_File1 = ".bed";
+					flt_File2 = ".bim";
+					flt_FileSampleInfo = ".fam"; // XXX and ".txt"?
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -383,6 +398,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case HAPMAP:
 					fieldObligatoryState = new boolean[]{true, false, false};
+					flt_File1 = ""; // TODO
+					flt_File2 = "";
+					flt_FileSampleInfo = ""; // TODO
 					lbl_File1.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
 					lbl_File2.setEnabled(false);
@@ -400,6 +418,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case BEAGLE:
 					fieldObligatoryState = new boolean[]{true, true, false};
+					flt_File1 = ".markers";
+					flt_File2 = ".beagle"; // TODO check whether this is correct, or has to be swapped with with flt_FileSampleInfo
+					flt_FileSampleInfo = ""; // TODO check whether this is correct, or has to be swapped with with flt_File2
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -416,6 +437,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case HGDP1:
 					fieldObligatoryState = new boolean[]{true, true, false};
+					flt_File1 = ".markers.txt";
+					flt_File2 = ".samples.txt";
+					flt_FileSampleInfo = ""; // TODO
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -432,6 +456,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case GWASpi:
 					fieldObligatoryState = new boolean[]{true, false, true};
+					flt_File1 = ".nc";
+					flt_File2 = "";
+					flt_FileSampleInfo = ".txt";
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(false);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -449,6 +476,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case Illumina_LGEN:
 					fieldObligatoryState = new boolean[]{true, true, false};
+					flt_File1 = ""; // TODO
+					flt_File2 = ""; // TODO
+					flt_FileSampleInfo = ""; // TODO
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -466,6 +496,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				case Sequenom:
 					fieldObligatoryState = new boolean[]{true, true, true};
+					flt_File1 = ""; // TODO
+					flt_File2 = ""; // TODO
+					flt_FileSampleInfo = ""; // TODO
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
@@ -481,6 +514,9 @@ public class LoadDataPanel extends JPanel {
 					break;
 				default:
 					fieldObligatoryState = new boolean[]{false, false, false};
+					flt_File1 = "";
+					flt_File2 = "";
+					flt_FileSampleInfo = "";
 					lbl_File1.setEnabled(false);
 					lbl_File1.setText("");
 					lbl_File2.setEnabled(false);
@@ -620,7 +656,7 @@ public class LoadDataPanel extends JPanel {
 			// CHECK IF HOMONYM .PED FILE EXISTS IN PLINK CASE
 			if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK)) {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, flt_File1);
 				if (!txt_File1.getText().isEmpty()) {
 					File pedFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".ped");
 					if (txt_File2.getText().isEmpty() && pedFile.exists()) {
@@ -634,7 +670,7 @@ public class LoadDataPanel extends JPanel {
 				}
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK_Binary)) {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, flt_File1);
 				if (!txt_File1.getText().isEmpty()) {
 					File bimFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".bim");
 					File famFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".fam");
@@ -655,10 +691,10 @@ public class LoadDataPanel extends JPanel {
 				}
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.Sequenom)) {
 				// Use directory selector
-				Dialogs.selectAndSetDirectoryDialog(txt_File1, "", ""); // only dirs
+				Dialogs.selectAndSetDirectoryDialog(txt_File1, "", flt_File1); // only dirs
 			} else {
 				// Use standard file opener
-				Dialogs.selectAndSetFileDialog(txt_File1, "");
+				Dialogs.selectAndSetFileDialog(txt_File1, flt_File1);
 			}
 		}
 	}
@@ -675,7 +711,7 @@ public class LoadDataPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
 			if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK)) {
-				Dialogs.selectAndSetFileDialog(txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, flt_File2);
 				if (!txt_File2.getText().isEmpty()) {
 					File mapFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".map");
 					if (txt_File1.getText().isEmpty() && mapFile.exists()) {
@@ -688,7 +724,7 @@ public class LoadDataPanel extends JPanel {
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.PLINK_Binary)) {
-				Dialogs.selectAndSetFileDialog(txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, flt_File2);
 				if (!txt_File2.getText().isEmpty()) {
 					File bedFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".bed");
 					File famFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".fam");
@@ -708,13 +744,13 @@ public class LoadDataPanel extends JPanel {
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.BEAGLE)) {
-				Dialogs.selectAndSetFileDialog(txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, flt_File2);
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.HGDP1)) {
-				Dialogs.selectAndSetFileDialog(txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, flt_File2);
 			} else if (cmb_Format.getSelectedItem().equals(ImportFormat.Sequenom)) {
-				Dialogs.selectAndSetFileDialog(txt_File2, "");
+				Dialogs.selectAndSetFileDialog(txt_File2, flt_File2);
 			} else {
-				Dialogs.selectAndSetDirectoryDialog(txt_File2, "", ""); // only dirs
+				Dialogs.selectAndSetDirectoryDialog(txt_File2, "", flt_File2); // only dirs
 			}
 		}
 	}
@@ -730,7 +766,7 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
-			Dialogs.selectAndSetFileDialog(txt_FileSampleInfo, "");
+			Dialogs.selectAndSetFileDialog(txt_FileSampleInfo, flt_FileSampleInfo);
 		}
 	}
 
