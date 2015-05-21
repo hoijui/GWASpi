@@ -29,16 +29,25 @@ public class GenotypeEncodingParams {
 	 * It is called 'feature_scaling_p_norm' in the Octave/Matlab scripts.
 	 */
 	private final double featureScalingP;
+	/**
+	 * The value for 'p' used to calculate the standard deviation
+	 * used when decoding weights from feature- into marker-space.
+	 * It is called 'svm_p' in the Octave/Matlab scripts.
+	 */
+	private final double weightsDecodingP;
 
-	public GenotypeEncodingParams(final Double pStandardDeviation) {
+	public GenotypeEncodingParams(final Double pStandardDeviation, final Double weightsDecodingP) {
 
 		this.featureScalingP = (pStandardDeviation == null)
 				? getFeatureScalingPDefault()
 				: pStandardDeviation;
+		this.weightsDecodingP = (weightsDecodingP == null)
+				? getWeightsDecodingPDefault()
+				: weightsDecodingP;
 	}
 
 	public GenotypeEncodingParams() {
-		this(null);
+		this(null, null);
 	}
 
 	public double getFeatureScalingPDefault() {
@@ -47,5 +56,13 @@ public class GenotypeEncodingParams {
 
 	public double getFeatureScalingP() {
 		return featureScalingP;
+	}
+
+	public double getWeightsDecodingPDefault() {
+		return 2.0;
+	}
+
+	public double getWeightsDecodingP() {
+		return weightsDecodingP;
 	}
 }

@@ -524,9 +524,10 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 	@Override
 	public void decodeWeights(
 			final List<Double> encodedWeights,
+			final GenotypeEncodingParams params,
 			final List<Double> decodedWeights)
 	{
-		final double pNorm = 2.0; // FIXME make configurable? is called 'svm_p' in the octave/matlab scripts
+		final double pNorm = params.getWeightsDecodingP();
 		final double norm = norm(encodedWeights, pNorm);
 		final int encodingFactor = getEncodingFactor();
 		final double pNormInv = 1.0 / pNorm;

@@ -681,6 +681,7 @@ public class CombiTestMatrixOperation
 				libSvmParameters,
 				libLinearParameters,
 				genotypeEncoder,
+				genotypeEncodingParams,
 				svmPH);
 
 		return new RunSVMResults(weights, kernelMatrix, libSvmProblem, libLinearProblem);
@@ -1171,7 +1172,8 @@ public class CombiTestMatrixOperation
 			final Problem libLinearProblem,
 			final svm_parameter libSvmParameters,
 			final Parameter libLinearParameters,
-			GenotypeEncoder genotypeEncoder,
+			final GenotypeEncoder genotypeEncoder,
+			final GenotypeEncodingParams genotypeEncodingParams,
 			final SvmProgressHandler svmPH)
 	{
 		final boolean useLibSvm = (libSvmProblem != null);
@@ -1230,7 +1232,7 @@ public class CombiTestMatrixOperation
 
 		LOG.debug("decode weights from the encoded feature space into marker space");
 		List<Double> weights = new ArrayList<Double>(dSamples);
-		genotypeEncoder.decodeWeights(weightsEncoded, weights);
+		genotypeEncoder.decodeWeights(weightsEncoded, genotypeEncodingParams, weights);
 
 		if (spy != null) {
 			spy.decodedWeightsCalculated(weights);

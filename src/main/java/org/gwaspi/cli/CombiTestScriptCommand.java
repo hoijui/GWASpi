@@ -100,12 +100,9 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			}
 
 			final Double featureScalingP = fetchDouble(args, "feature-scaling-p", null);
-			final GenotypeEncodingParams genotypeEncodingParams;
-			if (featureScalingP == null) {
-				genotypeEncodingParams = new GenotypeEncodingParams();
-			} else {
-				genotypeEncodingParams = new GenotypeEncodingParams(featureScalingP);
-			}
+			final Double weightsDecodingP = fetchDouble(args, "weights-decoding-p", null);
+			final GenotypeEncodingParams genotypeEncodingParams
+					= new GenotypeEncodingParams(featureScalingP, weightsDecodingP);
 
 			final String svmLibraryStr = args.get("svm-library");
 			final SolverLibrary svmLibrary = (svmLibraryStr == null) ? null

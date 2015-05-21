@@ -89,7 +89,8 @@ public interface GenotypeEncoder {
 	 * XXX
 	 */
 	void decodeWeights(
-			final List<Double> encodedWeights,
+			List<Double> encodedWeights,
+			GenotypeEncodingParams params,
 			List<Double> decodedWeights);
 
 	/**
