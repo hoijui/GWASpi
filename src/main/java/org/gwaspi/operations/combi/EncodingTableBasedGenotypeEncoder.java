@@ -99,7 +99,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 				Genotype.hashCode(minorAllele, AlleleByte._0_VALUE),
 				Genotype.hashCode(AlleleByte._0_VALUE, minorAllele)
 		)); // aa
-		genotypesHashes.add(null); // --
+		genotypesHashes.add(null); // -- (everything else)
 
 		return genotypesHashes;
 	}
@@ -269,7 +269,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		swapped.add(orig.get(2)); // "aA" -> "Aa"
 		swapped.add(orig.get(1)); // "Aa" -> "aA"
 		swapped.add(orig.get(0)); // "AA" -> "aa"
-		swapped.add(orig.get(4)); // "--" -> "--"
+		swapped.add(orig.get(4)); // "--" -> "--" (everything else)
 
 		return swapped;
 	}
