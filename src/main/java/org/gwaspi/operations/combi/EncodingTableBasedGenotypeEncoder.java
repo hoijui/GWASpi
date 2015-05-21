@@ -42,14 +42,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		this.encodedValuesSwapped = null;
 	}
 
-//	public abstract Map<Integer, List<Float>> generateEncodingTable(
-////			Set<byte[]> possibleGenotypes,
-////			Collection<byte[]> rawGenotypes);
-//			final byte majorAllele,
-//			final byte minorAllele,
-//			final int[] genotypeCounts,
-//			final int numMarkers);
-
 	/**
 	 * @return The encoded values for: "AA", "Aa", "aA", "aa", "--" (stands for everything else)
 	 */
@@ -108,14 +100,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 				Genotype.hashCode(AlleleByte._0_VALUE, minorAllele)
 		)); // aa
 		genotypesHashes.add(null); // --
-//		genotypesHashes.add(Arrays.asList(
-//				Genotype.hashCode(AlleleByte.dash.getValue(), AlleleByte.dash.getValue())
-//		)); // --
-//		genotypeHashes.add(Genotype.hashCode(majorAllele, majorAllele)); // AA
-//		genotypeHashes.add(Genotype.hashCode(majorAllele, minorAllele)); // Aa
-//		genotypeHashes.add(Genotype.hashCode(minorAllele, majorAllele)); // aA
-//		genotypeHashes.add(Genotype.hashCode(minorAllele, minorAllele)); // aa
-//		genotypeHashes.add(Genotype.hashCode(AlleleByte._0_VALUE, AlleleByte._0_VALUE));
 
 		return genotypesHashes;
 	}
@@ -176,17 +160,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		return genotypeCountsAccumulated;
 	}
-
-//	private static int calculateTotalCount(int[] genotypeCounts) {
-//
-//		int sum = 0;
-//
-//		for (int genotypeCount : genotypeCounts) {
-//			sum += genotypeCount;
-//		}
-//
-//		return sum;
-//	}
 
 	private static List<List<Float>> createWhitenedValuesLists(List<List<Float>> valuesLists, List<Integer> genotypesCountsAccumulated, final int numSamples, final int numFeatures, final double pStdDev) {
 
@@ -324,7 +297,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //		Map<Integer, Integer> baseEncodingTable
 //				= generateBaseEncodingTable(possibleGenotypes);
 //		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
-////System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
 //			encodingTable.put(baseEncoding.getKey(), ENCODED_VALUES.get(baseEncoding.getValue()));
 //		}
 //
@@ -334,16 +306,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		List<List<Integer>> genotypesHashes = createGenotypesHashes(majorAllele, minorAllele);
 		List<List<Integer>> perHashGenotypesCounts = createPerHashGenotypesCounts(genotypeCounts);
 		List<Integer> genotypesCountsAccumulated = accumulateGenotypesCounts(genotypeCounts);
-
-//System.err.println();
-//final String majorAlleleStr = new String(new byte[] {majorAllele});
-//final String minorAlleleStr = new String(new byte[] {minorAllele});
-//System.err.println("majorAlleleStr: " + majorAlleleStr);
-//System.err.println("minorAlleleStr: " + minorAlleleStr);
-////System.err.println("genotypeCounts: " + genotypeCounts);
-//System.err.println("genotypesCountsAccumulated: " + genotypesCountsAccumulated);
-//System.err.println("genotypesCountsAccumulated.get(0): " + genotypesCountsAccumulated.get(0));
-//System.err.println("genotypesCountsAccumulated.get(3): " + genotypesCountsAccumulated.get(3));
 
 		final boolean lexOrder = isUsingLexicographicEncodingOrder();
 		final boolean swapMajorMinor = (lexOrder && (majorAllele > minorAllele))
@@ -437,22 +399,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		final Map<Integer, List<Float>> encodingTable
 //				= generateEncodingTable(possibleGenotypes, rawGenotypes);
 				= generateEncodingTable(majorAllele, minorAllele, genotypeCounts, numSamples, numFeatures, params.getPStandardDeviation());
-
-//System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
-//for (Map.Entry<Integer, List<Float>> encodingTableEntry : encodingTable.entrySet()) {
-//	Integer gtHash = encodingTableEntry.getKey();
-//	final String gtStr;
-//	if (gtHash == null) {
-//		gtStr = null;
-//	} else {
-//		gtStr = new String(Genotype.unhash(gtHash));
-//	}
-//	System.err.print("\t" + gtStr + " ->");
-//	for (Float value : encodingTableEntry.getValue()) {
-//		System.err.print(" " + value);
-//	}
-//	System.err.println();
-//}
 
 		// this is the -- value
 		List<Float> invalidEncoded = encodingTable.remove(null);
