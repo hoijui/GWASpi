@@ -69,7 +69,7 @@ public class CliExecutor {
 		for (int scriptIndex = 0; scriptIndex < scripts.size(); scriptIndex++) {
 			final Map<String, String> args = scripts.get(scriptIndex);
 			// GET COMMAND NAME OF CURRENT SCRIPT
-			final String command = args.values().iterator().next(); // HACK this will not always work, as we now support named arguments in any order
+			final String command = args.get("command");
 
 			System.out.println("Script " + scriptIndex + ": " + command);
 
