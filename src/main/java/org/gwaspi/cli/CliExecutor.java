@@ -67,8 +67,6 @@ public class CliExecutor {
 
 		// parse and execute all scripts, one after an other, in order, in a single thread
 		for (int scriptIndex = 0; scriptIndex < scripts.size(); scriptIndex++) {
-			System.gc(); // HACK It is discouraged to do this explicitly!
-
 			final Map<String, String> args = scripts.get(scriptIndex);
 			// GET COMMAND NAME OF CURRENT SCRIPT
 			final String command = args.values().iterator().next(); // HACK this will not always work, as we now support named arguments in any order

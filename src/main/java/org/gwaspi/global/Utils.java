@@ -572,23 +572,6 @@ public class Utils {
 	// </editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SYSTEM MANAGEMENT">
-	public static void takeOutTheGarbage() {
-		collectGarbageWithThreadSleep(0); // Poke system to try to Garbage Collect!
-	}
-
-	public static void collectGarbageWithThreadSleep(int millisecs) {
-//		try {
-//			System.gc(); //Poke system to try to Garbage Collect!
-//			if (millisecs>0) {
-//				Thread.sleep(millisecs);
-//				System.gc(); //Poke system to try to Garbage Collect!
-//			}
-//			log.info("Garbage collected");
-//		} catch (InterruptedException ex) {
-//			log.error(null, ex);
-//		}
-	}
-
 	/**
 	 * FIXME This is actually only checking for a network connection,
 	 * not for internet connection.
