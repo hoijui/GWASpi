@@ -284,10 +284,10 @@ public class NetCDFConstants {
 			O1234,
 			ACGT0;
 
-			public static GenotypeEncoding compareTo(String str) {
+			public static GenotypeEncoding valueOfNoException(final String name) {
 				try {
-					return valueOf(str);
-				} catch (Exception ex) {
+					return valueOf(name);
+				} catch (final Exception ex) {
 					return null;
 				}
 			}

@@ -221,7 +221,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 				try {
 					ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
 //					gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
-					gtEncoding = GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
+					gtEncoding = GenotypeEncoding.valueOfNoException(gtCodeAC.getString(0)); // HACK, the above was used before
 				} catch (InvalidRangeException ex) {
 					LOG.error(null, ex);
 				}
