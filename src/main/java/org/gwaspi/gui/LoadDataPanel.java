@@ -328,7 +328,7 @@ public class LoadDataPanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SET FIELD NAMES & DEFAULTS">
-	private class FormatAction extends AbstractAction { // FIXME make static
+	private class FormatAction extends AbstractAction { // XXX make static
 
 		FormatAction() {
 		}
@@ -534,7 +534,7 @@ public class LoadDataPanel extends JPanel {
 	}
 
 	//</editor-fold>
-	private class LoadGenotypesAction extends AbstractAction { // FIXME make static
+	private class LoadGenotypesAction extends AbstractAction { // XXX make static
 
 		LoadGenotypesAction() {
 
@@ -643,7 +643,7 @@ public class LoadDataPanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private class Browse1Action extends AbstractAction { // FIXME make static
+	private class Browse1Action extends AbstractAction { // XXX make static
 
 		Browse1Action() {
 
@@ -699,7 +699,7 @@ public class LoadDataPanel extends JPanel {
 		}
 	}
 
-	private class Browse2Action extends AbstractAction { // FIXME make static
+	private class Browse2Action extends AbstractAction { // XXX make static
 
 		Browse2Action() {
 
@@ -755,7 +755,7 @@ public class LoadDataPanel extends JPanel {
 		}
 	}
 
-	private class BrowseSampleInfoAction extends AbstractAction { // FIXME make static
+	private class BrowseSampleInfoAction extends AbstractAction { // XXX make static
 
 		BrowseSampleInfoAction() {
 

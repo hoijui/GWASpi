@@ -133,7 +133,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		btn_Back.setAction(new BackAction(parent));
 
-		btn_Help.setAction(new BrowserHelpUrlAction(null)); // FIXME no help implemented yet
+		btn_Help.setAction(new BrowserHelpUrlAction(null)); // TODO implemented help for this!
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);

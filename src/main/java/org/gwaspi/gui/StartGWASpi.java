@@ -52,7 +52,7 @@ public class StartGWASpi {
 
 	public static final int MIN_HEAP_SIZE_MB = 254;
 
-	// FIXME TODO convert all this to non-static, and make configuration in general more modular (for example, use preferences for everything?)
+	// HACK convert all this to non-static, and make configuration in general more modular (for example, use preferences for everything?)
 	private static MainFrame mainGUIFrame = null;
 	private static boolean logToFile = false;
 	private static String logPath;

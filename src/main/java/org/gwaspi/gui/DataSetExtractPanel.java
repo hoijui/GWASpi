@@ -483,7 +483,7 @@ public class DataSetExtractPanel extends JPanel {
 		add(pnl_Footer, gridBagConstraints);
 	}
 
-	private class ExtractAction extends AbstractAction { // FIXME make static
+	private class ExtractAction extends AbstractAction { // XXX make static
 
 		ExtractAction() {
 
@@ -608,7 +608,7 @@ public class DataSetExtractPanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	private class MarkersCriteriaBrowseAction extends AbstractAction { // FIXME make static
+	private class MarkersCriteriaBrowseAction extends AbstractAction { // XXX make static
 
 		MarkersCriteriaBrowseAction() {
 
@@ -623,7 +623,7 @@ public class DataSetExtractPanel extends JPanel {
 		}
 	}
 
-	private class SamplesCriteriaBrowseAction extends AbstractAction { // FIXME make static
+	private class SamplesCriteriaBrowseAction extends AbstractAction { // XXX make static
 
 		SamplesCriteriaBrowseAction() {
 

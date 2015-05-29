@@ -275,7 +275,7 @@ public class PreferencesPanel extends JPanel {
 					for (int i = 0; i < preferencesTable.getRowCount(); i++) {
 						final String selectedPropertyName = preferencesTable.getValueAt(i, 0).toString();
 						final String selectedPropertyValue = preferencesTable.getValueAt(i, 1).toString();
-						Config.getSingleton().putString(selectedPropertyName, selectedPropertyValue); // HACK FIXME this will likely casue failure, becasue we do not have only String type values!
+						Config.getSingleton().putString(selectedPropertyName, selectedPropertyValue); // FIXME this will likely cause failure, because we do not have only String type values!
 					}
 					Dialogs.showInfoDialogue("Preferences & Paths Saved");
 				}
@@ -325,7 +325,7 @@ public class PreferencesPanel extends JPanel {
 			boolean result = true;
 
 			for (String[] pref : prefBackup) {
-				Config.getSingleton().putString(pref[0], pref[1]); // HACK FIXME this will likely casue failure, becasue we do not have only String type values!
+				Config.getSingleton().putString(pref[0], pref[1]); // FIXME this will likely cause failure, because we do not have only String type values!
 			}
 
 			if (result) {

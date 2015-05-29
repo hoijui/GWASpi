@@ -143,8 +143,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				= new LoadingMatrixMetadataFactory(loadDescription);
 		final AbstractDataSetDestination innerDataReceiver
 				= (AbstractDataSetDestination) MatrixFactory.generateMatrixDataSetDestination(
-						null, loadingMatrixMetadataFactory); // HACK FIXME
-		final DataSetDestination dataReceiver = new LoadingDataSetDestination(innerDataReceiver, loadDescription); // HACK FIXME
+						null, loadingMatrixMetadataFactory); // HACK ... not sure if this still applies
+		final DataSetDestination dataReceiver = new LoadingDataSetDestination(innerDataReceiver, loadDescription); // HACK ... not sure if this still applies
 		final DataSetDestinationProgressHandler dataSetDestinationProgressHandler = new DataSetDestinationProgressHandler(pureLoadProcessInfo);
 		innerDataReceiver.setProgressHandler(dataSetDestinationProgressHandler);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_LOAD_GTS, dataSetDestinationProgressHandler, null);

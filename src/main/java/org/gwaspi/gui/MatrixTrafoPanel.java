@@ -289,7 +289,7 @@ public class MatrixTrafoPanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="TRAFO">
-	private class TranslateAB12ToACGTAction extends AbstractAction { // FIXME make static
+	private class TranslateAB12ToACGTAction extends AbstractAction { // XXX make static
 
 		TranslateAB12ToACGTAction() throws IOException {
 
@@ -341,7 +341,7 @@ public class MatrixTrafoPanel extends JPanel {
 		}
 	}
 
-	private class Translate1234ToACGTAction extends TranslateAB12ToACGTAction { // FIXME make static
+	private class Translate1234ToACGTAction extends TranslateAB12ToACGTAction { // XXX make static
 
 		Translate1234ToACGTAction() throws IOException {
 
@@ -359,7 +359,7 @@ public class MatrixTrafoPanel extends JPanel {
 		}
 	}
 
-	private class MatrixStrandFlipAction extends AbstractAction { // FIXME make static
+	private class MatrixStrandFlipAction extends AbstractAction { // XXX make static
 
 		MatrixStrandFlipAction() {
 
