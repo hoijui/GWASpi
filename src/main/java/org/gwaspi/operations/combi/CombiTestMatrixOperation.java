@@ -66,7 +66,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * TODO add class comment
+ * TODO rename this class to CombiTestOperation
  * - n / nSamples : #samples == #data-points in the SVM feature space == rows & columns in the SVM kernel matrix
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
