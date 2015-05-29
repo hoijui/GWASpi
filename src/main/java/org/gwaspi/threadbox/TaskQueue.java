@@ -64,7 +64,7 @@ public class TaskQueue {
 	private final Lock scheduleLock;
 	private final Lock doneLock;
 
-	public static TaskQueue getInstance() { // HACK bad singleton implementation
+	public static TaskQueue getInstance() { // HACK ugly singleton
 		return SINGLETON;
 	}
 

@@ -111,7 +111,7 @@ public class Config {
 		}
 	}
 
-	public static void createSingleton(final boolean guiMode) { //  HACK
+	public static void createSingleton(final boolean guiMode) { // HACK ugly singleton; we should have one instance per application instance
 
 		if (SINGLETON != null) {
 			throw new IllegalStateException(Config.class.getSimpleName() + " singleton can be created only once");
@@ -120,11 +120,11 @@ public class Config {
 		SINGLETON.putBoolean(PROPERTY_GUI_MODE, guiMode);
 	}
 
-	public static void destroySingleton() { //  HACK
+	public static void destroySingleton() {
 		SINGLETON = null;
 	}
 
-	public static Config getSingleton() { //  HACK
+	public static Config getSingleton() {
 		return SINGLETON;
 	}
 

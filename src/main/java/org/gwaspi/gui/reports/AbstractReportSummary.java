@@ -212,6 +212,10 @@ public class AbstractReportSummary extends JPanel {
 		return originalStr.substring(originalStr.indexOf('-') + 2);
 	}
 
+	/**
+	 * @deprecated XXX unuse this!
+	 * @return
+	 */
 	protected static String getReportName(/*final OperationKey operation*/) {
 		return extractPartAfterFirstDash(GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString()); // HACK XXX better fetch through operation meta-data?
 	}
