@@ -20,17 +20,20 @@ package org.gwaspi.operations.combi;
 public class GenotypeEncodingParams {
 
 	/**
-	 * The value for 'p', used when whitening the data (more precisely, when setting the mean to 1).
+	 * The value for 'p' used to calculate the standard deviation
+	 * when whitening/scaling the feature matrix.
+	 * More precisely, when setting the means of the feature matrix to 1.
 	 * The formula to be used should be:
 	 * <math>(mean(abs(X) .^ p) * d) .^ (1 / p)</math>
 	 * where 'd' is ??? (some weight?).
+	 * It is called 'feature_scaling_p_norm' in the Octave/Matlab scripts.
 	 */
-	private final double pStandardDeviation;
+	private final double featureScalingP;
 
 	public GenotypeEncodingParams(final Double pStandardDeviation) {
 
-		this.pStandardDeviation = (pStandardDeviation == null)
-				? getPStandardDeviationDefault()
+		this.featureScalingP = (pStandardDeviation == null)
+				? getFeatureScalingPDefault()
 				: pStandardDeviation;
 	}
 
@@ -38,11 +41,11 @@ public class GenotypeEncodingParams {
 		this(null);
 	}
 
-	public double getPStandardDeviationDefault() {
+	public double getFeatureScalingPDefault() {
 		return 6.0;
 	}
 
-	public double getPStandardDeviation() {
-		return pStandardDeviation;
+	public double getFeatureScalingP() {
+		return featureScalingP;
 	}
 }

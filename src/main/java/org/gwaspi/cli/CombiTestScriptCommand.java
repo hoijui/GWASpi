@@ -99,12 +99,12 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 								+ genotypeEncoderStr + "\"");
 			}
 
-			final Double genotypeEncodindP = fetchDouble(args, "genotype-encoding-p", null);
+			final Double featureScalingP = fetchDouble(args, "feature-scaling-p", null);
 			final GenotypeEncodingParams genotypeEncodingParams;
-			if (genotypeEncodindP == null) {
+			if (featureScalingP == null) {
 				genotypeEncodingParams = new GenotypeEncodingParams();
 			} else {
-				genotypeEncodingParams = new GenotypeEncodingParams(genotypeEncodindP);
+				genotypeEncodingParams = new GenotypeEncodingParams(featureScalingP);
 			}
 
 			final String svmLibraryStr = args.get("svm-library");

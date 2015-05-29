@@ -79,10 +79,10 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JComboBox genotypeEncoderValue;
 	private final JCheckBox genotypeEncoderDefault;
 
-	private final JLabel genotypeEncoderPLabel;
-	private final JPanel genotypeEncoderPPanel;
-	private final JSpinner genotypeEncoderPValue;
-	private final JCheckBox genotypeEncoderPDefault;
+	private final JLabel featureScalingPLabel;
+	private final JPanel featureScalingPPanel;
+	private final JSpinner featureScalingPValue;
+	private final JCheckBox featureScalingPDefault;
 
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
@@ -130,10 +130,10 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderValue = new JComboBox();
 		this.genotypeEncoderDefault = new JCheckBox();
 
-		this.genotypeEncoderPLabel = new JLabel();
-		this.genotypeEncoderPPanel = new JPanel();
-		this.genotypeEncoderPValue = new JSpinner();
-		this.genotypeEncoderPDefault = new JCheckBox();
+		this.featureScalingPLabel = new JLabel();
+		this.featureScalingPPanel = new JPanel();
+		this.featureScalingPValue = new JSpinner();
+		this.featureScalingPDefault = new JCheckBox();
 
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
@@ -169,8 +169,8 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP.add(this.genotypeEncoderValue);
 		this.genotypeEncoderP.add(this.genotypeEncoderDefault);
 
-		this.genotypeEncoderPPanel.add(this.genotypeEncoderPValue);
-		this.genotypeEncoderPPanel.add(this.genotypeEncoderPDefault);
+		this.featureScalingPPanel.add(this.featureScalingPValue);
+		this.featureScalingPPanel.add(this.featureScalingPDefault);
 
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
@@ -194,7 +194,7 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
 		labelsAndComponents.put(qaMarkersOperationLabel, qaMarkersOperationValue);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
-		labelsAndComponents.put(genotypeEncoderPLabel, genotypeEncoderPPanel);
+		labelsAndComponents.put(featureScalingPLabel, featureScalingPPanel);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
 		labelsAndComponents.put(perChromosomeLabel, perChromosomeP);
 		labelsAndComponents.put(svmLibraryLabel, svmLibraryP);
@@ -223,17 +223,18 @@ public class CombiTestParamsGUI extends JPanel {
 		this.genotypeEncoderP.setLayout(contentPanelLayout);
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 
-		this.genotypeEncoderPLabel.setText("data whitening 'p'");
-		this.genotypeEncoderPLabel.setLabelFor(this.genotypeEncoderPValue);
-		this.genotypeEncoderPPanel.setLayout(contentPanelLayout);
-		this.genotypeEncoderPValue.setModel(new SpinnerNumberModel(
-				CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation(),
+		this.featureScalingPLabel.setText("feature scaling 'p'");
+		this.featureScalingPLabel.setLabelFor(this.featureScalingPValue);
+		this.featureScalingPPanel.setLayout(contentPanelLayout);
+		this.featureScalingPValue.setModel(new SpinnerNumberModel(
+				CombiTestOperationParams.getEncodingParamsDefault().getFeatureScalingP(),
 				-100.0, 100.0, 1.0));
-		final String genotypeEncoderPTooltip
-				= "p parameter used to calculate the standard deviation used for whitening the data";
-		this.genotypeEncoderPLabel.setToolTipText(genotypeEncoderPTooltip);
-		this.genotypeEncoderPValue.setToolTipText(genotypeEncoderPTooltip);
-		this.genotypeEncoderPPanel.setToolTipText(genotypeEncoderPTooltip);
+		final String featureScalingPTooltip
+				= "p parameter used to calculate the standard deviation "
+				+ "used for whitening the feature matrix";
+		this.featureScalingPLabel.setToolTipText(featureScalingPTooltip);
+		this.featureScalingPValue.setToolTipText(featureScalingPTooltip);
+		this.featureScalingPPanel.setToolTipText(featureScalingPTooltip);
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
@@ -344,9 +345,9 @@ public class CombiTestParamsGUI extends JPanel {
 		genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(genotypeEncoderValue,
 				CombiTestOperationParams.getEncoderDefault()));
 
-		genotypeEncoderPValue.setValue(params.getEncodingParams().getPStandardDeviation());
-		genotypeEncoderPDefault.setAction(new SpinnerDefaultAction(genotypeEncoderPValue,
-				CombiTestOperationParams.getEncodingParamsDefault().getPStandardDeviation()));
+		featureScalingPValue.setValue(params.getEncodingParams().getFeatureScalingP());
+		featureScalingPDefault.setAction(new SpinnerDefaultAction(featureScalingPValue,
+				CombiTestOperationParams.getEncodingParamsDefault().getFeatureScalingP()));
 
 		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
 
@@ -429,7 +430,7 @@ public class CombiTestParamsGUI extends JPanel {
 		CombiTestOperationParams params = new CombiTestOperationParams(
 				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
-				new GenotypeEncodingParams((Double) genotypeEncoderPValue.getValue()),
+				new GenotypeEncodingParams((Double) featureScalingPValue.getValue()),
 				useThresholdCalibrationValue.isSelected(),
 				perChromosomeValue.isSelected(),
 				(SolverLibrary) svmLibraryValue.getSelectedItem(),
