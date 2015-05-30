@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.GroupLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -205,7 +206,7 @@ public final class ManhattanChartDisplay extends JPanel {
 			String reportPath = Study.constructReportsPath(studyKey);
 			File testF = new File(reportPath + chartPath);
 			if (testF.exists()) {
-				ImageIcon image = new ImageIcon(testF.getPath());
+				Icon image = new ImageIcon(testF.getPath());
 				label.setIcon(image);
 				chartWidth = image.getIconWidth() - padLeft; // Get width of loaded manhattan plot and remove 62 pixels for Y axis labels
 				// Creating a Scroll pane component
