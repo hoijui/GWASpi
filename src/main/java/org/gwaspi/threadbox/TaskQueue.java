@@ -35,7 +35,7 @@ import org.gwaspi.progress.ProcessStatusChangeEvent;
 
 public class TaskQueue {
 
-	private static final TaskQueue SINGLETON = new TaskQueue();
+	private static TaskQueue SINGLETON = null;
 
 	private final List<TaskQueueListener> taskListeners;
 	/**
@@ -65,7 +65,20 @@ public class TaskQueue {
 	private final Lock doneLock;
 
 	public static TaskQueue getInstance() { // HACK ugly singleton
+
+		if (SINGLETON == null) {
+			SINGLETON = new TaskQueue();
+		}
+
 		return SINGLETON;
+	}
+
+	public static void killInstance() {
+
+		if (SINGLETON != null) {
+			SINGLETON.shutdown();
+			SINGLETON = null;
+		}
 	}
 
 	private class TaskQueueProgressListener extends AbstractProgressListener {
@@ -263,5 +276,9 @@ public class TaskQueue {
 	 */
 	public boolean isActive() {
 		return (tasks.size() > done.size());
+	}
+
+	public void shutdown() {
+		executorService.shutdown();
 	}
 }
