@@ -202,14 +202,23 @@
 		<!--<module name="FinalParameters"/>-->
 		<module name="TodoComment">
 			<property name="format" value="FIXME"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="TodoComment">
+			<property name="format" value="HACK"/>
+			<property name="severity" value="error"/>
+		</module>
+		<module name="TodoComment">
+			<property name="format" value="XXX"/>
+			<property name="severity" value="warning"/>
 		</module>
 		<module name="TodoComment">
 			<property name="format" value="TODO"/>
 			<property name="severity" value="warning"/>
 		</module>
 		<module name="TodoComment">
-			<property name="format" value="XXX"/>
-			<property name="severity" value="warning"/>
+			<property name="format" value="NOTE"/>
+			<property name="severity" value="info"/>
 		</module>
 		<module name="UpperEll"/>
 
