@@ -248,6 +248,7 @@ public abstract class AbstractTestScripts {
 				ex.printStackTrace();
 			}
 		} while (TaskQueue.getInstance().isActive());
+		TaskQueue.killInstance(); // NOTE This is probably not required
 	}
 
 	protected static String[] createArgs(String scriptPath, String logPath) {

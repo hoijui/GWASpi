@@ -89,6 +89,9 @@ public class MainFrame extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent windowEvent) {
+
+				TaskQueue.killInstance(); // NOTE This is probably not required
+
 				final boolean jobsPending = TaskQueue.getInstance().isActive();
 				if (jobsPending) {
 					int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
