@@ -114,7 +114,6 @@ public abstract class AbstractTestScripts {
 		 */
 		private final File scriptsDir;
 
-		private int lastLoadedMatrixId;
 		private final Map<String, Integer> fileNameToLoadedMatrixId;
 
 		private int studyId;
@@ -125,7 +124,6 @@ public abstract class AbstractTestScripts {
 			this.exportDir = exportDir;
 			this.tmpDir = tmpDir;
 			this.scriptsDir = scriptsDir;
-			this.lastLoadedMatrixId = -1;
 			this.fileNameToLoadedMatrixId = new HashMap<String, Integer>();
 			this.studyId = -1;
 		}
@@ -190,10 +188,10 @@ public abstract class AbstractTestScripts {
 			return scriptsDir;
 		}
 
-		public void addLoadedFileName(String matrixName) {
+		public void addLoadedFileName(final int matrixId, final String matrixName) {
 
 			if (!fileNameToLoadedMatrixId.containsKey(matrixName)) {
-				fileNameToLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
+				fileNameToLoadedMatrixId.put(matrixName, matrixId);
 			}
 		}
 
@@ -210,9 +208,11 @@ public abstract class AbstractTestScripts {
 	public static void createTempDataDirs() throws IOException {
 
 		StudyList.clearListsInternalServices(); // HACK
-		StudyList.clearListsInternalServices(); // HACK
 		setup = Setup.createTemp();
-		setup.setStudyId(1); // XXX We should create a new study and use it
+//		final Study testStudy = new Study("myTestStudy", "myTestStudyDescription");
+//		final StudyKey testStudyKey = StudyList.insertNewStudy(testStudy);
+//		setup.setStudyId(testStudyKey.getId());
+		setup.setStudyId(1);
 	}
 
 	@AfterClass

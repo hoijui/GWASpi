@@ -18,11 +18,17 @@
 package org.gwaspi.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.Utils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -93,7 +99,8 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
 
-		setup.addLoadedFileName(matrixName);
+		final MatrixKey addedMatrixKey = findMatrixId(new StudyKey(setup.getStudyId()), matrixName);
+		setup.addLoadedFileName(addedMatrixKey.getMatrixId(), matrixName);
 
 		log.info("Load from PLINK Binary DONE.");
 
@@ -150,7 +157,8 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
 
-		setup.addLoadedFileName(matrixName);
+		final MatrixKey addedMatrixKey = findMatrixId(new StudyKey(setup.getStudyId()), matrixName);
+		setup.addLoadedFileName(addedMatrixKey.getMatrixId(), matrixName);
 
 		log.info("Load from PLINK Flat DONE.");
 
@@ -207,6 +215,24 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		log.info("Export into PLINK Flat DONE.");
 	}
 
+	private static MatrixKey findMatrixId(final StudyKey studyKey, final String matrixName) throws IOException {
+
+		int addedMatrixId = -1;
+		List<MatrixMetadata> matricesTable = MatricesList.getMatricesTable(studyKey);
+		for (final MatrixMetadata matrix : matricesTable) {
+			if (matrix.getFriendlyName().equals(matrixName)) {
+				addedMatrixId = matrix.getMatrixId();
+			}
+		}
+
+		if (addedMatrixId < 0) {
+			throw new IOException("matrix with name \"" + matrixName + "\" not found in study "
+					+ studyKey.toRawIdString());
+		}
+
+		return new MatrixKey(studyKey, addedMatrixId);
+	}
+
 	private void testLoadHGDP1(Setup setup, String name) throws Exception {
 
 		String matrixName = ImportFormat.HGDP1.name() + "." + name;
@@ -249,7 +275,8 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
 
-		setup.addLoadedFileName(matrixName);
+		final MatrixKey addedMatrixKey = findMatrixId(new StudyKey(setup.getStudyId()), matrixName);
+		setup.addLoadedFileName(addedMatrixKey.getMatrixId(), matrixName);
 
 		log.info("Load from HGDP1 DONE.");
 	}

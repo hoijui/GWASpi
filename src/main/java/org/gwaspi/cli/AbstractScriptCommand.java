@@ -51,8 +51,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 	 * @param script properties specified in the script
 	 * @param idKey property-key of the id of the study
 	 * @param nameKey property-key of the name of the study
-	 * @param allowNew if true, then we create a new study,
-	 *   if the found value <code>startsWith("New Study")</code>
+	 * @param allowNew if true, then we create a new study
 	 * @return the parsed study-key
 	 */
 	protected static StudyKey fetchStudyKey(Map<String, String> script, String idKey, String nameKey, boolean allowNew) throws IOException {
@@ -71,29 +70,28 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			try {
 				studyKey = new StudyKey(Integer.parseInt(idValue));
 			} catch (final NumberFormatException ex) {
-				if (allowNew && idValue.startsWith("New Study")) {
-					studyKey = StudyList.insertNewStudy(new Study(
-							idValue.substring("New Study".length() + 1),
-							"Study created by command-line interface"));
-					GWASpiExplorerNodes.insertStudyNode(studyKey);
-				} else {
-					throw new IOException(
-							"The Study-Id has to be an integer value and the Id of an existing Study, "
-							+ "\"" + idValue + "\" is not so!");
-				}
+				throw new IOException(
+						"The Study-Id has to be an integer value and the Id of an existing Study, "
+						+ "\"" + idValue + "\" is not so!");
 			}
 			return studyKey;
 		} else { // -> (nameValue != null)
-			if (allowNew && nameValue.startsWith("New Study")) {
-				StudyKey studyKey = StudyList.insertNewStudy(new Study(
-						idValue.substring("New Study".length() + 1),
-						"Study created by command-line interface"));
-				GWASpiExplorerNodes.insertStudyNode(studyKey);
-				return studyKey;
+			final StudyKey studyByName = StudyList.getStudyByName(nameValue);
+			if (studyByName != null) {
+				return studyByName;
 			} else {
-				throw new IllegalStateException(
-						"Study name is supposed to be unique, but there are multiple studies with the name \""
-								+ nameValue + "\"");
+				// a study by the given name does not yet exist
+				if (allowNew) {
+					StudyKey studyKey = StudyList.insertNewStudy(new Study(
+							nameValue,
+							"Study created by command-line interface"));
+					GWASpiExplorerNodes.insertStudyNode(studyKey);
+					return studyKey;
+				} else {
+					throw new UnsupportedOperationException("Study with name \"" + nameValue
+							+ "\" does not exist, and conditions to create a new one are not met (allowNew: "
+							+ Boolean.toString(allowNew) + ").");
+				}
 			}
 		}
 	}
@@ -137,8 +135,19 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int matrixId = Integer.parseInt(idValue);
 			return new MatrixKey(studyKey, matrixId);
 		} else {
-			List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(studyKey, nameValue);
-			return matrixKeysByName.isEmpty() ? null : matrixKeysByName.get(0);
+			final List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(studyKey, nameValue);
+			if (matrixKeysByName.isEmpty()) {
+				throw new IllegalStateException(
+						"No matrix with name \"" + nameValue + "\" found in the study "
+								+ studyKey.toString());
+			} else if (matrixKeysByName.size() == 1) {
+				return matrixKeysByName.get(0);
+			} else {
+				throw new IllegalStateException(
+						"The name of a matrix within a study is supposed to be unique, "
+								+ "but there are multiple matrices with the name \""
+								+ nameValue + "\" in the study " + studyKey.toString());
+			}
 		}
 	}
 
@@ -174,8 +183,21 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int operationId = Integer.parseInt(idValue);
 			return new OperationKey(parentMatrixKey, operationId);
 		} else {
-			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(parentMatrixKey.getStudyKey(), nameValue);
-			return operationKeysByName.isEmpty() ? null : operationKeysByName.get(0);
+			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(
+					parentMatrixKey.getStudyKey(), nameValue);
+			if (operationKeysByName.isEmpty()) {
+				throw new IllegalStateException(
+						"No operation with name \"" + nameValue + "\" found in the study "
+								+ parentMatrixKey.getStudyKey().toString());
+			} else if (operationKeysByName.size() == 1) {
+				return operationKeysByName.get(0);
+			} else {
+				throw new IllegalStateException(
+						"The name of an operation within a study is supposed to be unique, "
+								+ "but there are multiple matrices with the name \""
+								+ nameValue + "\" in the study "
+								+ parentMatrixKey.getStudyKey().toString());
+			}
 		}
 	}
 
