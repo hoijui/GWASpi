@@ -161,7 +161,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		final OperationKey matrixSampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.SAMPLE_QA).get(0));
 		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
 
-		final boolean doPreFiltering = false; // HACK FIXME XXX TODO
+		final boolean doPreFiltering = false; // NOTE This was suggested by the Barcelona folks, but as our test compare data comes from the matlab/octave scripts, which do not support this, we have to disable it here too.
 
 		final OperationKey parentQaMarkersOpKey;
 		if (doPreFiltering) {
