@@ -116,13 +116,20 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		return LoggerFactory.getLogger(Threaded_GTFreq_HW.class);
 	}
 
+	private static void checkAffection(final Set<SampleInfo.Affection> affectionStates) {
+
+		if (!(affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+				&& affectionStates.contains(SampleInfo.Affection.AFFECTED)))
+		{
+			throw new IllegalStateException(Text.Operation.warnAffectionMissing);
+		}
+	}
+
 	private OperationKey checkPerformMarkerCensus(
 			final Logger log,
 			final GWASinOneGOParams gwasParams)
 			throws IOException
 	{
-		OperationKey censusOpKey = null;
-
 		final ProgressHandler prepareForMcPh = new IndeterminateProgressHandler(mcPreparationProcessInfo);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_PREPARE_MARKER_CENSUS, prepareForMcPh, null);
 		prepareForMcPh.setNewStatus(ProcessStatus.INITIALIZING);
@@ -144,40 +151,29 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			// BY EXTERNAL PHENOTYPE FILE
 			// use Sample Info file affection state
 			Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath());
+			checkAffection(affectionStates);
 
-			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-			{
-				log.info("Updating Sample Info in DB");
-				final SampleInfoExtractorDataSetDestination sampleInfoExtractor
-						= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
-				SamplesParserManager.scanSampleInfo(
-						markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
-						ImportFormat.GWASpi,
-						phenotypeFile.getPath(),
-						sampleInfoExtractor);
-				Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
-				SampleInfoList.insertSampleInfos(sampleInfos);
-			} else {
-				log.warn(Text.Operation.warnAffectionMissing);
-				return censusOpKey;
-			}
+			log.info("Updating Sample Info in DB");
+			final SampleInfoExtractorDataSetDestination sampleInfoExtractor
+					= new SampleInfoExtractorDataSetDestination(new NullDataSetDestination());
+			SamplesParserManager.scanSampleInfo(
+					markerCensusOperationParams.getParent().getOrigin().getStudyKey(),
+					ImportFormat.GWASpi,
+					phenotypeFile.getPath(),
+					sampleInfoExtractor);
+			Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
+			SampleInfoList.insertSampleInfos(sampleInfos);
 		} else {
 			// BY DB AFFECTION
 			// use Sample Info from the DB to extract affection state
 			Set<SampleInfo.Affection> affectionStates = SamplesParserManager.collectAffectionStates(markerCensusOperationParams.getParent());
-			if (!(affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-					&& affectionStates.contains(SampleInfo.Affection.AFFECTED)))
-			{
-				log.warn(Text.Operation.warnAffectionMissing);
-				return censusOpKey;
-			}
+			checkAffection(affectionStates);
 		}
 		prepareForMcPh.setNewStatus(ProcessStatus.COMPLEETED);
 
 		final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MARKER_CENSUS, markerCensusOperation.getProgressSource(), null);
-		censusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
+		final OperationKey censusOpKey = OperationManager.performOperationCreatingOperation(markerCensusOperation);
 
 		return censusOpKey;
 	}
@@ -216,17 +212,13 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		// HW ON GENOTYPE FREQ.
-		if (markerCensusOperationKey == null) {
-			getLog().warn("Hardy&Weinberg operation canceled because Marker-Census is not available");
-		} else {
-			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
-			HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, gwasParams.getHardyWeinbergOperationName(), markersQAOpKey);
-			final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
-			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
-			CommonRunnable.doRunNowInThread(threaded_HardyWeinberg);
-			progressSource.setNewStatus(ProcessStatus.FINALIZING);
-			hardyWeinbergOperationKey = threaded_HardyWeinberg.getHardyWeinbergOperationKey();
-			progressSource.setNewStatus(ProcessStatus.COMPLEETED);
-		}
+		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
+		HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, gwasParams.getHardyWeinbergOperationName(), markersQAOpKey);
+		final Threaded_HardyWeinberg threaded_HardyWeinberg = new Threaded_HardyWeinberg(params);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);
+		CommonRunnable.doRunNowInThread(threaded_HardyWeinberg);
+		progressSource.setNewStatus(ProcessStatus.FINALIZING);
+		hardyWeinbergOperationKey = threaded_HardyWeinberg.getHardyWeinbergOperationKey();
+		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }
