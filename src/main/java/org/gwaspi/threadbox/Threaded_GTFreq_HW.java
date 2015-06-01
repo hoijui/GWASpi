@@ -116,8 +116,11 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		return LoggerFactory.getLogger(Threaded_GTFreq_HW.class);
 	}
 
-	private OperationKey checkPerformMarkerCensus(Logger log, GWASinOneGOParams gwasParams) throws IOException {
-
+	private OperationKey checkPerformMarkerCensus(
+			final Logger log,
+			final GWASinOneGOParams gwasParams)
+			throws IOException
+	{
 		OperationKey censusOpKey = null;
 
 		final ProgressHandler prepareForMcPh = new IndeterminateProgressHandler(mcPreparationProcessInfo);
