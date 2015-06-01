@@ -126,6 +126,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 			}
 			String chr = markerVals[Plink_Standard.map_chr].trim();
 			String pos = markerVals[Plink_Standard.map_pos].trim();
+			final String genomicDistance = markerVals[Plink_Standard.map_gendist].trim(); // XXX store this in MarkerMetadata (it is not yet in there)! same in PLinkBinary!
 
 			// chr;pos;markerId
 			final StringBuilder sbKey = new StringBuilder();
