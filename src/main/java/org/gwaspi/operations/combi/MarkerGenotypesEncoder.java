@@ -187,7 +187,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 
 			// encode only a chunk/part of the markers at a time
 			// which gives us a part of the feature matrix
-			CombiTestMatrixOperation.encodeAndWhitenSamples(
+			CombiTestOperation.encodeAndWhitenSamples(
 					markersGenotypesSource,
 					majorAlleles,
 					minorAlleles,

@@ -77,7 +77,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 		benchmarkSummary.append(header).append("\n");
 		for (Map.Entry<String, GenotypeEncoder> genotypeEncoder : genotypeEncoders.entrySet()) {
 			for (int kernelCalculationAlgorithm : kernelCalculationAlgorithms) {
-				CombiTestMatrixOperation.KERNEL_CALCULATION_ALGORTIHM = kernelCalculationAlgorithm;
+				CombiTestOperation.KERNEL_CALCULATION_ALGORTIHM = kernelCalculationAlgorithm;
 				for (int chunkSize : chunkSizes) {
 					for (boolean arrayCopy : arrayCopyStates) {
 						NetCdfUtils.ARRAY_COPY = arrayCopy;
@@ -135,7 +135,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 		final List<int[]> markerGenotypesCounts = parentQAMarkersOperationDataSet.getGenotypeCounts();
 		final MarkersGenotypesSource markersGenotypesSource = parentQAMarkersOperationDataSet.getMarkersGenotypesSource();
 
-		MarkerGenotypesEncoder markerGenotypesEncoder = CombiTestMatrixOperation.createMarkerGenotypesEncoder(
+		MarkerGenotypesEncoder markerGenotypesEncoder = CombiTestOperation.createMarkerGenotypesEncoder(
 				markersGenotypesSource,
 				majorAlleles,
 				minorAlleles,
@@ -147,7 +147,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 				chunkSize);
 
 		final long startTime = System.currentTimeMillis();
-//		List<Double> weights = CombiTestMatrixOperation.runEncodingAndSVM(
+//		List<Double> weights = CombiTestOperation.runEncodingAndSVM(
 //				markerKeys,
 //				majorAlleles,
 //				minorAlleles,
@@ -156,7 +156,7 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 //				validSampleAffections,
 //				markersGenotypesSource,
 //				genotypeEncoder);
-		float[][] kernelMatrix = CombiTestMatrixOperation.encodeFeaturesAndCalculateKernel(
+		float[][] kernelMatrix = CombiTestOperation.encodeFeaturesAndCalculateKernel(
 				markerGenotypesEncoder,
 				null,
 				new NullProgressHandler<Integer>(null));

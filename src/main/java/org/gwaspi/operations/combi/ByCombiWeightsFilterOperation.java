@@ -177,8 +177,8 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		LOG.info("apply moving average filter (p-norm filter) on the weights");
 		List<Double> weightsFiltered = applyMovingAverageFilter(rawWeights, getParams().getWeightsFilterWidth());
 
-		if (CombiTestMatrixOperation.spy != null) {
-			CombiTestMatrixOperation.spy.smoothedWeightsCalculated(weightsFiltered);
+		if (CombiTestOperation.spy != null) {
+			CombiTestOperation.spy.smoothedWeightsCalculated(weightsFiltered);
 		}
 //		LOG.debug("filtered weights: " + weightsFiltered); // this is way too verbose
 

@@ -29,7 +29,7 @@ import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
-import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
@@ -127,7 +127,7 @@ public class Threaded_Combi extends CommonRunnable {
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-		final MatrixOperation combiTestOperation = new CombiTestMatrixOperation(paramsTest);
+		final MatrixOperation combiTestOperation = new CombiTestOperation(paramsTest);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, combiTestOperation.getProgressSource(), null);
 		final OperationKey combiTestOpKey = OperationManager.performOperationCreatingOperation(combiTestOperation);
 

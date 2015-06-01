@@ -42,7 +42,7 @@ public class CombiTestOperationFactory
 	private final OperationMetadataFactory<CombiTestOperationDataSet, CombiTestOperationParams> operationMetadataFactory;
 
 	public CombiTestOperationFactory() {
-		super(CombiTestMatrixOperation.class, OPERATION_TYPE_INFO);
+		super(CombiTestOperation.class, OPERATION_TYPE_INFO);
 
 		this.operationMetadataFactory = new CombiTestOperationMetadataFactory();
 	}

@@ -44,7 +44,7 @@ import org.gwaspi.operations.qasamples.QASamplesOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
-import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
@@ -79,7 +79,7 @@ public class OperationManager {
 		ByHardyWeinbergThresholdFilterOperation.register();
 		ByValidAffectionFilterOperation.register();
 		ByCombiWeightsFilterOperation.register();
-		CombiTestMatrixOperation.register();
+		CombiTestOperation.register();
 	}
 
 	private OperationManager() {

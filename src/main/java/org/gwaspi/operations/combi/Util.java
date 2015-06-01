@@ -463,7 +463,7 @@ public class Util {
 
 			ois.close();
 
-			CombiTestMatrixOperation.runEncodingAndSVM(
+			CombiTestOperation.runEncodingAndSVM(
 					markerKeys,
 					majorAlleles,
 					minorAlleles,
@@ -478,7 +478,7 @@ public class Util {
 					null,
 					null,
 					null,
-					new CombiTestMatrixOperation.SvmProgressHandler());
+					new CombiTestOperation.SvmProgressHandler());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

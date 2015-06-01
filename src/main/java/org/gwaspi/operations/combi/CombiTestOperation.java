@@ -67,16 +67,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class comment
- * TODO rename this class to CombiTestOperation
  * - n / nSamples : #samples == #data-points in the SVM feature space == rows & columns in the SVM kernel matrix
  * - dSamples : #markers == #SNPs
  * - dEncoded : #markers * encodingFactor == #dimensions in the SVM  feature space
  */
-public class CombiTestMatrixOperation
+public class CombiTestOperation
 		extends AbstractOperationCreatingOperation<CombiTestOperationDataSet, CombiTestOperationParams>
 {
 	private static final Logger LOG
-			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
+			= LoggerFactory.getLogger(CombiTestOperation.class);
 
 	public static void register() {
 		// NOTE When converting to OSGi, this would be done in bundle init,
@@ -98,7 +97,7 @@ public class CombiTestMatrixOperation
 	private ProgressHandler customProgressHandler;
 	private List<SvmProgressHandler> svmPHs;
 
-	public CombiTestMatrixOperation(CombiTestOperationParams params) {
+	public CombiTestOperation(CombiTestOperationParams params) {
 		super(params);
 
 		this.valid = null;

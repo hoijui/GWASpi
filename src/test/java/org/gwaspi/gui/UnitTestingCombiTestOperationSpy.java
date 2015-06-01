@@ -33,7 +33,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
-import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperationSpy;
 import org.gwaspi.operations.combi.GenotypeEncoder;
@@ -147,7 +147,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		final Map<Integer, Double> extractedNonZeroAlphas;
 		if (svmModelLinear == null) {
-			extractedNonZeroAlphas = CombiTestMatrixOperation.extractNonZeroAlphas(svmModel);
+			extractedNonZeroAlphas = CombiTestOperation.extractNonZeroAlphas(svmModel);
 		} else {
 			throw new IllegalStateException("libLinear does not produce alphas, cause it is not kernel-based, but feature matrix based (only)");
 		}
@@ -233,7 +233,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 //		runSVM(genotypeEncoder);
 
-		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
+		CombiTestOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
 		Util.runEncodingAndSVM(genotypeEncoder, genotypeEncodingParams, solverLibrary, solverParams); // FIXME
 
 //		List<List<Double>> X = new ArrayList<List<Double>>(2);
@@ -243,6 +243,6 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 //		Y.add(1.0);
 //		Y.add(-1.0);
 //		runSVM(X, Y, genotypeEncoder, null);
-		CombiTestMatrixOperation.spy = null; // HACK
+		CombiTestOperation.spy = null; // HACK
 	}
 }

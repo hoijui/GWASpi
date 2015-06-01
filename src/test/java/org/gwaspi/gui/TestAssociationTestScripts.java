@@ -35,7 +35,7 @@ import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
-import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
@@ -215,9 +215,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
 
-		CombiTestMatrixOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
+		CombiTestOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
-		CombiTestMatrixOperation.spy = null; // HACK
+		CombiTestOperation.spy = null; // HACK
 
 		log.info("Run Combi Association Test ({}, {}) DONE.", mapFileName, pedFileName);
 	}
