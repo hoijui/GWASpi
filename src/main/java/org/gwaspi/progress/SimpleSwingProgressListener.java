@@ -113,6 +113,10 @@ public class SimpleSwingProgressListener<S>
 				default: throw new UnsupportedOperationException("Unsupported status: " + evt.getNewStatus());
 			}
 			bar.setValue(progressValue);
+		} else if ((bar.getValue() == 0) && evt.getNewStatus().isEnd()) {
+			// We set the bar to a low, non-zero value, because otherwise we would not be able
+			// to see the foreground color, indicating the state, if the bar is still at value 0.
+			bar.setValue(Math.max(1, (int) (bar.getMaximum() * 0.1)));
 		}
 		resetIndeterminateBarState(evt.getProgressSource());
 	}
