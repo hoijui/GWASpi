@@ -27,8 +27,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -69,6 +72,7 @@ public class Utils {
 	public static final String MANIFEST_PROPERTY_BUILD = "Implementation-Build";
 	public static final String MANIFEST_PROPERTY_BUILD_TIMESTAMP = "Build-Timestamp";
 	public static final String MANIFEST_PROPERTY_JDK_VERSION = "Build-Jdk";
+	public static final String DEFAULT_INTERNET_CONNECTION_CHECK_URL = "http://www.gwaspi.org";
 
 	private static Properties manifestProperties = null;
 	private static Semaphore manifestPropertiesInit = new Semaphore(1);
@@ -601,10 +605,9 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="SYSTEM MANAGEMENT">
 	/**
-	 * FIXME This is actually only checking for a network connection,
-	 * not for internet connection.
+	 * Checks whether this computer is connected to a network.
 	 */
-	public static boolean checkInternetConnection() {
+	public static boolean isNetworkConnected() {
 
 		boolean isConnected = false;
 
@@ -632,6 +635,42 @@ public class Utils {
 //		}
 
 		return isConnected;
+	}
+
+	/**
+	 * Checks for a connection to the internet through a dummy request.
+	 * @return whether the supplied address was reachable or not
+	 */
+	public static boolean isURLReachable(final URL url) {
+
+		boolean connected;
+		try {
+			// open a connection to that source
+			final URLConnection urlConnect = url.openConnection();
+
+			// Try to retrieve data from the source.
+			// If there is no connection, this line will throw an exception.
+			final Object objData = urlConnect.getContent();
+			connected = true;
+		} catch (final IOException ex) {
+			log.warn("Internet connection attempt resulted in: negative", ex);
+			connected = false;
+		}
+
+		return connected;
+	}
+
+	public static boolean isInternetReachable() {
+
+		boolean reachable;
+		try {
+			reachable = isURLReachable(new URL(DEFAULT_INTERNET_CONNECTION_CHECK_URL));
+		} catch (final MalformedURLException ex) {
+			log.error("Internet connection attempt resulted in: negative", ex);
+			reachable = false;
+		}
+
+		return reachable;
 	}
 	//</editor-fold>
 

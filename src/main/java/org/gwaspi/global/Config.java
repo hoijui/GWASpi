@@ -496,7 +496,7 @@ public class Config {
 
 	public void checkUpdates() throws IOException, ParseException {
 
-		if (Utils.checkInternetConnection()) {
+		if (Utils.isInternetReachable()) {
 			final Element localElementZero = getLocalDomElementZero();
 
 			if (localElementZero != null) { // Found local version info

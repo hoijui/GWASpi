@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import org.gwaspi.global.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +62,7 @@ public class URLInDefaultBrowser {
 		}
 
 		try {
-			if (org.gwaspi.global.Utils.checkInternetConnection()
-					&& desktop.isSupported(Desktop.Action.BROWSE))
-			{
+			if (Utils.isInternetReachable() && desktop.isSupported(Desktop.Action.BROWSE)) {
 				final URI uri = new URI(url);
 				desktop.browse(uri);
 			} else {
@@ -80,7 +79,7 @@ public class URLInDefaultBrowser {
 		//String helpDir = Config.getConfigValue("HelpDir", "");
 		String url;
 
-		if (!org.gwaspi.global.Utils.checkInternetConnection()) {
+		if (!Utils.isInternetReachable()) {
 			String[] resourceURL = URLInDefaultBrowser.class.getResource("/img/logo/logo_white.png").toString().split("/");
 			StringBuilder urlBuilder = new StringBuilder();
 			urlBuilder.append('/');
