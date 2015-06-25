@@ -49,10 +49,7 @@ import org.gwaspi.reports.QASamplesOutputParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * TODO rename to just QA, because it can be done on matrices and operations alike.
- */
-public class Threaded_MatrixQA extends CommonRunnable {
+public class QACombinedOperation extends CommonRunnable {
 
 	static final ProgressSource PLACEHOLDER_PS_QA = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_PS_QA", null));
@@ -85,7 +82,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_MatrixQA(final DataSetKey parentKey, final boolean createReports) {
+	public QACombinedOperation(final DataSetKey parentKey, final boolean createReports) {
 		super("Quality Assurance & Reports", "on " + parentKey.toString());
 
 		this.parentKey = parentKey;
@@ -96,7 +93,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(parentKey);
 	}
 
-	public Threaded_MatrixQA(final DataSetKey parentKey) {
+	public QACombinedOperation(final DataSetKey parentKey) {
 		this(parentKey, true);
 	}
 
@@ -117,7 +114,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_MatrixQA.class);
+		return LoggerFactory.getLogger(QACombinedOperation.class);
 	}
 
 	public OperationKey getSamplesQAOperationKey() {
@@ -176,7 +173,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 		final DataSetKey parent = new DataSetKey(matrixKey);
-		final Threaded_MatrixQA matrixQA = new Threaded_MatrixQA(parent, true);
+		final QACombinedOperation matrixQA = new QACombinedOperation(parent, true);
 		superProgressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, matrixQA.getProgressSource(), null);
 
 		// run within this thread

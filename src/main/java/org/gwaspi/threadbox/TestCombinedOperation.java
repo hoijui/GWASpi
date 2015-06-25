@@ -47,7 +47,7 @@ import org.gwaspi.reports.TestOutputParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_Test extends CommonRunnable {
+public class TestCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo fullTestProcessInfo
 			= new DefaultProcessInfo("Full Test",
@@ -71,7 +71,7 @@ public class Threaded_Test extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_Test(
+	public TestCombinedOperation(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			GWASinOneGOParams gwasParams,
@@ -112,7 +112,7 @@ public class Threaded_Test extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_Test.class);
+		return LoggerFactory.getLogger(TestCombinedOperation.class);
 	}
 
 	@Override

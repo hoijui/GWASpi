@@ -48,7 +48,7 @@ import org.gwaspi.reports.TestOutputParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_Combi extends CommonRunnable {
+public class CombiCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo fullCombiProcessInfo
 			= new DefaultProcessInfo("Full COMBI Test",
@@ -83,7 +83,7 @@ public class Threaded_Combi extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_Combi(
+	public CombiCombinedOperation(
 			final CombiTestOperationParams paramsTest,
 			final ByCombiWeightsFilterOperationParams paramsFilter)
 	{
@@ -112,7 +112,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_Combi.class);
+		return LoggerFactory.getLogger(CombiCombinedOperation.class);
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class Threaded_Combi extends CommonRunnable {
 		final OperationKey combiFilterOpKey = OperationManager.performOperationCreatingOperation(byCombiWeightsFilterOperation);
 		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
 
-		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(combiFilterDataSetKey, false);
+		final QACombinedOperation threaded_MatrixQA = new QACombinedOperation(combiFilterDataSetKey, false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
 		CommonRunnable.doRunNowInThread(threaded_MatrixQA);

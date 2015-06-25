@@ -26,7 +26,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.Threaded_GTFreq_HW;
+import org.gwaspi.threadbox.GTFreqAndHWCombinedOperation;
 
 class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand {
 
@@ -123,7 +123,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
-				final CommonRunnable gtFreqHwTask = new Threaded_GTFreq_HW(gwasParams);
+				final CommonRunnable gtFreqHwTask = new GTFreqAndHWCombinedOperation(gwasParams);
 				CommonRunnable.doRunNowInThread(gtFreqHwTask);
 			} else {
 				System.err.println("Not proceeding after trying to ensure QA operations");

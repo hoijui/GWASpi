@@ -79,10 +79,10 @@ import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Deleter;
-import org.gwaspi.threadbox.Threaded_Combi;
-import org.gwaspi.threadbox.Threaded_GTFreq_HW;
-import org.gwaspi.threadbox.Threaded_GWAS;
-import org.gwaspi.threadbox.Threaded_Test;
+import org.gwaspi.threadbox.CombiCombinedOperation;
+import org.gwaspi.threadbox.GTFreqAndHWCombinedOperation;
+import org.gwaspi.threadbox.GWASCombinedOperation;
+import org.gwaspi.threadbox.TestCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -453,10 +453,10 @@ public class DataSetAnalysePanel extends JPanel {
 							if (reProceed) {
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (testType == OPType.COMBI_ASSOC_TEST) {
-									final CommonRunnable combiTask = new Threaded_Combi(combiTestParams, combiFilterParams);
+									final CommonRunnable combiTask = new CombiCombinedOperation(combiTestParams, combiFilterParams);
 									MultiOperations.queueTask(combiTask);
 								} else if (censusOPKey != null && hwOPKey != null) {
-									final CommonRunnable testTask = new Threaded_Test(
+									final CommonRunnable testTask = new TestCombinedOperation(
 											censusOPKey,
 											hwOPKey,
 											gwasParams,
@@ -549,7 +549,7 @@ public class DataSetAnalysePanel extends JPanel {
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
 				gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
-				final CommonRunnable gtFreqHwTask = new Threaded_GTFreq_HW(gwasParams);
+				final CommonRunnable gtFreqHwTask = new GTFreqAndHWCombinedOperation(gwasParams);
 				MultiOperations.queueTask(gtFreqHwTask);
 
 			}
@@ -724,7 +724,7 @@ public class DataSetAnalysePanel extends JPanel {
 							&& affectionStates.contains(Affection.AFFECTED))
 					{
 						gwasParams.getMarkerCensusOperationParams().setParent(observedElementKey);
-						final CommonRunnable gwasTask = new Threaded_GWAS(gwasParams);
+						final CommonRunnable gwasTask = new GWASCombinedOperation(gwasParams);
 						MultiOperations.queueTask(gwasTask);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);

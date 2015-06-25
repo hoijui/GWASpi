@@ -56,7 +56,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.Threaded_ExtractMatrix;
+import org.gwaspi.threadbox.ExtractCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -615,7 +615,7 @@ public class DataSetExtractPanel extends JPanel {
 							markerCriteria,
 							sampleCriteria);
 
-					final CommonRunnable extractDataTask = new Threaded_ExtractMatrix(params);
+					final CommonRunnable extractDataTask = new ExtractCombinedOperation(params);
 					MultiOperations.queueTask(extractDataTask);
 				} else {
 					Dialogs.showWarningDialogue(Text.Matrix.pleaseInsertMatrixName);

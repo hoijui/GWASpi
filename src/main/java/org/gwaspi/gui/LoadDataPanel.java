@@ -57,7 +57,7 @@ import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
+import org.gwaspi.threadbox.LoadAndGWASIfOKCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -592,7 +592,7 @@ public class LoadDataPanel extends JPanel {
 									gwasParams.getStrandType(),
 									gwasParams.getGtCode()
 									);
-							final CommonRunnable loadGwasTask = new Threaded_Loader_GWASifOK(
+							final CommonRunnable loadGwasTask = new LoadAndGWASIfOKCombinedOperation(
 									loadDescription,
 									dummySamples,
 									performGwasInOneGo == JOptionPane.YES_OPTION,

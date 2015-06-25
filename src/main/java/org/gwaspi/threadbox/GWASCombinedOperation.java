@@ -38,7 +38,7 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_GWAS extends CommonRunnable {
+public class GWASCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo fullGwasProcessInfo
 			= new DefaultProcessInfo("Full GWAS",
@@ -66,7 +66,7 @@ public class Threaded_GWAS extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_GWAS(GWASinOneGOParams gwasParams) {
+	public GWASCombinedOperation(GWASinOneGOParams gwasParams) {
 		super("GWAS", "on " + gwasParams.getMarkerCensusOperationParams().getParent().toString());
 
 		this.gwasParams = gwasParams;
@@ -92,14 +92,14 @@ public class Threaded_GWAS extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_GWAS.class);
+		return LoggerFactory.getLogger(GWASCombinedOperation.class);
 	}
 
 	@Override
 	protected void runInternal() throws IOException {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
-		final Threaded_GTFreq_HW threaded_GTFreq_HW = new Threaded_GTFreq_HW(gwasParams);
+		final GTFreqAndHWCombinedOperation threaded_GTFreq_HW = new GTFreqAndHWCombinedOperation(gwasParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GTFREQ_HW, threaded_GTFreq_HW.getProgressSource(), null);
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 		CommonRunnable.doRunNowInThread(threaded_GTFreq_HW);
@@ -141,7 +141,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
-		final Threaded_Test threaded_Test = new Threaded_Test(censusOpKey, hwOpKey, gwasParams, testType);
+		final TestCombinedOperation threaded_Test = new TestCombinedOperation(censusOpKey, hwOpKey, gwasParams, testType);
 		superProgressSource.replaceSubProgressSource(placeholderPS, threaded_Test.getProgressSource(), null);
 		try {
 			CommonRunnable.doRunNowInThread(threaded_Test);

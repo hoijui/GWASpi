@@ -50,8 +50,8 @@ import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
-import org.gwaspi.threadbox.Threaded_FlipStrandMatrix;
-import org.gwaspi.threadbox.Threaded_TranslateMatrix;
+import org.gwaspi.threadbox.FlipStrandCombinedOperation;
+import org.gwaspi.threadbox.TranslateCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,7 +327,7 @@ public class MatrixTrafoPanel extends JPanel {
 //								null);
 //
 //					if (validationMatrixOperation.isValid()) {
-						final CommonRunnable translateTask = new Threaded_TranslateMatrix(params);
+						final CommonRunnable translateTask = new TranslateCombinedOperation(params);
 						MultiOperations.queueTask(translateTask);
 //					} else {
 //						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
@@ -396,7 +396,7 @@ public class MatrixTrafoPanel extends JPanel {
 							description,
 							newMatrixName,
 							flipMarkersFile);
-						final CommonRunnable flipTask = new Threaded_FlipStrandMatrix(params);
+						final CommonRunnable flipTask = new FlipStrandCombinedOperation(params);
 						MultiOperations.queueTask(flipTask);
 //					} else {
 //						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());

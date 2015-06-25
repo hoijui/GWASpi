@@ -51,7 +51,7 @@ import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_Loader_GWASifOK extends CommonRunnable {
+public class LoadAndGWASIfOKCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo loadAndFullGwasProcessInfo
 			= new DefaultProcessInfo("Load GTs & QA & GWAS",
@@ -72,13 +72,13 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(2);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_LOAD_GTS, 0.5);
-		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.5);
+		tmpSubProgressSourcesAndWeights.put(QACombinedOperation.PLACEHOLDER_PS_QA, 0.5);
 		subProgressSourcesAndWeightsLoadOnly = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 
 		tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(3);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_LOAD_GTS, 0.2);
-		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.2);
+		tmpSubProgressSourcesAndWeights.put(QACombinedOperation.PLACEHOLDER_PS_QA, 0.2);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_GWAS, 0.6);
 		subProgressSourcesAndWeightsFull = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
@@ -91,7 +91,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private final TaskLockProperties taskLockProperties;
 	private MatrixKey resultMatrixKey;
 
-	public Threaded_Loader_GWASifOK(
+	public LoadAndGWASIfOKCombinedOperation(
 			GenotypesLoadDescription loadDescription,
 			boolean dummySamples,
 			boolean performGwas,
@@ -132,7 +132,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_Loader_GWASifOK.class);
+		return LoggerFactory.getLogger(LoadAndGWASIfOKCombinedOperation.class);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		MultiOperations.printCompleted("Loading Genotypes");
 		final DataSetKey parent = new DataSetKey(resultMatrixKey);
 
-		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(parent.getMatrixParent(), progressSource);
+		final OperationKey[] qaOpKeys = QACombinedOperation.matrixCompleeted(parent.getMatrixParent(), progressSource);
 
 		if (performGwas) {
 			final OperationKey samplesQAOpKey = qaOpKeys[0];
@@ -190,7 +190,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 					&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 			{
-				final Threaded_GWAS threaded_GWAS = new Threaded_GWAS(gwasParams);
+				final GWASCombinedOperation threaded_GWAS = new GWASCombinedOperation(gwasParams);
 				progressSource.replaceSubProgressSource(PLACEHOLDER_PS_GWAS, threaded_GWAS.getProgressSource(), null);
 				CommonRunnable.doRunNowInThread(threaded_GWAS);
 			} else {

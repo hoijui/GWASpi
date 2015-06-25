@@ -27,7 +27,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.exporter.MatrixExporterParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.Threaded_ExportMatrix;
+import org.gwaspi.threadbox.ExportCombinedOperation;
 
 class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
@@ -73,7 +73,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 			final MatrixExporterParams matrixExporterParams = new MatrixExporterParams(
 					dataSetKey, format, DBSamplesConstants.F_AFFECTION);
-			final CommonRunnable exportTask = new Threaded_ExportMatrix(matrixExporterParams);
+			final CommonRunnable exportTask = new ExportCombinedOperation(matrixExporterParams);
 			CommonRunnable.doRunNowInThread(exportTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);

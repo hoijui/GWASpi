@@ -34,7 +34,7 @@ import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.SolverLibrary;
 import org.gwaspi.operations.combi.SolverParams;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.Threaded_Combi;
+import org.gwaspi.threadbox.CombiCombinedOperation;
 
 public class CombiTestScriptCommand extends AbstractScriptCommand {
 
@@ -143,7 +143,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					resultFilterOperationName);
 
 			// test block
-			final CommonRunnable combiTask = new Threaded_Combi(paramsTest, paramsFilter);
+			final CommonRunnable combiTask = new CombiCombinedOperation(paramsTest, paramsFilter);
 			CommonRunnable.doRunNowInThread(combiTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);

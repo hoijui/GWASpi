@@ -24,9 +24,13 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperMetadataFactory;
-import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
+import org.gwaspi.operations.merge.MatrixMergeSamples;
+import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.merge.MergeAllMatrixOperation;
+import org.gwaspi.operations.merge.MergeMarkersMatrixOperation;
+import org.gwaspi.operations.OperationManager;
+import org.gwaspi.operations.merge.MergeMatrixMetadataFactory;
+import org.gwaspi.operations.merge.MergeMatrixOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -38,32 +42,35 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_FlipStrandMatrix extends CommonRunnable {
+public class MergeCombinedOperation extends CommonRunnable {
 
-	private static final ProcessInfo fullFlipStrandMatrixInfo
-			= new DefaultProcessInfo("Full Flip Strand",
-					"Flip Strand and QA"); // TODO
-	private static final ProgressSource PLACEHOLDER_PS_MATRIX_STRAND_FLIP = new NullProgressHandler(
-			new SubProcessInfo(null, "PLACEHOLDER_PS_MATRIX_STRAND_FLIP", null));
+	private static final ProcessInfo fullMergeMatricesProcessInfo
+			= new DefaultProcessInfo("Merge Matrices & QA",
+					"Merge Matrices & QA"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_MERGE = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_MERGE", null));
 	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(2);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, 0.4);
-		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.6);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MERGE, 0.6);
+		tmpSubProgressSourcesAndWeights.put(QACombinedOperation.PLACEHOLDER_PS_QA, 0.4);
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final MatrixGenotypesFlipperParams params;
+	private final MergeMatrixOperationParams params;
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_FlipStrandMatrix(MatrixGenotypesFlipperParams params) {
-		super("Flip Strand Matrix (Genotypes)", "on " + params.getParent().toString());
+	public MergeCombinedOperation(final MergeMatrixOperationParams params) {
+		super(
+				"Merge Data",
+				"on " + params.getMatrixFriendlyName() + " and " + params.getSource2().toString());
 
 		this.params = params;
-		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);
+		this.progressSource = new SuperProgressSource(fullMergeMatricesProcessInfo, subProgressSourcesAndWeights);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
+		this.taskLockProperties.addRequired(params.getSource2());
 	}
 
 	@Override
@@ -83,7 +90,30 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_FlipStrandMatrix.class);
+		return LoggerFactory.getLogger(MergeCombinedOperation.class);
+	}
+
+	private MatrixOperation createMatrixOperation(
+			MergeMatrixOperationParams params,
+			DataSetDestination dataSetDestination)
+			throws IOException
+	{
+		final MatrixOperation joinMatrices;
+		if (params.isMergeSamples()) {
+			joinMatrices = new MatrixMergeSamples(
+					params,
+					dataSetDestination);
+		} else if (params.isMergeMarkers()) {
+			joinMatrices = new MergeMarkersMatrixOperation(
+					params,
+					dataSetDestination);
+		} else {
+			joinMatrices = new MergeAllMatrixOperation(
+					params,
+					dataSetDestination);
+		}
+
+		return joinMatrices;
 	}
 
 	@Override
@@ -91,15 +121,15 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination
-				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixGenotypesFlipperMetadataFactory.SINGLETON);
-		MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(params, dataSetDestination);
-		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
+				= MatrixFactory.generateMatrixDataSetDestination(params, MergeMatrixMetadataFactory.SINGLETON);
+		final MatrixOperation matrixOperation = createMatrixOperation(params, dataSetDestination);
 
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MERGE, matrixOperation.getProgressSource(), null);
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
-//		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
-		final MatrixKey resultMatrixKey = matrixOperation.call();
+		OperationManager.performOperationCreatingOperation(matrixOperation);
+		final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
-		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);
+		QACombinedOperation.matrixCompleeted(resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

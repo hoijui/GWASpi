@@ -49,7 +49,7 @@ import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.CommonRunnable;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Deleter;
-import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
+import org.gwaspi.threadbox.UpdateSampleInfoCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,7 +195,7 @@ public class CurrentStudyPanel extends JPanel {
 				}
 
 				ProcessTab.getSingleton().showTab();
-				final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+				final CommonRunnable updateSampleInfoTask = new UpdateSampleInfoCombinedOperation(studyKey, sampleInfoFile);
 				MultiOperations.queueTask(updateSampleInfoTask);
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);

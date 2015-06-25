@@ -43,7 +43,7 @@ import org.gwaspi.reports.OutputHardyWeinberg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_HardyWeinberg extends CommonRunnable {
+public class HardyWeinbergCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo fullHWProcessInfo
 			= new DefaultProcessInfo("Hardy & Weinberg Packet",
@@ -67,7 +67,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_HardyWeinberg(final HardyWeinbergOperationParams params) {
+	public HardyWeinbergCombinedOperation(final HardyWeinbergOperationParams params) {
 		super(
 				"Hardy-Weinberg Test",
 				"on " + params.getParent().toString());
@@ -106,7 +106,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_HardyWeinberg.class);
+		return LoggerFactory.getLogger(HardyWeinbergCombinedOperation.class);
 	}
 
 	public OperationKey getHardyWeinbergOperationKey() {

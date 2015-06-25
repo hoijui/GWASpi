@@ -38,8 +38,8 @@ import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
-import org.gwaspi.threadbox.Threaded_Loader_GWASifOK;
-import org.gwaspi.threadbox.Threaded_MatrixQA;
+import org.gwaspi.threadbox.LoadAndGWASIfOKCombinedOperation;
+import org.gwaspi.threadbox.QACombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +120,7 @@ public class ReduceDataSet {
 				null,
 				StrandType.UNKNOWN,
 				GenotypeEncoding.UNKNOWN);
-		final Threaded_Loader_GWASifOK loadGwasTask = new Threaded_Loader_GWASifOK(
+		final LoadAndGWASIfOKCombinedOperation loadGwasTask = new LoadAndGWASIfOKCombinedOperation(
 				loadDescription, // Format
 				false, // Dummy samples
 				false, // Do GWAS
@@ -145,9 +145,9 @@ public class ReduceDataSet {
 		final DataSetKey reducingFilterOpDataSetKey = new DataSetKey(reducingFilterOpKey);
 
 		// run QA's on the reduced set
-		final Threaded_MatrixQA threaded_MatrixQA = new Threaded_MatrixQA(reducingFilterOpDataSetKey, false);
+		final QACombinedOperation threaded_MatrixQA = new QACombinedOperation(reducingFilterOpDataSetKey, false);
 		threaded_MatrixQA.run();
-//		final OperationKey[] qaOpKeys = Threaded_MatrixQA.matrixCompleeted(parent.getMatrixParent(), progressSource);
+//		final OperationKey[] qaOpKeys = QACombinedOperation.matrixCompleeted(parent.getMatrixParent(), progressSource);
 
 		// export the data
 		final MatrixExporterParams matrixExporterParams

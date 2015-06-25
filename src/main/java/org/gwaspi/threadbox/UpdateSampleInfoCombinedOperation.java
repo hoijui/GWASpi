@@ -38,7 +38,7 @@ import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_UpdateSampleInfo extends CommonRunnable {
+public class UpdateSampleInfoCombinedOperation extends CommonRunnable {
 
 	private static final ProcessInfo processInfo
 			= new DefaultProcessInfo("Updating Sample Info",
@@ -48,7 +48,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private final ProgressHandler progressHandler;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_UpdateSampleInfo(StudyKey studyKey, File sampleInfoFile) {
+	public UpdateSampleInfoCombinedOperation(StudyKey studyKey, File sampleInfoFile) {
 		super("Sample Info Update", "on Study ID: " + studyKey);
 
 		this.studyKey = studyKey;
@@ -75,7 +75,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_UpdateSampleInfo.class);
+		return LoggerFactory.getLogger(UpdateSampleInfoCombinedOperation.class);
 	}
 
 	@Override

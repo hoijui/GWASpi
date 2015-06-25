@@ -31,8 +31,8 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.Threaded_MatrixQA;
-import org.gwaspi.threadbox.Threaded_Test;
+import org.gwaspi.threadbox.QACombinedOperation;
+import org.gwaspi.threadbox.TestCombinedOperation;
 
 public class TestScriptCommand extends AbstractScriptCommand {
 
@@ -122,7 +122,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 
 			// test block
 			if (gwasParams.isProceed()) {
-				final CommonRunnable testTask = new Threaded_Test(
+				final CommonRunnable testTask = new TestCombinedOperation(
 						gtFreqKey,
 						hwKey,
 						gwasParams,
@@ -143,7 +143,7 @@ public class TestScriptCommand extends AbstractScriptCommand {
 		if (gwasParams.isProceed() && missingOPs.size() > 0) {
 			gwasParams.setProceed(false);
 			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-			final CommonRunnable task = new Threaded_MatrixQA(dataSetKey);
+			final CommonRunnable task = new QACombinedOperation(dataSetKey);
 			CommonRunnable.doRunNowInThread(task);
 		}
 	}

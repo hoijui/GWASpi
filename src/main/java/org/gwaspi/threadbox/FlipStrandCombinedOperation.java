@@ -24,9 +24,9 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
-import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
-import org.gwaspi.operations.genotypestranslator.MatrixTranslatorMetadataFactory;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipper;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperMetadataFactory;
+import org.gwaspi.operations.genotypesflipper.MatrixGenotypesFlipperParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -38,33 +38,31 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_TranslateMatrix extends CommonRunnable {
+public class FlipStrandCombinedOperation extends CommonRunnable {
 
-	private static final ProcessInfo processInfo
-			= new DefaultProcessInfo("Translating Matrix", // TODO this is .. unique? preserve? but should include QA!
-					"Translates all the Genotypes from a matrix from one encoding to an other"); // TODO see todo note of the last line
-	private static final ProgressSource PLACEHOLDER_PS_TRANSLATE = new NullProgressHandler(
-			new SubProcessInfo(null, "PLACEHOLDER_PS_TRANSLATE", null));
+	private static final ProcessInfo fullFlipStrandMatrixInfo
+			= new DefaultProcessInfo("Full Flip Strand",
+					"Flip Strand and QA"); // TODO
+	private static final ProgressSource PLACEHOLDER_PS_MATRIX_STRAND_FLIP = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_MATRIX_STRAND_FLIP", null));
 	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(2);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TRANSLATE, 0.6);
-		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.4);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, 0.4);
+		tmpSubProgressSourcesAndWeights.put(QACombinedOperation.PLACEHOLDER_PS_QA, 0.6);
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final MatrixGenotypesTranslatorParams params;
+	private final MatrixGenotypesFlipperParams params;
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_TranslateMatrix(MatrixGenotypesTranslatorParams params) {
-		super(
-				"Translate Matrix",
-				"on matrix " + params.getParent().getMatrixParent().toRawIdString());
+	public FlipStrandCombinedOperation(MatrixGenotypesFlipperParams params) {
+		super("Flip Strand Matrix (Genotypes)", "on " + params.getParent().toString());
 
 		this.params = params;
-		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);
+		this.progressSource = new SuperProgressSource(fullFlipStrandMatrixInfo, subProgressSourcesAndWeights);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
@@ -85,7 +83,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_TranslateMatrix.class);
+		return LoggerFactory.getLogger(FlipStrandCombinedOperation.class);
 	}
 
 	@Override
@@ -93,15 +91,15 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination
-				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
-		MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
-		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
+				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixGenotypesFlipperMetadataFactory.SINGLETON);
+		MatrixGenotypesFlipper matrixOperation = new MatrixGenotypesFlipper(params, dataSetDestination);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_STRAND_FLIP, matrixOperation.getProgressSource(), null);
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 //		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
 		final MatrixKey resultMatrixKey = matrixOperation.call();
 
-		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);
+		QACombinedOperation.matrixCompleeted(resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

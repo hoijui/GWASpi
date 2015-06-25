@@ -24,9 +24,9 @@ import java.util.Map;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.operations.dataextractor.MatrixDataExtractor;
-import org.gwaspi.operations.dataextractor.MatrixDataExtractorMetadataFactory;
-import org.gwaspi.operations.dataextractor.MatrixDataExtractorParams;
+import org.gwaspi.operations.genotypestranslator.MatrixGenotypesTranslatorParams;
+import org.gwaspi.operations.genotypestranslator.MatrixTranslator;
+import org.gwaspi.operations.genotypestranslator.MatrixTranslatorMetadataFactory;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
 import org.gwaspi.progress.ProcessInfo;
@@ -38,34 +38,33 @@ import org.gwaspi.progress.SuperProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * TODO Merge Threaded_ExtractMatrix, Threaded_FlipStrandMatrix and Threaded_TranslateMatrix, as they are all the same (with minor differences).
- */
-public class Threaded_ExtractMatrix extends CommonRunnable {
+public class TranslateCombinedOperation extends CommonRunnable {
 
-	private static final ProcessInfo fullExtractMatrixInfo
-			= new DefaultProcessInfo("Full Data Extraction",
-					"Data Extraction and evaluation of the results (QA)"); // TODO
-	private static final ProgressSource PLACEHOLDER_PS_MATRIX_EXTRACTION = new NullProgressHandler(
-			new SubProcessInfo(null, "PLACEHOLDER_PS_MATRIX_EXTRACTION", null));
+	private static final ProcessInfo processInfo
+			= new DefaultProcessInfo("Translating Matrix", // TODO this is .. unique? preserve? but should include QA!
+					"Translates all the Genotypes from a matrix from one encoding to an other"); // TODO see todo note of the last line
+	private static final ProgressSource PLACEHOLDER_PS_TRANSLATE = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_PS_TRANSLATE", null));
 	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(2);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MATRIX_EXTRACTION, 0.4);
-		tmpSubProgressSourcesAndWeights.put(Threaded_MatrixQA.PLACEHOLDER_PS_QA, 0.6);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TRANSLATE, 0.6);
+		tmpSubProgressSourcesAndWeights.put(QACombinedOperation.PLACEHOLDER_PS_QA, 0.4);
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
-	private final MatrixDataExtractorParams params;
+	private final MatrixGenotypesTranslatorParams params;
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_ExtractMatrix(MatrixDataExtractorParams params) {
-		super("Extract Data", "from " + params.getMatrixFriendlyName());
+	public TranslateCombinedOperation(MatrixGenotypesTranslatorParams params) {
+		super(
+				"Translate Matrix",
+				"on matrix " + params.getParent().getMatrixParent().toRawIdString());
 
 		this.params = params;
-		this.progressSource = new SuperProgressSource(fullExtractMatrixInfo, subProgressSourcesAndWeights);
+		this.progressSource = new SuperProgressSource(processInfo, subProgressSourcesAndWeights);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
@@ -86,7 +85,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_ExtractMatrix.class);
+		return LoggerFactory.getLogger(TranslateCombinedOperation.class);
 	}
 
 	@Override
@@ -94,15 +93,15 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 		final DataSetDestination dataSetDestination
-				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixDataExtractorMetadataFactory.SINGLETON);
-		MatrixDataExtractor matrixOperation = new MatrixDataExtractor(params, dataSetDestination);
-		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_MATRIX_EXTRACTION, matrixOperation.getProgressSource(), null);
+				= MatrixFactory.generateMatrixDataSetDestination(params, MatrixTranslatorMetadataFactory.SINGLETON);
+		MatrixTranslator matrixOperation = new MatrixTranslator(params, dataSetDestination);
+		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TRANSLATE, matrixOperation.getProgressSource(), null);
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
 //		OperationManager.performOperation(matrixOperation); // XXX We can not do that, because our matrixOperation does not support getParams() yet, so instead we do ...
 		final MatrixKey resultMatrixKey = matrixOperation.call();
 
-		Threaded_MatrixQA.matrixCompleeted(resultMatrixKey, progressSource);
+		QACombinedOperation.matrixCompleeted(resultMatrixKey, progressSource);
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 }

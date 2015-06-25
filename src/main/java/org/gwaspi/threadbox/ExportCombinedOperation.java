@@ -26,13 +26,13 @@ import org.gwaspi.progress.ProgressSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_ExportMatrix extends CommonRunnable {
+public class ExportCombinedOperation extends CommonRunnable {
 
 	private final MatrixExporterParams params;
 	private final ProgressHandlerForwarder progressForwarder;
 	private final TaskLockProperties taskLockProperties;
 
-	public Threaded_ExportMatrix(final MatrixExporterParams params) {
+	public ExportCombinedOperation(final MatrixExporterParams params) {
 		super("Export Data", "from " + params.getParent().toString());
 
 		this.params = params;
@@ -42,7 +42,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 
 	@Override
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_ExportMatrix.class);
+		return LoggerFactory.getLogger(ExportCombinedOperation.class);
 	}
 
 	@Override

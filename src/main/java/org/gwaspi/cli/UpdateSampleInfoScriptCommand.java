@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.threadbox.CommonRunnable;
-import org.gwaspi.threadbox.Threaded_UpdateSampleInfo;
+import org.gwaspi.threadbox.UpdateSampleInfoCombinedOperation;
 
 class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
@@ -59,7 +59,7 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 				throw new ScriptExecutionException("Sample-info file does not exist: \"" + sampleInfoFile.getAbsolutePath() + "\"");
 			}
 
-			final CommonRunnable updateSampleInfoTask = new Threaded_UpdateSampleInfo(studyKey, sampleInfoFile);
+			final CommonRunnable updateSampleInfoTask = new UpdateSampleInfoCombinedOperation(studyKey, sampleInfoFile);
 			CommonRunnable.doRunNowInThread(updateSampleInfoTask);
 		} catch (final IOException ex) {
 			throw new ScriptExecutionException(ex);
