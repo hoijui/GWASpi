@@ -257,11 +257,12 @@ public class StartGWASpi {
 					if (logPath == null) {
 						logPath = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
 					}
+					LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 					FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
 					fileAppender.setFile(logPath);
-					fileAppender.start();
-					LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+					fileAppender.setContext(lc);
 					lc.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(fileAppender);
+					fileAppender.start();
 				}
 			}
 		}
