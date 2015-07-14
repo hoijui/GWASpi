@@ -147,7 +147,6 @@ public class StudyManagementPanel extends JPanel {
 		final JScrollPane scrl_StudiesTable = new JScrollPane();
 		final StudyTable tbl_StudiesTable = new StudyTable();
 
-		txtF_NewStudyName.setDocument(new LimitedLengthDocument(64));
 		tbl_StudiesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.studies)); // NOI18N
