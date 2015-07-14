@@ -30,10 +30,12 @@ public class MultiOperations {
 	private MultiOperations() {
 	}
 
-	public static void queueTask(final CommonRunnable job) {
+	public static Task queueTask(final CommonRunnable job) {
 
 		final Task task = new DefaultTask(job);
 		TaskQueue.getInstance().queueTask(task);
+
+		return task;
 	}
 
 	public static TaskLockProperties createTaskLockProperties(
@@ -72,10 +74,12 @@ public class MultiOperations {
 		return canBeDoneNow(new DefaultTask(task));
 	}
 
-	public static void queueTask(final Deleter sdi) {
+	public static Task queueTask(final Deleter sdi) {
 
 		final Task task = new DefaultTask(sdi);
 		TaskQueue.getInstance().queueTask(task);
+
+		return task;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
