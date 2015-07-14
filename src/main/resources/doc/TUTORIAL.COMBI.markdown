@@ -3,7 +3,7 @@
 A tutorial listing the minimal steps for a GWASpi GUI workflow ending in the use of the COMBI method.
 
 * Download latest GWASpi testing version from
-	[the bitbucket download section](https://bitbucket.org/hoijui/gwaspi/downloads)
+	[the bitbucket repo](https://bitbucket.org/gwas_combi/gwaspi/downloads)
 * Run GWASpi in in-memory mode with lots of RAM (2GB initial, 3GB maximum).
 
 		java -Xms2g -Xmx3g -jar gwaspi-*-jar-with-dependencies*.jar --memory
