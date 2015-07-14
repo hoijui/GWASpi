@@ -38,6 +38,12 @@ public class GlobalConstants {
 	public static final Color FOREGROUND = UIManager.getColor("Table.foreground");
 	public static final Color SELECTION_BACKGROUND = UIManager.getColor("Table.selectionBackground");
 	public static final Color SELECTION_FOREGROUND = UIManager.getColor("Table.selectionForeground");
+	/**
+	 * The number of chromosomes.
+	 * We disregard the last chromosome (23), which is the famous XX/XY (female/male) one,
+	 * because we do not care about differences regarding the sexes.
+	 */
+	public static final int NUM_CHROMOSOMES = 22;
 
 	private GlobalConstants() {
 	}

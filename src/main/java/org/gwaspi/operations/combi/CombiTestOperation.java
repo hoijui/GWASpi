@@ -39,6 +39,7 @@ import libsvm.svm_model;
 import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.IndicesSubList;
 import org.gwaspi.model.DataSetSource;
@@ -194,7 +195,7 @@ public class CombiTestOperation
 			throws IOException
 	{
 		final Map<String, List<Integer>> markersChromosomeToIndices
-				= new LinkedHashMap<String, List<Integer>>(22 + 2);
+				= new LinkedHashMap<String, List<Integer>>(GlobalConstants.NUM_CHROMOSOMES + 2);
 
 //		final List<Integer> markersOrigIndices
 //				= dataSetSource.getMarkersKeysSource().getIndices();

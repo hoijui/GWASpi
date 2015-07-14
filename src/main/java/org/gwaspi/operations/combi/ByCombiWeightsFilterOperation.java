@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
@@ -126,9 +127,10 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 		if (getParams().isPerChromosome()) {
 			final Map<String, Map<Integer, MarkerKey>> chromParentMarkersOrigIndicesAndKeys
-					= new LinkedHashMap<String, Map<Integer, MarkerKey>>(22);
+					= new LinkedHashMap<String, Map<Integer, MarkerKey>>(
+							GlobalConstants.NUM_CHROMOSOMES);
 			final Map<String, List<Double>> chromRawWeights
-					= new LinkedHashMap<String, List<Double>>(22);
+					= new LinkedHashMap<String, List<Double>>(GlobalConstants.NUM_CHROMOSOMES);
 			for (final ChromosomeKey chromosomeKey : combiTestOperationDataSet.getChromosomesKeysSource()) {
 				chromParentMarkersOrigIndicesAndKeys.put(chromosomeKey.getChromosome(), new LinkedHashMap<Integer, MarkerKey>());
 				chromRawWeights.put(chromosomeKey.getChromosome(), new LinkedList<Double>());
