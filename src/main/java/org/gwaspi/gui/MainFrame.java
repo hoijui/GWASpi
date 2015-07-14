@@ -30,6 +30,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.threadbox.TaskQueue;
 import org.slf4j.Logger;
@@ -128,7 +129,8 @@ public class MainFrame extends JFrame {
 				Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
 		String infoMessage
 				= maxHeapSize + Text.App.memoryAvailable1 + "\n"
-				+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3;
+				+ Text.App.memoryAvailable2 + Utils.toHumanReadableNum(maxProcessMarkers)
+				+ Text.App.memoryAvailable3;
 		if (maxHeapSize <= StartGWASpi.MIN_HEAP_SIZE_MB) {
 			infoMessage += "\n" + Text.App.memoryAvailable4;
 		}
