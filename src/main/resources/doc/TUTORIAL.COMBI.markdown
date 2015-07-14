@@ -4,6 +4,8 @@ A tutorial listing the minimal steps for a GWASpi GUI workflow ending in the use
 
 * Download latest GWASpi testing version from
 	[the bitbucket repo](https://bitbucket.org/gwas_combi/gwaspi/downloads)
+* Download & extract _Tutorial\_GWASpi.zip_ from
+	[the GWASpi homepage](http://www.gwaspi.org/?page_id=182)
 * Run GWASpi in in-memory mode with lots of RAM (2GB initial, 3GB maximum).
 
 		java -Xms2g -Xmx3g -jar gwaspi-*-jar-with-dependencies*.jar --memory
