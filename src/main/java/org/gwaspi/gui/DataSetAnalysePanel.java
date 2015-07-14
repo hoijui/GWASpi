@@ -533,19 +533,6 @@ public class DataSetAnalysePanel extends JPanel {
 //					}
 				}
 
-//				if (!gwasParams.isDiscardMarkerByMisRat()) {
-//					gwasParams.setDiscardMarkerMisRatVal(1);
-//				}
-//				if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-//					gwasParams.setDiscardMarkerHetzyRatVal(1);
-//				}
-//				if (!gwasParams.isDiscardSampleByMisRat()) {
-//					gwasParams.setDiscardSampleMisRatVal(1);
-//				}
-//				if (!gwasParams.isDiscardSampleByHetzyRat()) {
-//					gwasParams.setDiscardSampleHetzyRatVal(1);
-//				}
-
 				if (gwasParams.isProceed()) {
 					ProcessTab.getSingleton().showTab();
 				}
