@@ -181,7 +181,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 				totalMarkers - 1));
 
 		markersToKeepValue.setModel(new AbsolutePercentageModel(
-				params.getMarkersToKeep(),
+				params.getMarkersToKeep(totalMarkers),
 				params.getMarkersToKeepDefault(),
 				totalMarkers,
 				1,
