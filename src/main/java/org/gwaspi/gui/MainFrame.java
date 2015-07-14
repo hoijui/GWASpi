@@ -112,11 +112,11 @@ public class MainFrame extends JFrame {
 		setSize(1100, 800);
 		setResizable(true);
 
-		GWASpiExplorerPanel panel0 = GWASpiExplorerPanel.getSingleton();
-		ProcessTab panel1 = ProcessTab.getSingleton();
+		final GWASpiExplorerPanel panelMain = GWASpiExplorerPanel.getSingleton();
+		final ProcessTab panelProcesses = ProcessTab.getSingleton();
 
-		tabs.addTab(Text.App.Tab0, panel0);
-		tabs.addTab(Text.App.Tab1, panel1);
+		tabs.addTab(Text.App.GUI_TAB_MAIN, panelMain);
+		tabs.addTab(Text.App.GUI_TAB_PROCESSES, panelProcesses);
 
 		setPreferredSize(new Dimension(1000, 750)); // TODO Make this also work well for even smaller screen sizes
 		setLayout(new BorderLayout());
