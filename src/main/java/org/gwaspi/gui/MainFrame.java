@@ -126,14 +126,13 @@ public class MainFrame extends JFrame {
 		final int maxHeapSize = Config.getSingleton().getInteger(Config.PROPERTY_MAX_HEAP_MB, -1);
 		final int maxProcessMarkers =
 				Config.getSingleton().getInteger(Config.PROPERTY_MAX_PROCESS_MARKERS, -1);
-		if (maxHeapSize > StartGWASpi.MIN_HEAP_SIZE_MB) {
-			Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
-					+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3);
-		} else {
-			Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
-					+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3 + "\n"
-					+ Text.App.memoryAvailable4);
+		String infoMessage
+				= maxHeapSize + Text.App.memoryAvailable1 + "\n"
+				+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3;
+		if (maxHeapSize <= StartGWASpi.MIN_HEAP_SIZE_MB) {
+			infoMessage += "\n" + Text.App.memoryAvailable4;
 		}
+		Dialogs.showInfoDialogue(infoMessage);
 	}
 
 	public JTabbedPane getTabs() {
