@@ -510,18 +510,23 @@ public class DataSetAnalysePanel extends JPanel {
 
 				gwasParams.setMarkerCensusOperationParams(new MarkerCensusOperationParams(observedElementKey, qaSamplesOpKey, qaMarkersOpKey));
 
-				final int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
-				if (choice == JOptionPane.NO_OPTION) {
-					// BY EXTERNAL PHENOTYPE FILE
-					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
-					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
-					if (phenotypeFile != null) {
-						gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
-//						if (gwasParams.isProceed()) {
-//							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-//						}
+				final int choiceUsePhenotyeFile = Dialogs.showConfirmDialog(
+						Text.Operation.chosePhenotype,
+						Text.Operation.genotypeFreqAndHW);
+				if (choiceUsePhenotyeFile == JOptionPane.CANCEL_OPTION) {
+					gwasParams.setProceed(false);
+				} else {
+					if (choiceUsePhenotyeFile == JOptionPane.YES_OPTION) {
+						// BY EXTERNAL PHENOTYPE FILE
+						final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
+						gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
+						gwasParams.setProceed(phenotypeFile != null);
+					} else {
+						gwasParams.setProceed(true);
 					}
-				} else if (choice != JOptionPane.CANCEL_OPTION) {
+				}
+
+				if (gwasParams.isProceed()) {
 					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 //					if (gwasParams.isProceed()) {
 //						Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
@@ -679,22 +684,27 @@ public class DataSetAnalysePanel extends JPanel {
 			try {
 				DataSetMetadata observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 
-				final int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				final int choiceUsePhenotyeFile = Dialogs.showConfirmDialog(
+						Text.Operation.chosePhenotype,
+						Text.Operation.genotypeFreqAndHW);
 				ImportFormat technology = null;
 				if (observedElementMetadata instanceof MatrixMetadata) {
 					technology = ((MatrixMetadata) observedElementMetadata).getTechnology();
 				}
-				if (choice == JOptionPane.NO_OPTION) { // BY EXTERNAL PHENOTYPE FILE
-					final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
-					gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
-					if (phenotypeFile != null) {
-						final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
-						MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
-//						if (gwasParams.isProceed()) {
-//							Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-//						}
+				if (choiceUsePhenotyeFile == JOptionPane.CANCEL_OPTION) {
+					gwasParams.setProceed(false);
+				} else {
+					if (choiceUsePhenotyeFile == JOptionPane.YES_OPTION) {
+						// BY EXTERNAL PHENOTYPE FILE
+						final File phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION, "Choose an external Phenotype file", dialogParent);
+						gwasParams.getMarkerCensusOperationParams().setPhenotypeFile(phenotypeFile);
+						gwasParams.setProceed(phenotypeFile != null);
+					} else {
+						gwasParams.setProceed(true);
 					}
-				} else if (choice != JOptionPane.CANCEL_OPTION) {
+				}
+
+				if (gwasParams.isProceed()) {
 					final JFrame windowAncestor = (JFrame) SwingUtilities.getWindowAncestor(dialogParent);
 					MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
 //					if (gwasParams.isProceed()) {
@@ -710,7 +720,6 @@ public class DataSetAnalysePanel extends JPanel {
 
 				// GWAS BLOCK
 				if (gwasParams.isProceed()
-						&& choice != JOptionPane.CANCEL_OPTION
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests()))
 				{
 					// At least one test has been picked

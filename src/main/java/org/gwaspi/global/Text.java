@@ -296,10 +296,8 @@ public class Text {
 		public static final String allelicAssocTest = "Allelic Association Test";
 		public static final String genoAssocTest = "Genotypic Association Test";
 		public static final String trendTest = "Cochran-Armitage Trend Test";
-		public static final String chosePhenotype = "Affection or Phenotype File";
-		public static final String genotypeFreqAndHW = "Do you want to use current Case/Conrol Affection info from the Samples DB\nor update the Samples DB Affection from an external Sample Info file?";
-		public static final String htmlCurrentAffectionFromDB = "<html><div align='center'>Current Case/Control <br> Affection from DB </div></html>";
-		public static final String htmlAffectionFromFile = "<html><div align='center'>Update Case/Control <br> Affection from File </div></html>";
+		public static final String chosePhenotype = "Update Affection from Phenotype File";
+		public static final String genotypeFreqAndHW = "Do you want to update the case/conrol affection info in the data-set from an external Sample Info file?";
 		public static final String addPhenotypes = "Add Phenotypes";
 		public static final String gwasInOneGo = "GWAS In One Go";
 		public static final String performAllelicTests = "Allelic tests";
