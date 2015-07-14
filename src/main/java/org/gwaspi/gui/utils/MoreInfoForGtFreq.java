@@ -114,6 +114,7 @@ public class MoreInfoForGtFreq extends JFrame {
 
 		chkB_1.setText(Text.Operation.discardMismatch);
 		chkB_1.setEnabled(false);
+		chkB_1.setToolTipText("Discarding mismatched markers is mandatory");
 
 		chkB_2.setText(Text.Operation.discardMarkerMissing);
 		final  double markerMissingRatioThreshold = Config.getSingleton().getDouble(
