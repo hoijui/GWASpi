@@ -117,7 +117,7 @@ public class MainFrame extends JFrame {
 		tabs.addTab(Text.App.Tab0, panel0);
 		tabs.addTab(Text.App.Tab1, panel1);
 
-		setPreferredSize(new Dimension(1000, 750));
+		setPreferredSize(new Dimension(1000, 750)); // TODO Make this also work well for even smaller screen sizes
 		setLayout(new BorderLayout());
 		add(tabs, BorderLayout.CENTER);
 		setVisible(true);
