@@ -288,6 +288,15 @@ public class Dialogs {
 		JOptionPane.showMessageDialog(null, message, "Information", JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	public static int showConfirmDialog(final String title, final String message) {
+		return JOptionPane.showConfirmDialog(
+				null,
+				message,
+				title,
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+	}
+
 	public static int showOptionDialogue(String title, String message, String button1, String button2, String button3) {
 		Object[] options = {button1,
 			button2,
