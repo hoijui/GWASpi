@@ -20,23 +20,23 @@ A tutorial listing the minimal steps for a GWASpi GUI workflow ending in the use
 * Behind the "MAP File" field, click on the [Browse] button, and select the "Tutorial\_Matrix.map" file.
 * Click on the _[Go!]_ button.
 * Click on the _[No, just load data]_ button.
-* Wait till the process is finished ("Activity" == "DONE")
+* Wait till the process is finished ("State" == "DONE")
 * Click on the "GWASpi Management" tab.
 * In the application tree, click on "MX: 1 - mmm".
 * Click on the _[Analyse Data]_ button.
 * Click on the _[Genotype freq. & Hardy-Weinberg QA]_ button.
 * Click on the _[Current Case/Control Affection from DB]_ button.
 * Click on the _[Go!]_ button.
-* In the text field, write "ggg".
-* Click on the _[OK]_ button.
-* Wait till the process is finished ("Activity" == "DONE")
+* If a text field shows up, write "ggg" and then click on the _[OK]_ button.
+* Wait till the process is finished ("State" == "DONE")
 * Click on the "GWASpi Management" tab.
+* In the application tree, click on "Study Management".
+* In the application tree, click on "MX: 1 - mmm".
 * Click on the _[Analyse Data]_ button.
 * Click on the _[COMBI Association Test]_ button.
 * Click on the _[OK]_ button.
 * Click on the _[OK]_ button.
-* Click on the _[OK]_ button.
-* Wait till the process is finished ("Activity" == "DONE")
+* Wait till the process is finished ("State" == "DONE")
 * Click on the "GWASpi Management" tab.
 * In the application tree, under "OP: 10 - Cochr...",
 	click on the different reports ("RP: ...") to see the result.
