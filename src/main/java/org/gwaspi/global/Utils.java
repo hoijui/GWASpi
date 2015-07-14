@@ -87,6 +87,34 @@ public class Utils {
 	}
 
 	/**
+	 * Tries to convert any number into an easily readable String representation.
+	 * for example: 123456789000 -> "123'456'789'000"
+	 */
+	public static String toHumanReadableNum(final Number number) {
+
+		String rep = number.toString();
+
+		// split into parts
+		final String signPart = rep.startsWith("-") ? "-" : "";
+		final String integerPart = rep.substring(signPart.length()).replaceFirst("[^0-9].*$", "");
+		final String restPart = rep.substring(signPart.length() + integerPart.length());
+
+		// beautify the integer part
+		final int n = integerPart.length();
+		String integerPartNice = integerPart.substring(0, n % 3);
+		for (int i = n % 3; i < n; i += 3) {
+			if (!integerPartNice.isEmpty()) {
+				integerPartNice += '\'';
+			}
+			integerPartNice += integerPart.substring(i, Math.min(i + 3, integerPart.length()));
+		}
+
+		rep = signPart + integerPartNice + restPart;
+
+		return rep;
+	}
+
+	/**
 	 * Tries to convert an Object to a meaningful String representation.
 	 * We primarily use this to not convert char[] or byte[]
 	 * to something like "C[@g63dfg" or "B[@g63dfg".
