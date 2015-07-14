@@ -503,8 +503,11 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			if (hasOr2) {
 				row[col++] = or2_f;
 			}
-			row[col++] = "";
-			row[col++] = Text.Reports.queryDB;
+			if (col < numColumns) {
+				// we only get here if we are parsing for a GUI representation
+				row[col++] = "";
+				row[col++] = Text.Reports.queryDB;
+			}
 
 			return row;
 		}
