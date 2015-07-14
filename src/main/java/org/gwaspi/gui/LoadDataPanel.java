@@ -55,7 +55,8 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.operations.GWASinOneGOParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
-import org.gwaspi.threadbox.CommonRunnable;
+import org.gwaspi.progress.AbstractProgressListener;
+import org.gwaspi.progress.ProcessStatusChangeEvent;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.LoadAndGWASIfOKCombinedOperation;
 import org.slf4j.Logger;
@@ -592,12 +593,24 @@ public class LoadDataPanel extends JPanel {
 									gwasParams.getStrandType(),
 									gwasParams.getGtCode()
 									);
-							final CommonRunnable loadGwasTask = new LoadAndGWASIfOKCombinedOperation(
+							final LoadAndGWASIfOKCombinedOperation loadGwasTask = new LoadAndGWASIfOKCombinedOperation(
 									loadDescription,
 									dummySamples,
 									performGwasInOneGo == JOptionPane.YES_OPTION,
 									gwasParams);
 							MultiOperations.queueTask(loadGwasTask);
+
+							// Select the resulting matrix in the GUI tree,
+							// when the operation finished.
+							loadGwasTask.getProgressSource().addProgressListener(new AbstractProgressListener() {
+								@Override
+								public void statusChanged(final ProcessStatusChangeEvent evt) {
+
+									if (evt.getNewStatus().isEnd() && (loadGwasTask.getResultMatrixKey() != null)) {
+										GWASpiExplorerPanel.getSingleton().selectNode(loadGwasTask.getResultMatrixKey());
+									}
+								}
+							});
 
 							ProcessTab.getSingleton().showTab();
 						}
