@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -151,10 +152,13 @@ public class StudyManagementPanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.studies)); // NOI18N
 
+		final Action actionAddStudy = new AddStudyAction(lbl_NewStudyName, txtF_NewStudyName, txtA_Desc);
+
 		pnl_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.Study.createNewStudy)); // NOI18N
 		lbl_NewStudyName.setText(Text.Study.studyName);
 		txtF_NewStudyName.setDocument(new LimitedLengthDocument(63));
+		txtF_NewStudyName.setAction(actionAddStudy);
 
 		lbl_Desc.setText(Text.All.description);
 		txtA_Desc.setColumns(20);
@@ -163,7 +167,7 @@ public class StudyManagementPanel extends JPanel {
 		txtA_Desc.addFocusListener(new SelectAllTextFocusListener(Text.All.optional));
 
 		scrl_Desc.setViewportView(txtA_Desc);
-		btn_AddStudy.setAction(new AddStudyAction(lbl_NewStudyName, txtF_NewStudyName, txtA_Desc));
+		btn_AddStudy.setAction(actionAddStudy);
 
 		pnl_StudiesTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.Study.availableStudies)); // NOI18N
