@@ -270,7 +270,9 @@ public class LoadDataPanel extends JPanel {
 
 		btn_Back.setAction(new BackAction(studyKey));
 
-		btn_Go.setAction(new LoadGenotypesAction());
+		final Action actionLoadGenotypes = new LoadGenotypesAction();
+		btn_Go.setAction(actionLoadGenotypes);
+		txt_NewMatrixName.setAction(actionLoadGenotypes);
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.loadGts));
 
