@@ -19,6 +19,8 @@ package org.gwaspi.operations.combi;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -33,7 +35,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
-import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponent;
 import org.gwaspi.gui.utils.AbsolutePercentageModel;
@@ -189,6 +190,13 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 				1,
 				1,
 				totalMarkers - 1));
+
+		perChromosomeValue.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(final ItemEvent evt) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		});
 
 		resultMatrixValue.setText(params.getName());
 		resultMatrixDefault.setAction(new TextDefaultAction(resultMatrixValue, params.getNameDefault()));

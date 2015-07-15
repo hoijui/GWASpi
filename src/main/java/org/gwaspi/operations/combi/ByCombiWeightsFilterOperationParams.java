@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.combi;
 
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -183,7 +184,9 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 
 		final int relativeMarkersToKeep;
 		if (getMarkersToKeep() == -1) {
-			relativeMarkersToKeep = (int) Math.ceil(getMarkersToKeepFraction() * totalMarkers);
+			// if
+			relativeMarkersToKeep = (int) Math.ceil(getMarkersToKeepFraction() * totalMarkers
+					* (isPerChromosome() ? 1 : GlobalConstants.NUM_CHROMOSOMES));
 		} else {
 			relativeMarkersToKeep = getMarkersToKeep();
 		}
