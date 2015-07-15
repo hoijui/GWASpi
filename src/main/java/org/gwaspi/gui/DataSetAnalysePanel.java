@@ -82,6 +82,10 @@ import org.gwaspi.threadbox.Deleter;
 import org.gwaspi.threadbox.CombiCombinedOperation;
 import org.gwaspi.threadbox.GTFreqAndHWCombinedOperation;
 import org.gwaspi.threadbox.GWASCombinedOperation;
+import org.gwaspi.threadbox.QueueState;
+import org.gwaspi.threadbox.TaskQueue;
+import org.gwaspi.threadbox.TaskQueueListener;
+import org.gwaspi.threadbox.TaskQueueStatusChangedEvent;
 import org.gwaspi.threadbox.TestCombinedOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,6 +261,17 @@ public class DataSetAnalysePanel extends JPanel {
 		btn_combiTest.setAction(combiTest);
 		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
+
+		TaskQueue.getInstance().addTaskListener(new TaskQueueListener() {
+
+			@Override
+			public void taskStatusChanged(final TaskQueueStatusChangedEvent evt) {
+
+				if (evt.getTask().getStatus() == QueueState.DONE) {
+					refreshActionStates();
+				}
+			}
+		});
 	}
 
 	private void refreshActionStates() {
