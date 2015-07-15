@@ -113,6 +113,7 @@ public class DataSetAnalysePanel extends JPanel {
 
 	private final DataSetKey observedElementKey;
 	private final OperationMetadata currentOP;
+	private final AssociationTestsAction[] testActions;
 
 	public DataSetAnalysePanel(DataSetKey observedElementKey) throws IOException {
 
@@ -235,6 +236,7 @@ public class DataSetAnalysePanel extends JPanel {
 		this.add(pnl_Bottom, BorderLayout.SOUTH);
 
 		if (observedElementKey == null) {
+			testActions = new AssociationTestsAction[] {};
 			return;
 		}
 
@@ -243,17 +245,27 @@ public class DataSetAnalysePanel extends JPanel {
 		Action genFreqAndHWAction = new GenFreqAndHWAction(observedElementKey, gwasParams, this);
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_genFreqAndHW.setAction(genFreqAndHWAction);
-		final boolean validMarkerCensusOpAvailable = isValidMarkerCensusOpAvailable();
-		final Action allelicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.ALLELICTEST);
-		final Action genotypicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.GENOTYPICTEST);
-		final Action trendTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.TRENDTEST);
-		final Action combiTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, validMarkerCensusOpAvailable, OPType.COMBI_ASSOC_TEST);
+		final AssociationTestsAction allelicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.ALLELICTEST);
+		final AssociationTestsAction genotypicTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST);
+		final AssociationTestsAction trendTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.TRENDTEST);
+		final AssociationTestsAction combiTest = new AssociationTestsAction(observedElementKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST);
+		testActions = new AssociationTestsAction[] {allelicTest, genotypicTest, trendTest, combiTest};
+		refreshActionStates();
 		btn_allelicTest.setAction(allelicTest);
 		btn_genotypicTest.setAction(genotypicTest);
 		btn_trendTest.setAction(trendTest);
 		btn_combiTest.setAction(combiTest);
 		btn_Back.setAction(new BackAction(parent));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
+	}
+
+	private void refreshActionStates() {
+
+		final boolean validMarkerCensusOpAvailable = isValidMarkerCensusOpAvailable();
+		for (int ai = 0; ai < testActions.length; ai++) {
+			final AssociationTestsAction action = testActions[ai];
+			action.setValidMarkerCensusOpAvailable(validMarkerCensusOpAvailable);
+		}
 	}
 
 	private boolean isValidMarkerCensusOpAvailable() {
@@ -292,6 +304,10 @@ public class DataSetAnalysePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static class AssociationTestsAction extends AbstractAction {
 
+		private static final String SHORT_DESC_MISSING
+				= "<html>You first have to conduct a<br>"
+				+ "Genotype Frequency & Marker Census operation<br>"
+				+ "before you can run this test</html>";
 		private final DataSetKey observedElementKey;
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
@@ -304,7 +320,6 @@ public class DataSetAnalysePanel extends JPanel {
 				GWASinOneGOParams gwasParams,
 				OperationMetadata currentOP,
 				Component dialogParent,
-				final boolean validMarkerCensusOpAvailable,
 				OPType testType)
 		{
 			this.observedElementKey = observedElementKey;
@@ -316,14 +331,14 @@ public class DataSetAnalysePanel extends JPanel {
 
 			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>"; // XXX This does not make sense. why would we need HTML here? text alignment should not be done through Swing, and not HTML
 			putValue(NAME, testNameHtml);
-			setEnabled(validMarkerCensusOpAvailable);
-			if (!validMarkerCensusOpAvailable) {
-				// explain why the action is disabled in the tool-tip
-				putValue(SHORT_DESCRIPTION,
-						"<html>You first have to conduct a<br>"
-						+ "Genotype Frequency & Marker Census operation<br>"
-						+ "before you can run this test</html>");
-			}
+			setEnabled(false);
+		}
+
+		public void setValidMarkerCensusOpAvailable(final boolean available) {
+
+			setEnabled(available);
+			// potentially explain why the action is disabled in the tool-tip
+			putValue(SHORT_DESCRIPTION, available ? "" : SHORT_DESC_MISSING);
 		}
 
 		private static OperationKey evaluateCensusOPId(OperationMetadata currentOP, DataSetKey observedElementKey) throws IOException {
