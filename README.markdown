@@ -14,7 +14,7 @@ __README__
 
 1. Obtain GWASpi
 	* Get the __latest stable version__ from the [GWASpi homepage _Download_ section](http://www.gwaspi.org/?page_id=182), or
-	* Get the __latest testing version__ from the [source hosting platform _Download_ section](https://bitbucket.org/hoijui/gwaspi/downloads), or
+	* Get the __latest testing version__ from the [source hosting platform _Download_ section](https://bitbucket.org/gwas_combi/gwaspi/downloads), or
 	* Get the __latest development version__ by [building it yourself](#building) from source
 2. Obtain data
 	* From the [_Tutorial_ section](http://www.gwaspi.org/?page_id=226) on the GWASpi homepage
@@ -23,7 +23,7 @@ __README__
 	* For general GWASpi usage, see the [_Introduction_](http://www.gwaspi.org/?page_id=213)
 		and the [_Tutorial_](http://www.gwaspi.org/?page_id=226) sections on the GWASpi homepage
 	* For COMBI instructions, see the (notoriously detailed) [COMBI tutorial (local)](TUTORIAL.COMBI.html)
-		[(online)](https://bitbucket.org/hoijui/gwaspi/src/develop/src/main/resources/doc/TUTORIAL.COMBI.markdown)
+		[(online)](https://bitbucket.org/gwas_combi/gwaspi/src/develop/src/main/resources/doc/TUTORIAL.COMBI.markdown)
 		(or its [Markdown version (local)](src/main/resources/doc/TUTORIAL.COMBI.md))
 	* or just try clicking around!
 
