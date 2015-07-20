@@ -47,7 +47,7 @@ public class GWASinOneGOParams {
 	private String chromosome = "";
 	private StrandType strandType = StrandType.UNKNOWN;
 	private GenotypeEncoding gtCode = GenotypeEncoding.UNKNOWN;
-	private String hardyWeinbergOperationName = "";
+	private String hardyWeinbergOperationName = null;
 
 	public boolean isProceed() {
 		return proceed;
@@ -210,7 +210,11 @@ public class GWASinOneGOParams {
 	}
 
 	public String getHardyWeinbergOperationName() {
-		return hardyWeinbergOperationName;
+		return (hardyWeinbergOperationName == null)
+				? ((getMarkerCensusOperationParams() == null)
+					? ""
+					: "H&W on " + getMarkerCensusOperationParams().getName())
+				: hardyWeinbergOperationName;
 	}
 
 	public void setHardyWeinbergOperationName(final String hardyWeinbergOperationName) {
