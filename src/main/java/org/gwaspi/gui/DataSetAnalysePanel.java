@@ -560,9 +560,9 @@ public class DataSetAnalysePanel extends JPanel {
 					gwasParams = new MoreInfoForGtFreq().showMoreInfo(gwasParams);
 				}
 
-				if (gwasParams.isProceed()) {
-					Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-				}
+//				if (gwasParams.isProceed()) {
+//					Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//				}
 
 				if (gwasParams.isProceed()) {
 					ProcessTab.getSingleton().showTab();
@@ -727,9 +727,9 @@ public class DataSetAnalysePanel extends JPanel {
 					MoreGWASinOneGoInfo.showMoreInfo(windowAncestor, gwasParams, technology);
 				}
 
-				if (gwasParams.isProceed()) {
-					Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
-				}
+//				if (gwasParams.isProceed()) {
+//					Dialogs.askUserForGTFreqAndHWFriendlyName(gwasParams);
+//				}
 
 				if (gwasParams.isProceed()) {
 					ProcessTab.getSingleton().showTab();
