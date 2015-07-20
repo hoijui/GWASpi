@@ -106,12 +106,12 @@ You should end up with a single file to distribute at:
 
 You can then use the file to start GWASpi like this:
 
-	> java -jar gwaspi-*-jar-with-dependencies*.jar
+	> java -jar gwaspi-*jar-with-dependencies*.jar
 
 An example with Java arguments (initial and maximum amount of RAM)
 and with application arguments (run in memory mode):
 
-	> java -Xms1024m -Xmx3g -jar gwaspi-*-jar-with-dependencies*.jar --memory
+	> java -Xms1024m -Xmx3g -jar gwaspi-*jar-with-dependencies*.jar --memory
 
 
 ## Release a SNAPSHOT (devs only)
