@@ -215,6 +215,7 @@ public class StartGWASpi {
 					CliExecutor cliExecutor = new CliExecutor(scriptFile);
 					try {
 						cliExecutor.execute();
+						log.info("closing ...");
 					} catch (final ScriptExecutionException ex) {
 						throw new IOException("Failed to execute script(s) from file '" + scriptFile + "'", ex);
 					}
@@ -280,6 +281,5 @@ public class StartGWASpi {
 
 		StartGWASpi startGWASpi = new StartGWASpi();
 		startGWASpi.start(Arrays.asList(args));
-		log.info("closing ...");
 	}
 }
