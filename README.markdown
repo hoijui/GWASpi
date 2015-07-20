@@ -99,7 +99,7 @@ and with application arguments (run in memory mode):
 If you want to give the software to a non-dev for trying it out/using it,
 follow these instructions.
 
-	> mvn package assembly:single
+	> mvn clean package assembly:single -DskipTests -P createUniqueBuild,compileWithJava6
 
 You should end up with a single file to distribute at:
 `target/gwaspi-{version}-jar-with-dependencies.jar`
