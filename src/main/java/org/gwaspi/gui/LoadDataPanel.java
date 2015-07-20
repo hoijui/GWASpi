@@ -50,6 +50,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
+import org.gwaspi.gui.utils.RequestFocusListener;
 import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
@@ -140,7 +141,7 @@ public class LoadDataPanel extends JPanel {
 		pnl_NameAndDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.nameAndDescription)); // NOI18N
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
-		txt_NewMatrixName.requestFocus();
+		RequestFocusListener.applyOn(txt_NewMatrixName);
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);

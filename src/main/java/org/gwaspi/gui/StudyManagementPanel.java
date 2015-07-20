@@ -44,6 +44,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.gui.utils.RequestFocusListener;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -158,6 +159,7 @@ public class StudyManagementPanel extends JPanel {
 				Text.Study.createNewStudy)); // NOI18N
 		lbl_NewStudyName.setText(Text.Study.studyName);
 		txtF_NewStudyName.setDocument(new LimitedLengthDocument(63));
+		RequestFocusListener.applyOn(txtF_NewStudyName);
 		txtF_NewStudyName.setAction(actionAddStudy);
 
 		lbl_Desc.setText(Text.All.description);

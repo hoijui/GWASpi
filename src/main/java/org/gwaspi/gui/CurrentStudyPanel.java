@@ -40,6 +40,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.MatricesTableModel;
+import org.gwaspi.gui.utils.RequestFocusListener;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -117,6 +118,7 @@ public class CurrentStudyPanel extends JPanel {
 		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
 		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(studyKey, this));
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
+		RequestFocusListener.applyOn(btn_LoadGenotypes);
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
 		btn_Back.setAction(new BackAction());
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
