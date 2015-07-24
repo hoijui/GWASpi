@@ -18,15 +18,13 @@
 package org.gwaspi.gui;
 
 import de.bwaldvogel.liblinear.Model;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import libsvm.svm_model;
-import libsvm.svm_node;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListManager;
 import org.gwaspi.model.MarkerKey;
@@ -52,10 +50,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(UnitTestingCombiTestOperationSpy.class);
 
-	/**
-	 * HACK
-	 */
-	static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra/generatedData_old"); // HACK
+	static final String BASE_PATH = "/data/extra/";
 
 	private String encoderString;
 	private int n;
@@ -101,7 +96,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 		}
 
 		// check if feature matrix is equivalent to the one calculated with matlab
-		File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
+		final InputStream correctFeaturesFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "featmat_" + encoderString);
 		final List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
 
 		// load all features into memory
@@ -130,7 +125,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	@Override
 	public void kernelCalculated(float[][] K) {
 
-		File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
+		final InputStream correctKernelFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "K_" + encoderString);
 		List<List<Double>> correctKernel = Util.parsePlainTextMatrix(correctKernelFile, false);
 
 		List<List<Double>> calculatedKernel = new Util.DoubleMatrixWrapperFloatArray2D(K);
@@ -161,7 +156,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 //		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.toString(alphas[0]));
 //		LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
-		File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
+		final InputStream correctAlphasFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "alpha_" + encoderString);
 		List<List<Double>> correctAlphasSparse = Util.parsePlainTextMatrix(correctAlphasFile, false);
 		List<Double> correctAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
 		for (List<Double> correctAlphasSparseEntry : correctAlphasSparse) {
@@ -182,7 +177,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		final List<Double> weightsEncodedCopy = new ArrayList<Double>(weightsEncoded);
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
-		final File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
+		final InputStream mlWeightsRawFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_raw");
 		final List<Double> mlWeightsRaw = Util.parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
 		Util.absVector(weightsEncodedCopy);
 		Util.absVector(mlWeightsRaw);
@@ -198,7 +193,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	public void decodedWeightsCalculated(List<Double> weights) {
 
 		// check if the decoded weights are equivalent to the ones calculated with matlab
-		File mlWeightsFinalFile = new File(BASE_DIR, "w_" + encoderString + "_final");
+		final InputStream mlWeightsFinalFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_final");
 		List<Double> mlWeightsFinal = Util.parsePlainTextMatrix(mlWeightsFinalFile, false).get(0);
 
 		LOG.debug("\nXXX correct weights final: (" + mlWeightsFinal.size() + ") " + mlWeightsFinal);
@@ -212,7 +207,7 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	public void smoothedWeightsCalculated(List<Double> weightsFiltered) {
 
 		// check if the filtered weights are equivalent to the ones calculated with matlab
-		File mlWeightsFinalFilteredFile = new File(BASE_DIR, "w_" + encoderString + "_final_filtered");
+		final InputStream mlWeightsFinalFilteredFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_final_filtered");
 		List<Double> mlWeightsFinalFiltered = Util.parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);
 
 		LOG.debug("\ncompare final, filtered weights vectors ...");
