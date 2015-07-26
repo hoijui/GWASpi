@@ -268,6 +268,8 @@ public class StartGWASpi {
 					fileAppender.start();
 				}
 			}
+		} else {
+			mainGUIFrame.dispose();
 		}
 
 		return isInitiated;
