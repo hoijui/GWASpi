@@ -17,15 +17,9 @@
 
 package org.gwaspi.model;
 
-import java.io.IOException;
-import java.util.List;
-import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.dao.jpa.JPAReportService;
 
-/**
- * @deprecated use ReportService directly
- */
 public class ReportsList {
 
 	private static ReportService reportService = null;
@@ -37,41 +31,12 @@ public class ReportsList {
 		reportService = null;
 	}
 
-	private static ReportService getReportService() {
+	public static ReportService getReportService() {
 
 		if (reportService == null) {
 			reportService = new JPAReportService(StudyList.getEntityManagerFactory());
 		}
 
 		return reportService;
-	}
-
-	public static Report getReport(ReportKey reportKey) throws IOException {
-		return getReportService().getReport(reportKey);
-	}
-
-	/** @deprecated use {@link #getReportsList(DataSetKey)} instead */
-	public static List<Report> getReportsList(OperationKey parentOperationKey) throws IOException {
-		return getReportService().getReports(new DataSetKey(parentOperationKey));
-	}
-
-	public static List<Report> getReportsList(DataSetKey parentKey) throws IOException {
-		return getReportService().getReports(parentKey);
-	}
-
-	public static List<Report> getReportsList(DataSetKey parentKey, OPType reportType) throws IOException {
-		return getReportService().getReports(parentKey, reportType);
-	}
-
-	public static String getReportNamePrefix(OperationMetadata op) {
-		return getReportService().getReportNamePrefix(op);
-	}
-
-	public static void insertRPMetadata(Report report) throws IOException {
-		getReportService().insertReport(report);
-	}
-
-	public static void deleteReports(final DataSetKey parent) throws IOException {
-		getReportService().deleteReports(parent);
 	}
 }

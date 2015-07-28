@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -89,6 +91,14 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		super(params);
 	}
 
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		// XXX For this class, we should use a different return type on this method (ialso for the othe Output* classes)
@@ -99,11 +109,11 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		final OperationMetadata qaSamplesOperation = OperationsList.getOperationMetadata(getParams().getSampleQAOpKey());
+		final OperationMetadata qaSamplesOperation = getOperationService().getOperationMetadata(getParams().getSampleQAOpKey());
 
 		final String reportPath = Study.constructReportsPath(qaSamplesOperation.getStudyKey());
 		org.gwaspi.global.Utils.createFolder(new File(reportPath));
-		final String prefix = ReportsList.getReportNamePrefix(qaSamplesOperation);
+		final String prefix = getReportService().getReportNamePrefix(qaSamplesOperation);
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
 		final String sampleMissOutName = prefix + "samplmissing.txt";
@@ -113,7 +123,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 		createSortedSampleMissingnessReport(getParams().getSampleQAOpKey(), sampleMissOutFile);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
 		if (getParams().isNewReport()) {
-			ReportsList.insertRPMetadata(new Report(
+			getReportService().insertReport(new Report(
 					"Sample Missingness Table",
 					sampleMissOutName,
 					OPType.SAMPLE_QA,
@@ -131,7 +141,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 //		if (createSampleHetzygPlot(opId, samplMissOutName, 500, 500)) {
 //			if (params.isNewReport()) {
 		creatingHetzyPlotPH.setNewStatus(ProcessStatus.FINALIZING);
-		ReportsList.insertRPMetadata(new Report(
+		getReportService().insertReport(new Report(
 				"Sample Heterozygosity vs Missingness Plot",
 				hetzyMissOutName,
 				OPType.SAMPLE_HTZYPLOT,

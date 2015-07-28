@@ -33,6 +33,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -66,7 +68,7 @@ public class CurrentStudyPanel extends JPanel {
 
 	public CurrentStudyPanel(StudyKey studyKey) throws IOException {
 
-		Study study = StudyList.getStudy(studyKey);
+		Study study = getStudyService().getStudy(studyKey);
 
 		JPanel pnl_desc = new JPanel();
 		JScrollPane scrl_desc = new JScrollPane();
@@ -93,7 +95,7 @@ public class CurrentStudyPanel extends JPanel {
 		JTable tbl_MatrixTable = new MatrixTable();
 		JButton btn_DeleteMatrix = new JButton();
 		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.matrices)); // NOI18N
-		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(studyKey)));
+		tbl_MatrixTable.setModel(new MatricesTableModel(getMatrixService().getMatrices(studyKey)));
 		tbl_MatrixTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 		btn_DeleteMatrix.setBackground(DANGER_RED);
@@ -124,6 +126,14 @@ public class CurrentStudyPanel extends JPanel {
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
 	}
 
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
+	}
+
 	private static String createTitle(Study study) {
 		return Text.Study.currentStudy + " " + study.getName() + ", StudyID: STUDY_" + study.getId(); // NOI18N
 	}
@@ -146,7 +156,7 @@ public class CurrentStudyPanel extends JPanel {
 				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getId());
 
 				study.setDescription(descriptionSource.getText());
-				StudyList.updateStudy(study);
+				getStudyService().updateStudy(study);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

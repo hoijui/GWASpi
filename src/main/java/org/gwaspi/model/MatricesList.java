@@ -18,13 +18,10 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
-import java.util.List;
 import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.jpa.JPAMatrixService;
 
-/**
- * @deprecated use MatrixService directly
- */
 public final class MatricesList {
 
 	private static MatrixService matrixService = null;
@@ -36,7 +33,11 @@ public final class MatricesList {
 		matrixService = null;
 	}
 
-	private static MatrixService getMatrixService() {
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	public static MatrixService getMatrixService() {
 
 		if (matrixService == null) {
 			matrixService = new JPAMatrixService(StudyList.getEntityManagerFactory());
@@ -45,44 +46,12 @@ public final class MatricesList {
 		return matrixService;
 	}
 
-	public static List<MatrixKey> getMatrixList(StudyKey studyKey) throws IOException {
-		return getMatrixService().getMatrixKeys(studyKey);
-	}
-
-	public static List<MatrixMetadata> getMatricesTable(StudyKey studyKey) throws IOException {
-		return getMatrixService().getMatrices(studyKey);
-	}
-
-	public static MatrixKey insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
-		return getMatrixService().insertMatrix(matrixMetadata);
-	}
-
-	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
-		getMatrixService().deleteMatrix(matrixKey, deleteReports);
-	}
-
-	public static void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
-		getMatrixService().updateMatrix(matrixMetadata);
-	}
-
-	public static MatrixMetadata getMatrixMetadataById(MatrixKey matrixKey) throws IOException {
-		return getMatrixService().getMatrix(matrixKey);
-	}
-
 	public static DataSetMetadata getDataSetMetadata(DataSetKey key) throws IOException {
 
 		if (key.isMatrix()) {
-			return getMatrixMetadataById(key.getMatrixParent());
+			return getMatrixService().getMatrix(key.getMatrixParent());
 		} else {
-			return OperationsList.getOperationMetadata(key.getOperationParent());
+			return getOperationService().getOperationMetadata(key.getOperationParent());
 		}
-	}
-
-	public static List<MatrixKey> getMatrixKeysBySimpleName(final StudyKey studyKey, final String simpleName) throws IOException {
-		return getMatrixService().getMatrixKeysBySimpleName(studyKey, simpleName);
-	}
-
-	public static List<MatrixKey> getMatrixKeysByName(final StudyKey studyKey, final String friendlyName) throws IOException {
-		return getMatrixService().getMatrixKeysByName(studyKey, friendlyName);
 	}
 }

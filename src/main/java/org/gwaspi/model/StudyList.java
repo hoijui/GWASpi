@@ -17,8 +17,6 @@
 
 package org.gwaspi.model;
 
-import java.io.IOException;
-import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
@@ -28,9 +26,6 @@ import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @deprecated use StudyService directly
- */
 public class StudyList {
 
 	private static final Logger log
@@ -96,40 +91,12 @@ public class StudyList {
 		emf = null;
 	}
 
-	private static StudyService getStudyService() {
+	public static StudyService getStudyService() {
 
 		if (studyService == null) {
 			studyService = new JPAStudyService(getEntityManagerFactory());
 		}
 
 		return studyService;
-	}
-
-	public static Study getStudy(StudyKey studyKey) throws IOException {
-		return getStudyService().getStudy(studyKey);
-	}
-
-	public static List<StudyKey> getStudies() throws IOException {
-		return getStudyService().getStudies();
-	}
-
-	public static StudyKey getStudyByName(final String name) throws IOException {
-		return getStudyService().getStudyByName(name);
-	}
-
-	public static List<Study> getStudyList() throws IOException {
-		return getStudyService().getStudiesInfos();
-	}
-
-	public static StudyKey insertNewStudy(Study study) {
-		return getStudyService().insertStudy(study);
-	}
-
-	public static void deleteStudy(StudyKey studyKey, boolean deleteReports) throws IOException {
-		getStudyService().deleteStudy(studyKey, deleteReports);
-	}
-
-	public static void updateStudy(Study study) throws IOException {
-		getStudyService().updateStudy(study);
 	}
 }

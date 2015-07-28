@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -78,6 +79,10 @@ public class HardyWeinbergCombinedOperation extends CommonRunnable {
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(params.getParent());
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
@@ -96,8 +101,8 @@ public class HardyWeinbergCombinedOperation extends CommonRunnable {
 	public static HardyWeinbergOperationParams createParams(OperationKey censusOpKey) throws IOException {
 
 		if (censusOpKey != null) {
-			OperationMetadata censusOpMetadata = OperationsList.getOperationMetadata(censusOpKey);
-			final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(censusOpMetadata.getParent(), OPType.MARKER_QA).get(0));
+			OperationMetadata censusOpMetadata = getOperationService().getOperationMetadata(censusOpKey);
+			final OperationKey markersQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(censusOpMetadata.getParent(), OPType.MARKER_QA).get(0));
 			return new HardyWeinbergOperationParams(censusOpKey, NetCDFConstants.Defaults.DEFAULT_AFFECTION, markersQAOpKey);
 		}
 

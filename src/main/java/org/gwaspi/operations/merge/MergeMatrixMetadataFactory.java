@@ -20,6 +20,7 @@ package org.gwaspi.operations.merge;
 import java.io.IOException;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatricesList;
@@ -30,6 +31,10 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 
 	public static final MergeMatrixMetadataFactory SINGLETON = new MergeMatrixMetadataFactory();
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	@Override
 	public MatrixMetadata generateMetadata(DataSet dataSet, MergeMatrixOperationParams params) throws IOException {
 
@@ -37,9 +42,9 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 		final int numSamples = dataSet.getSampleInfos().size();
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
-		final MatrixMetadata rdMatrix1Metadata = MatricesList.getMatrixMetadataById(
+		final MatrixMetadata rdMatrix1Metadata = getMatrixService().getMatrix(
 				params.getParent().getMatrixParent());
-		final MatrixMetadata rdMatrix2Metadata = MatricesList.getMatrixMetadataById(
+		final MatrixMetadata rdMatrix2Metadata = getMatrixService().getMatrix(
 				params.getSource2().getMatrixParent());
 
 		final boolean hasDictionary = (rdMatrix1Metadata.getHasDictionary() && rdMatrix2Metadata.getHasDictionary());
@@ -100,9 +105,9 @@ public class MergeMatrixMetadataFactory implements MatrixMetadataFactory<DataSet
 	public GenotypeEncoding getGuessedGTCode(MergeMatrixOperationParams params) {
 
 		try {
-			final MatrixMetadata rdMatrix1Metadata = MatricesList.getMatrixMetadataById(
+			final MatrixMetadata rdMatrix1Metadata = getMatrixService().getMatrix(
 					params.getParent().getMatrixParent());
-			final MatrixMetadata rdMatrix2Metadata = MatricesList.getMatrixMetadataById(
+			final MatrixMetadata rdMatrix2Metadata = getMatrixService().getMatrix(
 					params.getSource2().getMatrixParent());
 
 			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;

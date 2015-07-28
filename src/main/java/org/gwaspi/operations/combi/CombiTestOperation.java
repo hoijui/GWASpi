@@ -41,6 +41,7 @@ import libsvm.svm_parameter;
 import libsvm.svm_problem;
 import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.IndicesSubList;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -103,6 +104,10 @@ public class CombiTestOperation
 
 		this.valid = null;
 		this.problemDescription = null;
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	@Override
@@ -265,7 +270,7 @@ public class CombiTestOperation
 			return valid;
 		}
 
-		List<OPType> ancestorOperationTypes = OperationsList.getAncestorOperationTypes(getParentKey().getOperationParent());
+		List<OPType> ancestorOperationTypes = getOperationService().getAncestorOperationTypes(getParentKey().getOperationParent());
 
 		if (ancestorOperationTypes.isEmpty()
 				|| (ancestorOperationTypes.get(0) != OPType.MARKER_QA))

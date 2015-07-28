@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -107,6 +108,10 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		initChart();
 
 		setCursor(CursorUtils.DEFAULT_CURSOR);
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	public void initChart() throws IOException {
@@ -193,7 +198,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		btn_redraw.setAction(new RedrawAction(txt_hetzy, txt_missing));
 
 		final MatrixMetadata rdMatrixMetadata
-				= MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
+				= getMatrixService().getMatrix(operationKey.getParentMatrixKey());
 		final String originFriendlyName = rdMatrixMetadata.getFriendlyName();
 		btn_Save.setAction(new SaveAsAction(
 				"SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(originFriendlyName) + ".png",

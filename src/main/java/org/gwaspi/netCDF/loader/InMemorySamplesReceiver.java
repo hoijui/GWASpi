@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.datasource.inmemory.MatrixInMemoryDataSetSource;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -64,6 +65,10 @@ public class InMemorySamplesReceiver<P extends MatrixCreatingOperationParams>
 		this.sampleGenotypes = null;
 		this.genotypesListFactory = GenotypesListManager.getCommon();
 		this.loadAllelesPerSample = null;
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	@Override
@@ -126,7 +131,7 @@ public class InMemorySamplesReceiver<P extends MatrixCreatingOperationParams>
 
 //		final MatrixMetadata matrixMetadata = getDataSet().getMatrixMetadata();
 		final MatrixMetadata matrixMetadata = metadataFactory.generateMetadata(this.getDataSet(), params);
-		resultMatrixKey = MatricesList.insertMatrixMetadata(matrixMetadata);
+		resultMatrixKey = getMatrixService().insertMatrix(matrixMetadata);
 		getDataSet().setMatrixMetadata(matrixMetadata);
 
 		// register/store in the in-memory storage

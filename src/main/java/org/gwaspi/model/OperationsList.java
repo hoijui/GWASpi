@@ -24,9 +24,6 @@ import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.jpa.JPAOperationService;
 
-/**
- * @deprecated use OperationService directly
- */
 public class OperationsList {
 
 	private static OperationService operationService = null;
@@ -38,7 +35,7 @@ public class OperationsList {
 		operationService = null;
 	}
 
-	private static OperationService getOperationService() {
+	public static OperationService getOperationService() {
 
 		if (operationService == null) {
 			operationService = new JPAOperationService(StudyList.getEntityManagerFactory());
@@ -48,83 +45,13 @@ public class OperationsList {
 	}
 
 	/**
-	 * @see OperationService#getOperationMetadata(OperationKey)
-	 */
-	public static OperationMetadata getOperationMetadata(OperationKey operationKey) throws IOException {
-		return getOperationService().getOperationMetadata(operationKey);
-	}
-
-	/**
-	 * @see OperationService#getOperationKeysByName(StudyKey, String)
-	 */
-	public static List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException {
-		return getOperationService().getOperationKeysByName(studyKey, operationFriendlyName);
-	}
-
-	/**
-	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey)
-	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(new DataSetKey(root));
-	}
-
-	/**
-	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey, OPType)
-	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root, OPType opType) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(new DataSetKey(root), opType);
-	}
-
-	/**
-	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey)
-	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(root);
-	}
-
-	/**
-	 * @see OperationService#getOffspringOperationsMetadata(DataSetKey, OPType)
-	 */
-	public static List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root, OPType opType) throws IOException {
-		return getOperationService().getOffspringOperationsMetadata(root, opType);
-	}
-
-	/**
-	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey)
-	 */
-	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(new DataSetKey(parent));
-	}
-
-	/**
-	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey, OPType)
-	 */
-	public static List<OperationMetadata> getChildrenOperationsMetadata(OperationKey parent, OPType opType) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(new DataSetKey(parent), opType);
-	}
-
-	/**
-	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey)
-	 */
-	public static List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(parent);
-	}
-
-	/**
-	 * @see OperationService#getChildrenOperationsMetadata(DataSetKey, OPType)
-	 */
-	public static List<OperationMetadata> getChildrenOperationsMetadata(DataSetKey parent, OPType opType) throws IOException {
-		return getOperationService().getChildrenOperationsMetadata(parent, opType);
-	}
-
-	/**
 	 * @see OperationService#getSelfAndOffspringOperationsMetadata(OperationKey)
 	 */
 	public static List<OperationMetadata> getSelfAndOffspringOperationsMetadata(OperationKey root) throws IOException {
 
-		final List<OperationMetadata> offspring = getOffspringOperationsMetadata(new DataSetKey(root));
+		final List<OperationMetadata> offspring = getOperationService().getOffspringOperationsMetadata(new DataSetKey(root));
 		final List<OperationMetadata> selfAndOffspring = new ArrayList<OperationMetadata>(1 + offspring.size());
-		selfAndOffspring.add(getOperationMetadata(root));
+		selfAndOffspring.add(getOperationService().getOperationMetadata(root));
 		selfAndOffspring.addAll(offspring);
 
 		return selfAndOffspring;
@@ -154,7 +81,7 @@ public class OperationsList {
 		final List<OperationMetadata> filteredOperations = new ArrayList<OperationMetadata>();
 
 		for (final OPType validType : validTypes) {
-			List<OperationMetadata> validTypeOperations = OperationsList.getOffspringOperationsMetadata(parentKey, validType);
+			List<OperationMetadata> validTypeOperations = getOperationService().getOffspringOperationsMetadata(parentKey, validType);
 
 			for (OperationMetadata validTypeOperation : validTypeOperations) {
 				if (validTypeOperation.getNumMarkers() == numMarkers) {
@@ -164,26 +91,5 @@ public class OperationsList {
 		}
 
 		return filteredOperations;
-	}
-
-	/**
-	 * @see OperationService#getAncestorOperationTypes(OperationKey)
-	 */
-	public static List<OPType> getAncestorOperationTypes(OperationKey operationKey) throws IOException {
-		return getOperationService().getAncestorOperationTypes(operationKey);
-	}
-
-	/**
-	 * @see OperationService#insertOperation(OperationMetadata)
-	 */
-	public static OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException {
-		return getOperationService().insertOperation(operationMetadata);
-	}
-
-	/**
-	 * @see OperationService#deleteOperationBranch(OperationKey, boolean)
-	 */
-	public static void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException {
-		getOperationService().deleteOperation(operationKey, deleteReports);
 	}
 }

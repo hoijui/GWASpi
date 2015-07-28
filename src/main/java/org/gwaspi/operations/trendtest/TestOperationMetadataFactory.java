@@ -18,6 +18,7 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.OperationTypeInfo;
@@ -33,6 +34,10 @@ public class TestOperationMetadataFactory<D extends CommonTestOperationDataSet, 
 		this.typeInfo = typeInfo;
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return typeInfo;
@@ -41,7 +46,7 @@ public class TestOperationMetadataFactory<D extends CommonTestOperationDataSet, 
 	@Override
 	public OperationMetadata generateMetadata(D operationDataSet, P params) throws IOException {
 
-		OperationMetadata markerCensusOP = OperationsList.getOperationMetadata(params.getMarkerCensus());
+		OperationMetadata markerCensusOP = getOperationService().getOperationMetadata(params.getMarkerCensus());
 
 		final boolean markersOriented = getTypeInfo().isMarkersOriented();
 		final int numMarkers = operationDataSet.getNumMarkers();

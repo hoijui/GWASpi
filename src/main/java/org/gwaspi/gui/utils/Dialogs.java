@@ -35,12 +35,14 @@ import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
@@ -57,6 +59,14 @@ public class Dialogs {
 	private static JFileChooser fc;
 
 	private Dialogs() {
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	private static List<String> generateOperationsNames(final List<OperationMetadata> operations) {
@@ -96,11 +106,11 @@ public class Dialogs {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
-	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, OPType filterOpType) throws IOException {
+	public static OperationMetadata showOperationCombo(final DataSetKey rootKey, final OPType filterOpType) throws IOException {
 
 		OperationMetadata selectedOp = null;
 
-		final List<OperationMetadata> operationsList = OperationsList.getOffspringOperationsMetadata(matrixKey);
+		final List<OperationMetadata> operationsList = getOperationService().getOffspringOperationsMetadata(rootKey);
 		if (!operationsList.isEmpty()) {
 			final List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
 			for (final OperationMetadata operation : operationsList) {
@@ -139,10 +149,10 @@ public class Dialogs {
 		return selectedOp;
 	}
 
-	public static OperationMetadata showOperationSubOperationsCombo(OperationKey parentOpKey, OPType filterOpType, String title) throws IOException {
+	public static OperationMetadata showOperationSubOperationsCombo(final DataSetKey parentKey, final OPType filterOpType, String title) throws IOException {
 
 		OperationMetadata selectedOp = null;
-		List<OperationMetadata> operationsList = OperationsList.getChildrenOperationsMetadata(parentOpKey);
+		final List<OperationMetadata> operationsList = getOperationService().getChildrenOperationsMetadata(parentKey);
 
 		if (!operationsList.isEmpty()) {
 			List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
@@ -253,7 +263,7 @@ public class Dialogs {
 	 * @deprecated unused
 	 */
 	public static int showMatrixSelectCombo(StudyKey studyKey) throws IOException {
-		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyKey);
+		final List<MatrixMetadata> matrices = getMatrixService().getMatrices(studyKey);
 		final List<String> matrixNames = generateMatrixNames(matrices);
 		List<Integer> matrixIDs = new ArrayList<Integer>(matrices.size());
 		for (MatrixMetadata matrixMetadata : matrices) {

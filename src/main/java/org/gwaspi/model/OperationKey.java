@@ -19,6 +19,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import javax.persistence.Transient;
+import org.gwaspi.dao.OperationService;
 
 /**
  * Uniquely identifies an operation.
@@ -44,6 +45,10 @@ public class OperationKey implements Identifier<OperationKey> {
 				new StudyKey(StudyKey.NULL_ID),
 				MatrixKey.NULL_ID),
 				NULL_ID);
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	public static OperationKey valueOf(OperationMetadata operation) {
@@ -139,7 +144,7 @@ public class OperationKey implements Identifier<OperationKey> {
 
 		OperationMetadata operation = null;
 		try {
-			operation = OperationsList.getOperationMetadata(this);
+			operation = getOperationService().getOperationMetadata(this);
 		} catch (IOException ex) {
 			// do nothing, as operation will be null
 		}

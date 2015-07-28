@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
@@ -51,6 +52,10 @@ import ucar.nc2.NetcdfFile;
 public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 	private final Logger log = LoggerFactory.getLogger(LoadGTFromGWASpiFiles.class);
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
 
 //	@Override
 //	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
@@ -156,7 +161,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 						.append(" (Matrix file)\n")
 						.append(loadDescription.getSampleFilePath())
 						.append(" (Sample Info file)\n");
-				MatricesList.insertMatrixMetadata(new MatrixMetadata(
+				getMatrixService().insertMatrix(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
 //						importMatrixMetadata.getSimpleName(), // XXX here is the problem!
 						description.toString(),

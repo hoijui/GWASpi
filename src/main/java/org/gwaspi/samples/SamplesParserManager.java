@@ -29,6 +29,7 @@ import java.util.Set;
 import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.Annotation.GWASpi;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.global.ExtractorList;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
@@ -66,6 +67,10 @@ public class SamplesParserManager {
 	}
 
 	private SamplesParserManager() {
+	}
+
+	private static SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
 	}
 
 	public static Set<Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
@@ -122,7 +127,7 @@ public class SamplesParserManager {
 		log.info("Getting Sample Affection info from DB for: {}",
 				dataSourceFriendlyName);
 		for (SampleKey key : dataSetSource.getSamplesKeysSource()) {
-			SampleInfo sampleInfo = SampleInfoList.getSample(key);
+			SampleInfo sampleInfo = getSampleInfoService().getSample(key);
 			if (sampleInfo != null) {
 				affections.add(sampleInfo.getAffection());
 			}

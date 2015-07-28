@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersGenotypesSource;
 import org.gwaspi.datasource.filter.IndicesFilteredMarkersMetadataSource;
 import org.gwaspi.datasource.filter.IndicesFilteredSamplesGenotypesSource;
@@ -113,6 +114,10 @@ public abstract class AbstractNetCdfOperationDataSet<E extends OperationDataEntr
 			DataSetKey parent)
 	{
 		this(markersOperationSet, origin, parent, null);
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	@Override
@@ -221,7 +226,7 @@ public abstract class AbstractNetCdfOperationDataSet<E extends OperationDataEntr
 	protected NetcdfFile getOriginNetCdfReadFile() throws IOException {
 
 		if (originReadNcFile == null) {
-			MatrixMetadata originMatrixMetadata = MatricesList.getMatrixMetadataById(getOrigin());
+			final MatrixMetadata originMatrixMetadata = getMatrixService().getMatrix(getOrigin());
 
 			File readFile = MatrixMetadata.generatePathToNetCdfFile(originMatrixMetadata);
 			originReadNcFile = NetcdfFile.open(readFile.getAbsolutePath());

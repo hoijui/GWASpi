@@ -26,6 +26,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -49,6 +51,14 @@ public class JPAStudyService implements StudyService {
 
 	public JPAStudyService(EntityManagerFactory emf) {
 		this.jpaUtil = new JPAUtil(emf);
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
 	}
 
 	@Override
@@ -185,11 +195,11 @@ public class JPAStudyService implements StudyService {
 		} finally {
 			jpaUtil.close(em);
 		}
-		List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+		final List<MatrixKey> matrices = getMatrixService().getMatrixKeys(studyKey);
 
 		for (MatrixKey toBeDeletedMatrix : matrices) {
 			try {
-				MatricesList.deleteMatrix(toBeDeletedMatrix, deleteReports);
+				getMatrixService().deleteMatrix(toBeDeletedMatrix, deleteReports);
 				GWASpiExplorerNodes.deleteMatrixNode(toBeDeletedMatrix);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
@@ -207,7 +217,7 @@ public class JPAStudyService implements StudyService {
 		}
 
 		// DELETE STUDY POOL SAMPLES
-		SampleInfoList.deleteSamples(studyKey);
+		getSampleInfoService().deleteSamples(studyKey);
 	}
 
 	@Override

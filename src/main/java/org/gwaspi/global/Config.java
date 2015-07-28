@@ -32,6 +32,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import org.gwaspi.cli.ScriptUtils;
 import org.gwaspi.constants.GlobalConstants;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -126,6 +127,10 @@ public class Config {
 
 	public static Config getSingleton() {
 		return SINGLETON;
+	}
+
+	private StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	private void put(final String key, final Object value) {
@@ -422,7 +427,7 @@ public class Config {
 
 		if (!dbDirExisted && createInitialStudy) {
 			// HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
-			StudyKey newStudy = StudyList.insertNewStudy(new Study("Study 1", ""));
+			StudyKey newStudy = getStudyService().insertStudy(new Study("Study 1", ""));
 			// We do not have to add it to the GUI,
 			// as the GUI is not yet initialized,
 			// and it will be read from the DB and added there later on

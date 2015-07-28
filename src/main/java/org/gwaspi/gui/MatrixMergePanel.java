@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -112,7 +113,7 @@ public class MatrixMergePanel extends JPanel {
 			parentMatrixMetadata = null;
 			matrixItems = Collections.EMPTY_LIST;
 		} else {
-			parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
 			matrixItems = getMatrixItems(parentMatrixKey.getStudyKey());
 		}
 
@@ -355,6 +356,10 @@ public class MatrixMergePanel extends JPanel {
 		//</editor-fold>
 	}
 
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	//<editor-fold defaultstate="expanded" desc="MERGE">
 	private static class MergeAction extends AbstractAction {
 
@@ -394,8 +399,8 @@ public class MatrixMergePanel extends JPanel {
 				int addMatrixId = (Integer) matrixItems.get(selectMatrix.getSelectedIndex())[0];
 				MatrixKey addMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), addMatrixId);
 
-				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
-				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixKey);
+				final MatrixMetadata parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
+				final MatrixMetadata addMatrixMetadata = getMatrixService().getMatrix(addMatrixKey);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
 						// UNKOWN ENCODING, PROBABLY NOT A GOOD IDEA TO PROCEED
@@ -450,7 +455,7 @@ public class MatrixMergePanel extends JPanel {
 
 		List<Object[]> result = new ArrayList<Object[]>();
 
-		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyKey);
+		final List<MatrixMetadata> matrices = getMatrixService().getMatrices(studyKey);
 		if (!matrices.isEmpty()) {
 			for (int i = matrices.size() - 1; i >= 0; i--) {
 				MatrixMetadata currentMatrix = matrices.get(i);

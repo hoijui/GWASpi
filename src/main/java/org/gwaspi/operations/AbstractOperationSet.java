@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -61,6 +62,10 @@ public abstract class AbstractOperationSet<K, V> {
 		this.opIndexTo = opIndexTo;
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	protected OperationKey getOperationKey() {
 		return operationKey;
 	}
@@ -82,7 +87,7 @@ public abstract class AbstractOperationSet<K, V> {
 
 		NetcdfFile ncfile = null;
 		try {
-			OperationMetadata opMetadata = OperationsList.getOperationMetadata(operationKey);
+			OperationMetadata opMetadata = getOperationService().getOperationMetadata(operationKey);
 			ncfile = NetcdfFile.open(OperationMetadata.generatePathToNetCdfFile(opMetadata).getAbsolutePath());
 			Variable var = ncfile.findVariable(NetCDFConstants.Variables.VAR_OPSET);
 

@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
@@ -71,6 +72,10 @@ public class PlinkBinaryFormatter implements Formatter {
 	 */
 	public PlinkBinaryFormatter() {
 		this(false);
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	@Override
@@ -121,7 +126,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
 
 		// ALLELES
-		final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetKey);
+		final List<OperationMetadata> operations = getOperationService().getOffspringOperationsMetadata(dataSetKey);
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, rdDataSetMetadata.getNumMarkers());
 
 		QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(markersQAOpKey);

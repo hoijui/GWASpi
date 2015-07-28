@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
@@ -50,6 +51,10 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 		this.dataSet = new DataSet();
 		this.progressHandler = null;
+	}
+
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
 	}
 
 	/**
@@ -93,7 +98,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	@Override
 	public void addSampleKey(SampleKey sampleKey) throws IOException {
 
-		SampleInfo sampleInfo = SampleInfoList.getSample(sampleKey);
+		SampleInfo sampleInfo = getSampleInfoService().getSample(sampleKey);
 		dataSet.getSampleInfos().add(sampleInfo);
 	}
 
@@ -117,7 +122,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void finishedLoadingSampleInfos() throws IOException {
 
 		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.FINALIZING);
-		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
+		getSampleInfoService().insertSamples(getDataSet().getSampleInfos());
 		logParsedSampleInfos();
 		progressHandler.getSampleInfosProgressHandler().setNewStatus(ProcessStatus.COMPLEETED);
 	}

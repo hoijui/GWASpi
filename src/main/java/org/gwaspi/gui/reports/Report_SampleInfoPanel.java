@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -156,9 +157,13 @@ public class Report_SampleInfoPanel extends JPanel {
 		actionLoadReport();
 	}
 
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
 	private void actionLoadReport() throws IOException {
 
-		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
+		final List<SampleInfo> allSamplesFromPool = getSampleInfoService().getSamples(studyKey);
 
 		// Getting data from file and subdividing to series all points by chromosome
 		Object[][] tableMatrix = new Object[allSamplesFromPool.size()][COLUMNS.length];

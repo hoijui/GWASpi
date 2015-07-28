@@ -20,6 +20,7 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
@@ -48,6 +49,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 	CombiTestScriptCommand() {
 		super("combi_association");
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	@Override
@@ -83,8 +88,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			final MatrixKey matrixKey = fetchMatrixKey(args, studyKey); // parent Matrix
 
 			final OperationKey qaMarkersOperationKey = fetchOperationKey(args, matrixKey, "qa-markers");
-			final int totalMarkers
-					= OperationsList.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
+			final int totalMarkers = getOperationService()
+					.getOperationMetadata(qaMarkersOperationKey).getNumMarkers();
 
 			final Boolean perChromosome = fetchBoolean(args, "per-chromosome", null);
 

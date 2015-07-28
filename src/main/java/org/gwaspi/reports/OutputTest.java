@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -115,6 +117,14 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		this.header = OutputQAMarkers.createReportHeaderLine(
 				createColumnHeaders(getParams().getTestType(), false));
 		this.testName = createTestName(getParams().getTestType());
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
 	}
 
 	public static String[] createColumnHeaders(final OPType associationTestType, final boolean gui)
@@ -225,12 +235,12 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		OperationMetadata op = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
+		OperationMetadata op = getOperationService().getOperationMetadata(getParams().getTestOperationKey());
 		final StudyKey studyKey = getParams().getTestOperationKey().getParentMatrixKey().getStudyKey();
 
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
 		Utils.createFolder(new File(Study.constructReportsPath(studyKey)));
-		String prefix = ReportsList.getReportNamePrefix(op);
+		String prefix = getReportService().getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving {} test", testName);
@@ -239,7 +249,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		writeManhattanPlotFromAssociationData(manhattanName, 4000, 500);
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.FINALIZING);
 		if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
-			ReportsList.insertRPMetadata(new Report(
+			getReportService().insertReport(new Report(
 					testName + " Test Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
@@ -256,7 +266,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		writeQQPlotFromAssociationData(qqName, 500, 500);
 		creatingQQPlotPH.setNewStatus(ProcessStatus.FINALIZING);
 		if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
-			ReportsList.insertRPMetadata(new Report(
+			getReportService().insertReport(new Report(
 					testName + " Test QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
@@ -272,7 +282,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		writingAssociationReportPH.setNewStatus(ProcessStatus.RUNNING);
 		createSortedAssociationReport(assocName);
 		writingAssociationReportPH.setNewStatus(ProcessStatus.FINALIZING);
-		ReportsList.insertRPMetadata(new Report(
+		getReportService().insertReport(new Report(
 				testName + " Tests Values",
 				assocName + ".txt",
 				getParams().getTestType(),
@@ -297,7 +307,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 
 		chart.setBackgroundPaint(MANHATTAN_PLOT_CHART_BACKGROUD_COLOR);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
+		OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(getParams().getTestOperationKey());
 		int pointNb = rdOPMetadata.getNumMarkers();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -330,7 +340,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
+		OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(getParams().getTestOperationKey());
 		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(
@@ -368,7 +378,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		}
 
 		String sep = ExportConstants.SEPARATOR_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(getParams().getTestOperationKey());
+		OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(getParams().getTestOperationKey());
 		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(getParams().getTestOperationKey().getParentMatrixKey());
 		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedOrigIndices, markersMetadatas);

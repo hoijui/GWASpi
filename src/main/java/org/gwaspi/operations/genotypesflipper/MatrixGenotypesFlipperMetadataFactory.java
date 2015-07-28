@@ -20,6 +20,7 @@ package org.gwaspi.operations.genotypesflipper;
 import java.io.IOException;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatricesList;
@@ -33,6 +34,10 @@ public class MatrixGenotypesFlipperMetadataFactory
 	public static final MatrixGenotypesFlipperMetadataFactory SINGLETON
 			= new MatrixGenotypesFlipperMetadataFactory();
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	@Override
 	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixGenotypesFlipperParams params) throws IOException {
 
@@ -41,7 +46,7 @@ public class MatrixGenotypesFlipperMetadataFactory
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
 		final MatrixMetadata sourceMatrixMetadata
-				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+				= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 
 		final StringBuilder description = new StringBuilder();
 		description
@@ -87,7 +92,7 @@ public class MatrixGenotypesFlipperMetadataFactory
 	public GenotypeEncoding getGuessedGTCode(MatrixGenotypesFlipperParams params) {
 		try {
 			final MatrixMetadata sourceMatrixMetadata
-					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+					= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 			return sourceMatrixMetadata.getGenotypeEncoding();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

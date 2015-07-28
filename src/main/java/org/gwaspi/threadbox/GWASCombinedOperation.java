@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -73,6 +74,10 @@ public class GWASCombinedOperation extends CommonRunnable {
 		this.progressSource = new SuperProgressSource(fullGwasProcessInfo, subProgressSourcesAndWeights);
 		final DataSetKey parentKey = gwasParams.getMarkerCensusOperationParams().getParent();
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(parentKey);
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	@Override
@@ -135,7 +140,7 @@ public class GWASCombinedOperation extends CommonRunnable {
 
 		final OperationKey markersQAOpKey = gwasParams.getMarkerCensusOperationParams().getMarkerQAOpKey();
 
-		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
+		OperationMetadata markerQAMetadata = getOperationService().getOperationMetadata(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());

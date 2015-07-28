@@ -34,6 +34,8 @@ import javax.swing.JTextArea;
 import org.gwaspi.constants.DBSamplesConstants;
 import org.gwaspi.constants.ExportConstants.ExportFormat;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -67,10 +69,10 @@ public class CurrentMatrixPanel extends JPanel {
 
 		matrix = matrixKey;
 		final DataSetKey abstractMatrix = new DataSetKey(matrixKey);
-		final MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+		final MatrixMetadata matrixMetadata = getMatrixService().getMatrix(matrixKey);
 
 //		final List<OperationMetadata> subOperations = OperationsList.getOffspringOperationsMetadata(abstractMatrix);
-		final List<OperationMetadata> subOperations = OperationsList.getChildrenOperationsMetadata(abstractMatrix);
+		final List<OperationMetadata> subOperations = getOperationService().getChildrenOperationsMetadata(abstractMatrix);
 
 		JPanel pnl_desc = new JPanel();
 		JScrollPane scrl_desc = new JScrollPane();
@@ -151,6 +153,14 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
 		btn_Back.setAction(new BackAction(matrix.getStudyKey()));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
@@ -253,7 +263,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 				try {
 					// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-					final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetMetadata.getDataSetKey());
+					final List<OperationMetadata> operations = getOperationService().getOffspringOperationsMetadata(dataSetMetadata.getDataSetKey());
 					final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, dataSetMetadata.getNumMarkers());
 					if (markersQAOpKey == null) {
 						Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
@@ -309,9 +319,9 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				MatrixMetadata matrixMetadataById = MatricesList.getMatrixMetadataById(matrixKey);
+				final MatrixMetadata matrixMetadataById = getMatrixService().getMatrix(matrixKey);
 				matrixMetadataById.setDescription(matrixDesc.getText());
-				MatricesList.updateMatrix(matrixMetadataById);
+				getMatrixService().updateMatrix(matrixMetadataById);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

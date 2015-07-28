@@ -33,10 +33,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.utils.AbsolutePercentageComponent;
 import org.gwaspi.gui.utils.AbsolutePercentageModel;
 import org.gwaspi.gui.utils.TextDefaultAction;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -243,11 +245,11 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 		List<OperationKey> parentCandidates = new ArrayList<OperationKey>();
 		try {
 			// Look for ANY QA-Markers operation in the DB
-			List<StudyKey> studies = StudyList.getStudies();
+			List<StudyKey> studies = StudyList.getStudyService().getStudies();
 			studiesLoop : for (StudyKey studyKey : studies) {
-				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+				List<MatrixKey> matrices = MatricesList.getMatrixService().getMatrixKeys(studyKey);
 				for (MatrixKey matrixKey : matrices) {
-					List<OperationMetadata> parentCandidatesMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.COMBI_ASSOC_TEST);
+					List<OperationMetadata> parentCandidatesMetadatas = OperationsList.getOperationService().getOffspringOperationsMetadata(new DataSetKey(matrixKey), OPType.COMBI_ASSOC_TEST);
 					for (OperationMetadata qaOperationsMetadata : parentCandidatesMetadatas) {
 						parentCandidates.add(OperationKey.valueOf(qaOperationsMetadata));
 					}
@@ -265,7 +267,7 @@ public class ByCombiWeightsFilterOperationParamsEditor extends JPanel {
 			totalMarkers = 100000;
 		} else {
 			parentOperationKey = parentCandidates.get(0);
-			totalMarkers = OperationsList.getOperationMetadata(parentOperationKey).getNumMarkers();
+			totalMarkers = OperationsList.getOperationService().getOperationMetadata(parentOperationKey).getNumMarkers();
 		}
 
 		ByCombiWeightsFilterOperationParams inputParams = new ByCombiWeightsFilterOperationParams(

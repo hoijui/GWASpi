@@ -48,6 +48,7 @@ import javax.swing.event.ListSelectionListener;
 import org.gwaspi.cli.TestScriptCommand;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -132,7 +133,7 @@ public class DataSetAnalysePanel extends JPanel {
 		} else {
 			observedElementMetadata = MatricesList.getDataSetMetadata(observedElementKey);
 			if (observedElementKey.isOperation()) {
-				currentOP = OperationsList.getOperationMetadata(observedElementKey.getOperationParent());
+				currentOP = getOperationService().getOperationMetadata(observedElementKey.getOperationParent());
 				parent = currentOP.getParent();
 			} else {
 				currentOP = null;
@@ -150,7 +151,7 @@ public class DataSetAnalysePanel extends JPanel {
 		if (observedElementKey == null) {
 			subOperations = Collections.EMPTY_LIST;
 		} else {
-			subOperations = OperationsList.getChildrenOperationsMetadata(observedElementKey);
+			subOperations = getOperationService().getChildrenOperationsMetadata(observedElementKey);
 		}
 
 		JPanel pnl_desc = new JPanel();
@@ -274,6 +275,10 @@ public class DataSetAnalysePanel extends JPanel {
 		});
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	private void refreshActionStates() {
 
 		final boolean validMarkerCensusOpAvailable = isValidMarkerCensusOpAvailable();
@@ -382,7 +387,8 @@ public class DataSetAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				OperationKey censusOPKey = evaluateCensusOPId(currentOP, observedElementKey);
+				final OperationKey censusOPKey = evaluateCensusOPId(currentOP, observedElementKey);
+				final DataSetKey censusOpDataSetKey = new DataSetKey(censusOPKey);
 				if (censusOPKey == null) {
 					// the user chose to abort the operation
 					return;
@@ -438,14 +444,14 @@ public class DataSetAnalysePanel extends JPanel {
 						OperationKey hwOPKey = null;
 						if (testType == OPType.COMBI_ASSOC_TEST) {
 							List<OperationMetadata> qaMarkersOffspring
-									= OperationsList.getOffspringOperationsMetadata(observedElementKey, OPType.MARKER_QA);
+									= getOperationService().getOffspringOperationsMetadata(observedElementKey, OPType.MARKER_QA);
 							qaMarkersOffspringKeys = new ArrayList<OperationKey>(qaMarkersOffspring.size());
 							for (OperationMetadata qaMarkersOp : qaMarkersOffspring) {
 								qaMarkersOffspringKeys.add(OperationKey.valueOf(qaMarkersOp));
 							}
 						} else {
 							// GET HW OPERATION
-							List<OperationMetadata> hwOperations = OperationsList.getChildrenOperationsMetadata(censusOPKey, OPType.HARDY_WEINBERG);
+							List<OperationMetadata> hwOperations = getOperationService().getChildrenOperationsMetadata(censusOpDataSetKey, OPType.HARDY_WEINBERG);
 							for (OperationMetadata currentHWop : hwOperations) {
 								// REQUEST WHICH HW TO USE
 								// FIXME this looks strange.. just use the last one?
@@ -464,7 +470,7 @@ public class DataSetAnalysePanel extends JPanel {
 								combiTestParams = new CombiTestOperationParams(qaMarkersOffspringKeys.get(0));
 								combiTestParams = CombiTestParamsGUI.chooseParams(dialogParent, combiTestParams, qaMarkersOffspringKeys);
 								if (combiTestParams != null) {
-									OperationMetadata testParentOperation = OperationsList.getOperationMetadata(combiTestParams.getParent().getOperationParent());
+									OperationMetadata testParentOperation = getOperationService().getOperationMetadata(combiTestParams.getParent().getOperationParent());
 									final int totalMarkers = testParentOperation.getNumMarkers();
 									combiFilterParams = new ByCombiWeightsFilterOperationParams(totalMarkers);
 									combiFilterParams = ByCombiWeightsFilterOperationParamsEditor.chooseParams(dialogParent, combiFilterParams, null);
@@ -524,14 +530,14 @@ public class DataSetAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 
 			try {
-				List<OperationMetadata> qaMarkersOps = OperationsList.getChildrenOperationsMetadata(observedElementKey, OPType.MARKER_QA);
+				List<OperationMetadata> qaMarkersOps = getOperationService().getChildrenOperationsMetadata(observedElementKey, OPType.MARKER_QA);
 				if (qaMarkersOps.isEmpty()) {
 					Dialogs.showWarningDialogue("You must perform a Markers Quality Assurance before running a Marker Census operation!");
 					return;
 				}
 				final OperationKey qaMarkersOpKey = OperationKey.valueOf(qaMarkersOps.get(0));
 
-				List<OperationMetadata> qaSamplesOps = OperationsList.getChildrenOperationsMetadata(observedElementKey, OPType.SAMPLE_QA);
+				List<OperationMetadata> qaSamplesOps = getOperationService().getChildrenOperationsMetadata(observedElementKey, OPType.SAMPLE_QA);
 				if (qaMarkersOps.isEmpty()) {
 					Dialogs.showWarningDialogue("You must perform a Samples Quality Assurance before running a Marker Census operation!");
 					return;

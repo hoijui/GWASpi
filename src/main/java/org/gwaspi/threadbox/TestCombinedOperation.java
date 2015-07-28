@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
@@ -95,6 +96,10 @@ public class TestCombinedOperation extends CommonRunnable {
 		this.taskLockProperties = tmpTaskLockProperties;
 	}
 
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
@@ -120,8 +125,8 @@ public class TestCombinedOperation extends CommonRunnable {
 
 		progressSource.setNewStatus(ProcessStatus.INITIALIZING);
 
-		final OperationMetadata operationMetadata = OperationsList.getOperationMetadata(censusOpKey);
-		final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(censusOpKey.getParentMatrixKey());
+		final OperationMetadata operationMetadata = getOperationService().getOperationMetadata(censusOpKey);
+		final List<OperationMetadata> operations = getOperationService().getOffspringOperationsMetadata(new DataSetKey(censusOpKey.getParentMatrixKey()));
 		final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, operationMetadata.getNumMarkers());
 
 //		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -138,7 +143,7 @@ public class TestCombinedOperation extends CommonRunnable {
 //		}
 
 		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpKey);
+		OperationMetadata markerQAMetadata = getOperationService().getOperationMetadata(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());

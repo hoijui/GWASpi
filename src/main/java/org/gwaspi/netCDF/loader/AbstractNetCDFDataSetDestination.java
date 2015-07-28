@@ -26,6 +26,7 @@ import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.ChromosomeInfo;
@@ -74,6 +75,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		this.alleleLoadPerSample = null;
 		this.genotypesHyperslabs = null;
 		this.hyperSlabRows = -1;
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	@Override
@@ -264,7 +269,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 				throw new RuntimeException("No markers loaded");
 			}
 
-			resultMatrixKey = MatricesList.insertMatrixMetadata(matrixMetadata);
+			resultMatrixKey = getMatrixService().insertMatrix(matrixMetadata);
 			try {
 				ncfile = generateNetcdfHandler(matrixMetadata);
 			} catch (InvalidRangeException ex) {
@@ -515,7 +520,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			description.append("Genotype encoding: ");
 			description.append(getGuessedGTCode().toString());
 			matrixMetadata.setDescription(description.toString());
-			MatricesList.updateMatrix(matrixMetadata);
+			getMatrixService().updateMatrix(matrixMetadata);
 
 			// CLOSE FILE
 			ncfile.close();

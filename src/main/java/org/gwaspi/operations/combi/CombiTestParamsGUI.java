@@ -47,6 +47,7 @@ import org.gwaspi.gui.utils.CheckBoxDefaultAction;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
 import org.gwaspi.gui.utils.TextDefaultAction;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -509,11 +510,11 @@ public class CombiTestParamsGUI extends JPanel {
 		List<OperationKey> parentCandidates = new ArrayList<OperationKey>();
 		try {
 			// Look for ANY QA-Markers operation in the DB
-			List<StudyKey> studies = StudyList.getStudies();
+			List<StudyKey> studies = StudyList.getStudyService().getStudies();
 			studiesLoop : for (StudyKey studyKey : studies) {
-				List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+				List<MatrixKey> matrices = MatricesList.getMatrixService().getMatrixKeys(studyKey);
 				for (MatrixKey matrixKey : matrices) {
-					List<OperationMetadata> parentCandidatesMetadatas = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_QA);
+					List<OperationMetadata> parentCandidatesMetadatas = OperationsList.getOperationService().getOffspringOperationsMetadata(new DataSetKey(matrixKey), OPType.MARKER_QA);
 					for (OperationMetadata qaOperationsMetadata : parentCandidatesMetadatas) {
 						parentCandidates.add(OperationKey.valueOf(qaOperationsMetadata));
 					}

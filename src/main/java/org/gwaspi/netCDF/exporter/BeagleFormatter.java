@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.DataSetSource;
@@ -50,6 +51,10 @@ import org.slf4j.LoggerFactory;
 class BeagleFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(BeagleFormatter.class);
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
 
 	@Override
 	public void export(
@@ -233,7 +238,7 @@ class BeagleFormatter implements Formatter {
 
 			// get MARKER_QA Operation
 			final DataSetKey dataSetKey = rdDataSetMetadata.getDataSetKey();
-			final List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(dataSetKey);
+			final List<OperationMetadata> operations = getOperationService().getOffspringOperationsMetadata(dataSetKey);
 			final OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA, rdDataSetMetadata.getNumMarkers());
 
 			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;

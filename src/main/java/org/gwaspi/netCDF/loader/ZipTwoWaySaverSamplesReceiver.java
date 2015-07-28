@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
@@ -71,6 +72,10 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 		this.hyperSlabRows = -1;
 	}
 
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
 	@Override
 	public MatrixKey getResultMatrixKey() {
 		return resultMatrixKey;
@@ -85,7 +90,7 @@ public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 
 	@Override
 	public void finishedLoadingSampleInfos() throws IOException {
-		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
+		getSampleInfoService().insertSamples(getDataSet().getSampleInfos());
 	}
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">

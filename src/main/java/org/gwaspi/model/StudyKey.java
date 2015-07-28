@@ -19,6 +19,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import javax.persistence.Transient;
+import org.gwaspi.dao.StudyService;
 
 /**
  * Uniquely identifies an existing study.
@@ -37,6 +38,10 @@ public class StudyKey implements Identifier<StudyKey> {
 
 	protected StudyKey() {
 		this(NULL_ID);
+	}
+
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	@Transient
@@ -114,8 +119,8 @@ public class StudyKey implements Identifier<StudyKey> {
 
 		Study study = null;
 		try {
-			study = StudyList.getStudy(this);
-		} catch (IOException ex) {
+			study = getStudyService().getStudy(this);
+		} catch (final IOException ex) {
 			// do nothing, as study will be null
 		}
 

@@ -40,7 +40,7 @@ public class TestOutputParams extends AbstractOperationParams {
 	}
 
 	public TestOutputParams(OperationKey testOpKey, OperationKey qaMarkersOpKey) throws IOException {
-		this(testOpKey, OperationsList.getOperationMetadata(testOpKey).getOperationType(), qaMarkersOpKey);
+		this(testOpKey, OperationsList.getOperationService().getOperationMetadata(testOpKey).getOperationType(), qaMarkersOpKey);
 	}
 
 	/** @deprecated */

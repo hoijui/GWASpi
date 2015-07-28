@@ -27,6 +27,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -50,6 +52,14 @@ public class JPAMatrixService implements MatrixService {
 
 	public JPAMatrixService(final EntityManagerFactory emf) {
 		this.jpaUtil = new JPAUtil(emf);
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
 	}
 
 	private static List<MatrixKey> convertMatrixIdsToKeys(final StudyKey studyKey, final List<Integer> matrixIds) {
@@ -157,13 +167,15 @@ public class JPAMatrixService implements MatrixService {
 
 		String genotypesFolder = Study.constructGTPath(matrixMetadata.getKey().getStudyKey());
 
+		final DataSetKey matrixDataSetKey = new DataSetKey(matrixKey);
+
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
-		List<OperationMetadata> operations = OperationsList.getOffspringOperationsMetadata(matrixKey);
+		final List<OperationMetadata> operations = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey);
 		for (OperationMetadata op : operations) {
 			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}
 
-		ReportsList.deleteReports(new DataSetKey(matrixKey));
+		getReportService().deleteReports(matrixDataSetKey);
 
 		// DELETE MATRIX NETCDF FILE
 		File matrixFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);

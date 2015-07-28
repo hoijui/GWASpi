@@ -19,6 +19,7 @@ package org.gwaspi.operations.dataextractor;
 
 import java.io.IOException;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatricesList;
@@ -32,6 +33,10 @@ public class MatrixDataExtractorMetadataFactory
 	public static final MatrixDataExtractorMetadataFactory SINGLETON
 			= new MatrixDataExtractorMetadataFactory();
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	@Override
 	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixDataExtractorParams params) throws IOException {
 
@@ -40,7 +45,7 @@ public class MatrixDataExtractorMetadataFactory
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
 		final MatrixMetadata sourceMatrixMetadata
-				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+				= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 
 		final StringBuilder markerPickerCriteria = new StringBuilder();
 		for (Object value : params.getFullMarkerCriteria()) {
@@ -147,7 +152,7 @@ public class MatrixDataExtractorMetadataFactory
 	public GenotypeEncoding getGuessedGTCode(MatrixDataExtractorParams params) {
 		try {
 			final MatrixMetadata sourceMatrixMetadata
-					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+					= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 			return sourceMatrixMetadata.getGenotypeEncoding();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

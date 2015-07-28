@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -96,6 +98,14 @@ public class GTFreqAndHWCombinedOperation extends CommonRunnable {
 		this.hardyWeinbergOperationKey = null;
 	}
 
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressSource;
@@ -135,8 +145,8 @@ public class GTFreqAndHWCombinedOperation extends CommonRunnable {
 		prepareForMcPh.setNewStatus(ProcessStatus.INITIALIZING);
 		final MarkerCensusOperationParams markerCensusOperationParams = gwasParams.getMarkerCensusOperationParams();
 
-		final OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.SAMPLE_QA).get(0));
-		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.MARKER_QA).get(0));
+		final OperationKey sampleQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.SAMPLE_QA).get(0));
+		final OperationKey markersQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(markerCensusOperationParams.getParent(), OPType.MARKER_QA).get(0));
 
 		markerCensusOperationParams.setSampleQAOpKey(sampleQAOpKey);
 		markerCensusOperationParams.setMarkerQAOpKey(markersQAOpKey);
@@ -162,7 +172,7 @@ public class GTFreqAndHWCombinedOperation extends CommonRunnable {
 					phenotypeFile.getPath(),
 					sampleInfoExtractor);
 			Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
-			SampleInfoList.insertSampleInfos(sampleInfos);
+			getSampleInfoService().insertSamples(sampleInfos);
 		} else {
 			// BY DB AFFECTION
 			// use Sample Info from the DB to extract affection state
@@ -212,7 +222,7 @@ public class GTFreqAndHWCombinedOperation extends CommonRunnable {
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		// HW ON GENOTYPE FREQ.
-		final OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
+		final OperationKey markersQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(gwasParams.getMarkerCensusOperationParams().getParent(), OPType.MARKER_QA).get(0));
 		HardyWeinbergOperationParams params = new HardyWeinbergOperationParams(markerCensusOperationKey, gwasParams.getHardyWeinbergOperationName(), markersQAOpKey);
 		final HardyWeinbergCombinedOperation threaded_HardyWeinberg = new HardyWeinbergCombinedOperation(params);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_HARDY_WEINBERG, threaded_HardyWeinberg.getProgressSource(), null);

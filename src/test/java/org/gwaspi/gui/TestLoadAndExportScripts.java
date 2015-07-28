@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -40,6 +41,10 @@ import org.slf4j.LoggerFactory;
 public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 	private static final Logger log = LoggerFactory.getLogger(TestLoadAndExportScripts.class);
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
 
 	public static String createSanitizedMatrixName(final ImportFormat format, final String name) {
 		return Utils.sanitizeForFileName(format.name() + "." + name);
@@ -218,7 +223,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 	private static MatrixKey findMatrixId(final StudyKey studyKey, final String matrixName) throws IOException {
 
 		int addedMatrixId = -1;
-		List<MatrixMetadata> matricesTable = MatricesList.getMatricesTable(studyKey);
+		final List<MatrixMetadata> matricesTable = getMatrixService().getMatrices(studyKey);
 		for (final MatrixMetadata matrix : matricesTable) {
 			if (matrix.getFriendlyName().equals(matrixName)) {
 				addedMatrixId = matrix.getMatrixId();

@@ -39,6 +39,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -173,7 +174,7 @@ public class StudyManagementPanel extends JPanel {
 
 		pnl_StudiesTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(
 				Text.Study.availableStudies)); // NOI18N
-		tbl_StudiesTable.setModel(new StudyTableModel(StudyList.getStudyList()));
+		tbl_StudiesTable.setModel(new StudyTableModel(getStudyService().getStudiesInfos()));
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
 		btn_DeleteStudy.setAction(new DeleteStudyAction(this, tbl_StudiesTable));
 
@@ -279,6 +280,10 @@ public class StudyManagementPanel extends JPanel {
 		//</editor-fold>
 	}
 
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
+	}
+
 	private static class AddStudyAction extends AbstractAction {
 
 		private final JLabel newStudyNameLabel;
@@ -309,7 +314,7 @@ public class StudyManagementPanel extends JPanel {
 						study_description = "";
 					}
 
-					StudyKey newStudy = StudyList.insertNewStudy(new Study(study_name, study_description));
+					StudyKey newStudy = getStudyService().insertStudy(new Study(study_name, study_description));
 					GWASpiExplorerNodes.insertStudyNode(newStudy);
 					GWASpiExplorerPanel.getSingleton().selectNode(newStudy);
 				} else {

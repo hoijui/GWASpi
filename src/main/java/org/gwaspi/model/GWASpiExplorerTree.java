@@ -36,6 +36,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.CurrentMatrixPanel;
@@ -83,6 +87,22 @@ public class GWASpiExplorerTree {
 		this.tree = null;
 		this.playWithLineStyle = false;
 		this.lineStyle = "Horizontal";
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private static ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	public JTree getGWASpiTree() throws IOException {
@@ -140,7 +160,7 @@ public class GWASpiExplorerTree {
 			addOperationToTree(operationItem, allOperations, subOPKey);
 		}
 
-		List<Report> reports = ReportsList.getReportsList(operationKey);
+		List<Report> reports = getReportService().getReports(new DataSetKey(operationKey));
 		for (Report report : reports) {
 //			if (!report.getReportType().equals(OPType.ALLELICTEST)
 //					&& !report.getReportType().equals(OPType.GENOTYPICTEST)
@@ -164,7 +184,7 @@ public class GWASpiExplorerTree {
 		GWASpiExplorerNodes.addNode(top, category, false);
 
 		// LOAD ALL STUDIES
-		List<Study> studies = StudyList.getStudyList();
+		List<Study> studies = getStudyService().getStudiesInfos();
 		for (Study study : studies) {
 			final StudyKey studyKey = StudyKey.valueOf(study);
 
@@ -178,13 +198,14 @@ public class GWASpiExplorerTree {
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			List<MatrixKey> matrices = MatricesList.getMatrixList(studyKey);
+			List<MatrixKey> matrices = getMatrixService().getMatrixKeys(studyKey);
 			for (MatrixKey matrixKey : matrices) {
 				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixKey);
 
 				// LOAD ROOT OPERATIONS (having the matrix as direct parent)
-				List<OperationMetadata> rootOperations = OperationsList.getChildrenOperationsMetadata(new DataSetKey(matrixKey));
-				List<OperationMetadata> allOperations = OperationsList.getOffspringOperationsMetadata(matrixKey);
+				final DataSetKey matrixDataSetKey = new DataSetKey(matrixKey);
+				final List<OperationMetadata> rootOperations = getOperationService().getChildrenOperationsMetadata(matrixDataSetKey);
+				final List<OperationMetadata> allOperations = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey);
 				for (OperationMetadata rootOperation : rootOperations) {
 					// LOAD SUB OPERATIONS (having an operation as direct parent)
 					OperationMetadata currentOP = rootOperation;
@@ -268,11 +289,11 @@ public class GWASpiExplorerTree {
 					case OPERATION:
 						tree.expandPath(treePath);
 						final OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
-						final OperationMetadata currentOP = OperationsList.getOperationMetadata(currentOPKey);
+						final OperationMetadata currentOP = getOperationService().getOperationMetadata(currentOPKey);
 						switch (currentOP.getType()) {
 							case HARDY_WEINBERG:
 								// Display HW Report
-								List<Report> reportsList = ReportsList.getReportsList(currentOPKey);
+								List<Report> reportsList = getReportService().getReports(new DataSetKey(currentOPKey));
 								if (!reportsList.isEmpty()) {
 									Report hwReport = reportsList.get(0);
 									String reportFile = hwReport.getFileName();
@@ -317,7 +338,7 @@ public class GWASpiExplorerTree {
 					case REPORT:
 						// Display report summary
 						tree.expandPath(treePath);
-						final Report rp = ReportsList.getReport((ReportKey) currentElementInfo.getContentKey());
+						final Report rp = getReportService().getReport((ReportKey) currentElementInfo.getContentKey());
 						final String reportFile = rp.getFileName();
 						switch (rp.getReportType()) {
 							case SAMPLE_HTZYPLOT:

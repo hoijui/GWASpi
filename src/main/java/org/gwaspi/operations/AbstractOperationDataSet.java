@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.DataSetKey;
@@ -92,6 +93,10 @@ public abstract class AbstractOperationDataSet<E extends OperationDataEntry> imp
 		this.params = null;
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 //	public AbstractOperationDataSet(
 //			MatrixKey origin,
 //			DataSetKey parent,
@@ -146,9 +151,9 @@ public abstract class AbstractOperationDataSet<E extends OperationDataEntry> imp
 		if (operationMetadata == null) {
 			if (operationKey == null) {
 				operationMetadata = OperationManager.generateOperationMetadata(getTypeInfo(), this, params);
-				setOperationKey(OperationsList.insertOperation(operationMetadata));
+				setOperationKey(getOperationService().insertOperation(operationMetadata));
 			} else {
-				operationMetadata = OperationsList.getOperationMetadata(operationKey);
+				operationMetadata = getOperationService().getOperationMetadata(operationKey);
 			}
 		}
 

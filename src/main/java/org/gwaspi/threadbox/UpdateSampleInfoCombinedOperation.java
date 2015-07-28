@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
+import org.gwaspi.dao.SampleInfoService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
@@ -58,6 +60,14 @@ public class UpdateSampleInfoCombinedOperation extends CommonRunnable {
 		this.taskLockProperties.addRequired(studyKey);
 	}
 
+	private SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
+	private StudyService getStudyService() {
+		return StudyList.getStudyService();
+	}
+
 	@Override
 	public ProgressSource getProgressSource() {
 		return progressHandler;
@@ -91,7 +101,7 @@ public class UpdateSampleInfoCombinedOperation extends CommonRunnable {
 				sampleInfoFile.getPath(),
 				sampleInfoExtractor);
 		Collection<SampleInfo> sampleInfos = sampleInfoExtractor.getSampleInfos().values();
-		SampleInfoList.insertSampleInfos(sampleInfos);
+		getSampleInfoService().insertSamples(sampleInfos);
 		progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 
 		// DO NOT! Write new reports of SAMPLE QA
@@ -107,7 +117,7 @@ public class UpdateSampleInfoCombinedOperation extends CommonRunnable {
 //			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
 //		}
 
-		Study study = StudyList.getStudy(studyKey);
+		Study study = getStudyService().getStudy(studyKey);
 
 		final StringBuilder newDesc = new StringBuilder();
 		newDesc
@@ -118,7 +128,7 @@ public class UpdateSampleInfoCombinedOperation extends CommonRunnable {
 				.append(org.gwaspi.global.Utils.getShortDateTimeAsString())
 				.append(") *");
 		study.setDescription(newDesc.toString());
-		StudyList.updateStudy(study);
+		getStudyService().updateStudy(study);
 
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 	}

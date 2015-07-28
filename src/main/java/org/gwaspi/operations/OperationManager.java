@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -83,6 +84,10 @@ public class OperationManager {
 	}
 
 	private OperationManager() {
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	public static void registerOperationFactory(final OperationFactory operationFactory) {
@@ -154,7 +159,7 @@ public class OperationManager {
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
 
-		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(operationKey);
+		OperationMetadata operationMetadata = getOperationService().getOperationMetadata(operationKey);
 		OPType oldType = operationMetadata.getOperationType();
 		final Class<? extends MatrixOperation> type = oldToNewType.get(oldType);
 
@@ -272,7 +277,7 @@ public class OperationManager {
 			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
 		} else {
 			final boolean opHasResultView
-					= (OperationsList.getOperationMetadata(resultOperationKey) != null); // HACK maybe better add a getter to OperationType or so
+					= (getOperationService().getOperationMetadata(resultOperationKey) != null); // HACK maybe better add a getter to OperationType or so
 			if (opHasResultView) {
 				if (parent.isMatrix()) {
 					GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultOperationKey);
@@ -290,9 +295,9 @@ public class OperationManager {
 		try {
 			final List<OperationMetadata> presentOperations;
 			if (childrenOnly) {
-				presentOperations = OperationsList.getChildrenOperationsMetadata(rootKey);
+				presentOperations = getOperationService().getChildrenOperationsMetadata(rootKey);
 			} else {
-				presentOperations = OperationsList.getOffspringOperationsMetadata(rootKey);
+				presentOperations = getOperationService().getOffspringOperationsMetadata(rootKey);
 			}
 
 			return checkForNecessaryOperations(necessaryOpTypes, presentOperations);

@@ -18,6 +18,10 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
@@ -93,6 +97,14 @@ public class Deleter extends CommonRunnable {
 		this.taskLockProperties = new UnmodifiableTaskLockProperties(tmpTaskLockProperties);
 	}
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
 	private static String getToDeleteShortDescription(
 			StudyKey studyKey,
 			MatrixKey matrixKey,
@@ -114,6 +126,14 @@ public class Deleter extends CommonRunnable {
 		}
 
 		return description.toString();
+	}
+
+	private OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	public MatrixKey getMatrixKey() {
@@ -160,7 +180,7 @@ public class Deleter extends CommonRunnable {
 			try {
 				progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-				StudyList.deleteStudy(getStudyKey(), isDeleteReports());
+				getStudyService().deleteStudy(getStudyKey(), isDeleteReports());
 				MultiOperations.printCompleted("deleting Study ID: " + getStudyKey());
 
 				GWASpiExplorerNodes.deleteStudyNode(getStudyKey());
@@ -173,7 +193,7 @@ public class Deleter extends CommonRunnable {
 			try {
 				progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-				MatricesList.deleteMatrix(getMatrixKey(), isDeleteReports());
+				getMatrixService().deleteMatrix(getMatrixKey(), isDeleteReports());
 				MultiOperations.printCompleted("deleting Matrix ID:" + getMatrixKey());
 
 				GWASpiExplorerNodes.deleteMatrixNode(getMatrixKey());
@@ -186,7 +206,7 @@ public class Deleter extends CommonRunnable {
 			try {
 				progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-				OperationsList.deleteOperation(
+				getOperationService().deleteOperation(
 						getOperationKey(),
 						isDeleteReports());
 				MultiOperations.printCompleted("deleting Operation ID: " + getOperationKey());
@@ -202,7 +222,7 @@ public class Deleter extends CommonRunnable {
 			try {
 				progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
-				ReportsList.deleteReports(new DataSetKey(getMatrixKey()));
+				getReportService().deleteReports(new DataSetKey(getMatrixKey()));
 				MultiOperations.printCompleted("deleting Reports from Matrix ID: " + getMatrixKey());
 
 				progressHandler.setNewStatus(ProcessStatus.COMPLEETED);

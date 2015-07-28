@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.ExportConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -88,6 +90,14 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 		super(params);
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		// XXX For this class, we should use a different return type on this method (ialso for the othe Output* classes)
@@ -98,17 +108,17 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		final OperationMetadata hwOperation = OperationsList.getOperationMetadata(getParams().getHardyWeinbergOpKey());
+		final OperationMetadata hwOperation = getOperationService().getOperationMetadata(getParams().getHardyWeinbergOpKey());
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
-		String prefix = ReportsList.getReportNamePrefix(hwOperation);
+		String prefix = getReportService().getReportNamePrefix(hwOperation);
 		Utils.createFolder(new File(Study.constructReportsPath(hwOperation.getStudyKey())));
 
 		String hwOutName = prefix + "hardy-weinberg.txt";
 		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		processSortedHardyWeinbergReport(getParams().getHardyWeinbergOpKey(), hwOutName, getParams().getMarkersQAOpKey());
 		operationPH.setNewStatus(ProcessStatus.FINALIZING);
-		ReportsList.insertRPMetadata(new Report(
+		getReportService().insertReport(new Report(
 				"Hardy Weinberg Table",
 				hwOutName,
 				OPType.HARDY_WEINBERG,
@@ -155,7 +165,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 
 		// GET MARKER INFO
 		String sep = ExportConstants.SEPARATOR_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
+		OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(operationKey);
 		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();

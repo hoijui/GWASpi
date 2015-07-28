@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
@@ -94,6 +95,10 @@ public class GenericReportGenerator {
 	public static final DecimalFormat FORMAT_P_VALUE = new DecimalFormat("0.#E0#");
 
 	private GenericReportGenerator() {
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	private static class MarkerManhattenData {
@@ -728,7 +733,7 @@ public class GenericReportGenerator {
 
 		QASamplesOperationDataSet qaSamplesOpDS = (QASamplesOperationDataSet) OperationManager.generateOperationDataSet(operationKey);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(operationKey);
+		OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(operationKey);
 
 		Map<Integer, SampleKey> samples = qaSamplesOpDS.getSamplesKeysSource().getIndicesMap();
 		List<Double> hetzyRatios = (List) qaSamplesOpDS.getHetzyRatios(-1, -1);

@@ -106,7 +106,7 @@ public class ReduceDataSet {
 		Config.getSingleton().putString(Config.PROPERTY_DATA_DIR, exportDataDir.getAbsolutePath());
 
 		// create new study
-		final StudyKey newStudy = StudyList.insertNewStudy(new Study("TEMP-study-name", "TEMP-description"));
+		final StudyKey newStudy = StudyList.getStudyService().insertStudy(new Study("TEMP-study-name", "TEMP-description"));
 
 		// load all the data
 		final GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(

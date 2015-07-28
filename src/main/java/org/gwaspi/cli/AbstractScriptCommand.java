@@ -20,6 +20,9 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
@@ -39,6 +42,18 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 
 	AbstractScriptCommand(String commandName) {
 		this.commandName = commandName;
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	@Override
@@ -76,13 +91,13 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			}
 			return studyKey;
 		} else { // -> (nameValue != null)
-			final StudyKey studyByName = StudyList.getStudyByName(nameValue);
+			final StudyKey studyByName = getStudyService().getStudyByName(nameValue);
 			if (studyByName != null) {
 				return studyByName;
 			} else {
 				// a study by the given name does not yet exist
 				if (allowNew) {
-					StudyKey studyKey = StudyList.insertNewStudy(new Study(
+					StudyKey studyKey = getStudyService().insertStudy(new Study(
 							nameValue,
 							"Study created by command-line interface"));
 					GWASpiExplorerNodes.insertStudyNode(studyKey);
@@ -135,7 +150,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int matrixId = Integer.parseInt(idValue);
 			return new MatrixKey(studyKey, matrixId);
 		} else {
-			final List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(studyKey, nameValue);
+			final List<MatrixKey> matrixKeysByName = getMatrixService().getMatrixKeysByName(studyKey, nameValue);
 			if (matrixKeysByName.isEmpty()) {
 				throw new IllegalStateException(
 						"No matrix with name \"" + nameValue + "\" found in the study "
@@ -183,8 +198,8 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int operationId = Integer.parseInt(idValue);
 			return new OperationKey(parentMatrixKey, operationId);
 		} else {
-			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(
-					parentMatrixKey.getStudyKey(), nameValue);
+			final List<OperationKey> operationKeysByName
+					= getOperationService().getOperationKeysByName(parentMatrixKey.getStudyKey(), nameValue);
 			if (operationKeysByName.isEmpty()) {
 				throw new IllegalStateException(
 						"No operation with name \"" + nameValue + "\" found in the study "
@@ -222,11 +237,11 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 
 		boolean studyExists;
 
-		Study study = StudyList.getStudy(studyKey);
+		Study study = getStudyService().getStudy(studyKey);
 		studyExists = (study != null);
 
 		if (!studyExists) {
-			List<Study> studyList = StudyList.getStudyList();
+			List<Study> studyList = getStudyService().getStudiesInfos();
 			System.out.println("\n" + Text.Cli.studyNotExist);
 			System.out.println(Text.Cli.availableStudies);
 			for (Study studyX : studyList) {

@@ -25,6 +25,11 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
+import org.gwaspi.dao.SampleInfoService;
+import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -39,6 +44,26 @@ public class GWASpiExplorerNodes {
 	private static final Map<Integer, DefaultMutableTreeNode> nodeIdToNode = new HashMap<Integer, DefaultMutableTreeNode>();
 
 	private GWASpiExplorerNodes() {
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private static ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
+	private static SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
+	private static StudyService getStudyService() {
+		return StudyList.getStudyService();
 	}
 
 	public static class NodeElementInfo {
@@ -155,7 +180,7 @@ public class GWASpiExplorerNodes {
 
 		DefaultMutableTreeNode tn = null;
 		try {
-			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+			MatrixMetadata matrixMetadata = getMatrixService().getMatrix(matrixKey);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY, matrixKey.getStudyKey()),
 					NodeElementInfo.NodeType.MATRIX,
@@ -173,7 +198,7 @@ public class GWASpiExplorerNodes {
 		DefaultMutableTreeNode tn = null;
 
 		// CHECK IF STUDY EXISTS
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
+		final List<SampleInfo> sampleInfos = getSampleInfoService().getSamples(studyKey);
 		if (!sampleInfos.isEmpty()) {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					NodeElementInfo.createUniqueId(NodeElementInfo.NodeType.STUDY, studyKey),
@@ -189,7 +214,7 @@ public class GWASpiExplorerNodes {
 
 		DefaultMutableTreeNode tn = null;
 		try {
-			OperationMetadata op = OperationsList.getOperationMetadata(operationKey);
+			final OperationMetadata op = getOperationService().getOperationMetadata(operationKey);
 
 			DataSetKey parent = op.getParent();
 			final int parentNodeId;
@@ -219,7 +244,7 @@ public class GWASpiExplorerNodes {
 
 		DefaultMutableTreeNode tn = null;
 		try {
-			Report rp = ReportsList.getReport(reportKey);
+			Report rp = getReportService().getReport(reportKey);
 
 			final int parentNodeId;
 			if (rp.getParentMatrixId() == MatrixKey.NULL_ID) {
@@ -258,7 +283,7 @@ public class GWASpiExplorerNodes {
 					throw new IOException("failed to find parent node");
 				}
 
-				Study study = StudyList.getStudy(studyKey);
+				Study study = getStudyService().getStudy(studyKey);
 				DefaultMutableTreeNode newNode = createStudyTreeNode(study);
 				addNode(parentNode, newNode, true);
 			} catch (IOException ex) {
@@ -392,7 +417,7 @@ public class GWASpiExplorerNodes {
 //				OperationMetadata parentOP = OperationsList.getOperationMetadata(parentOpKey);
 
 				// GET ALL REPORTS UNDER THIS OPERATION
-				List<Report> reports = ReportsList.getReportsList(parentOpKey);
+				List<Report> reports = getReportService().getReports(new DataSetKey(parentOpKey));
 				for (Report report : reports) {
 //					// DON'T SHOW SUPERFLUOUS OPEARATION INFO
 //					if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG)

@@ -29,6 +29,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -71,13 +73,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 		if (parentMatrixKey == null) {
 			parentMatrixMetadata = null;
 		} else {
-			parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
 		}
 
 		final OperationMetadata currentOP;
 		if (opId != OperationKey.NULL_ID) {
 			this.currentOPKey = new OperationKey(parentMatrixKey, opId);
-			currentOP = OperationsList.getOperationMetadata(currentOPKey);
+			currentOP = getOperationService().getOperationMetadata(currentOPKey);
 		} else {
 			this.currentOPKey = null;
 			currentOP = null;
@@ -143,6 +145,14 @@ public class MatrixMarkerQAPanel extends JPanel {
 		add(pnl_MatrixDesc, BorderLayout.NORTH);
 		add(pnl_Footer, BorderLayout.SOUTH);
 		//</editor-fold>
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	private static class DeleteOperationAction extends AbstractAction {

@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -49,6 +50,10 @@ public class JPAOperationService implements OperationService {
 
 	public JPAOperationService(EntityManagerFactory emf) {
 		this.jpaUtil = new JPAUtil(emf);
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
 	}
 
 	@Override
@@ -313,7 +318,7 @@ public class JPAOperationService implements OperationService {
 					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(childOperations.get(i)));
 					final OperationKey childOperationKey = OperationKey.valueOf(childOperations.get(i));
 					if (deleteReports) {
-						ReportsList.deleteReports(new DataSetKey(childOperationKey));
+						getReportService().deleteReports(new DataSetKey(childOperationKey));
 					}
 
 					EntityManager em = null;
@@ -338,7 +343,7 @@ public class JPAOperationService implements OperationService {
 			} else {
 				org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 				if (deleteReports) {
-					ReportsList.deleteReports(new DataSetKey(operationKey));
+					getReportService().deleteReports(new DataSetKey(operationKey));
 				}
 
 				EntityManager em = null;

@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -84,7 +85,7 @@ public class MatrixTrafoPanel extends JPanel {
 	public MatrixTrafoPanel(MatrixKey parentMatrixKey) throws IOException {
 
 		this.parentMatrixKey = parentMatrixKey;
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		MatrixMetadata parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
 
 		pnl_ParentMatrixDesc = new JPanel();
 		scrl_ParentMatrixDesc = new JScrollPane();
@@ -288,13 +289,17 @@ public class MatrixTrafoPanel extends JPanel {
 		//</editor-fold>
 	}
 
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	//<editor-fold defaultstate="expanded" desc="TRAFO">
 	private class TranslateAB12ToACGTAction extends AbstractAction { // XXX make static
 
 		TranslateAB12ToACGTAction() throws IOException {
 
 			putValue(NAME, Text.Trafo.htmlTranslate1);
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			MatrixMetadata parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
 			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
 			final boolean sourceGTEncodingIsABor12
 					= (genotypeEncoding.equals(GenotypeEncoding.AB0)
@@ -346,7 +351,7 @@ public class MatrixTrafoPanel extends JPanel {
 		Translate1234ToACGTAction() throws IOException {
 
 			putValue(NAME, Text.Trafo.htmlTranslate2);
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			MatrixMetadata parentMatrixMetadata = getMatrixService().getMatrix(parentMatrixKey);
 			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
 			final boolean sourceGTEncodingIs1234
 					= genotypeEncoding.equals(GenotypeEncoding.O1234);

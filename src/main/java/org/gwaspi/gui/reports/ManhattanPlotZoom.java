@@ -768,7 +768,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 			try {
 				parent.setFired(false);
-				List<Report> manhattenPlotReports = ReportsList.getReportsList(new DataSetKey(testOpKey), OPType.MANHATTANPLOT);
+				List<Report> manhattenPlotReports = ReportsList.getReportService().getReports(new DataSetKey(testOpKey), OPType.MANHATTANPLOT);
 				String reportFile = "";
 				if (!manhattenPlotReports.isEmpty()) {
 					reportFile = manhattenPlotReports.get(0).getFileName();

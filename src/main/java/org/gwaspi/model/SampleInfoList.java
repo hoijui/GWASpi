@@ -17,16 +17,9 @@
 
 package org.gwaspi.model;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.jpa.JPASampleInfoService;
 
-/**
- * @deprecated use SampleInfoService directly
- */
 public class SampleInfoList {
 
 	private static SampleInfoService sampleInfoService = null;
@@ -38,32 +31,12 @@ public class SampleInfoList {
 		sampleInfoService = null;
 	}
 
-	private static SampleInfoService getSampleInfoService() {
+	public static SampleInfoService getSampleInfoService() {
 
 		if (sampleInfoService == null) {
 			sampleInfoService = new JPASampleInfoService(StudyList.getEntityManagerFactory());
 		}
 
 		return sampleInfoService;
-	}
-
-	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(StudyKey studyKey) throws IOException {
-		return getSampleInfoService().getSamples(studyKey);
-	}
-
-	public static SampleInfo getSample(SampleKey key) throws IOException {
-		return getSampleInfoService().getSample(key);
-	}
-
-	public static <T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException {
-		return getSampleInfoService().pickSamples(studyKey, variable, criteria, include);
-	}
-
-	public static void deleteSamples(StudyKey studyKey) throws IOException {
-		getSampleInfoService().deleteSamples(studyKey);
-	}
-
-	public static void insertSampleInfos(Collection<SampleInfo> sampleInfos) throws IOException {
-		getSampleInfoService().insertSamples(sampleInfos);
 	}
 }

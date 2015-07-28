@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -59,6 +60,10 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 	private static final Logger log = LoggerFactory.getLogger(TestAssociationTestScripts.class);
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
 	private static void testHardyWeinbergTest(Setup setup, String name) throws Exception {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
@@ -73,7 +78,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
 	}
 
-	private static List<OperationKey> testHardyWeinbergTest(Setup setup, MatrixKey matrixKey, String dataSpecifier) throws Exception {
+	private static List<OperationKey> testHardyWeinbergTest(final Setup setup, final MatrixKey matrixKey, final String dataSpecifier) throws Exception {
 
 		log.info("Run Hardy-Weinberg Test ({}) ...", dataSpecifier);
 
@@ -95,9 +100,11 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixKey.getMatrixId()));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
-		List<OperationMetadata> hwOpsBefore = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.HARDY_WEINBERG);
-		List<OperationMetadata> censusOpsBefore = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
-		censusOpsBefore.addAll(OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+		final DataSetKey matrixDataSetKey = new DataSetKey(matrixKey);
+
+		List<OperationMetadata> hwOpsBefore = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsBefore = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsBefore.addAll(getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
 
 		File logFile = new File(setup.getTmpDir(), "log_test_hardyWeinberg_" + dataSpecifier.replaceAll("[, \t.]", "_") + ".txt");
 
@@ -106,7 +113,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		log.info("Run Hardy-Weinberg Test ({}) DONE.", dataSpecifier);
 
 		if (log.isDebugEnabled()) {
-			List<OperationMetadata> operationsTable = OperationsList.getOffspringOperationsMetadata(matrixKey);
+			List<OperationMetadata> operationsTable = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey);
 			log.debug("available operations:");
 			for (OperationMetadata operationMetadata : operationsTable) {
 				log.debug("\toperation id: {}, name: \"{}\"",
@@ -115,9 +122,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 			}
 		}
 
-		List<OperationMetadata> hwOpsAfter = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.HARDY_WEINBERG);
-		List<OperationMetadata> censusOpsAfter = OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_AFFECTION);
-		censusOpsAfter.addAll(OperationsList.getOffspringOperationsMetadata(matrixKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
+		List<OperationMetadata> hwOpsAfter = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.HARDY_WEINBERG);
+		List<OperationMetadata> censusOpsAfter = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.MARKER_CENSUS_BY_AFFECTION);
+		censusOpsAfter.addAll(getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.MARKER_CENSUS_BY_PHENOTYPE));
 
 		OperationKey gtFreqOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(censusOpsBefore, censusOpsAfter).get(0)); // HACK
 		OperationKey hwOpKey = OperationKey.valueOf(extractElementsFromSecondNotInFirst(hwOpsBefore, hwOpsAfter).get(0)); // HACK
@@ -157,9 +164,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 //		OperationKey gtFreqOpKey = opKeys.get(0);
 //		OperationKey hwOpKey = opKeys.get(1);
 
-		DataSetKey initialParent = new DataSetKey(matrixKey);
-		final OperationKey matrixSampleQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.SAMPLE_QA).get(0));
-		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(OperationsList.getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
+		final DataSetKey initialParent = new DataSetKey(matrixKey);
+		final OperationKey matrixSampleQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(initialParent, OPType.SAMPLE_QA).get(0));
+		final OperationKey matrixMarkersQAOpKey = OperationKey.valueOf(getOperationService().getChildrenOperationsMetadata(initialParent, OPType.MARKER_QA).get(0));
 
 		final boolean doPreFiltering = false; // NOTE This was suggested by the Barcelona folks, but as our test compare data comes from the matlab/octave scripts, which do not support this, we have to disable it here too.
 

@@ -19,6 +19,7 @@ package org.gwaspi.datasource.inmemory;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
@@ -86,7 +87,11 @@ public class MatrixInMemoryDataSetSource implements DataSetSource {
 
 	/** Use this if the actual data is in memory already! */
 	public MatrixInMemoryDataSetSource(MatrixKey matrixKey) throws IOException {
-		this(matrixKey, MatricesList.getMatrixMetadataById(matrixKey), null, null, null, null, null, null, null, null);
+		this(matrixKey, getMatrixService().getMatrix(matrixKey), null, null, null, null, null, null, null, null);
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	public static void clearAllInMemoryStorage() {

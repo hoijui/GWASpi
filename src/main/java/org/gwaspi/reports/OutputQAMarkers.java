@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.ReportService;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Filter;
 import org.gwaspi.global.Text;
@@ -78,6 +80,14 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		super(params);
 	}
 
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
+	}
+
+	private ReportService getReportService() {
+		return ReportsList.getReportService();
+	}
+
 	private static String[] createColumnHeaders(final boolean missingness) {
 
 		return new String[] {
@@ -111,9 +121,9 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	public Object call() throws IOException {
 
 		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
-		final OperationMetadata qaMarkersOperation = OperationsList.getOperationMetadata(getParams().getMarkersQAOpKey());
+		final OperationMetadata qaMarkersOperation = getOperationService().getOperationMetadata(getParams().getMarkersQAOpKey());
 
-		String prefix = ReportsList.getReportNamePrefix(qaMarkersOperation);
+		String prefix = getReportService().getReportNamePrefix(qaMarkersOperation);
 		Utils.createFolder(new File(Study.constructReportsPath(qaMarkersOperation.getStudyKey())));
 
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.INITIALIZING);
@@ -122,7 +132,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.RUNNING);
 		createSortedMarkerMissingnessReport(getParams().getMarkersQAOpKey(), markMissOutName);
 		creatingMissingnessTablePH.setNewStatus(ProcessStatus.FINALIZING);
-		ReportsList.insertRPMetadata(new Report(
+		getReportService().insertReport(new Report(
 				"Marker Missingness Table",
 				markMissOutName,
 				OPType.MARKER_QA,
@@ -137,7 +147,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.RUNNING);
 		createMarkerMismatchReport(getParams().getMarkersQAOpKey(), markMismatchOutName);
 		creatingMismatchTablePH.setNewStatus(ProcessStatus.FINALIZING);
-		ReportsList.insertRPMetadata(new Report(
+		getReportService().insertReport(new Report(
 				"Marker Mismatch State Table",
 				markMismatchOutName,
 				OPType.MARKER_QA,
@@ -283,7 +293,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 	{
 		final DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(markersQAopKey.getParentMatrixKey());
 
-		final OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markersQAopKey);
+		final OperationMetadata rdOPMetadata = getOperationService().getOperationMetadata(markersQAopKey);
 		final MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
 		final List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, markersMetadatas);
 

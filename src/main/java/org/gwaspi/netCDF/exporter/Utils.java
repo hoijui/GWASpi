@@ -66,7 +66,7 @@ public class Utils {
 
 	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key) throws IOException {
 
-		SampleInfo baseSampleInfo = SampleInfoList.getSample(key);
+		SampleInfo baseSampleInfo = SampleInfoList.getSampleInfoService().getSample(key);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (baseSampleInfo == null) {

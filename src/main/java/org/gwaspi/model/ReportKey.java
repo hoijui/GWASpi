@@ -20,6 +20,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.Transient;
+import org.gwaspi.dao.ReportService;
 
 /**
  * Uniquely identifies a report.
@@ -51,6 +52,10 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		this.parentMatrixId = parentMatrixId;
 		this.parentOperationId = parentOperationId;
 		this.id = id;
+	}
+
+	private static ReportService getReportService() {
+		return ReportsList.getReportService();
 	}
 
 	protected ReportKey() {
@@ -141,7 +146,7 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 
 		Report report = null;
 		try {
-			report = ReportsList.getReport(this);
+			report = getReportService().getReport(this);
 		} catch (IOException ex) {
 			// do nothing, as report will be null
 		}

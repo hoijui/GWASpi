@@ -23,6 +23,7 @@ import java.util.Map;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatricesList;
@@ -47,16 +48,17 @@ public class BenchmarkEncodeFeaturesAndCalculateKernel {
 
 		boolean isInitiated = Config.getSingleton().initPreferences(true, null, null);
 
-		final List<StudyKey> studies = StudyList.getStudies();
+		final List<StudyKey> studies = StudyList.getStudyService().getStudies();
 		MatrixKey matrix = null;
 		for (final StudyKey study : studies) {
-			final List<MatrixKey> studyMatrices = MatricesList.getMatrixList(study);
+			final List<MatrixKey> studyMatrices = MatricesList.getMatrixService().getMatrixKeys(study);
 			if (!studyMatrices.isEmpty()) {
 				matrix = studyMatrices.get(0);
 				break;
 			}
 		}
-		OperationMetadata qaMarkersOperation = OperationsList.getOffspringOperationsMetadata(matrix, OPType.MARKER_QA).get(0);
+		DataSetKey matrixDataSetKey = new DataSetKey(matrix);
+		OperationMetadata qaMarkersOperation = OperationsList.getOperationService().getOffspringOperationsMetadata(matrixDataSetKey, OPType.MARKER_QA).get(0);
 		OperationKey qaMarkersOperationKey = OperationKey.valueOf(qaMarkersOperation);
 		OperationManager.generateOperationDataSet(qaMarkersOperationKey);
 		QAMarkersOperationDataSet parentQAMarkersOperationDataSet

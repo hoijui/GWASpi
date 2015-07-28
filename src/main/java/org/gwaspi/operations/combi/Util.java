@@ -23,8 +23,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -269,13 +272,31 @@ public class Util {
 	}
 	public static List<List<Double>> parsePlainTextMatrix(File sourceFile, boolean transposed) {
 
+		InputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(sourceFile);
+			return parsePlainTextMatrix(fileInputStream, transposed);
+		} catch (final IOException ex) {
+			throw new RuntimeException(ex);
+		} finally {
+			if (fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				} catch (final IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+	}
+	public static List<List<Double>> parsePlainTextMatrix(final InputStream source, boolean transposed) {
+
 		List<List<Double>> matrix = new ArrayList<List<Double>>();
 
-		FileReader fileReader = null;
+		Reader sourceReader = null;
 		BufferedReader bufferedReader = null;
 		try {
-			fileReader = new FileReader(sourceFile);
-			bufferedReader = new BufferedReader(fileReader);
+			sourceReader = new InputStreamReader(source);
+			bufferedReader = new BufferedReader(sourceReader);
 			String line = bufferedReader.readLine();
 			while (line != null) {
 				String[] strValues = line.split("[ ]+");
@@ -306,9 +327,9 @@ public class Util {
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
-			} else if (fileReader != null) {
+			} else if (sourceReader != null) {
 				try {
-					fileReader.close();
+					sourceReader.close();
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}

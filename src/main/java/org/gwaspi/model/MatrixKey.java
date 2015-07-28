@@ -19,6 +19,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import javax.persistence.Transient;
+import org.gwaspi.dao.MatrixService;
 
 /**
  * Uniquely identifies a matrix.
@@ -40,6 +41,10 @@ public class MatrixKey implements Identifier<MatrixKey> {
 
 	protected MatrixKey() {
 		this(null, NULL_ID);
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 	public static MatrixKey valueOf(MatrixMetadata matrix) {
@@ -134,7 +139,7 @@ public class MatrixKey implements Identifier<MatrixKey> {
 
 		MatrixMetadata matrix = null;
 		try {
-			matrix = MatricesList.getMatrixMetadataById(this);
+			matrix = getMatrixService().getMatrix(this);
 		} catch (IOException ex) {
 			// do nothing, as matrix will be null
 		}

@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -62,7 +63,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		final DataSetKey parent;
 		if (operationKey != null) {
-			currentOP = OperationsList.getOperationMetadata(operationKey);
+			currentOP = getOperationService().getOperationMetadata(operationKey);
 			parent = currentOP.getParent();
 		} else {
 			currentOP = null;
@@ -113,7 +114,7 @@ public class Report_AnalysisPanel extends JPanel {
 				.addContainerGap(6, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		List<Report> reportsList = ReportsList.getReportsList(operationKey);
+		List<Report> reportsList = ReportsList.getReportService().getReports(new DataSetKey(operationKey));
 		JPanel pnl_ReportTmp = null;
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
@@ -157,6 +158,10 @@ public class Report_AnalysisPanel extends JPanel {
 				.addComponent(pnl_Report, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 		//</editor-fold>
+	}
+
+	private static OperationService getOperationService() {
+		return OperationsList.getOperationService();
 	}
 
 	private static class DeleteOperationAction extends AbstractAction {

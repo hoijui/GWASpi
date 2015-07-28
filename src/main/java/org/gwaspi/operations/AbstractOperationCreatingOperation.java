@@ -18,6 +18,7 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
@@ -64,6 +65,10 @@ public abstract class AbstractOperationCreatingOperation<D extends OperationData
 		this.parent = params.getParent();
 		this.params = params;
 		this.operationPH = null;
+	}
+
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 //	public abstract OperationMetadata createOperationMetadata(DST operationDataSet) throws IOException;
@@ -137,7 +142,7 @@ public abstract class AbstractOperationCreatingOperation<D extends OperationData
 
 	protected MatrixMetadata getParentMatrixMetadata() throws IOException {
 
-		final MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(getParentMatrixKey());
+		final MatrixMetadata parentMatrixMetadata = getMatrixService().getMatrix(getParentMatrixKey());
 
 		return parentMatrixMetadata;
 	}

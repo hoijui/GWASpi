@@ -30,6 +30,7 @@ import java.util.Set;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.NetCDFConstants.Defaults.SetSamplePickCase;
 import org.gwaspi.constants.NetCDFConstants.Variables;
+import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.gui.utils.Dialogs;
@@ -310,6 +311,10 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 		this.params = params;
 	}
 
+	private static SampleInfoService getSampleInfoService() {
+		return SampleInfoList.getSampleInfoService();
+	}
+
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return OPERATION_TYPE_INFO;
@@ -406,12 +411,12 @@ public class MatrixDataExtractor extends AbstractMatrixCreatingOperation {
 //				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples = SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, true);
+				pickedSamples = getSampleInfoService().pickSamples(studyKey, samplePickerVar, sampleCriteria, true);
 //				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples = SampleInfoList.pickSamples(studyKey, samplePickerVar, sampleCriteria, false);
+				pickedSamples = getSampleInfoService().pickSamples(studyKey, samplePickerVar, sampleCriteria, false);
 //				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:

@@ -19,6 +19,7 @@ package org.gwaspi.operations.genotypestranslator;
 
 import java.io.IOException;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MatricesList;
@@ -32,6 +33,10 @@ public class MatrixTranslatorMetadataFactory
 	public static final MatrixTranslatorMetadataFactory SINGLETON
 			= new MatrixTranslatorMetadataFactory();
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	@Override
 	public MatrixMetadata generateMetadata(DataSet dataSet, MatrixGenotypesTranslatorParams params) throws IOException {
 
@@ -40,7 +45,7 @@ public class MatrixTranslatorMetadataFactory
 		final int numChromosomes = dataSet.getChromosomeInfos().size();
 
 		final MatrixMetadata sourceMatrixMetadata
-				= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+				= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 
 		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
 		String translationMethodDesc;

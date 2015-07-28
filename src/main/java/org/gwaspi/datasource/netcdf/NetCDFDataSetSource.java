@@ -24,6 +24,7 @@ import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -63,7 +64,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
 
 		this.matrixKey = matrixKey;
-		this.matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+		this.matrixMetadata = getMatrixService().getMatrix(matrixKey);
 		this.netCDFpath = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
 		this.rdNetCdfFile = null;
 	}
@@ -84,6 +85,10 @@ public class NetCDFDataSetSource implements DataSetSource {
 		this.studyKey = studyKey;
 		this.matrixKey = null;
 		this.matrixMetadata = null;
+	}
+
+	private static MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
 	}
 
 //	public NetCDFDataSetSource(File netCDFpath) throws IOException {

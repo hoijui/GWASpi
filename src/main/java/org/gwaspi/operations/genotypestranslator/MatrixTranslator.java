@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
+import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -86,6 +87,10 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 		this.translateBySamples = true;
 	}
 
+	private MatrixService getMatrixService() {
+		return MatricesList.getMatrixService();
+	}
+
 	@Override
 	public OperationTypeInfo getTypeInfo() {
 		return OPERATION_TYPE_INFO;
@@ -108,7 +113,7 @@ public class MatrixTranslator extends AbstractMatrixCreatingOperation {
 
 		try {
 			final MatrixMetadata sourceMetadata
-					= MatricesList.getMatrixMetadataById(params.getParent().getMatrixParent());
+					= getMatrixService().getMatrix(params.getParent().getMatrixParent());
 			GenotypeEncoding genotypeEncoding = sourceMetadata.getGenotypeEncoding();
 			if (!genotypeEncoding.equals(GenotypeEncoding.AB0)
 					&& !genotypeEncoding.equals(GenotypeEncoding.O12)
