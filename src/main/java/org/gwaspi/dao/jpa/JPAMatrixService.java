@@ -153,7 +153,7 @@ public class JPAMatrixService implements MatrixService {
 			if (matrixMetadata == null) {
 				throw new IllegalArgumentException("No matrix found with this ID: (" + matrixKey.getStudyId() + ") " + matrixKey.getMatrixId());
 			}
-			em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
+			em.remove(matrixMetadata);
 			jpaUtil.commit(em);
 		} catch (Exception ex) {
 			jpaUtil.rollback(em);
