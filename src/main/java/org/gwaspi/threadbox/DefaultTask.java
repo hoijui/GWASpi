@@ -152,7 +152,6 @@ public class DefaultTask implements Task {
 	@Override
 	public void run() {
 
-		DefaultTask thisSwi = null;
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getTask().getDetailedName());
 			Config.getSingleton().initPreferences(false, null, null); // XXX this should probably not be here.. we should ensure initialized preferences before
@@ -187,7 +186,7 @@ public class DefaultTask implements Task {
 			log.info("");
 			log.info(Text.Processes.abortingProcess);
 			log.info("Process Name: " + getName());
-			log.info("Process Launch Time: " + org.gwaspi.global.Utils.getShortDateTimeAsString(thisSwi.getCreateTime()));
+			log.info("Process Launch Time: " + org.gwaspi.global.Utils.getShortDateTimeAsString(getCreateTime()));
 			log.info("");
 			log.info("");
 		} else {
