@@ -135,6 +135,7 @@ public class InMemorySamplesReceiver<P extends MatrixCreatingOperationParams>
 		getDataSet().setMatrixMetadata(matrixMetadata);
 
 		// register/store in the in-memory storage
+		// NOTE ... that happens inside this ctor
 		new MatrixInMemoryDataSetSource(
 				resultMatrixKey,
 				matrixMetadata,
