@@ -6,6 +6,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import org.gwaspi.global.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,9 @@ public class URLInDefaultBrowser {
 				File file = new File(url);
 				desktop.open(file);
 			}
-		} catch (Exception ex) {
+		} catch (final URISyntaxException ex) {
+			log.error("Failed browsing " + url, ex);
+		} catch (final IOException ex) {
 			log.error("Failed browsing " + url, ex);
 		}
 	}
