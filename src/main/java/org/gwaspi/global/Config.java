@@ -233,14 +233,7 @@ public class Config {
 
 		final Boolean value;
 		if (guiMode) {
-//			value = prefs.getBoolean(key, defaultValue);
-			Boolean val = null;
-			try {
-			val = prefs.getBoolean(key, defaultValue);
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-			value = val;
+			value = prefs.getBoolean(key, defaultValue);
 		} else {
 			value = (Boolean) get(key, defaultValue);
 		}
