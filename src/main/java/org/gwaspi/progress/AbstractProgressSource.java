@@ -104,6 +104,11 @@ public abstract class AbstractProgressSource<S> implements ProgressSource<S> {
 
 	protected void fireStatusChanged(final ProcessStatusChangeEvent evt) {
 
+		if ((evt.getNewStatus() == ProcessStatus.RUNNING) && (startTime == -1)) {
+			startTime = System.currentTimeMillis();
+		} else if (evt.getNewStatus().isEnd() && (startTime == -1)) {
+			endTime = System.currentTimeMillis();
+		}
 		currentStatus = evt.getNewStatus();
 		// Using this copy of the list prevents ConcurrentModificationException's
 		// when we try to add to or remove from the list of listeners as a result
