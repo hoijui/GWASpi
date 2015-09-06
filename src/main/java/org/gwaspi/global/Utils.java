@@ -574,32 +574,12 @@ public class Utils {
 	// </editor-fold>
 
 	// <editor-fold defaultstate="expanded" desc="String manipulation methods">
-	public static String stripNonAlphaNumeric(String s) {
-		String good =
-				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			if (good.indexOf(s.charAt(i)) >= 0) {
-				result.append(s.charAt(i));
-			}
-		}
-
-		return result.toString();
+	public static String stripNonAlphaNumeric(final String str) {
+		return str.replaceAll("[^a-zA-Z0-9]", "");
 	}
 
-	public static String stripNonAlphaNumericDashUndscr(String s) {
-		String good =
-				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
-
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			if (good.indexOf(s.charAt(i)) >= 0) {
-				result.append(s.charAt(i));
-			}
-		}
-
-		return result.toString();
+	public static String stripNonAlphaNumericDashUndscr(final String str) {
+		return str.replaceAll("[^a-zA-Z0-9_-]", "");
 	}
 	// </editor-fold>
 
