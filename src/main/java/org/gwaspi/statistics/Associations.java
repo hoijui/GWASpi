@@ -112,10 +112,11 @@ public class Associations {
 
 		final int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
 		final int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
+		final int totGT = obsCaseRowTot + obsCtrlRowTot;
+
 		final int obsAAColTot = obsCaseAA + obsCtrlAA;
 		final int obsAaColTot = obsCaseAa + obsCtrlAa;
 		final int obsaaColTot = obsCaseaa + obsCtrlaa;
-		final int totGT = obsCaseRowTot + obsCtrlRowTot;
 
 		final double chiSQ;
 		if (totGT != 0) {
