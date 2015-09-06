@@ -130,7 +130,7 @@ public class Associations {
 
 			chiSQ = Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
 		} else {
-			chiSQ = 0;
+			chiSQ = Double.NaN;
 		}
 
 		return chiSQ;
