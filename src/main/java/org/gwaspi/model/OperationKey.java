@@ -74,7 +74,7 @@ public class OperationKey implements Identifier<OperationKey> {
 			}
 			return diff;
 		} else {
-			return - other.compareTo(this);
+			return -other.compareTo(this);
 		}
 	}
 

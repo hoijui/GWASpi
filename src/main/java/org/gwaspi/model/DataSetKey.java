@@ -140,7 +140,7 @@ public final class DataSetKey implements Identifier<DataSetKey> {
 				return this.isMatrix() ? 1 : -1;
 			}
 		} else {
-			return - other.compareTo(this);
+			return -other.compareTo(this);
 		}
 	}
 }

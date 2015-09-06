@@ -87,7 +87,7 @@ public class AbstractVirtualIdentifier<K extends Identifier<K>> implements Virtu
 	public int compareTo(final Identifier<K> other) {
 
 		if (!(other instanceof VirtualIdentifier)) {
-			return - other.compareTo(this);
+			return -other.compareTo(this);
 		}
 		final AbstractVirtualIdentifier<K> otherCasted = (AbstractVirtualIdentifier<K>) other;
 		if (!this.isVirtual() && !otherCasted.isVirtual()) {

@@ -97,7 +97,7 @@ public class MatrixKey implements Identifier<MatrixKey> {
 			}
 			return diff;
 		} else {
-			return - other.compareTo(this);
+			return -other.compareTo(this);
 		}
 	}
 

@@ -79,7 +79,7 @@ public class StudyKey implements Identifier<StudyKey> {
 		if (other instanceof StudyKey) {
 			return this.getId() - ((StudyKey) other).getId();
 		} else {
-			return - other.compareTo(this);
+			return -other.compareTo(this);
 		}
 	}
 
