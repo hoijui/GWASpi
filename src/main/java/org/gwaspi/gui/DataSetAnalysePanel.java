@@ -120,7 +120,7 @@ public class DataSetAnalysePanel extends JPanel {
 	private final OperationMetadata currentOP;
 	private final AssociationTestsAction[] testActions;
 
-	public DataSetAnalysePanel(DataSetKey observedElementKey) throws IOException {
+	public DataSetAnalysePanel(final DataSetKey observedElementKey) throws IOException {
 
 		this.observedElementKey = observedElementKey;
 
@@ -282,8 +282,7 @@ public class DataSetAnalysePanel extends JPanel {
 	private void refreshActionStates() {
 
 		final boolean validMarkerCensusOpAvailable = isValidMarkerCensusOpAvailable();
-		for (int ai = 0; ai < testActions.length; ai++) {
-			final AssociationTestsAction action = testActions[ai];
+		for (final AssociationTestsAction action : testActions) {
 			action.setValidMarkerCensusOpAvailable(validMarkerCensusOpAvailable);
 		}
 	}
@@ -479,7 +478,7 @@ public class DataSetAnalysePanel extends JPanel {
 									}
 								}
 							} else {
-								gwasParams = new MoreAssocInfo().showMoreInfo();
+								gwasParams = new MoreAssocInfo(new GWASinOneGOParams()).showMoreInfo();
 							}
 						}
 
@@ -491,7 +490,7 @@ public class DataSetAnalysePanel extends JPanel {
 								if (testType == OPType.COMBI_ASSOC_TEST) {
 									final CommonRunnable combiTask = new CombiCombinedOperation(combiTestParams, combiFilterParams);
 									MultiOperations.queueTask(combiTask);
-								} else if (censusOPKey != null && hwOPKey != null) {
+								} else if (hwOPKey != null) {
 									final CommonRunnable testTask = new TestCombinedOperation(
 											censusOPKey,
 											hwOPKey,
@@ -645,10 +644,9 @@ public class DataSetAnalysePanel extends JPanel {
 
 		private void deleteOperations(Map<Integer, OperationKey> operationsToDelete, boolean deleteReports) throws IOException {
 
-			OperationKey operationKey = null;
 //			OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
 			for (final Map.Entry<Integer, OperationKey> selectedOperation : operationsToDelete.entrySet()) {
-				operationKey = selectedOperation.getValue();
+				final OperationKey operationKey = selectedOperation.getValue();
 				final Deleter operationDeleter = new Deleter(operationKey, deleteReports);
 				// test if the deleted item is required for a queued worker
 				if (MultiOperations.canBeDoneNow(operationDeleter)) {
@@ -690,7 +688,7 @@ public class DataSetAnalysePanel extends JPanel {
 	private static class GwasInOneGoAction extends AbstractAction {
 
 		private final DataSetKey observedElementKey;
-		private GWASinOneGOParams gwasParams;
+		private final GWASinOneGOParams gwasParams;
 		private final Component dialogParent;
 
 		GwasInOneGoAction(DataSetKey observedElementKey, GWASinOneGOParams gwasParams, final Component dialogParent) {

@@ -45,14 +45,17 @@ public class MoreAssocInfo extends JFrame {
 
 	// Variables declaration - do not modify
 	private JRadioButton rdioB_1;
-	private JLabel lbl_1;
 	private JRadioButton rdioB_2;
 	private JTextField txtF_1;
 	private JTextField txtF_2;
-	private ButtonGroup rdiogrp_HW;
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private final GWASinOneGOParams gwasParams;
 	private JDialog dialog;
 	// End of variables declaration
+
+	public MoreAssocInfo(final GWASinOneGOParams gwasParams) {
+
+		this.gwasParams = gwasParams;
+	}
 
 	public GWASinOneGOParams showMoreInfo() {
 		gwasParams.setProceed(false);
@@ -85,7 +88,7 @@ public class MoreAssocInfo extends JFrame {
 		pnl_Questions.setBorder(GWASpiExplorerPanel.createRegularTitledBorder("A few questions..."));
 
 		rdioB_1 = new JRadioButton();
-		lbl_1 = new JLabel();
+		final JLabel lbl_1 = new JLabel();
 		rdioB_2 = new JRadioButton();
 		txtF_1 = new JTextField();
 		txtF_1.setInputVerifier(new DoubleInputVerifier());
@@ -93,7 +96,7 @@ public class MoreAssocInfo extends JFrame {
 		txtF_2.setInputVerifier(new DoubleInputVerifier());
 		final JTextField txtF_3 = new JTextField();
 		txtF_3.setInputVerifier(new DoubleInputVerifier());
-		rdiogrp_HW = new ButtonGroup();
+		final ButtonGroup rdiogrp_HW = new ButtonGroup();
 
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;

@@ -692,20 +692,17 @@ public final class ManhattanPlotZoom extends JPanel {
 		public String generateLabel(XYDataset dataset, int series, int item) {
 
 			String rsLabel = null;
-			Number pValue = dataset.getYValue(series, item);
+			final double pValue = dataset.getYValue(series, item);
 			int position = (int) dataset.getXValue(series, item);
-			if (pValue != null) { // TODO unnessesary test for null
-				final double pValueDouble = pValue.doubleValue();
-				StringBuilder chrPos = new StringBuilder(chr.getChromosome());
-				chrPos.append('_').append(position);
-				if (pValueDouble < this.threshold) {
-					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
-					//result = value.toString().substring(0, 4); // could apply formatting here
-				}
-				if (getLabelerMap().get(chrPos.toString()).equals(origMarkerKey)) {
-					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
-					rsLabel = "◄ " + rsLabel;
-				}
+			final StringBuilder chrPos = new StringBuilder(chr.getChromosome());
+			chrPos.append('_').append(position);
+			if (pValue < this.threshold) {
+				rsLabel = getLabelerMap().get(chrPos.toString()).toString();
+				//result = value.toString().substring(0, 4); // could apply formatting here
+			}
+			if (getLabelerMap().get(chrPos.toString()).equals(origMarkerKey)) {
+				rsLabel = getLabelerMap().get(chrPos.toString()).toString();
+				rsLabel = "◄ " + rsLabel;
 			}
 			return rsLabel;
 		}

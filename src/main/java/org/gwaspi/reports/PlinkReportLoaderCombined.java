@@ -83,7 +83,7 @@ public class PlinkReportLoaderCombined {
 				if (!s_pVal.equals("NA")) {
 					double pValue = Double.parseDouble(s_pVal); // P value
 
-					if (cVals[0].toString().equals(tempChr)) {
+					if (cVals[0].equals(tempChr)) {
 						if (redMarkers.contains(markerId)) { // Insert in alternate color series
 							series2.add(position, pValue);
 						} else {

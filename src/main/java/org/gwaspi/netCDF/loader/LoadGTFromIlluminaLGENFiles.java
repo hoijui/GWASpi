@@ -119,13 +119,11 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		//Skip header rows
-		String header;
-		boolean gotHeader = false;
-		while (!gotHeader && inputBufferReader.ready()) {
-			header = inputBufferReader.readLine();
-			if (header.startsWith("[Data]")) {
-				header = inputBufferReader.readLine(); // Get next line which is real header
-				gotHeader = true;
+		String header = null;
+		while ((header == null) && inputBufferReader.ready()) {
+			final String line = inputBufferReader.readLine();
+			if (line.startsWith("[Data]")) {
+				header = inputBufferReader.readLine(); // get the real header
 			}
 		}
 

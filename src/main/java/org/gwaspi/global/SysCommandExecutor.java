@@ -18,6 +18,7 @@
 package org.gwaspi.global;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import org.gwaspi.constants.GlobalConstants;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class SysCommandExecutor {
 //		}
 	}
 
-	public static String sysCommandExecute(String cmd) {
+	public static String sysCommandExecute(String cmd) throws IOException {
 
 		StringBuilder result = new StringBuilder();
 
@@ -74,8 +75,8 @@ public class SysCommandExecutor {
 
 			final int exitVal = process.waitFor();
 			result.append('\n').append(exitVal).append('\n');
-		} catch (Exception ex) {
-			log.error("Failed to execute command: " + cmd, ex);
+		} catch (final InterruptedException ex) {
+			throw new IOException(ex);
 		} finally {
 			try {
 				if (inputBufferReader != null) {

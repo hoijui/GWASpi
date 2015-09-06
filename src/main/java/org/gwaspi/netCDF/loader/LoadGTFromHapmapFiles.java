@@ -50,7 +50,6 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 	public interface Standard {
 
-		int dataStartRow = 1;
 		int sampleId = 11;
 		int markerId = 0;
 		int alleles = 1;
@@ -150,15 +149,11 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			GenotypeEncoding guessedGTCode)
 			throws IOException
 	{
-		int dataStartRow = Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String header = null;
-		for (int i = 0; i < dataStartRow; i++) {
-			header = inputBufferReader.readLine();
-		}
-		String[] headerFields = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
+		final String header = inputBufferReader.readLine();
+		final String[] headerFields = header.split(ImportConstants.Separators.separators_SpaceTab_rgxp);
 
 		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 		for (int i = Standard.sampleId; i < headerFields.length; i++) {

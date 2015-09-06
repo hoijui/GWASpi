@@ -142,7 +142,7 @@ public class JPAMatrixService implements MatrixService {
 	@Override
 	public void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
 
-		MatrixMetadata matrixMetadata = null;
+		MatrixMetadata matrixMetadata;
 
 		// DELETE METADATA INFO FROM DB
 		EntityManager em = null;

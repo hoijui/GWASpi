@@ -167,12 +167,16 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	public static MatrixMetadata loadMatrixMetadata(
-			NetcdfFile netCDFFile,
+			final NetcdfFile netCDFFile,
 			String newMatrixFriendlyName,
 			StudyKey studyKey,
 			MatrixKey matrixKey)
 			throws IOException
 	{
+		if (netCDFFile == null) {
+			throw new NullPointerException("netCDFFile");
+		}
+
 		int studyId = StudyKey.NULL_ID;
 		int matrixId = MatrixKey.NULL_ID;
 		String friendlyName = "";
@@ -259,12 +263,10 @@ public class NetCDFDataSetSource implements DataSetSource {
 		} catch (IOException ex) {
 			LOG.error("Cannot open file: " + netCDFFile, ex);
 		} finally {
-			if (null != netCDFFile) {
-				try {
-					netCDFFile.close();
-				} catch (IOException ex) {
-					LOG.warn("Cannot close file: " + netCDFFile, ex);
-				}
+			try {
+				netCDFFile.close();
+			} catch (IOException ex) {
+				LOG.warn("Cannot close file: " + netCDFFile, ex);
 			}
 		}
 

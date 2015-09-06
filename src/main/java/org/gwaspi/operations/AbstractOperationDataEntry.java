@@ -28,14 +28,6 @@ public abstract class AbstractOperationDataEntry<O> implements OperationDataEntr
 		}
 	};
 
-	public static class IndexExtractor implements Extractor<OperationDataEntry, Integer> {
-		@Override
-		public Integer extract(OperationDataEntry from) {
-			return from.getIndex();
-		}
-	};
-	public static final Extractor<OperationDataEntry, Integer> TO_INDEX = new IndexExtractor();
-
 	private final O key;
 	private final int index;
 

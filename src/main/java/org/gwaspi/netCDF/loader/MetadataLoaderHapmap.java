@@ -55,11 +55,11 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	@Override
 	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws IOException {
 
-		File[] gtFilesToImport = LoadGTFromHapmapFiles.extractGTFilesToImport(loadDescription);
-		for (int i = 0; i < gtFilesToImport.length; i++) {
+		final File[] gtFilesToImport = LoadGTFromHapmapFiles.extractGTFilesToImport(loadDescription);
+		for (final File gtFileToImport : gtFilesToImport) {
 			loadMarkers(
 					samplesReceiver,
-					gtFilesToImport[i].getPath(),
+					gtFileToImport.getPath(),
 					loadDescription.getFormat(),
 					loadDescription.getStudyKey());
 		}

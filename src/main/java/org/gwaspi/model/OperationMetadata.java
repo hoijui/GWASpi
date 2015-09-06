@@ -310,6 +310,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	}
 
 	@Transient
+	@Override
 	public StudyKey getStudyKey() {
 		return key.getParentMatrixKey().getStudyKey();
 	}

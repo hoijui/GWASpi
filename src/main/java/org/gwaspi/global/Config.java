@@ -19,6 +19,7 @@ package org.gwaspi.global;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -294,7 +295,11 @@ public class Config {
 			File dirToData = new File(getString(PROPERTY_DATA_DIR, ""));
 
 			// CHECK FOR RECENT GWASPI VERSION
-			checkUpdates();
+			try {
+				checkUpdates();
+			} catch (final ParseException ex) {
+				throw new IOException(ex);
+			}
 
 			if (startWithGUI) { // GUI MODE
 				if (dirToData.getPath().isEmpty()) {
@@ -309,9 +314,11 @@ public class Config {
 							createDataStructure(dataDir, true);
 							JOptionPane.showMessageDialog(dialogParent, "Databases and working folders initialized successfully!");
 							isInitiated = true;
-						} catch (final Exception ex) {
+						} catch (final IOException ex) {
 							JOptionPane.showMessageDialog(dialogParent, Text.App.warnUnableToInitForFirstTime);
 							log.error(Text.App.warnUnableToInitForFirstTime, ex);
+						} catch (final HeadlessException ex) {
+							throw new IllegalStateException(ex);
 						}
 					}
 				} else {
@@ -365,7 +372,7 @@ public class Config {
 					isInitiated = true;
 				}
 			}
-		} catch (final Exception ex) {
+		} catch (final IOException ex) {
 			isInitiated = false;
 			log.error("Failed initializing the configuration", ex);
 		}

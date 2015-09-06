@@ -95,11 +95,11 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerInfos.keySet(), Defaults.DEFAULT_GT);
 
 			// PARSE ALL FILES FOR ANY DATA ON CURRENT SAMPLE
-			for (int i = 0; i < gtFilesToImport.length; i++) {
+			for (final File gtFileToImport : gtFilesToImport) {
 				//log.info("Input file: "+i);
 				loadIndividualFiles(
 						loadDescription.getStudyKey(),
-						gtFilesToImport[i],
+						gtFileToImport,
 						sampleInfo.getKey(),
 						alleles);
 			}

@@ -198,6 +198,30 @@ public class PreferencesPanel extends JPanel {
 			putValue(NAME, Text.All.save);
 		}
 
+		private static void isValidColorComponent(final String propertyName, final String componentName, final String componentValue) {
+
+			final int componentValueInt = Integer.parseInt(componentValue);
+			if ((componentValueInt < 0) || (componentValueInt > 255)) {
+				throw new IllegalArgumentException(
+						"Property " + propertyName + " value " + componentName
+						+ " out of range [0, 255]: " + componentValue);
+			}
+		}
+
+		private static void isValidColor(final String propertyName, final String propertyValue) {
+
+			final String[] rgbVals = propertyValue.split(",");
+			if (rgbVals.length != 3) {
+				throw new IllegalArgumentException(
+						"Property " + propertyName
+						+ " needs exactly 3 int values separated by ','; found "
+						+ rgbVals.length + " values");
+			}
+			isValidColorComponent(propertyName, "red", rgbVals[0]);
+			isValidColorComponent(propertyName, "green", rgbVals[1]);
+			isValidColorComponent(propertyName, "blue", rgbVals[2]);
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
@@ -226,27 +250,9 @@ public class PreferencesPanel extends JPanel {
 						|| selectedPropertyName.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
 						|| selectedPropertyName.equals("CHART_SAMPLEQA_MISSING_THRESHOLD"))
 				{
-					// Check if it is a valid color setting,
-					// and issue a warning if not.
-					final String[] rgbVals = selectedPropertyValue.split(",");
+					// Check if it is a valid color setting, and issue a warning if not.
 					try {
-						if (rgbVals.length != 3) {
-							throw new IllegalArgumentException(
-									"Needs exactly 3 int values separated by ','; found "
-											+ rgbVals.length + " values");
-						}
-						int redInt = Integer.parseInt(rgbVals[0]);
-						if (redInt < 0 || redInt > 255) {
-							redInt = redInt % 255;
-						}
-						int greenInt = Integer.parseInt(rgbVals[1]);
-						if (greenInt < 0 || greenInt > 255) {
-							greenInt = greenInt % 255;
-						}
-						int blueInt = Integer.parseInt(rgbVals[2]);
-						if (blueInt < 0 || blueInt > 255) {
-							blueInt = blueInt % 255;
-						}
+						isValidColor(selectedPropertyName, selectedPropertyValue);
 					} catch (Exception ex) {
 						String warningText = Text.App.warnPropertyRGB + "\nField: " + selectedPropertyName;
 						log.warn(warningText, ex);

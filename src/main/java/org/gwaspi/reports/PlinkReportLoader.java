@@ -64,7 +64,7 @@ public class PlinkReportLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(PlinkReportLoader.class);
 
-	private static Map<String, String> labeler = new HashMap<String, String>();
+	private static final Map<String, String> LABELER = new HashMap<String, String>();
 
 	private PlinkReportLoader() {
 	}
@@ -110,13 +110,13 @@ public class PlinkReportLoader {
 				if (!s_pVal.equals("NA")) {
 					double logPValue = Math.abs(Math.log(Double.parseDouble(s_pVal)) / Math.log(10));
 
-					if (cVals[0].toString().equals(tempChr)) {
+					if (cVals[0].equals(tempChr)) {
 						if (redMarkersHS.contains(markerId)) {
 							series2.add(position, logPValue);
 						} else {
 							series1.add(position, logPValue);
 						}
-						labeler.put(tempChr + "_" + position, markerId);
+						LABELER.put(tempChr + "_" + position, markerId);
 					} else {
 						if (!tempChr.isEmpty()) { // SKIP FIRST TIME (NO DATA YET!)
 							chrData.addSeries(series1);
@@ -126,7 +126,7 @@ public class PlinkReportLoader {
 						tempChr = cVals[0];
 						series1 = new XYSeries("Imputed");
 						series2 = new XYSeries("Observed");
-						labeler.put(tempChr + "_" + position, markerId);
+						LABELER.put(tempChr + "_" + position, markerId);
 
 						if (redMarkersHS.contains(markerId)) {
 							series2.add(position, logPValue);
@@ -210,8 +210,8 @@ public class PlinkReportLoader {
 	private static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator {
 
-		private double threshold;
-		private String chr;
+		private final double threshold;
+		private final String chr;
 
 		/**
 		 * Creates a new generator that only displays labels that are greater
@@ -220,6 +220,7 @@ public class PlinkReportLoader {
 		 * @param threshold the threshold value.
 		 */
 		MySeriesItemLabelGenerator(double threshold, String chr) {
+
 			this.threshold = threshold;
 			this.chr = chr;
 		}
@@ -234,20 +235,18 @@ public class PlinkReportLoader {
 		 *
 		 * @return the label (possibly <code>null</code>).
 		 */
+		@Override
 		public String generateLabel(XYDataset dataset, int series, int item) {
 			String result = null;
-			Number value = dataset.getYValue(series, item);
-			int position = (int) dataset.getXValue(series, item);
-			if (value != null) {
-				double v = value.doubleValue();
-				if (v > this.threshold) {
-					StringBuilder chrPos = new StringBuilder(chr);
-					chrPos.append("_");
-					chrPos.append(position);
-					result = labeler.get(chrPos.toString()).toString();
+			final double value = dataset.getYValue(series, item);
+			final int position = (int) dataset.getXValue(series, item);
+			if (value > this.threshold) {
+				final StringBuilder chrPos = new StringBuilder(chr);
+				chrPos.append("_");
+				chrPos.append(position);
+				result = LABELER.get(chrPos.toString()); // FIXME LABELER is always empty, because loadAssocUnadjLogPvsPos(...) is never called
 
-					//result = value.toString().substring(0, 4);  // could apply formatting here
-				}
+				//result = value.toString().substring(0, 4);  // could apply formatting here
 			}
 			return result;
 		}

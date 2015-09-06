@@ -23,18 +23,18 @@ import javax.swing.text.PlainDocument;
 
 public class LimitedLengthDocument extends PlainDocument {
 
-	private int limit;
+	private final int limit;
 
-	public LimitedLengthDocument(int limit) {
+	public LimitedLengthDocument(final int limit) {
 		this.limit = limit;
 	}
 
-	LimitedLengthDocument(int limit, boolean upper) {
+	LimitedLengthDocument(final int limit, final boolean upper) {
 		this.limit = limit;
 	}
 
 	@Override
-	public void insertString(int offset, String str, AttributeSet attr)
+	public void insertString(final int offset, final String str, final AttributeSet attr)
 			throws BadLocationException
 	{
 		if (str == null) {
@@ -52,7 +52,7 @@ public class LimitedLengthDocument extends PlainDocument {
 	}
 
 	@Override
-	public void replace(int offs, int length, String str, AttributeSet attr)
+	public void replace(final int offs, final int length, final String str, final AttributeSet attr)
 			throws BadLocationException
 	{
 		// This rejects the entire replacement if it would make

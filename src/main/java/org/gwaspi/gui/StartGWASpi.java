@@ -236,13 +236,13 @@ public class StartGWASpi {
 				Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
 			} catch (OutOfMemoryError ex) {
 				log.error(Text.App.outOfMemoryError, ex);
-			} catch (Exception ex) {
+			} catch (final IOException ex) {
 				log.error(null, ex);
 			}
 		}
 	}
 
-	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
+	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException {
 
 		if (startWithGUI) {
 			mainGUIFrame = new MainFrame();

@@ -314,13 +314,12 @@ public class JPAOperationService implements OperationService {
 			List<OperationMetadata> childOperations = getChildrenOperationsMetadata(operationKey);
 			if (!childOperations.isEmpty()) {
 				childOperations.add(op);
-				for (int i = 0; i < childOperations.size(); i++) {
-					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(childOperations.get(i)));
-					final OperationKey childOperationKey = OperationKey.valueOf(childOperations.get(i));
+				for (final OperationMetadata childOperation : childOperations) {
+					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(childOperation));
+					final OperationKey childOperationKey = OperationKey.valueOf(childOperation);
 					if (deleteReports) {
 						getReportService().deleteReports(new DataSetKey(childOperationKey));
 					}
-
 					EntityManager em = null;
 					try {
 						em = jpaUtil.open();
