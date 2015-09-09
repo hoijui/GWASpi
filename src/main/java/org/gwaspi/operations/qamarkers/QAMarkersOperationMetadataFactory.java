@@ -48,7 +48,7 @@ public class QAMarkersOperationMetadataFactory implements OperationMetadataFacto
 				operationDataSet.getParent(), // parent data set
 				params.getName(), // friendly name
 				description, // description
-				getTypeInfo().getType(),
+				params.getType(),
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

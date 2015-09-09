@@ -50,7 +50,7 @@ public class CombiTestOperationMetadataFactory
 				parentDataSetKey, // parent data set
 				params.getName(), // friendly name
 				"COMBI test on " + parentDataSetMetadata.getFriendlyName(), // description
-				getTypeInfo().getType(), // operationType
+				params.getType(), // operationType
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

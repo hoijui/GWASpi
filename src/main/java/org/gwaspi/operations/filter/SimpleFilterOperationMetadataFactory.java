@@ -50,7 +50,7 @@ public class SimpleFilterOperationMetadataFactory<P extends OperationParams>
 				operationDataSet.getParent(), // parent data set
 				params.getName(), // friendly name
 				"Filters the markers and/or samples by " + filterDescription, // description
-				getTypeInfo().getType(), // operationType
+				params.getType(), // operationType
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

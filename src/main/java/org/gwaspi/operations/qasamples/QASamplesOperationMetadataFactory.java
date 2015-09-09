@@ -44,7 +44,7 @@ public class QASamplesOperationMetadataFactory implements OperationMetadataFacto
 				params.getName(), // friendly name
 				"Sample census on " + rdDataSetMetadata.getFriendlyName()
 						+ "\nSamples: " + operationDataSet.getNumSamples(), // description
-				getTypeInfo().getType(),
+				params.getType(),
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

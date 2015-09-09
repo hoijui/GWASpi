@@ -46,7 +46,7 @@ public class HardyWeinbergOperationMetadataFactory
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + operationDataSet.getNumMarkers() + ""
 					+ "\nSamples: " + operationDataSet.getNumSamples(), // description
-				getTypeInfo().getType(), // operationType
+				params.getType(), // operationType
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

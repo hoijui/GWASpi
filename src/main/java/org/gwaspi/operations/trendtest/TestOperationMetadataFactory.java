@@ -56,7 +56,7 @@ public class TestOperationMetadataFactory<D extends CommonTestOperationDataSet, 
 				params.getName(), // friendly name
 				params.getName() + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + markerCensusOP.getDescription(), // description
-				getTypeInfo().getType(),
+				params.getType(),
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),

@@ -42,12 +42,9 @@ public class MarkerCensusOperationMetadataFactory
 	{
 		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(operationDataSet.getParent());
 
-		NetCDFConstants.Defaults.OPType opType = getTypeInfo().getType();
-
 		String description = "Genotype frequency count -" + params.getName() + "- on " + rdDataSetMetadata.getFriendlyName();
 		if (params.getPhenotypeFile() != null) {
 			description += "\nCase/Control status read from file: " + params.getPhenotypeFile().getPath();
-			opType = NetCDFConstants.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
 		final boolean markersOriented = getTypeInfo().isMarkersOriented();
@@ -63,7 +60,7 @@ public class MarkerCensusOperationMetadataFactory
 					+ "\nDiscard mismatching Markers: " + params.isDiscardMismatches()
 					+ "\nMarkers: " + operationDataSet.getNumMarkers()
 					+ "\nSamples: " + operationDataSet.getNumSamples(), // description
-				opType,
+				params.getType(),
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
