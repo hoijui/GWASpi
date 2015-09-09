@@ -35,6 +35,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.OperationManager;
 
 @Entity
 @Table(name = "operationMetadata")
@@ -381,6 +383,11 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	@Transient
 	public OPType getOperationType() {
 		return getGenotypeCode();
+	}
+
+	@Transient
+	public Class<? extends MatrixOperation> getType() {
+		return OperationManager.convertOldToNewType(getGenotypeCode());
 	}
 
 	@Column(

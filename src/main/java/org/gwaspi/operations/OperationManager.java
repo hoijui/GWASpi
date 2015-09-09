@@ -154,6 +154,10 @@ public class OperationManager {
 		return generateOperationDataSet(type, null, origin, parent, getDefaultFactoryProperties(), params);
 	}
 
+	public static Class<? extends MatrixOperation> convertOldToNewType(final OPType oldType) {
+		return oldToNewType.get(oldType);
+	}
+
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
 
 		OperationMetadata operationMetadata = getOperationService().getOperationMetadata(operationKey);
