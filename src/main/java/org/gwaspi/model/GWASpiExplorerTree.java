@@ -290,7 +290,7 @@ public class GWASpiExplorerTree {
 						tree.expandPath(treePath);
 						final OperationKey currentOPKey = (OperationKey) currentElementInfo.getContentKey();
 						final OperationMetadata currentOP = getOperationService().getOperationMetadata(currentOPKey);
-						switch (currentOP.getType()) {
+						switch (currentOP.getOperationType()) {
 							case HARDY_WEINBERG:
 								// Display HW Report
 								List<Report> reportsList = getReportService().getReports(new DataSetKey(currentOPKey));

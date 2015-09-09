@@ -310,7 +310,7 @@ public class OperationManager {
 
 		for (OperationMetadata operation : operations) {
 			// Remove this operations type as a necessity, if it is one
-			missingOpTypes.remove(operation.getType());
+			missingOpTypes.remove(operation.getOperationType());
 		}
 
 		return missingOpTypes;

@@ -165,7 +165,7 @@ public class JPAOperationService implements OperationService {
 			OperationKey possibleParent = possibleParents.remove(0);
 			final List<OperationMetadata> childrenOperations = getChildrenOperationsMetadata(possibleParent);
 			for (OperationMetadata childOperation : childrenOperations) {
-				if (childOperation.getType() == type) {
+				if (childOperation.getOperationType() == type) {
 					offspringOperations.add(childOperation);
 				}
 				possibleParents.add(OperationKey.valueOf(childOperation));

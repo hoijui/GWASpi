@@ -499,11 +499,6 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		this.creationDate = creationDate;
 	}
 
-	@Transient
-	public OPType getType() {
-		return getGenotypeCode();
-	}
-
 	public static File generatePathToNetCdfFile(OperationMetadata operation) throws IOException {
 
 		String genotypesFolder = Study.constructGTPath(operation.getStudyKey());
