@@ -20,13 +20,15 @@ package org.gwaspi.operations.trendtest;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.NetCDFConstants;
-import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.operations.AbstractAssociationTestsOperation;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationDataEntry;
+import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
@@ -62,14 +64,14 @@ public abstract class AbstractNetCdfTestOperationDataSet<E extends OperationData
 			List<Dimension> samplesSpace)
 			throws IOException
 	{
-		final OPType opType = operationMetadata.getOperationType();
+		final Class<? extends MatrixOperation> type = operationMetadata.getType();
 
 		// Define Variables
 		ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_T, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_P, DataType.DOUBLE, markersSpace);
-		if ((opType == OPType.ALLELICTEST) || (opType == OPType.GENOTYPICTEST)) {
+		if (AbstractAssociationTestsOperation.class.isAssignableFrom(type)) { // allelic or genotypic
 			ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_OR, DataType.DOUBLE, markersSpace);
-			if (opType == OPType.GENOTYPICTEST) {
+			if (type.equals(GenotypicAssociationTestOperation.class)) {
 				ncFile.addVariable(NetCDFConstants.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
 			}
 		}

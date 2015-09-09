@@ -33,7 +33,6 @@ import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.ImportConstants.ImportFormat;
 import org.gwaspi.constants.NetCDFConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.constants.NetCDFConstants.Defaults.StrandType;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.dao.OperationService;
@@ -47,6 +46,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.operations.GWASinOneGOParams;
+import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +106,7 @@ public class Dialogs {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
-	public static OperationMetadata showOperationCombo(final DataSetKey rootKey, final OPType filterOpType) throws IOException {
+	public static OperationMetadata showOperationCombo(final DataSetKey rootKey, final Class<? extends MatrixOperation> filterOpType) throws IOException {
 
 		OperationMetadata selectedOp = null;
 
@@ -114,7 +114,7 @@ public class Dialogs {
 		if (!operationsList.isEmpty()) {
 			final List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
 			for (final OperationMetadata operation : operationsList) {
-				if (operation.getOperationType().equals(filterOpType)) {
+				if (operation.getType().equals(filterOpType)) {
 					selectedOperations.add(operation);
 				}
 			}
@@ -149,7 +149,7 @@ public class Dialogs {
 		return selectedOp;
 	}
 
-	public static OperationMetadata showOperationSubOperationsCombo(final DataSetKey parentKey, final OPType filterOpType, String title) throws IOException {
+	public static OperationMetadata showOperationSubOperationsCombo(final DataSetKey parentKey, final Class<? extends MatrixOperation> filterOpType, String title) throws IOException {
 
 		OperationMetadata selectedOp = null;
 		final List<OperationMetadata> operationsList = getOperationService().getChildrenOperationsMetadata(parentKey);
@@ -157,7 +157,7 @@ public class Dialogs {
 		if (!operationsList.isEmpty()) {
 			List<OperationMetadata> selectedOperations = new ArrayList<OperationMetadata>();
 			for (OperationMetadata op : operationsList) {
-				if (op.getOperationType().equals(filterOpType)) {
+				if (op.getType().equals(filterOpType)) {
 					selectedOperations.add(op);
 				}
 			}

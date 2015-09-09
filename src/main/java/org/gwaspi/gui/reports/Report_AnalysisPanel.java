@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
-import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
@@ -43,6 +42,9 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperation;
+import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperation;
+import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.Deleter;
 
@@ -118,11 +120,11 @@ public class Report_AnalysisPanel extends JPanel {
 		JPanel pnl_ReportTmp = null;
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
-			if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
+			if (currentOP.getType().equals(AllelicAssociationTestOperation.class)) {
 				pnl_ReportTmp = new Report_AnalysisAllelicTestImpl(operationKey, reportFile, nRows);
-			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
+			} else if (currentOP.getType().equals(GenotypicAssociationTestOperation.class)) {
 				pnl_ReportTmp = new Report_AnalysisGenotypicTestImpl(operationKey, reportFile, nRows);
-			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
+			} else if (currentOP.getType().equals(TrendTestOperation.class)) {
 				pnl_ReportTmp = new Report_AnalysisTrendTestImpl(operationKey, reportFile, nRows);
 			}
 		}
