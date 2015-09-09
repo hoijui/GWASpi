@@ -144,9 +144,6 @@ public class OperationManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(final OPType type, MatrixKey origin, DataSetKey parent, OperationParams params) throws IOException {
-		return generateOperationDataSet(oldToNewType.get(type), origin, parent, params);
-	}
 	public static OperationDataSet generateOperationDataSet(
 			final Class<? extends MatrixOperation> type,
 			MatrixKey origin,
