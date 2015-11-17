@@ -74,16 +74,15 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 			final int ctrlaa)
 			throws IOException
 	{
-		final double allelicT = Associations.calculateAllelicAssociationChiSquare(
+		final double chiSqr = Associations.calculateAllelicAssociationChiSquare(
 				caseAA,
 				caseAa,
 				caseaa,
 				ctrlAA,
 				ctrlAa,
 				ctrlaa);
-		final double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
-
-		final double allelicOR = Associations.calculateAllelicAssociationOR(
+		final double pVal = Pvalue.calculatePvalueFromChiSqr(chiSqr, 1);
+		final double oddsRatio = Associations.calculateAllelicAssociationOR(
 				caseAA,
 				caseAa,
 				caseaa,
@@ -94,8 +93,8 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 		dataSet.addEntry(new DefaultAllelicAssociationOperationEntry(
 				markerKey,
 				markerOrigIndex,
-				allelicT,
-				allelicPval,
-				allelicOR));
+				chiSqr,
+				pVal,
+				oddsRatio));
 	}
 }

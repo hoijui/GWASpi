@@ -67,15 +67,15 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 			final int ctrlaa)
 			throws IOException
 	{
-		final double gntypT = Associations.calculateGenotypicAssociationChiSquare(
+		final double chiSqr = Associations.calculateGenotypicAssociationChiSquare(
 				caseAA,
 				caseAa,
 				caseaa,
 				ctrlAA,
 				ctrlAa,
 				ctrlaa);
-		final double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-		final double[] gntypOR = Associations.calculateGenotypicAssociationOR(
+		final double pVal = Pvalue.calculatePvalueFromChiSqr(chiSqr, 2);
+		final double[] oddsRatio = Associations.calculateGenotypicAssociationOR(
 				caseAA,
 				caseAa,
 				caseaa,
@@ -86,9 +86,9 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 		dataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(
 				markerKey,
 				markerOrigIndex,
-				gntypT,
-				gntypPval,
-				gntypOR[0],
-				gntypOR[1]));
+				chiSqr,
+				pVal,
+				oddsRatio[0],
+				oddsRatio[1]));
 	}
 }
