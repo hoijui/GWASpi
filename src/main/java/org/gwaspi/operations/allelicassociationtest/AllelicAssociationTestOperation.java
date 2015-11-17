@@ -74,13 +74,14 @@ public class AllelicAssociationTestOperation extends AbstractAssociationTestsOpe
 			final int ctrlaa)
 			throws IOException
 	{
-		final double chiSqr = Associations.calculateAllelicAssociationChiSquare(
+		final double chiSqr = Associations.calculateAssociationChiSquare(
 				caseAA,
 				caseAa,
 				caseaa,
 				ctrlAA,
 				ctrlAa,
-				ctrlaa);
+				ctrlaa,
+				false);
 		final double pVal = Pvalue.calculatePvalueFromChiSqr(chiSqr, 1);
 		final double oddsRatio = Associations.calculateAllelicAssociationOR(
 				caseAA,

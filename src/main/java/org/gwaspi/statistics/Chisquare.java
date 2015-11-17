@@ -36,7 +36,7 @@ public class Chisquare {
 		return chiSQ;
 	}
 
-	public static double calculateGenotypicAssociationChiSquare(int[][] obsCntgTable, double[][] expCntgTable) {
+	static double calculateGenotypicAssociationChiSquare(int[][] obsCntgTable, double[][] expCntgTable) {
 		//3 columns: AA Aa aa, 2 rows: case, ctrl
 		double chiSQ = (Math.pow(obsCntgTable[0][0] - expCntgTable[0][0], 2) / (expCntgTable[0][0]))
 				+ (Math.pow(obsCntgTable[1][0] - expCntgTable[1][0], 2) / (expCntgTable[1][0]))

@@ -91,13 +91,14 @@ public class Associations {
 		return trendTestChiSqr;
 	}
 
-	public static double calculateGenotypicAssociationChiSquare(
+	public static double calculateAssociationChiSquare(
 			final int obsCaseAA,
 			final int obsCaseAa,
 			final int obsCaseaa,
 			final int obsCtrlAA,
 			final int obsCtrlAa,
-			final int obsCtrlaa)
+			final int obsCtrlaa,
+			final boolean genotypic)
 	{
 		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
@@ -128,7 +129,11 @@ public class Associations {
 			expCntgTable[1][1] = (double) (obsCtrlRowTot * obsAaColTot) / totGT;
 			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
 
-			chiSQ = Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
+			if (genotypic) {
+				chiSQ = Chisquare.calculateGenotypicAssociationChiSquare(obsCntgTable, expCntgTable);
+			} else {
+				chiSQ = Chisquare.calculateAllelicAssociationChiSquare(obsCntgTable, expCntgTable);
+			}
 		} else {
 			chiSQ = Double.NaN;
 		}
@@ -212,51 +217,6 @@ public class Associations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ALLELIC TESTS">
-	public static double calculateAllelicAssociationChiSquare(
-			final int obsCaseAA,
-			final int obsCaseAa,
-			final int obsCaseaa,
-			final int obsCtrlAA,
-			final int obsCtrlAa,
-			final int obsCtrlaa)
-	{
-		final int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
-		final double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
-
-		obsCntgTable[0][0] = obsCaseAA;
-		obsCntgTable[1][0] = obsCaseAa;
-		obsCntgTable[2][0] = obsCaseaa;
-
-		obsCntgTable[0][1] = obsCtrlAA;
-		obsCntgTable[1][1] = obsCtrlAa;
-		obsCntgTable[2][1] = obsCtrlaa;
-
-		final int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
-		final int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
-		final int totGT = obsCaseRowTot + obsCtrlRowTot;
-
-		final int obsAAColTot = obsCaseAA + obsCtrlAA;
-		final int obsAaColTot = obsCaseAa + obsCtrlAa;
-		final int obsaaColTot = obsCaseaa + obsCtrlaa;
-
-		final double chiSQ;
-		if (totGT != 0) {
-			expCntgTable[0][0] = (double) (obsCaseRowTot * obsAAColTot) / totGT;
-			expCntgTable[1][0] = (double) (obsCaseRowTot * obsAaColTot) / totGT;
-			expCntgTable[2][0] = (double) (obsCaseRowTot * obsaaColTot) / totGT;
-
-			expCntgTable[0][1] = (double) (obsCtrlRowTot * obsAAColTot) / totGT;
-			expCntgTable[1][1] = (double) (obsCtrlRowTot * obsAaColTot) / totGT;
-			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
-
-			chiSQ = Chisquare.calculateAllelicAssociationChiSquare(obsCntgTable, expCntgTable);
-		} else {
-			chiSQ = Double.NaN;
-		}
-
-		return chiSQ;
-	}
-
 	/**
 	 * Calculates the allelic association adds ratio.
 	 * 1) Check if any value is 0

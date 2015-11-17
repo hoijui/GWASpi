@@ -67,13 +67,14 @@ public class GenotypicAssociationTestOperation extends AbstractAssociationTestsO
 			final int ctrlaa)
 			throws IOException
 	{
-		final double chiSqr = Associations.calculateGenotypicAssociationChiSquare(
+		final double chiSqr = Associations.calculateAssociationChiSquare(
 				caseAA,
 				caseAa,
 				caseaa,
 				ctrlAA,
 				ctrlAa,
-				ctrlaa);
+				ctrlaa,
+				true);
 		final double pVal = Pvalue.calculatePvalueFromChiSqr(chiSqr, 2);
 		final double[] oddsRatio = Associations.calculateGenotypicAssociationOR(
 				caseAA,
