@@ -55,12 +55,9 @@ public class ChartDefaultDisplay extends JPanel {
 	private final JScrollPane scrl_Chart;
 	private final JButton btn_Save;
 	private final JButton btn_Back;
-	private final OperationKey operationKey;
 	// End of variables declaration
 
 	public ChartDefaultDisplay(final String chartPath, final OperationKey operationKey) {
-
-		this.operationKey = operationKey;
 
 		scrl_Chart = new JScrollPane();
 		pnl_Chart = new JPanel();
@@ -69,9 +66,15 @@ public class ChartDefaultDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
+		final StudyKey studyKey;
+		if ((operationKey != null) && (operationKey.getId() != OperationKey.NULL_ID)) {
+			studyKey = operationKey.getParentMatrixKey().getStudyKey();
 
-		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
+			btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
+		} else {
+			studyKey = new StudyKey(1);
+		}
+		btn_Save.setAction(new SaveAsAction(studyKey, chartPath, this));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -130,7 +133,7 @@ public class ChartDefaultDisplay extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		diplayChart(operationKey.getParentMatrixKey().getStudyKey(), chartPath);
+		diplayChart(studyKey, chartPath);
 	}
 
 	private void diplayChart(StudyKey studyKey, String chartPath) {
