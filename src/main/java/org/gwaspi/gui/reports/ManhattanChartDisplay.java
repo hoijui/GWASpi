@@ -30,10 +30,12 @@ import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -62,6 +64,7 @@ public final class ManhattanChartDisplay extends JPanel {
 	private final JButton btn_Save;
 	private final JButton btn_Back;
 	private boolean fired;
+//	private OperationKey operationKey;
 	private List<ChromosomeKey> chromosomeKeys;
 	private List<ChromosomeInfo> chromosomeInfos;
 	private int chartWidth = 0;
@@ -307,5 +310,21 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	public void setFired(boolean fired) {
 		this.fired = fired;
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		Config.createSingleton(true);
+//		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
+
+		final ManhattanChartDisplay pane = new ManhattanChartDisplay(null, null);
+		final JFrame frame = new JFrame("ManhattanChartDisplay tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

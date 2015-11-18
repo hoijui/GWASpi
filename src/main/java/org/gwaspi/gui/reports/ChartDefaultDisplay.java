@@ -28,6 +28,7 @@ import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -199,5 +200,21 @@ public class ChartDefaultDisplay extends JPanel {
 				log.error("A table saving error has occurred", ex);
 			}
 		}
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		Config.createSingleton(true);
+//		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
+
+		final ChartDefaultDisplay pane = new ChartDefaultDisplay(null, null);
+		final JFrame frame = new JFrame("ChartDefaultDisplay tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

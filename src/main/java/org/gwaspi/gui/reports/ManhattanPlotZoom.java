@@ -34,6 +34,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
@@ -778,4 +779,20 @@ public final class ManhattanPlotZoom extends JPanel {
 		}
 	}
 	//</editor-fold>
+
+	public static void main(String[] args) throws IOException {
+
+		Config.createSingleton(true);
+//		Config.setDBSystemDir(System.getProperty("user.home") + "/Projects/GWASpi/var/dataStore/testing/datacenter"); // HACK
+
+		final ManhattanPlotZoom pane = new ManhattanPlotZoom(null, null);
+		final JFrame frame = new JFrame("ManhattanPlotZoom tester");
+		final JScrollPane scrl_container = new JScrollPane();
+		scrl_container.setViewportView(pane);
+		frame.setLayout(new BorderLayout());
+		frame.add(scrl_container, BorderLayout.CENTER);
+		frame.setSize(1024, 600);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 }
