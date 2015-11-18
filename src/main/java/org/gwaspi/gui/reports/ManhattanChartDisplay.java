@@ -55,37 +55,35 @@ public final class ManhattanChartDisplay extends JPanel {
 			= LoggerFactory.getLogger(ManhattanChartDisplay.class);
 
 	// Variables declaration - do not modify
-	private JPanel pnl_Chart;
-	private JPanel pnl_Footer;
-	private JScrollPane scrl_Chart;
+	private final JPanel pnl_Chart;
+	private final JPanel pnl_Footer;
+	private final JScrollPane scrl_Chart;
 	private final JLabel label;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
 	private boolean fired;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private OperationKey operationKey;
 	private List<ChromosomeKey> chromosomeKeys;
 	private List<ChromosomeInfo> chromosomeInfos;
 	private int chartWidth = 0;
 	private int chrPlotWidth = 0;
 	private int chrPlotWidthPad = 0;
-	private final int padLeft = 64; // Pixel padding to the left of graph
-	private final int padGap = 9; // Pixel padding between chromosome plots
+	private static final int padLeft = 64; // Pixel padding to the left of graph
+	private static final int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
-	public ManhattanChartDisplay(final String chartPath, OperationKey testOpKey) {
+	public ManhattanChartDisplay(final String chartPath, final OperationKey operationKey) {
 
 		this.label = new JLabel();
 		this.chromosomeKeys = null;
 		this.chromosomeInfos = null;
 		this.fired = false;
 
-		initManhattanChartDisplay(chartPath, testOpKey);
-		initChromosmesMap(testOpKey.getParentMatrixKey().getStudyKey(), chartPath);
-	}
-
-	private void initManhattanChartDisplay(final String chartPath, final OperationKey operationKey) {
-
-		this.operationKey = operationKey;
+		final StudyKey studyKey;
+		if ((operationKey != null) && (operationKey.getId() != OperationKey.NULL_ID)) {
+			studyKey = operationKey.getParentMatrixKey().getStudyKey();
+		} else {
+			studyKey = new StudyKey(1);
+		}
 
 		scrl_Chart = new JScrollPane();
 		pnl_Chart = new JPanel();
@@ -137,7 +135,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new ChartDefaultDisplay.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath, this));
+		btn_Save.setAction(new ChartDefaultDisplay.SaveAsAction(studyKey, chartPath, this));
 
 		btn_Back.setAction(new BackAction(new DataSetKey(operationKey)));
 
@@ -197,9 +195,11 @@ public final class ManhattanChartDisplay extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		//</editor-fold>
+
+		initChromosmesMap(studyKey, chartPath, operationKey);
 	}
 
-	private void initChromosmesMap(StudyKey studyKey, String chartPath) {
+	private void initChromosmesMap(StudyKey studyKey, String chartPath, final OperationKey operationKey) {
 
 		// LOAD MANHATTANPLOT IMAGE
 		try {
@@ -220,7 +220,8 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			Map<ChromosomeKey, ChromosomeInfo> chromosomes = OperationManager.extractChromosomeKeysAndInfos(operationKey);
+			Map<ChromosomeKey, ChromosomeInfo> chromosomes
+					= OperationManager.extractChromosomeKeysAndInfos(operationKey);
 			chromosomeKeys = new ArrayList<ChromosomeKey>(chromosomes.keySet());
 			chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomes.values());
 
