@@ -86,7 +86,7 @@ public class GWASpiExplorerNodes {
 		private final String nodeName;
 		/** This may contain a {@link StudyKey}, {@link MatrixKey}, {@link OperationKey}, {@link ReportKey}, ... */
 		private final Object contentKey;
-		private boolean collapsable;
+		private boolean collapsable; // XXX correct spelling is: collapsible
 
 		public NodeElementInfo(
 				int parentNodeId,
@@ -101,7 +101,7 @@ public class GWASpiExplorerNodes {
 			this.nodeType = nodeType;
 			this.nodeName = nodeName;
 			this.contentKey = contentKey;
-			this.collapsable = false;
+			this.collapsable = true;
 		}
 
 		public static int createUniqueId(NodeType nodeType, Object contentKey) {

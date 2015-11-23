@@ -335,8 +335,6 @@ public class GWASpiExplorerPanel extends JPanel {
 				// ignore
 			}
 
-			setAllNodesCollapsable();
-
 			row--;
 			while (row >= 0) {
 				final TreePath treePath = tmpTree.getPathForRow(row);
@@ -364,20 +362,6 @@ public class GWASpiExplorerPanel extends JPanel {
 		pnl_Content.setVisible(true);
 		scrl_Content.setViewportView(pnl_Content);
 		splt_MoapiPanel.setRightComponent(scrl_Content);
-	}
-
-	public void setAllNodesCollapsable() {
-		if (Config.getSingleton().getBoolean(Config.PROPERTY_GUI_MODE, false)) {
-			for (int i = 0; i < getTree().getRowCount(); i++) {
-				TreePath treePath = getTree().getPathForRow(i);
-				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-				Object currentElement = currentNode.getUserObject();
-				NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
-				if (!currentNodeInfo.isCollapsable()) {
-					currentNodeInfo.setCollapsable(true);
-				}
-			}
-		}
 	}
 
 	public JTree getTree() {
