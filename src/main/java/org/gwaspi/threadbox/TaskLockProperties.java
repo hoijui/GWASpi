@@ -20,6 +20,8 @@ package org.gwaspi.threadbox;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.Identifier;
 import org.gwaspi.model.StudyKey;
@@ -32,8 +34,8 @@ import org.gwaspi.model.StudyKey;
  */
 public class TaskLockProperties {
 
-	private final Collection<Identifier<StudyKey>> requiredStudies;
-	private final Collection<Identifier<DataSetKey>> requiredDataSets;
+	private final Set<Identifier<StudyKey>> requiredStudies;
+	private final Set<Identifier<DataSetKey>> requiredDataSets;
 	private final Collection<Identifier<StudyKey>> removingStudies;
 	private final Collection<Identifier<DataSetKey>> removingDataSets;
 	private final Collection<Identifier<StudyKey>> introducingStudies;
@@ -41,20 +43,20 @@ public class TaskLockProperties {
 
 	public TaskLockProperties() {
 
-		this.requiredStudies = new ArrayList<Identifier<StudyKey>>();
-		this.requiredDataSets = new ArrayList<Identifier<DataSetKey>>();
+		this.requiredStudies = new HashSet<Identifier<StudyKey>>();
+		this.requiredDataSets = new HashSet<Identifier<DataSetKey>>();
 		this.removingStudies = new ArrayList<Identifier<StudyKey>>();
 		this.removingDataSets = new ArrayList<Identifier<DataSetKey>>();
 		this.introducingStudies = new ArrayList<Identifier<StudyKey>>();
 		this.introducingDataSets = new ArrayList<Identifier<DataSetKey>>();
 	}
 
-	public Collection<Identifier<StudyKey>> getRequiredStudies() {
-		return Collections.unmodifiableCollection(requiredStudies);
+	public Set<Identifier<StudyKey>> getRequiredStudies() {
+		return Collections.unmodifiableSet(requiredStudies);
 	}
 
-	public Collection<Identifier<DataSetKey>> getRequiredDataSets() {
-		return Collections.unmodifiableCollection(requiredDataSets);
+	public Set<Identifier<DataSetKey>> getRequiredDataSets() {
+		return Collections.unmodifiableSet(requiredDataSets);
 	}
 
 	public void addRequired(final StudyKey studyKey) {

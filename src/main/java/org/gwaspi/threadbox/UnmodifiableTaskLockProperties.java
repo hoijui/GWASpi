@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.Collection;
+import java.util.Set;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.Identifier;
 import org.gwaspi.model.StudyKey;
@@ -37,12 +38,12 @@ public class UnmodifiableTaskLockProperties extends TaskLockProperties {
 	}
 
 	@Override
-	public Collection<Identifier<StudyKey>> getRequiredStudies() {
+	public Set<Identifier<StudyKey>> getRequiredStudies() {
 		return internal.getRequiredStudies();
 	}
 
 	@Override
-	public Collection<Identifier<DataSetKey>> getRequiredDataSets() {
+	public Set<Identifier<DataSetKey>> getRequiredDataSets() {
 		return internal.getRequiredDataSets();
 	}
 

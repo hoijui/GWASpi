@@ -37,7 +37,7 @@ public class TaskQueueTableModel extends AbstractTableModel implements TaskQueue
 	static {
 		final List<String> tmpColumnNames = new ArrayList<String>(8);
 		tmpColumnNames.add(Text.Processes.id);
-		tmpColumnNames.add(Text.Study.studyID);
+		tmpColumnNames.add(Text.Study.studies);
 		tmpColumnNames.add(Text.Processes.processeName);
 		tmpColumnNames.add(Text.Processes.launchTime);
 		tmpColumnNames.add(Text.Processes.startTime);
