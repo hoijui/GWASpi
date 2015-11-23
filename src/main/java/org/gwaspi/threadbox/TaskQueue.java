@@ -31,6 +31,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.gwaspi.progress.AbstractProgressListener;
+import org.gwaspi.progress.ProcessStatus;
 import org.gwaspi.progress.ProcessStatusChangeEvent;
 
 public class TaskQueue {
@@ -196,13 +197,32 @@ public class TaskQueue {
 			if (!wasQueued) {
 				return;
 			}
-			final Future<?> taskFuture = executorService.submit(task);
-//			futureToTask.put(taskFuture, task);
-			taskToFuture.put(task, taskFuture);
 			scheduled.add(task);
 			final Integer taskIndex = taskToIndex.get(task);
 			task.setStatus(QueueState.SCHEDULED);
 			fireStatusChanged(new TaskQueueStatusChangedEvent(this, task, taskIndex));
+			task.getProgressSource().addProgressListener(new AbstractProgressListener() {
+				@Override
+				public void statusChanged(final ProcessStatusChangeEvent evt) {
+					super.statusChanged(evt);
+
+					final QueueState newQueueState;
+					if (evt.getNewStatus().equals(ProcessStatus.RUNNING)) {
+						newQueueState = QueueState.PROCESSING;
+					} else if (evt.getNewStatus().equals(ProcessStatus.PAUSED)) {
+						newQueueState = QueueState.PAUSED;
+					} else {
+						newQueueState = null;
+					}
+					if (newQueueState != null) {
+						task.setStatus(newQueueState);
+						fireStatusChanged(new TaskQueueStatusChangedEvent(TaskQueue.this, task, taskIndex));
+					}
+				}
+			});
+			final Future<?> taskFuture = executorService.submit(task);
+//			futureToTask.put(taskFuture, task);
+			taskToFuture.put(task, taskFuture);
 		} finally {
 			scheduleLock.unlock();
 		}
