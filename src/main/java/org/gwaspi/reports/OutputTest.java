@@ -386,16 +386,17 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		// WRITE HEADER OF FILE
 		reportName = reportName + ".txt";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
+		final ReportWriter reportWriter = new ReportWriter(reportPath, reportName);
 
 		// WRITE MARKERS ID & RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
+		reportWriter.writeFirstColumnToReport(header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 
 		// WRITE MARKERSET CHROMOSOME
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 
 		// WRITE MARKERSET POS
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
 		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(getParams().geQaMarkersOpKey());
@@ -413,15 +414,15 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
 			sortedMarkerAlleles.add(concatenatedValue);
 		}
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
+		reportWriter.appendColumnToReport(sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
 
 		// WRITE DATA TO REPORT
-		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_T));
-		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
+		reportWriter.appendColumnToReport(testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_T));
+		reportWriter.appendColumnToReport(testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
 		if (getParams().getTestType() != OPType.TRENDTEST) {
-			ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(AllelicAssociationTestOperationEntry.TO_OR));
+			reportWriter.appendColumnToReport(testOperationEntries, null, new Extractor.ToStringMetaExtractor(AllelicAssociationTestOperationEntry.TO_OR));
 			if (getParams().getTestType() != OPType.ALLELICTEST) {
-				ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
+				reportWriter.appendColumnToReport(testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
 			}
 		}
 	}
@@ -447,8 +448,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 				throws IOException
 		{
 			final int numColumns = getColumnHeaders().length;
-			return ReportWriter.parseReport(
-					reportFile,
+			return new ReportWriter(reportFile).parseReport(
 					new AssociationTestReportLineParser(exactValues, numColumns),
 					numRowsToFetch);
 		}

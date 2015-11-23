@@ -300,28 +300,29 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		// WRITE HEADER OF FILE
 		final String header = createReportHeaderLine(columns);
 		final String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
+		final ReportWriter reportWriter = new ReportWriter(reportPath, reportName);
 
 		// WRITE MARKERS ID & RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
+		reportWriter.writeFirstColumnToReport(header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 
 		// WRITE MARKERSET CHROMOSOME
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 
 		// WRITE MARKERSET POS
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
 		final List<Byte> unsortedKnownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1);
 		final List<Byte> sortedKnownMinorAlleles = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, unsortedKnownMinorAlleles);
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedKnownMinorAlleles, null, new Extractor.ByteToStringExtractor());
+		reportWriter.appendColumnToReport(sortedKnownMinorAlleles, null, new Extractor.ByteToStringExtractor());
 
 		final List<Byte> unsortedKnownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1);
 		final List<Byte> sortedKnownMajorAlleles = Utils.createIndicesOrderedList(orderedMarkerOrigIndices, unsortedKnownMajorAlleles);
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedKnownMajorAlleles, null, new Extractor.ByteToStringExtractor());
+		reportWriter.appendColumnToReport(sortedKnownMajorAlleles, null, new Extractor.ByteToStringExtractor());
 
 		// WRITE QA MISSINGNESS RATIO OR MISMATCH STATE
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedOrigIndexMissingnessRatioOrMismatchStates, false, false);
+		reportWriter.appendColumnToReport(orderedOrigIndexMissingnessRatioOrMismatchStates, false, false);
 	}
 
 	public static class QAMarkersReportParser implements ReportParser {
@@ -344,8 +345,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				final boolean exactValues)
 				throws IOException
 		{
-			return ReportWriter.parseReport(
-					reportFile,
+			return new ReportWriter(reportFile).parseReport(
 					new QAMarkersReportLineParser(exactValues, missingness),
 					numRowsToFetch);
 		}

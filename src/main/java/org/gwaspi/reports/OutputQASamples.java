@@ -276,8 +276,7 @@ public class OutputQASamples extends AbstractOutputOperation<QASamplesOutputPara
 				final boolean exactValues)
 				throws IOException
 		{
-			return ReportWriter.parseReport(
-					reportFile,
+			return new ReportWriter(reportFile).parseReport(
 					new QASamplesReportLineParser(exactValues),
 					numRowsToFetch);
 		}

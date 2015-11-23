@@ -97,20 +97,25 @@ public class ReportWriter {
 		}
 	}
 
-	private ReportWriter() {
+	private final File reportFile;
+
+	public ReportWriter(final String reportPath, final String reportName) {
+
+		this.reportFile = new File(reportPath, reportName);
 	}
 
-	protected static <S> void writeFirstColumnToReport(
-			final String reportPath,
-			final String reportName,
+	public ReportWriter(final File reportFile) {
+
+		this.reportFile = reportFile;
+	}
+
+	protected <S> void writeFirstColumnToReport(
 			final String header,
 			final Collection<S> readContent,
 			final Extractor<S, String> keyExtractor,
 			final Extractor<S, String> valueExtractor)
 			throws IOException
 	{
-		final File reportFile = new File(reportPath, reportName);
-
 		final FileWriter outputFW = new FileWriter(reportFile);
 		final BufferedWriter outputBW = new BufferedWriter(outputFW);
 
@@ -133,9 +138,7 @@ public class ReportWriter {
 		outputBW.close();
 	}
 
-	protected static <K, V> void appendColumnToReport(
-			final String reportPath,
-			final String reportName,
+	protected <K, V> void appendColumnToReport(
 			final Map<K, V> map,
 			final boolean isArray,
 			final boolean withKey) throws IOException
@@ -154,25 +157,22 @@ public class ReportWriter {
 			keyExtractor = null;
 		}
 
-		appendColumnToReport(reportPath, reportName, map.entrySet(), keyExtractor, valueExtractor);
+		appendColumnToReport(map.entrySet(), keyExtractor, valueExtractor);
 	}
 
-	protected static <S> void appendColumnToReport(
-			final String reportPath,
-			final String reportName,
+	protected <S> void appendColumnToReport(
 			final Collection<S> readContent,
 			final Extractor<S, String> keyExtractor,
 			final Extractor<S, String> valueExtractor) throws IOException
 	{
-		final File tempFile = new File(reportPath, "tmp.rep");
-		final File inputFile = new File(reportPath, reportName);
+		final File tempFile = new File(reportFile.getParentFile(), reportFile.getName() + "tmp.rep");
 
 		FileReader inputFR = null;
 		BufferedReader inputBR = null;
 		FileWriter outputFW = null;
 		BufferedWriter outputBW = null;
 		try {
-			inputFR = new FileReader(inputFile);
+			inputFR = new FileReader(reportFile);
 			inputBR = new BufferedReader(inputFR);
 
 			outputFW = new FileWriter(tempFile);
@@ -219,11 +219,10 @@ public class ReportWriter {
 			}
 		}
 
-		Utils.move(tempFile, inputFile);
+		Utils.move(tempFile, reportFile);
 	}
 
-	protected static <S> List<S> parseReport(
-			final File reportFile,
+	protected <S> List<S> parseReport(
 			final Extractor<String[], S> keyExtractor,
 			final int numRowsToFetch)
 			throws IOException

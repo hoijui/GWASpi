@@ -178,23 +178,24 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 		final List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedMarkerOrigIndices, markersMetadatas);
 
 		// WRITE MARKERS ID & RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
+		final ReportWriter reportWriter = new ReportWriter(reportPath, reportName);
+		reportWriter.writeFirstColumnToReport(header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 //		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 //		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 		// WRITE MARKERSET CHROMOSOME
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 //		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
+//		reportWriter.appendColumnToReport(sortedMarkerCHRs, false, false);
 
 		// WRITE MARKERSET POS
-		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor<MarkerMetadata, Integer>(MarkerMetadata.TO_POS));
+		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor<MarkerMetadata, Integer>(MarkerMetadata.TO_POS));
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 //		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
+//		reportWriter.appendColumnToReport(sortedMarkerPos, false, false);
 
 		// WRITE KNOWN ALLELES FROM QA
 		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
@@ -246,21 +247,21 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 			}
 		}
 		sortedMarkerAlleles = Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
+		reportWriter.appendColumnToReport(sortedMarkerAlleles, false, false);
 
 		// WRITE HW PVAL
-		ReportWriter.appendColumnToReport(reportPath, reportName, hardyWeinbergEntries, null,
+		reportWriter.appendColumnToReport(hardyWeinbergEntries, null,
 				new Extractor.ToStringMetaExtractor(HardyWeinbergOperationEntry.P_VALUE_EXTRACTOR));
-		ReportWriter.appendColumnToReport(reportPath, reportName, hardyWeinbergEntries, null,
+		reportWriter.appendColumnToReport(hardyWeinbergEntries, null,
 				new Extractor.ToStringMetaExtractor(HardyWeinbergOperationEntry.HETZY_OBSERVED_EXTRACTOR));
-		ReportWriter.appendColumnToReport(reportPath, reportName, hardyWeinbergEntries, null,
+		reportWriter.appendColumnToReport(hardyWeinbergEntries, null,
 				new Extractor.ToStringMetaExtractor(HardyWeinbergOperationEntry.HETZY_EXPECTED_EXTRACTOR));
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedByHWPval, false, false);
+//		reportWriter.appendColumnToReport(sortedByHWPval, false, false);
 //
 //		// WRITE HW HETZY ARRAY
 //		Map<MarkerKey, Double> markerIdHWHETZY_CTRLMap = GatherHardyWeinbergData.loadHWHETZY_ALT(operationKey);
 //		Map<MarkerKey, Double> sortedHWHETZYCTRLs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, markerIdHWHETZY_CTRLMap);
-//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedHWHETZYCTRLs, true, false);
+//		reportWriter.appendColumnToReport(sortedHWHETZYCTRLs, true, false);
 	}
 
 	public static class HWReportParser implements ReportParser {
@@ -277,8 +278,7 @@ public class OutputHardyWeinberg extends AbstractOutputOperation<HardyWeinbergOu
 				final boolean exactValues)
 				throws IOException
 		{
-			return ReportWriter.parseReport(
-					reportFile,
+			return new ReportWriter(reportFile).parseReport(
 					new HWReportLineParser(exactValues),
 					numRowsToFetch);
 		}
