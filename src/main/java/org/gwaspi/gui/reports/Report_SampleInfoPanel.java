@@ -44,6 +44,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
@@ -106,6 +107,7 @@ public class Report_SampleInfoPanel extends JPanel {
 					{null, null, null, "Go!"}
 				},
 				new String[] {"", "", "", "", ""}));
+		LayoutUtils.configureReasonableHeight(tbl_ReportTable);
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">

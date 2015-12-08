@@ -40,6 +40,7 @@ import javax.swing.table.TableModel;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,7 @@ public class PreferencesPanel extends JPanel {
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.App.propertiesPaths)); // NOI18N
 
 		tbl_PreferencesTable.setModel(new PreferencesTableModel());
+		LayoutUtils.configureReasonableHeight(tbl_PreferencesTable);
 		scrl_PreferencesTable.setViewportView(tbl_PreferencesTable);
 
 		btn_Back.setAction(new BackAction());

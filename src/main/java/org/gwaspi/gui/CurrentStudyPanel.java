@@ -41,6 +41,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.MatricesTableModel;
 import org.gwaspi.gui.utils.RequestFocusListener;
 import org.gwaspi.gui.utils.RowRendererDefault;
@@ -97,6 +98,7 @@ public class CurrentStudyPanel extends JPanel {
 		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.matrices)); // NOI18N
 		tbl_MatrixTable.setModel(new MatricesTableModel(getMatrixService().getMatrices(studyKey)));
 		tbl_MatrixTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		LayoutUtils.configureReasonableHeight(tbl_MatrixTable);
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 		btn_DeleteMatrix.setBackground(DANGER_RED);
 		pnl_MatrixTable.setLayout(new BorderLayout(GAP, GAP_SMALL));

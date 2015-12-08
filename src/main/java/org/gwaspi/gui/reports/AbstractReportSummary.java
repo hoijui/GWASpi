@@ -38,6 +38,7 @@ import org.gwaspi.gui.BackAction;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.SelectAllTextFocusListener;
 import org.gwaspi.model.DataSetKey;
@@ -134,6 +135,7 @@ public class AbstractReportSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
+		LayoutUtils.configureReasonableHeight(tbl_ReportTable);
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">

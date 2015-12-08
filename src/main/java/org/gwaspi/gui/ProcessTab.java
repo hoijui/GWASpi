@@ -47,6 +47,7 @@ import javax.swing.border.TitledBorder;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import org.gwaspi.gui.utils.TaskQueueTableModel;
@@ -99,9 +100,7 @@ public class ProcessTab extends JPanel implements TaskQueueListener {
 		gridBagConstraints.weightx = 0.1;
 
 		final JTable processesTable = new ProcessesTable();
-		// without this line, the table would request a huge size by default,
-		// and thus cripple the layout on small scales
-		processesTable.setPreferredScrollableViewportSize(processesTable.getPreferredSize());
+		LayoutUtils.configureReasonableHeight(processesTable);
 		final JScrollPane scrl_processesTable = new JScrollPane();
 		scrl_processesTable.setViewportView(processesTable);
 		gridBagConstraints.gridx = 0;

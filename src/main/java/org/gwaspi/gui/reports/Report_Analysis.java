@@ -61,6 +61,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererAssociationTestWithZoomAndQueryDB;
 import org.gwaspi.gui.utils.RowRendererDefault;
@@ -202,6 +203,7 @@ public abstract class Report_Analysis extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
+		LayoutUtils.configureReasonableHeight(tbl_ReportTable);
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">

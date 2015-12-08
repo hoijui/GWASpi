@@ -40,6 +40,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LayoutUtils;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.DataSetKey;
@@ -103,6 +104,7 @@ public class CurrentMatrixPanel extends JPanel {
 		pnl_operationsTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Operation.operations)); // NOI18N
 		tbl_OperationsTable.setModel(new OperationsTableModel(subOperations));
 		tbl_OperationsTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		LayoutUtils.configureReasonableHeight(tbl_OperationsTable);
 		scrl_operationsTable.setViewportView(tbl_OperationsTable);
 		btn_DeleteOperation.setBackground(CurrentStudyPanel.DANGER_RED);
 		pnl_operationsTable.setLayout(new BorderLayout(CurrentStudyPanel.GAP, CurrentStudyPanel.GAP_SMALL));
