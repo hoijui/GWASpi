@@ -362,6 +362,8 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.originalParams = params;
 
+		parentMatrixValue.setText(params.getQAMarkerOperationKey().getParentMatrixKey().toString());
+
 		qaMarkersOperationValue.setSelectedItem(params.getQAMarkerOperationKey());
 
 		genotypeEncoderValue.setModel(new DefaultComboBoxModel(
