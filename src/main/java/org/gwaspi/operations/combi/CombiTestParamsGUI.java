@@ -183,6 +183,9 @@ public class CombiTestParamsGUI extends JPanel {
 		this.featureScalingPPanel.add(this.featureScalingPValue);
 		this.featureScalingPPanel.add(this.featureScalingPDefault);
 
+		this.weightsDecodingPPanel.add(this.weightsDecodingPValue);
+		this.weightsDecodingPPanel.add(this.weightsDecodingPDefault);
+
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
 
