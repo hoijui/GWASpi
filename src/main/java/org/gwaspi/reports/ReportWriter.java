@@ -109,7 +109,7 @@ public class ReportWriter {
 		this.reportFile = reportFile;
 	}
 
-	protected <S> void writeFirstColumnToReport(
+	public <S> void writeFirstColumnToReport(
 			final String header,
 			final Collection<S> readContent,
 			final Extractor<S, String> keyExtractor,
@@ -160,7 +160,7 @@ public class ReportWriter {
 		appendColumnToReport(map.entrySet(), keyExtractor, valueExtractor);
 	}
 
-	protected <S> void appendColumnToReport(
+	public <S> void appendColumnToReport(
 			final Collection<S> readContent,
 			final Extractor<S, String> keyExtractor,
 			final Extractor<S, String> valueExtractor) throws IOException
@@ -222,7 +222,7 @@ public class ReportWriter {
 		Utils.move(tempFile, reportFile);
 	}
 
-	protected <S> List<S> parseReport(
+	public <S> List<S> parseReport(
 			final Extractor<String[], S> keyExtractor,
 			final int numRowsToFetch)
 			throws IOException
