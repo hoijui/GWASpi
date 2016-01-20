@@ -63,7 +63,6 @@ public abstract class CommonRunnable implements Runnable {
 
 		try {
 			org.gwaspi.global.Utils.sysoutStart(getDetailedName());
-			Config.getSingleton().initPreferences(false, null, null);
 
 			// NOTE ABORTION_POINT We could be gracefully aborted here
 
