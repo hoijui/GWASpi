@@ -211,6 +211,7 @@ public class Text {
 		public static final String markerId = "MarkerID";
 		public static final String chiSqr = "X²";
 		public static final String pVal = "p-Value";
+		public static final String svmWeight = "SVM weight";
 		public static final String pos = "Pos";
 		public static final String rsId = "RsID";
 		public static final String externalResourceDB = "External Database Resources";
