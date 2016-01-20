@@ -25,10 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.TDistributionImpl;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class ChiSqrBoundaryCalculator {
 	protected static String netCDFFile = "";
 	protected static String boundaryPath = "";
 
-	public static void main(String[] args) throws IOException, MathException {
+	public static void main(String[] args) throws IOException {
 
 		boundaryPath = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrboundary" + df + "_" + method + simNb + "x" + N + ".txt";
 		netCDFFile = Config.getSingleton().getString(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrdist" + df + ".nc";
@@ -210,7 +209,7 @@ public class ChiSqrBoundaryCalculator {
 		log.info("Confidence boundary created for {} points", N);
 	}
 
-	protected static void calculateChisqrBoundaryByFormula() throws IOException, MathException {
+	protected static void calculateChisqrBoundaryByFormula() throws IOException {
 
 		FileWriter repFW = new FileWriter(boundaryPath);
 		BufferedWriter repBW = new BufferedWriter(repFW);
@@ -243,7 +242,7 @@ public class ChiSqrBoundaryCalculator {
 
 				double currentAvg = currentTot / simNb;
 
-				TDistributionImpl tDistImpl = new TDistributionImpl(sampleSize - 1);
+				TDistribution tDistImpl = new TDistribution(sampleSize - 1);
 				double tInvCumulProb = tDistImpl.inverseCumulativeProbability(0.05d);
 				double tCumulProb = tDistImpl.cumulativeProbability(0.05d);
 
@@ -276,7 +275,7 @@ public class ChiSqrBoundaryCalculator {
 		log.info("Confidence boundary created for {} points", N);
 	}
 
-	protected static void calculateChisqrBoundaryByStDev() throws IOException, MathException {
+	protected static void calculateChisqrBoundaryByStDev() throws IOException {
 
 		FileWriter repFW = new FileWriter(boundaryPath);
 		BufferedWriter repBW = new BufferedWriter(repFW);
@@ -332,7 +331,7 @@ public class ChiSqrBoundaryCalculator {
 		log.info("Confidence boundary created for {} points", N);
 	}
 
-	protected static void calculateChisqrBoundaryByVariance() throws IOException, MathException {
+	protected static void calculateChisqrBoundaryByVariance() throws IOException {
 
 		FileWriter repFW = new FileWriter(boundaryPath);
 		BufferedWriter repBW = new BufferedWriter(repFW);
