@@ -19,6 +19,7 @@ package org.gwaspi.reports;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -100,7 +101,7 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 				missingness ? Text.Reports.missRatio : Text.Reports.mismatchState};
 	}
 
-	static String createReportHeaderLine(final String[] columnHeaders) {
+	public static String createReportHeaderLine(final List<String> columnHeaders) {
 
 		final StringBuilder headerLine = new StringBuilder();
 		for (final String columnHeader : columnHeaders) {
@@ -109,6 +110,11 @@ public class OutputQAMarkers extends AbstractOutputOperation<QAMarkersOutputPara
 		headerLine.deleteCharAt(headerLine.length() - 1);
 		headerLine.append('\n');
 		return headerLine.toString();
+	}
+
+	@Deprecated
+	public static String createReportHeaderLine(final String[] columnHeaders) {
+		return createReportHeaderLine(Arrays.asList(columnHeaders));
 	}
 
 	@Override
