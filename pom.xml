@@ -384,6 +384,21 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>1.1.5</version>
+				<configuration>
+					<targetClasses>
+						<param>org.gwaspi.model*</param>
+					</targetClasses>
+					<targetTests>
+						<param>org.gwaspi.gui*</param>
+						<param>org.gwaspi.model*</param>
+					</targetTests>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
