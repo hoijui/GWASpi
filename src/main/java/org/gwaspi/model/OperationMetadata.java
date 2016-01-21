@@ -319,7 +319,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 
 	/**
 	 * A human eye friendly name.
-	 * @return a string matching with any characters
+	 * @return a string matching with any characters TODO fix this doc, makes no sense
 	 */
 	@Column(
 		name       = "name",
