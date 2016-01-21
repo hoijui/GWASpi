@@ -399,7 +399,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
-		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(getParams().geQaMarkersOpKey());
+		final QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationManager.generateOperationDataSet(getParams().getQaMarkersOpKey());
 		final int[] origIndexToQaMarkersIndexLookupTable = createOrigIndexToQaMarkersIndexLookupTable(qaMarkersOperationDataSet);
 		final List<Byte> knownMinorAlleles = qaMarkersOperationDataSet.getKnownMinorAllele();
 		final List<Byte> knownMajorAlleles = qaMarkersOperationDataSet.getKnownMajorAllele();
@@ -407,7 +407,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		for (Integer sortedOrigIndex : sortedOrigIndices) {
 			final int qaMarkersIndex = origIndexToQaMarkersIndexLookupTable[sortedOrigIndex];
 			if (qaMarkersIndex < 0) {
-				throw new IllegalArgumentException("The supplied QA Markers (" + getParams().geQaMarkersOpKey().toString() + ") operation does not contain all the required markers");
+				throw new IllegalArgumentException("The supplied QA Markers (" + getParams().getQaMarkersOpKey().toString() + ") operation does not contain all the required markers");
 			}
 			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(qaMarkersIndex);
 			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(qaMarkersIndex);

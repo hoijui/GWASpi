@@ -52,7 +52,7 @@ public class TestOutputParams extends AbstractOperationParams {
 		return testType;
 	}
 
-	public OperationKey geQaMarkersOpKey() {
+	public OperationKey getQaMarkersOpKey() {
 		return qaMarkersOpKey;
 	}
 
