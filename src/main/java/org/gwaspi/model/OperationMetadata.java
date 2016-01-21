@@ -323,7 +323,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	 */
 	@Column(
 		name       = "name",
-		length     = 127,
+		length     = 255,
 		unique     = false,
 		nullable   = true,
 		insertable = true,
