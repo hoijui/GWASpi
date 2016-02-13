@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -610,6 +611,14 @@ public class CombiTestOperation
 	{
 		final int dSamples = markerKeys.size();
 		final int n = sampleKeys.size();
+
+		final int nAffections = new HashSet<Affection>(sampleAffections).size();
+		if (nAffections != 2) {
+			// We have only 1 class, so we can not learn anything usefull
+			// TODO Check if this makes sense:
+			final List<Double> weights = Collections.nCopies(dSamples, 1.0 / dSamples);
+			return new RunSVMResults(weights, null, null, null);
+		}
 
 		LOG.debug("creating solver parameters ...");
 		LOG.debug("solver param: eps: {}", solverParams.getEps());
