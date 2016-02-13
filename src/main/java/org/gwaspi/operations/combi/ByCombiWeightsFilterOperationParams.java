@@ -90,7 +90,7 @@ public class ByCombiWeightsFilterOperationParams extends AbstractOperationParams
 				: markersToKeep;
 		this.markersToKeepFraction = ((this.markersToKeep == -1) && (markersToKeepFraction == null))
 				? getMarkersToKeepFractionDefault()
-				: markersToKeepFraction;
+				: (markersToKeepFraction == null) ? -1 : markersToKeepFraction;
 	}
 
 	public ByCombiWeightsFilterOperationParams(
