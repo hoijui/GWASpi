@@ -96,7 +96,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 		}
 
 		// check if feature matrix is equivalent to the one calculated with matlab
-		final InputStream correctFeaturesFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "featmat_" + encoderString);
+		final String correctFeaturesFilePath = BASE_PATH + "featmat_" + encoderString;
+		final InputStream correctFeaturesFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(correctFeaturesFilePath);
+		if (correctFeaturesFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", correctFeaturesFilePath);
+			return;
+		}
 		final List<List<Double>> correctFeatures = Util.parsePlainTextMatrix(correctFeaturesFile, false);
 
 		// load all features into memory
@@ -125,7 +130,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	@Override
 	public void kernelCalculated(float[][] K) {
 
-		final InputStream correctKernelFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "K_" + encoderString);
+		final String correctKernelFilePath = BASE_PATH + "K_" + encoderString;
+		final InputStream correctKernelFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(correctKernelFilePath);
+		if (correctKernelFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", correctKernelFilePath);
+			return;
+		}
 		List<List<Double>> correctKernel = Util.parsePlainTextMatrix(correctKernelFile, false);
 
 		List<List<Double>> calculatedKernel = new Util.DoubleMatrixWrapperFloatArray2D(K);
@@ -156,7 +166,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 //		LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.toString(alphas[0]));
 //		LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
-		final InputStream correctAlphasFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "alpha_" + encoderString);
+		final String correctAlphasFilePath = BASE_PATH + "alpha_" + encoderString;
+		final InputStream correctAlphasFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(correctAlphasFilePath);
+		if (correctAlphasFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", correctAlphasFilePath);
+			return;
+		}
 		List<List<Double>> correctAlphasSparse = Util.parsePlainTextMatrix(correctAlphasFile, false);
 		List<Double> correctAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
 		for (List<Double> correctAlphasSparseEntry : correctAlphasSparse) {
@@ -177,7 +192,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 
 		final List<Double> weightsEncodedCopy = new ArrayList<Double>(weightsEncoded);
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
-		final InputStream mlWeightsRawFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_raw");
+		final String mlWeightsRawFilePath = BASE_PATH + "w_" + encoderString + "_raw";
+		final InputStream mlWeightsRawFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(mlWeightsRawFilePath);
+		if (mlWeightsRawFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", mlWeightsRawFilePath);
+			return;
+		}
 		final List<Double> mlWeightsRaw = Util.parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
 		Util.absVector(weightsEncodedCopy);
 		Util.absVector(mlWeightsRaw);
@@ -193,7 +213,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	public void decodedWeightsCalculated(List<Double> weights) {
 
 		// check if the decoded weights are equivalent to the ones calculated with matlab
-		final InputStream mlWeightsFinalFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_final");
+		final String mlWeightsFinalFilePath = BASE_PATH + "w_" + encoderString + "_final";
+		final InputStream mlWeightsFinalFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(mlWeightsFinalFilePath);
+		if (mlWeightsFinalFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", mlWeightsFinalFilePath);
+			return;
+		}
 		List<Double> mlWeightsFinal = Util.parsePlainTextMatrix(mlWeightsFinalFile, false).get(0);
 
 		LOG.debug("\nXXX correct weights final: (" + mlWeightsFinal.size() + ") " + mlWeightsFinal);
@@ -207,7 +232,12 @@ public class UnitTestingCombiTestOperationSpy implements CombiTestOperationSpy {
 	public void smoothedWeightsCalculated(List<Double> weightsFiltered) {
 
 		// check if the filtered weights are equivalent to the ones calculated with matlab
-		final InputStream mlWeightsFinalFilteredFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(BASE_PATH + "w_" + encoderString + "_final_filtered");
+		final String mlWeightsFinalFilteredFilePath = BASE_PATH + "w_" + encoderString + "_final_filtered";
+		final InputStream mlWeightsFinalFilteredFile = UnitTestingCombiTestOperationSpy.class.getResourceAsStream(mlWeightsFinalFilteredFilePath);
+		if (mlWeightsFinalFilteredFile == null) {
+			LOG.error("Can not test because expected-values file was not found: {}", mlWeightsFinalFilteredFilePath);
+			return;
+		}
 		List<Double> mlWeightsFinalFiltered = Util.parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);
 
 		LOG.debug("\ncompare final, filtered weights vectors ...");
