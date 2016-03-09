@@ -633,7 +633,8 @@ public class Utils {
 			final Object objData = urlConnect.getContent();
 			connected = true;
 		} catch (final IOException ex) {
-			log.warn("Internet connection attempt resulted in: negative", ex);
+			log.warn("Internet connection attempt resulted in: negative");
+			log.trace("... detailed problem", ex);
 			connected = false;
 		}
 
