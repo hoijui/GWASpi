@@ -121,11 +121,11 @@ public abstract class AbstractFilterOperation<P extends OperationParams>
 				filteredSampleOrigIndicesAndKeys);
 
 		if (filteredMarkerOrigIndicesAndKeys.isEmpty()) {
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (markers)");
+			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (from " + parentDataSetSource.getNumMarkers() + " input markers)");
 			return resultOpKey;
 		}
 		if (filteredSampleOrigIndicesAndKeys.isEmpty()) {
-			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (samples)");
+			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking + " (from " + parentDataSetSource.getNumSamples() + " input samples)");
 			return resultOpKey;
 		}
 
