@@ -275,7 +275,7 @@ public class OperationManager {
 
 		OperationKey resultOperationKey = performOperation(operation);
 		if (resultOperationKey == null) {
-			resultOperationKey = new OperationKey(parent.getOrigin(), Integer.MIN_VALUE);
+			resultOperationKey = new OperationKey(parent.getOrigin(), OperationKey.NULL_ID);
 		} else {
 			final boolean opHasResultView
 					= (getOperationService().getOperationMetadata(resultOperationKey) != null); // HACK maybe better add a getter to OperationType or so
