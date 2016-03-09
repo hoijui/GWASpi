@@ -201,10 +201,16 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		}
 		for (final Map.Entry<Integer, MarkerKey> parentMarkersEntry : parentMarkersOrigIndicesAndKeys.entrySet()) {
 			final double curCombiWeight = combiWeightsIt.next();
-			if (curCombiWeight > thresholdWeight) {
+			// We  use >= and a max-size check instead of >,
+			// to not end up with too few values in case of a flat landscape
+			// (many equal values).
+			if (curCombiWeight >= thresholdWeight) {
 				filteredMarkerOrigIndicesAndKeys.put(
 						parentMarkersEntry.getKey(),
 						parentMarkersEntry.getValue());
+			}
+			if (filteredMarkerOrigIndicesAndKeys.size() >= markersToKeep) {
+				break;
 			}
 			// NOTE We omit progress reporting, because it would be too huge
 			//   a percentual performance penalty for this leight-weight operation.
