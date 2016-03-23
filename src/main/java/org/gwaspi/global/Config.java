@@ -315,7 +315,7 @@ public class Config {
 						}
 					}
 				} else {
-					File derbyCenter = new File(dirToData.getPath() + "/datacenter");
+					File derbyCenter = new File(dirToData.getPath(), "datacenter");
 					if (!derbyCenter.exists()) {
 						int recreateDataFolder = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
 						if (recreateDataFolder == JOptionPane.OK_OPTION) {
