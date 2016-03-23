@@ -471,7 +471,7 @@ public class Config {
 		final File exportDir = new File(dataDir, "export");
 		final File reportsDir = new File(dataDir, "reports");
 		final File reportsLogDir = new File(reportsDir, "log");
-		final File dbDir = new File(reportsDir, "datacenter");
+		final File dbDir = new File(dataDir, "datacenter");
 
 		dbDirExisted = dbDir.exists();
 
