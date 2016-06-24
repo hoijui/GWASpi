@@ -1225,12 +1225,16 @@ public class CombiTestOperation
 		trainSVMPH.setNewStatus(ProcessStatus.RUNNING);
 		final svm_model svmModel;
 		final Model svmModelLinear;
-		if (useLibSvm) {
-			svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
-			svmModelLinear = null;
-		} else {
-			svmModel = null;
-			svmModelLinear = Linear.train(libLinearProblem, libLinearParameters);
+		try {
+			if (useLibSvm) {
+				svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
+				svmModelLinear = null;
+			} else {
+				svmModel = null;
+				svmModelLinear = Linear.train(libLinearProblem, libLinearParameters);
+			}
+		} catch (final Throwable thr) {
+			throw new RuntimeException(thr);
 		}
 		trainSVMPH.setNewStatus(ProcessStatus.FINALIZING);
 
