@@ -187,7 +187,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		for (List<Float> valuesList : valuesLists) {
 			final double weight = weightsIt.next();
 			for (int vi = 0; vi < valueCenters.length; vi++) {
-				final double centeredValue = valuesList.get(vi) - valueCenters[vi];
+				// NOTE Math.abs is required, because otherwise Math.pow will result in NaN, if pStdDev does not correspond to an integer value
+				final double centeredValue = Math.abs(valuesList.get(vi) - valueCenters[vi]);
 				varianceMeans[vi] += Math.pow(centeredValue, pStdDev) * weight;
 			}
 		}
