@@ -13,6 +13,6 @@ data-dir=${DATA_DIR}
 9.use-threshold-calibration=0
 10.genotype-encoding-p=2.0
 12.svm-library=${SVM_LIBRARY}
-13.svm-eps=1E-7
-14.svm-C=1E-0
+13.svm-eps=${SVM_EPS}
+14.svm-C=${SVM_C}
 [/script]

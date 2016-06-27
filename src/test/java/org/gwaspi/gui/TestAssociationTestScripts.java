@@ -220,6 +220,8 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{PER_CHROMOSOME\\}", String.valueOf(perChromosome ? 1 : 0));
 		substitutions.put("\\$\\{GENOTYPE_ENCODING\\}", genotypeEncoder.getHumanReadableName());
 		substitutions.put("\\$\\{SVM_LIBRARY\\}", SolverLibrary.LIB_SVM.name());
+		substitutions.put("\\$\\{SVM_EPS\\}", String.valueOf(1E-7));
+		substitutions.put("\\$\\{SVM_C\\}", String.valueOf(1E-0));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
