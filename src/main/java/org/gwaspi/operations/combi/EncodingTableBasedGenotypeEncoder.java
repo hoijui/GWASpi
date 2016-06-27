@@ -530,7 +530,8 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 			final List<Double> decodedWeights)
 	{
 		final double pNorm = params.getWeightsDecodingP();
-		final double norm = norm(encodedWeights, pNorm);
+		final double normRaw = norm(encodedWeights, pNorm);
+		final double norm = (normRaw == 0.0) ? 1.0 : normRaw;
 		final int encodingFactor = getEncodingFactor();
 		final double pNormInv = 1.0 / pNorm;
 		for (int ewi = 0; ewi < encodedWeights.size(); ewi += encodingFactor) {
