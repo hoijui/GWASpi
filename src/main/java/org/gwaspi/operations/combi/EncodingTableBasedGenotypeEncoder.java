@@ -397,9 +397,10 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		final int numFeatures = encodedSamplesFeatures.getNumFeatures();
 
 		// create the encoding table
+		final double featureScalingPStdDev = (params.getFeatureScalingP() == 0.0) ? 1.0 : params.getFeatureScalingP();
 		final Map<Integer, List<Float>> encodingTable
 //				= generateEncodingTable(possibleGenotypes, rawGenotypes);
-				= generateEncodingTable(majorAllele, minorAllele, genotypeCounts, numSamples, numFeatures, params.getFeatureScalingP());
+				= generateEncodingTable(majorAllele, minorAllele, genotypeCounts, numSamples, numFeatures, featureScalingPStdDev);
 
 		// this is the -- value
 		List<Float> invalidEncoded = encodingTable.remove(null);
