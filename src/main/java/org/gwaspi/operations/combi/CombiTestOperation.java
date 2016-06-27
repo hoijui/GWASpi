@@ -1148,13 +1148,18 @@ public class CombiTestOperation
 	public static Map<Integer, Double> extractNonZeroAlphas(final svm_model svmModel) {
 
 		final int numClasses = svmModel.sv_coef.length + 1;
-		final int classIndex = 0;
-		final int numFeatures = svmModel.sv_coef[classIndex].length;
-		final Map<Integer, Double> nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[classIndex].length);
-		for (int nzai = 0; nzai < svmModel.sv_coef[classIndex].length; nzai++) {
-			final int featureIndex = (int) svmModel.SV[nzai][classIndex].value - 1; // NOTE this only works with PRECOMPUTED!
-			final double featureValue = svmModel.sv_coef[classIndex][nzai];
-			nonZeroAlphas.put(featureIndex, featureValue);
+		final Map<Integer, Double> nonZeroAlphas;
+		if (numClasses > 1) {
+			final int classIndex = 0;
+//			final int numFeatures = svmModel.sv_coef[classIndex].length;
+			nonZeroAlphas = new LinkedHashMap<Integer, Double>(svmModel.sv_coef[classIndex].length);
+			for (int nzai = 0; nzai < svmModel.sv_coef[classIndex].length; nzai++) {
+				final int featureIndex = (int) svmModel.SV[nzai][classIndex].value - 1; // NOTE this only works with PRECOMPUTED!
+				final double featureValue = svmModel.sv_coef[classIndex][nzai];
+				nonZeroAlphas.put(featureIndex, featureValue);
+			}
+		} else {
+			nonZeroAlphas = new LinkedHashMap<Integer, Double>(0);
 		}
 
 		return nonZeroAlphas;
