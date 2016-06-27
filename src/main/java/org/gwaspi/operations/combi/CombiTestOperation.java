@@ -1246,7 +1246,7 @@ public class CombiTestOperation
 			// sample index and value of non-zero alphas
 			final Map<Integer, Double> nonZeroAlphas;
 			nonZeroAlphas = extractNonZeroAlphas(svmModel);
-			trainSVMPH.setNewStatus(ProcessStatus.COMPLEETED);
+			trainSVMPH.setNewStatus(ProcessStatus.COMPLEETED); // XXX Does this make sense here, and only here?
 
 			LOG.debug("calculate original space weights from alphas");
 			weightsEncoded = calculateOriginalSpaceWeights(
