@@ -40,6 +40,7 @@ import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
+import org.gwaspi.operations.combi.SolverLibrary;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperation;
 import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
 import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
@@ -218,6 +219,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{QA_MARKERS_OPERATION_ID\\}", String.valueOf(parentQaMarkersOpKey.getId()));
 		substitutions.put("\\$\\{PER_CHROMOSOME\\}", String.valueOf(perChromosome ? 1 : 0));
 		substitutions.put("\\$\\{GENOTYPE_ENCODING\\}", genotypeEncoder.getHumanReadableName());
+		substitutions.put("\\$\\{SVM_LIBRARY\\}", SolverLibrary.LIB_SVM.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
