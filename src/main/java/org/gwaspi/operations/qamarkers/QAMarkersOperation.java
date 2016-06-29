@@ -359,7 +359,9 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 			0 // will be set later
 		};
 		int remainingAlleleCount = numSamples * 2;
-		for (int i = 0; i < compactAlleleStatistics.length - 1; i++) {
+		// count only once, if they are the same
+		final int startWithAlleleOrdinal = (majorAlleleOrdinal == minorAlleleOrdinal) ? 1 : 0;
+		for (int i = startWithAlleleOrdinal; i < compactAlleleStatistics.length - 1; i++) {
 			remainingAlleleCount -= compactAlleleStatistics[i];
 		}
 		compactAlleleStatistics[compactAlleleStatistics.length - 1] = remainingAlleleCount;
@@ -379,7 +381,9 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 			0, // will be set later
 		};
 		int remainingGenotypeCount = numSamples;
-		for (int i = 0; i < compactGenotypeStatistics.length - 1; i++) {
+		// count only once, if they are the same
+		final int startWithGTOrdinal = (majorAlleleOrdinal == minorAlleleOrdinal) ? 5 : 0;
+		for (int i = startWithGTOrdinal; i < compactGenotypeStatistics.length - 1; i++) {
 			remainingGenotypeCount -= compactGenotypeStatistics[i];
 		}
 		compactGenotypeStatistics[compactGenotypeStatistics.length - 1] = remainingGenotypeCount;
