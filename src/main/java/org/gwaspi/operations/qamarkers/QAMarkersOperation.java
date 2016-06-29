@@ -386,6 +386,9 @@ public class QAMarkersOperation extends AbstractOperationCreatingOperation<QAMar
 		for (int i = startWithGTOrdinal; i < compactGenotypeStatistics.length - 1; i++) {
 			remainingGenotypeCount -= compactGenotypeStatistics[i];
 		}
+		if (remainingGenotypeCount < 0) {
+			throw new IllegalStateException("Remaining genotypes count can not be less then 0, but is: " + remainingGenotypeCount + " (from a total of " + numSamples + ")");
+		}
 		compactGenotypeStatistics[compactGenotypeStatistics.length - 1] = remainingGenotypeCount;
 		markerAlleleAndGTStatistics.setCompactGenotypeStatistics(compactGenotypeStatistics);
 	}
