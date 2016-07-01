@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -591,6 +592,21 @@ public class CombiTestOperation
 		}
 	}
 
+	private static void validateSampleAffections(
+			final List<Affection> sampleAffections)
+	{
+		final EnumSet<Affection> affectionSet = EnumSet.copyOf(sampleAffections);
+		if (!affectionSet.contains(Affection.AFFECTED)) {
+			throw new IllegalArgumentException("Missing samples with affection state: " + Affection.AFFECTED);
+		}
+		if (!affectionSet.contains(Affection.UNAFFECTED)) {
+			throw new IllegalArgumentException("Missing samples with affection state: " + Affection.UNAFFECTED);
+		}
+		if (affectionSet.contains(Affection.UNKNOWN)) {
+			throw new IllegalArgumentException("Found samples with affection state: " + Affection.UNKNOWN);
+		}
+	}
+
 	static RunSVMResults runEncodingAndSVM(
 			List<MarkerKey> markerKeys,
 			final List<Byte> majorAlleles,
@@ -612,8 +628,10 @@ public class CombiTestOperation
 		final int dSamples = markerKeys.size();
 		final int n = sampleKeys.size();
 
-		final int nAffections = new HashSet<Affection>(sampleAffections).size();
-		if (nAffections != 2) {
+		try {
+			validateSampleAffections(sampleAffections);
+		} catch (final IllegalArgumentException ex) {
+			LOG.error("Invalid sample affections: {}", ex.getMessage());
 			// We have only 1 class, so we can not learn anything usefull
 			// TODO Check if this makes sense:
 			final List<Double> weights = Collections.nCopies(dSamples, 1.0 / dSamples);
