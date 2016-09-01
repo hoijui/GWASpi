@@ -67,31 +67,31 @@ mkdir -p "${OUTPUT_DIR}"
 mkdir -p "${WORK_DIR}"
 
 if [ 1 == 1 ]; then # HACK
-envsubst < "${GWASPI_SCRIPT_TEMPLATE}" > "${GWASPI_SCRIPT}"
+	envsubst < "${GWASPI_SCRIPT_TEMPLATE}" > "${GWASPI_SCRIPT}"
 
-cd "${GWASPI_BIN_DIR}"
+	cd "${GWASPI_BIN_DIR}"
 
-echo "COMBI GWASpi run in \"${OUTPUT_DIR}\"..."
-mvn exec:java \
-	-Dexec.args="--memory --array-genotypes-lists --script \"${GWASPI_SCRIPT}\" " #\
-# TODO use the next 2 lines
-#	>  "${OUTPUT_DIR}/GWASpi_log_stdout.txt" \
-#	2> "${OUTPUT_DIR}/GWASpi_log_stderr.txt"
-GWASPI_EXIT_STATE=${?}
-echo "${GWASPI_EXIT_STATE}" > "${OUTPUT_DIR}/GWASpi_log_exit_status.txt"
+	echo "COMBI GWASpi run in \"${OUTPUT_DIR}\"..."
+	mvn exec:java \
+		-Dexec.args="--memory --array-genotypes-lists --script \"${GWASPI_SCRIPT}\" " #\
+	# TODO use the next 2 lines
+	#	>  "${OUTPUT_DIR}/GWASpi_log_stdout.txt" \
+	#	2> "${OUTPUT_DIR}/GWASpi_log_stderr.txt"
+	GWASPI_EXIT_STATE=${?}
+	echo "${GWASPI_EXIT_STATE}" > "${OUTPUT_DIR}/GWASpi_log_exit_status.txt"
 
-if [ ${GWASPI_EXIT_STATE} -eq 0 ]; then
-#	EXPORT_DIR="${WORK_DIR}/export/STUDY_1"
-#	EXPORTED_FILE_MAP="${EXPORTS_DIR}/myTestMatrixName.map"
-#	EXPORTED_FILE_PED="${EXPORTS_DIR}/myTestMatrixName.ped"
-	REPORTS_DIR="${WORK_DIR}/reports/STUDY_1"
-	REPORT_FILE_TREND_TEST="${REPORTS_DIR}/mx-1_TRENDTEST-10.txt"
-	cat "${REPORT_FILE_TREND_TEST}" | awk '{if (NR != 1) {print $1 "\t" $8;}}' \
-		> "${GWASPI_OUTPUT_P_VALUES}"
-	echo "GWASpi output written to '${GWASPI_OUTPUT_P_VALUES}'"
-fi
-echo "done. (COMBI GWASpi run)"
-#exit 88
+	if [ ${GWASPI_EXIT_STATE} -eq 0 ]; then
+	#	EXPORT_DIR="${WORK_DIR}/export/STUDY_1"
+	#	EXPORTED_FILE_MAP="${EXPORTS_DIR}/myTestMatrixName.map"
+	#	EXPORTED_FILE_PED="${EXPORTS_DIR}/myTestMatrixName.ped"
+		REPORTS_DIR="${WORK_DIR}/reports/STUDY_1"
+		REPORT_FILE_TREND_TEST="${REPORTS_DIR}/mx-1_TRENDTEST-10.txt"
+		cat "${REPORT_FILE_TREND_TEST}" | awk '{if (NR != 1) {print $1 "\t" $8;}}' \
+			> "${GWASPI_OUTPUT_P_VALUES}"
+		echo "GWASpi output written to '${GWASPI_OUTPUT_P_VALUES}'"
+	fi
+	echo "done. (COMBI GWASpi run)"
+	#exit 88
 fi
 
 
