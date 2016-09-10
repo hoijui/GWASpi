@@ -283,6 +283,13 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, false, true, false);
 	}
 
+	@Test
+//	@org.junit.Ignore
+	public void testCombiPermutationTutorialSmall() throws Exception {
+
+		testCombiAssociationTest(getSetup(), "Small_Tutorial_Matrix", NominalGenotypeEncoder.SINGLETON, true, true, false);
+	}
+
 	@org.junit.Ignore
 	@Test
 	public void testHardyWeinbergTest() throws Exception {
