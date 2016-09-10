@@ -40,4 +40,13 @@ public interface OperationParams {
 	 * @return
 	 */
 	Set<MatrixKey> getParticipatingMatrices();
+
+	/**
+	 * Indicates whether this operation is hidden.
+	 * A hidden operation is not visible as a separate entry in the
+	 * "Processes Overview", nor in the data-tree.
+	 * This is used for quasi-sub-operations, especially if they come in masses.
+	 * @return <code>true</code> if the operation is hidden
+	 */
+	boolean isHidden();
 }

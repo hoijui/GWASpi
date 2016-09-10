@@ -79,6 +79,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	private int numChromosomes;
 	private boolean opSetMarkers;
 	private Date creationDate;
+	private boolean hidden;
 
 	protected OperationMetadata() {
 
@@ -92,6 +93,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		this.implicitSetSize = Integer.MIN_VALUE;
 		this.opSetMarkers = true;
 		this.creationDate = new Date();
+		this.hidden = false;
 	}
 
 //	/**
@@ -504,6 +506,22 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 
 	protected void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	/**
+	 * Indicates whether this operation should be hidden from the user,
+	 * for example in a GUI view.
+	 * This is useful in cases where we have lots of sub-operations
+	 * cluttering a view, which are basically uninteresting for the user,
+	 * like in the case of COMBI threshold calibration iterations.
+	 */
+	@Transient
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	protected void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 
 	public static File generatePathToNetCdfFile(OperationMetadata operation) throws IOException {

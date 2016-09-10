@@ -64,5 +64,10 @@ public abstract class AbstractOperationParams implements OperationParams {
 		return Collections.singleton(getParent().getOrigin());
 	}
 
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
+
 	protected abstract String getNameDefault();
 }
