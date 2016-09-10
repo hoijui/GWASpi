@@ -205,12 +205,14 @@ public class GWASpiExplorerTree {
 				// LOAD ROOT OPERATIONS (having the matrix as direct parent)
 				final DataSetKey matrixDataSetKey = new DataSetKey(matrixKey);
 				final List<OperationMetadata> rootOperations = getOperationService().getChildrenOperationsMetadata(matrixDataSetKey);
-				final List<OperationMetadata> allOperations = getOperationService().getOffspringOperationsMetadata(matrixDataSetKey);
+				final List<OperationMetadata> allOperations = getOperationService().getVisibleOffspringOperationsMetadata(matrixDataSetKey);
 				for (OperationMetadata rootOperation : rootOperations) {
 					// LOAD SUB OPERATIONS (having an operation as direct parent)
 					OperationMetadata currentOP = rootOperation;
-					OperationKey currentOPKey = OperationKey.valueOf(currentOP);
-					addOperationToTree(matrixItem, allOperations, currentOPKey);
+					if (!currentOP.isHidden()) {
+						OperationKey currentOPKey = OperationKey.valueOf(currentOP);
+						addOperationToTree(matrixItem, allOperations, currentOPKey);
+					}
 				}
 
 				GWASpiExplorerNodes.addNode(studyItem, matrixItem, false);
