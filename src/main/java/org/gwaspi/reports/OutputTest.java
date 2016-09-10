@@ -17,6 +17,7 @@
 
 package org.gwaspi.reports;
 
+import java.awt.AWTError;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -246,36 +247,54 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 		log.info("Start saving {} test", testName);
 		operationPH.setNewStatus(ProcessStatus.RUNNING);
 		creatingManhattanPlotPH.setNewStatus(ProcessStatus.RUNNING);
-		writeManhattanPlotFromAssociationData(manhattanName, 4000, 500);
-		creatingManhattanPlotPH.setNewStatus(ProcessStatus.FINALIZING);
-		if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
-			getReportService().insertReport(new Report(
-					testName + " Test Manhattan Plot",
-					manhattanName + ".png",
-					OPType.MANHATTANPLOT,
-					getParams().getTestOperationKey(),
-					testName + " Test Manhattan Plot",
-					studyKey));
-			log.info("Saved " + testName + " Test Manhattan Plot in reports folder");
+		try {
+			writeManhattanPlotFromAssociationData(manhattanName, 4000, 500);
+			creatingManhattanPlotPH.setNewStatus(ProcessStatus.FINALIZING);
+			if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
+				getReportService().insertReport(new Report(
+						testName + " Test Manhattan Plot",
+						manhattanName + ".png",
+						OPType.MANHATTANPLOT,
+						getParams().getTestOperationKey(),
+						testName + " Test Manhattan Plot",
+						studyKey));
+				log.info("Saved " + testName + " Test Manhattan Plot in reports folder");
+			}
+			creatingManhattanPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
+		} catch (final Error err) {
+			// This happens when we run on a headless Java instance,
+			// for example on Linux without X11.
+			// Instead of failing the whole GWASpi run,
+			// we just continue with the downside of not generating this plot.
+			log.warn("Failed to generate manhatten plot", err);
+			creatingManhattanPlotPH.setNewStatus(ProcessStatus.FAILED);
 		}
-		creatingManhattanPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		creatingQQPlotPH.setNewStatus(ProcessStatus.INITIALIZING);
 		String qqName = prefix + "qq";
 		creatingQQPlotPH.setNewStatus(ProcessStatus.RUNNING);
-		writeQQPlotFromAssociationData(qqName, 500, 500);
-		creatingQQPlotPH.setNewStatus(ProcessStatus.FINALIZING);
-		if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
-			getReportService().insertReport(new Report(
-					testName + " Test QQ Plot",
-					qqName + ".png",
-					OPType.QQPLOT,
-					getParams().getTestOperationKey(),
-					testName + " Test QQ Plot",
-					studyKey));
-			log.info("Saved {} Test QQ Plot in reports folder", testName);
+		try {
+			writeQQPlotFromAssociationData(qqName, 500, 500);
+			creatingQQPlotPH.setNewStatus(ProcessStatus.FINALIZING);
+			if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
+				getReportService().insertReport(new Report(
+						testName + " Test QQ Plot",
+						qqName + ".png",
+						OPType.QQPLOT,
+						getParams().getTestOperationKey(),
+						testName + " Test QQ Plot",
+						studyKey));
+				log.info("Saved {} Test QQ Plot in reports folder", testName);
+			}
+			creatingQQPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
+		} catch (final Error err) {
+			// This happens when we run on a headless Java instance,
+			// for example on Linux without X11.
+			// Instead of failing the whole GWASpi run,
+			// we just continue with the downside of not generating this plot.
+			log.warn("Failed to generate QQ plot", err);
+			creatingQQPlotPH.setNewStatus(ProcessStatus.FAILED);
 		}
-		creatingQQPlotPH.setNewStatus(ProcessStatus.COMPLEETED);
 
 		writingAssociationReportPH.setNewStatus(ProcessStatus.INITIALIZING);
 		String assocName = prefix;
