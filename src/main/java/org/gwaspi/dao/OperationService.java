@@ -40,6 +40,15 @@ public interface OperationService {
 	List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root) throws IOException;
 
 	/**
+	 * Returns operations that have the given root in their ancestry,
+	 * are not hidden, and have no hidden ancestor.
+	 * @param root
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getVisibleOffspringOperationsMetadata(DataSetKey root) throws IOException;
+
+	/**
 	 * Returns operations that have the given root in their ancestry
 	 * and are of the given type.
 	 * @param root

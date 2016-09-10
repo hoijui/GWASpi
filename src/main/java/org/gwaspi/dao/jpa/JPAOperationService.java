@@ -85,6 +85,16 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
+	public List<OperationMetadata> getVisibleOffspringOperationsMetadata(DataSetKey root) throws IOException {
+
+		if (root.isMatrix()) {
+			return getVisibleOffspringOperationsMetadata(root.getMatrixParent());
+		} else {
+			return getVisibleOffspringOperationsMetadata(root.getOperationParent());
+		}
+	}
+
+	@Override
 	public List<OperationMetadata> getOffspringOperationsMetadata(DataSetKey root, OPType type) throws IOException {
 
 		if (root.isMatrix()) {
@@ -113,6 +123,18 @@ public class JPAOperationService implements OperationService {
 		}
 
 		return operationsMetadata;
+	}
+
+	private List<OperationMetadata> getVisibleOffspringOperationsMetadata(final MatrixKey root) throws IOException {
+
+		final List<OperationMetadata> offspringOperations = new LinkedList<OperationMetadata>();
+
+		final List<OperationMetadata> rootChildrenMetadata = getChildrenOperationsMetadata(root);
+		for (final OperationMetadata rootChildMetadata : rootChildrenMetadata) {
+			offspringOperations.addAll(getVisibleOffspringOperationsMetadata(OperationKey.valueOf(rootChildMetadata)));
+		}
+
+		return offspringOperations;
 	}
 
 	private List<OperationMetadata> getOffspringOperationsMetadata(MatrixKey root, OPType opType) throws IOException {
@@ -149,6 +171,29 @@ public class JPAOperationService implements OperationService {
 			offspringOperations.addAll(childrenOperations);
 			for (OperationMetadata childOperation : childrenOperations) {
 				possibleParents.add(OperationKey.valueOf(childOperation));
+			}
+		}
+
+		return offspringOperations;
+	}
+
+	private List<OperationMetadata> getVisibleOffspringOperationsMetadata(final OperationKey root) throws IOException {
+
+		final List<OperationMetadata> offspringOperations = new LinkedList<OperationMetadata>();
+
+		final OperationMetadata rootMetadata = getOperationMetadata(root);
+		if (!rootMetadata.isHidden()) {
+			final List<OperationKey> possibleParents = new LinkedList<OperationKey>();
+			possibleParents.add(root);
+			while (!possibleParents.isEmpty()) {
+				final OperationKey possibleParent = possibleParents.remove(0);
+				final List<OperationMetadata> childrenOperations = getChildrenOperationsMetadata(possibleParent);
+				for (final OperationMetadata childOperation : childrenOperations) {
+					if (!childOperation.isHidden()) {
+						offspringOperations.add(childOperation);
+						possibleParents.add(OperationKey.valueOf(childOperation));
+					}
+				}
 			}
 		}
 
