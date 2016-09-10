@@ -973,6 +973,11 @@ public class CombiTestOperation
 		}
 
 		final int n = labels.size();
+		// NOTE Assertion stuff
+//		final Set<Double> labelDistinctValues = new HashSet<Double>(labels);
+//		if (labelDistinctValues.size() != 2) {
+//			throw new IllegalStateException("Invalid set of distinct label values: " + labelDistinctValues);
+//		}
 
 		// prepare the features
 		if (useLibSvm && (libSvmParameters.kernel_type != svm_parameter.PRECOMPUTED)) {
