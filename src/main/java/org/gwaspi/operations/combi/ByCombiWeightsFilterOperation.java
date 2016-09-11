@@ -51,7 +51,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 	private static final Logger LOG
 			= LoggerFactory.getLogger(ByCombiWeightsFilterOperation.class);
 
-	private static final ProcessInfo byCombiWeightsFilterPI = new DefaultProcessInfo(
+	private static final ProcessInfo PROCESS_INFO = new DefaultProcessInfo(
 			"Filter markers by COMBI weights threshold",
 			""); // TODO
 
@@ -90,7 +90,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 
 	@Override
 	public ProcessInfo getProcessInfo() {
-		return byCombiWeightsFilterPI;
+		return PROCESS_INFO;
 	}
 
 	@Override

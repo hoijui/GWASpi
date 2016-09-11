@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
 public class CombiCombinedOperation extends CommonRunnable {
 
-	private static final ProcessInfo fullCombiProcessInfo
+	private static final ProcessInfo PROCESS_INFO
 			= new DefaultProcessInfo("Full COMBI Test",
 					"Complete COMBI Test procedure and evaluation of the results"); // TODO
 	private static final ProgressSource PLACEHOLDER_PS_COMBI_TEST = new NullProgressHandler(
@@ -74,7 +74,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 			new SubProcessInfo(null, "PLACEHOLDER_TEST_OUTPUT", null));
 	private static final ProgressSource PLACEHOLDER_PS_COMBI_OUTPUT = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_COMBI_OUTPUT", null));
-	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
+	private static final Map<ProgressSource, Double> SUB_PROGRESS_SOURCESS_AND_WEIGHTS;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
 				= new LinkedHashMap<ProgressSource, Double>(6);
@@ -85,7 +85,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TREND_TEST, 0.1);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TEST_OUTPUT, 0.05);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_COMBI_OUTPUT, 0.05);
-		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
+		SUB_PROGRESS_SOURCESS_AND_WEIGHTS = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
 	private final CombiTestOperationParams paramsTest;
@@ -102,7 +102,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 
 		this.paramsTest = paramsTest;
 		this.paramsFilter = paramsFilter;
-		this.progressSource = new SuperProgressSource(fullCombiProcessInfo, subProgressSourcesAndWeights);
+		this.progressSource = new SuperProgressSource(PROCESS_INFO, SUB_PROGRESS_SOURCESS_AND_WEIGHTS);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(paramsTest.getParent());
 		this.resultingTrendTestOperationKey = null;
 	}
