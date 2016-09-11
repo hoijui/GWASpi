@@ -78,6 +78,7 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 					false,
 					false);
 
+//	private final String header;
 	private ProgressHandler operationPH;
 	private ProgressHandler prepareDataPH;
 	private ProgressHandler findTowersPH;
@@ -85,6 +86,9 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 
 	public CombiOutputOperation(final CombiOutputOperationParams params) {
 		super(params);
+
+//		this.header = OutputQAMarkers.createReportHeaderLine(
+//				createColumnHeaders());
 	}
 
 	private OperationService getOperationService() {
@@ -225,6 +229,7 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 				= new LinkedHashMap<ChromosomeKey, Map<Integer, Double>>();
 		final List<Double> pValueThreasholds = getParams().getPValueThreasholds();
 		int ci = 0;
+//LOG.warn("XXX chroms " + testOperationDataSet.getNumChromosomes());
 		for (final ChromosomeKey chromosome : testOperationDataSet.getChromosomesKeysSource()) {
 			final Double pValueThreashold;
 			if (pValueThreasholds.size() > 1) {
@@ -261,6 +266,11 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 						false);
 				indexedPeaksDescending = peakFinder.findPeaks();
 				invertPValues(indexedPeaksDescending);
+//LOG.warn("XXX chrom " + ci + " #positions " + origPositions.size());
+//LOG.warn("XXX chrom " + ci + " positions " + origPositions);
+//LOG.warn("XXX chrom " + ci + " invertedPValueThreashold " + invertedPValueThreashold);
+//LOG.warn("XXX chrom " + ci + " pValues " + pValues);
+//LOG.warn("XXX chrom " + ci + " peaks " + indexedPeaksDescending.size());
 			}
 			chromToPeaks.put(chromosome, indexedPeaksDescending);
 			ci++;
@@ -281,6 +291,8 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 		significantFileColumnExtractors.add(new Extractor.ToStringExtractor<Double>());
 		final File significantFile = new File(reportsPath, significantFileName);
 		final File insignificantFile = new File(reportsPath, insignificantFileName);
+		LOG.debug("significantFile: {}", significantFile);
+		LOG.debug("insignificantFile: {}", insignificantFile);
 		final ReportWriterRowWise significantRW = new ReportWriterRowWise(significantFile, significantFileColumnExtractors);
 		final ReportWriterRowWise insignificantRW = new ReportWriterRowWise(insignificantFile, significantFileColumnExtractors);
 		writeToFilesPH.setNewStatus(ProcessStatus.RUNNING);
@@ -312,6 +324,153 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 		writeToFilesPH.setNewStatus(ProcessStatus.COMPLEETED);
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
+		// TODO add process listener stuff above, see below
+//		throw new UnsupportedOperationException("Not yet implemented!");
+
+
+//		LOG.info("Start saving {} significant data", testName);
+//		operationPH.setNewStatus(ProcessStatus.RUNNING);
+//		writingSignificantPH.setNewStatus(ProcessStatus.RUNNING);
+//		writeManhattanPlotFromAssociationData(satisfiedFileName, true);
+//		writingSignificantPH.setNewStatus(ProcessStatus.FINALIZING);
+//		if (getParams().getTestType() != OPType.COMBI_ASSOC_TEST) {
+//			getReportService().insertReport(new Report(
+//					testName + " Test Manhattan Plot",
+//					manhattanName + ".png",
+//					OPType.MANHATTANPLOT,
+//					getParams().getParent().getOperationParent(),
+//					testName + " Test Manhattan Plot",
+//					studyKey));
+//			LOG.info("Saved " + testName + " Test Manhattan Plot in reports folder");
+//		}
+//		writingSignificantPH.setNewStatus(ProcessStatus.COMPLEETED);
+//
+//		writingInsignificantPH.setNewStatus(ProcessStatus.INITIALIZING);
+//		String assocName = prefix;
+//		writingInsignificantPH.setNewStatus(ProcessStatus.RUNNING);
+//		createSortedAssociationReport(assocName);
+//		writingInsignificantPH.setNewStatus(ProcessStatus.FINALIZING);
+//		getReportService().insertReport(new Report(
+//				testName + " Tests Values",
+//				assocName + ".txt",
+//				getParams().getType(),
+//				getParams().getParent().getOperationParent(),
+//				testName + " Tests Values",
+//				studyKey));
+//		writingInsignificantPH.setNewStatus(ProcessStatus.COMPLEETED);
+//		operationPH.setNewStatus(ProcessStatus.FINALIZING);
+//
+//		Utils.sysoutCompleted(testName + " Test Reports & Charts");
+//		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+
 		return null;
 	}
+
+//	private static int[] createOrigIndexToQaMarkersIndexLookupTable(QAMarkersOperationDataSet qaMarkersOperationDataSet) throws IOException {
+//
+//		final List<Integer> qaMarkersOrigIndices = qaMarkersOperationDataSet.getMarkersKeysSource().getIndices();
+//		final int[] origIndexToQaMarkersIndexLookupTable = new int[qaMarkersOperationDataSet.getOriginDataSetSource().getNumMarkers()];
+//		Arrays.fill(origIndexToQaMarkersIndexLookupTable, -1);
+//		int qaMarkersIndex = 0;
+//		for (Integer qaMarkersOrigIndex : qaMarkersOrigIndices) {
+//			origIndexToQaMarkersIndexLookupTable[qaMarkersOrigIndex] = qaMarkersIndex++;
+//		}
+//
+//		return origIndexToQaMarkersIndexLookupTable;
+//	}
+
+//	private void createSortedAssociationReport(String reportName) throws IOException {
+//
+//		final OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet
+//				= OperationManager.generateOperationDataSet(getParams().getParent().getOperationParent());
+//		final List<? extends TrendTestOperationEntry> testOperationEntries
+//				= new ArrayList<TrendTestOperationEntry>(testOperationDataSet.getEntries());
+//		Collections.sort(testOperationEntries, new TrendTestOperationEntry.PValueComparator());
+//
+//		List<Integer> sortedOrigIndices = new ArrayList<Integer>(testOperationEntries.size());
+//		for (TrendTestOperationEntry trendTestOperationEntry : testOperationEntries) {
+//			sortedOrigIndices.add(trendTestOperationEntry.getIndex());
+//		}
+//
+////		String sep = ExportConstants.SEPARATOR_REPORTS;
+//		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(getParams().getParent().getOrigin());
+//		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
+//		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedOrigIndices, markersMetadatas);
+//
+//		// WRITE HEADER OF FILE
+//		reportName = reportName + ".txt";
+//		final String reportPath = Study.constructReportsPath(getParams().getParent().getOrigin().getStudyKey());
+//		final ReportWriter reportWriter = new ReportWriter(reportPath, reportName);
+//
+//		// WRITE MARKERS ID & RSID
+//		reportWriter.writeFirstColumnToReport(header, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
+//		reportWriter.appendColumnToReport(orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
+//		reportWriter.appendColumnToReport(testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
+//		reportWriter.appendColumnToReport(todo, null, new Extractor.ToStringMetaExtractor(CombiTestOperationEntry.TO_WEIGHTS));
+//	}
+//
+//	public static class AssociationTestReportParser implements ReportParser {
+//
+//		private final String[] columnHeaders;
+//
+//		public AssociationTestReportParser(final OPType associationTestType) {
+//			this.columnHeaders = createColumnHeaders().toArray(new String[0]);
+//		}
+//
+//		@Override
+//		public String[] getColumnHeaders() {
+//			return columnHeaders;
+//		}
+//
+//		@Override
+//		public List<Object[]> parseReport(
+//				final File reportFile,
+//				final int numRowsToFetch,
+//				final boolean exactValues)
+//				throws IOException
+//		{
+//			final int numColumns = getColumnHeaders().length;
+//			return new ReportWriter(reportFile).parseReport(
+//					new COMBIResultsLineParser(),
+//					numRowsToFetch);
+//		}
+//	}
+//
+//	private static class COMBIResultsLineParser extends AbstractReportLineParser {
+//
+//		private final StringBuffer outputBuffer;
+//
+//		public COMBIResultsLineParser() {
+//			super(true);
+//
+//			this.outputBuffer = new StringBuffer();
+//		}
+//
+//		public void write(final Writer output, final Object[] vals) throws IOException {
+//
+//			output.append(((ChromosomeKey) vals[0]).getChromosome()); // chromosome
+//			output.append((String) vals[1]); // RS-ID
+//			output.append(((Double) vals[2]).toString()); // P-Value
+//			output.append(((Double) vals[3]).toString()); // SVM-weight
+//		}
+//
+//		@Override
+//		public Object[] extract(final String[] cVals) {
+//
+//			final Object[] row = new Object[4];
+//
+//			final ChromosomeKey chr = new ChromosomeKey(cVals[0]);
+//			final String rsId = cVals[1];
+//			final Double pValue_f = maybeTryToRoundNicely(tryToParseDouble(cVals[2]));
+//			final Double svmWeight_f = maybeTryToRoundNicely(tryToParseDouble(cVals[3]));
+//
+//			int col = 0;
+//			row[col++] = chr;
+//			row[col++] = rsId;
+//			row[col++] = pValue_f;
+//			row[col++] = svmWeight_f;
+//
+//			return row;
+//		}
+//	}
 }
