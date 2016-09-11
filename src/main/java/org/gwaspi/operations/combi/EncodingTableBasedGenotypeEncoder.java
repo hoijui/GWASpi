@@ -30,8 +30,12 @@ import java.util.TreeSet;
 import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(EncodingTableBasedGenotypeEncoder.class);
 
 	private List<List<Float>> encodedValues;
 	private List<List<Float>> encodedValuesSwapped;
@@ -197,6 +201,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		for (int vi = 0; vi < varianceMeans.length; vi++) {
 //			final double weight = weightsIt.next();
 			stdDevs[vi] = Math.pow(varianceMeans[vi] * numFeatures, pStdDevInverse);
+			// assert
+			if (Double.isNaN(stdDevs[vi])) {
+				throw new IllegalStateException("whitened encoding table std-dev is NaN:"
+						+ " varianceMeans[vi]="  + varianceMeans[vi]
+						+ " numFeatures="  + numFeatures
+						+ " (varianceMeans[vi] * numFeatures)="  + (varianceMeans[vi] * numFeatures)
+						+ " pStdDevInverse="  + pStdDevInverse);
+			}
 		}
 
 		// whiten (center & set variance to 1.0)
@@ -210,6 +222,11 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 					whitenedValue = centeredValue;
 				} else {
 					whitenedValue = centeredValue / stdDevs[vi];
+				}
+				// assert
+				if (Double.isNaN(whitenedValue)) {
+					throw new IllegalStateException("whitened encoding table value is NaN:"
+							+ " index="  + whitenedValuesList.size());
 				}
 				whitenedValuesList.add((float) whitenedValue);
 			}
@@ -459,10 +476,12 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 // XXX Testing-/debug-code that may be removed at some point
 int gti = 0;
 				for (byte[] genotype : rawGenotypes) {
-final byte[] genotypeIndexed = rawGenotypes.get(gti++);
-if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
-	throw new RuntimeException();
-}
+					// assert
+					final byte[] genotypeIndexed = rawGenotypes.get(gti++);
+					if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
+						throw new RuntimeException();
+					}
+
 					final int gtHash = Genotype.hashCode(genotype);
 //final String gtStr = new String(genotype);
 					List<Float> encodedGT = encodingTable.get(gtHash);
@@ -470,8 +489,22 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 						encodedGT = invalidEncoded;
 					}
 					encodedSamplesFeatures.setSampleValue(si++, encodedGT.get(0));
-  					for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
+
+					// assert
+					if (Float.isNaN(encodedGT.get(0))) {
+						throw new IllegalStateException("encoded sample feature is NaN:"
+								+ " fi="  + fi
+								+ " si="  + si);
+					}
+
+					for (int hfi = 0; hfi < numHigherFeatures; hfi++) {
 						tempHigherFeaturesEncodedGTs.get(hfi).add(encodedGT.get(1 + hfi));
+						// assert
+						if (Float.isNaN(encodedGT.get(1 + hfi))) {
+							throw new IllegalStateException("encoded (higher-)sample (pre) feature is NaN:"
+									+ " fi="  + fi
+									+ " hfi="  + hfi);
+						}
 					}
 //					for (Float encVal : encodedGT) {
 ////						encodedSamplesMarkers[si++][mi] = encVal.floatValue();
@@ -504,6 +537,13 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 				si = 0;
 				for (Float sampleValue : featuresSampleValues) {
 					encodedSamplesFeatures.setSampleValue(si++, sampleValue);
+					// assert
+					if (Float.isNaN(sampleValue)) {
+						throw new IllegalStateException(
+								"encoded (higher-)sample feature is NaN:"
+								+ " fi="  + fi
+								+ " si="  + si);
+					}
 				}
 				encodedSamplesFeatures.endStoringFeature();
 			}
@@ -534,14 +574,38 @@ if (genotypeIndexed[0] != genotype[0] || genotypeIndexed[1] != genotype[1]) {
 		final double norm = (normRaw == 0.0) ? 1.0 : normRaw;
 		final int encodingFactor = getEncodingFactor();
 		final double pNormInv = 1.0 / pNorm;
+		// assert
+		if (encodedWeights.contains(Double.NaN)) {
+			throw new RuntimeException("encoded weights contains NaN");
+		}
+
 		for (int ewi = 0; ewi < encodedWeights.size(); ewi += encodingFactor) {
 			double sum = 0.0;
 			for (int lwi = 0; lwi < encodingFactor; lwi++) {
 				final double wEncNormalized = Math.abs(encodedWeights.get(ewi + lwi)) / norm;
+
+				// assert
+				if (Double.isNaN(wEncNormalized)) {
+					LOG.error("encodedWeights: " + encodedWeights);
+					LOG.error("pNorm: " + pNorm);
+					throw new RuntimeException("encoded normalized weight part is NaN, with inputs: Math.abs(encodedWeights.get(" + ewi + "+" + lwi + ")=" + encodedWeights.get(ewi + lwi) + ") / " + norm + ")");
+				}
+
 				sum += Math.pow(wEncNormalized, pNorm);
+
+				// assert
+				final double weightPart = Math.pow(wEncNormalized, pNorm);
+				if (Double.isNaN(weightPart)) {
+					throw new RuntimeException("decoded weight part is NaN, with inputs: Math.pow(" + wEncNormalized + ", " + pNorm + ")");
+				}
 			}
 //			final double wDecNormalized = sum / encodingFactor;
 			final double wDecNormalized = Math.pow(sum, pNormInv);
+			// assert
+			if (Double.isNaN(wDecNormalized)) {
+				throw new RuntimeException("normalized, decoded weight is NaN, with inputs: " + pNorm + " / " + pNormInv);
+			}
+
 			decodedWeights.add(wDecNormalized);
 		}
 

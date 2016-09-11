@@ -859,6 +859,17 @@ public class CombiTestOperation
 		for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
 			final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
 			final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
+			// assert
+			for (int row = 0; row < featuresChunk.length; row++) {
+				for (int col = 0; col < featuresChunk[row].length; col++) {
+					if (Double.isNaN(featuresChunk[row][col])) {
+						throw new IllegalStateException("feature matrix part is NaN:"
+								+ " fci="  + fci
+								+ " row=" + row
+								+ " col=" + col);
+					}
+				}
+			}
 
 			calculateKernelMatrixPart(n, kernelMatrix, featuresChunk, numFeaturesInChunk);
 			creatingKernelMatrixProgressSource.setProgress(fci);
@@ -947,6 +958,16 @@ public class CombiTestOperation
 					for (int krci = 0; krci < n; krci++) { // kernel column sample index
 						for (int smi = 0; smi < numFeaturesInChunk; smi++) {
 							kernelMatrix[krsi][krci] += featuresChunk[krsi][smi] * featuresChunk[krci][smi];
+
+							// assert
+//							if (Double.isNaN(kernelMatrix[krsi][krci])) {
+//								throw new IllegalStateException("kernel matrix is NaN:"
+//										+ " krsi=" + krsi
+//										+ " krci=" + krci
+//										+ " smi=" + smi
+//										+ " featuresChunk[krsi][smi]=" + featuresChunk[krsi][smi]
+//										+ " featuresChunk[krci][smi]=" + featuresChunk[krci][smi]);
+//							}
 						}
 					}
 				}
@@ -1008,7 +1029,7 @@ public class CombiTestOperation
 		}
 
 		final int n = labels.size();
-		// NOTE Assertion stuff
+		// assert
 //		final Set<Double> labelDistinctValues = new HashSet<Double>(labels);
 //		if (labelDistinctValues.size() != 2) {
 //			throw new IllegalStateException("Invalid set of distinct label values: " + labelDistinctValues);
@@ -1317,6 +1338,24 @@ public class CombiTestOperation
 			final Map<Integer, Double> nonZeroAlphas;
 			nonZeroAlphas = extractNonZeroAlphas(svmModel);
 			trainSVMPH.setNewStatus(ProcessStatus.COMPLEETED); // XXX Does this make sense here, and only here?
+			// assert
+			if (nonZeroAlphas.isEmpty()) {
+//				throw new IllegalStateException("all alphas are zero");
+				LOG.error("all alphas are zero");
+				LOG.error("SVM labels: " + Arrays.toString(libSvmProblem.y));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("SVM kernel matrix:");
+					final StringBuilder rowStr = new StringBuilder(libSvmProblem.x[0].length * 2);
+					for (final svm_node[] row : libSvmProblem.x) {
+						for (final svm_node entry : row) {
+							rowStr.append(entry.value).append(' ');
+						}
+						LOG.debug(rowStr.toString());
+						rowStr.delete(0, rowStr.length());
+					}
+				}
+				System.exit(1);
+			}
 
 			LOG.debug("calculate original space weights from alphas");
 			weightsEncoded = calculateOriginalSpaceWeights(
@@ -1326,6 +1365,13 @@ public class CombiTestOperation
 					svmPH.getCalculateOriginalSpaceWeightsPH());
 		} else {
 			weightsEncoded = extractFeatureWeights(svmModelLinear);
+		}
+		// assert
+		final Set<Double> uniqueWeights = new HashSet<Double>(weightsEncoded);
+		if ((uniqueWeights.size() == 1) && (uniqueWeights.iterator().next() == 0.0)) {
+//			throw new IllegalStateException("weightsEncoded contains only zeros");
+			LOG.error("weightsEncoded contains only zeros");
+			System.exit(1);
 		}
 
 		if (spy != null) {
@@ -1344,6 +1390,10 @@ public class CombiTestOperation
 		LOG.debug("decode weights from the encoded feature space into marker space");
 		List<Double> weights = new ArrayList<Double>(dSamples);
 		genotypeEncoder.decodeWeights(weightsEncoded, genotypeEncodingParams, weights);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("weightsEncoded contains NaN: {}", weightsEncoded.contains(Double.NaN));
+			LOG.debug("weights contains NaN: {}", weights.contains(Double.NaN));
+		}
 
 		if (spy != null) {
 			spy.decodedWeightsCalculated(weights);
