@@ -216,6 +216,9 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			//   a percentual performance penalty for this leight-weight operation.
 //			filterPH.setProgress(mi);
 		}
+		if (filteredMarkerOrigIndicesAndKeys.isEmpty()) {
+			LOG.warn("no markers left!");
+		}
 	}
 
 	/**
