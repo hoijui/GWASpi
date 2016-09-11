@@ -320,7 +320,7 @@ public class OutputTest extends AbstractOutputOperation<TestOutputParams> {
 	private void writeManhattanPlotFromAssociationData(String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(getParams().getTestOperationKey());
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(getParams().getTestOperationKey(), getParams().getPValueThreasholds());
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 

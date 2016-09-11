@@ -37,6 +37,7 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestOperation;
+import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
@@ -79,6 +80,15 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		testHardyWeinbergTest(setup, matrixKey, dataSpecifier);
 	}
 
+	private static void startGWASpi(final File scriptFile, final File logFile, final boolean useSpy) throws Exception {
+
+		if (useSpy) {
+			CombiTestOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
+		}
+		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
+		CombiTestOperation.spy = null; // HACK
+	}
+
 	private static List<OperationKey> testHardyWeinbergTest(final Setup setup, final MatrixKey matrixKey, final String dataSpecifier) throws Exception {
 
 		log.info("Run Hardy-Weinberg Test ({}) ...", dataSpecifier);
@@ -109,7 +119,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		File logFile = new File(setup.getTmpDir(), "log_test_hardyWeinberg_" + dataSpecifier.replaceAll("[, \t.]", "_") + ".txt");
 
-		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
+		startGWASpi(scriptFile, logFile, false);
 
 		log.info("Run Hardy-Weinberg Test ({}) DONE.", dataSpecifier);
 
@@ -150,7 +160,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		return result;
 	}
 
-	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder, final boolean perChromosome) throws Exception {
+	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder, final boolean perChromosome, final boolean permutation, final boolean useSpy) throws Exception {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
@@ -222,15 +232,23 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{SVM_LIBRARY\\}", SolverLibrary.LIB_SVM.name());
 		substitutions.put("\\$\\{SVM_EPS\\}", String.valueOf(1E-7));
 		substitutions.put("\\$\\{SVM_C\\}", String.valueOf(1E-0));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_ENABLED\\}", String.valueOf(permutation ? 1 : 0));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_P_VALUE_TARGET\\}", String.valueOf(CombiTestOperationParams.getThresholdCalibrationAlphasCalculationPValueTargetDefault()));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_ITERATIONS\\}", String.valueOf(permutation ? 10 : -1));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ENABLED\\}", String.valueOf(permutation ? 1 : 0));
+//		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHA\\}", String.valueOf(CombiTestOperationParams.getThresholdCalibrationAlphaDefault()));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ITERATIONS\\}", String.valueOf(permutation ? 4 : -1));
 		copyFile(plinkLoadScript, scriptFile, substitutions);
 
-		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
+		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + (permutation ? "_permutations" : "") + ".txt");
 
-		CombiTestOperation.spy = new UnitTestingCombiTestOperationSpy(); // HACK
-		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
-		CombiTestOperation.spy = null; // HACK
+		startGWASpi(scriptFile, logFile, useSpy);
 
 		log.info("Run Combi Association Test ({}, {}) DONE.", mapFileName, pedFileName);
+	}
+
+	private static void testCombiAssociationTest(Setup setup, String name, GenotypeEncoder genotypeEncoder, final boolean perChromosome) throws Exception {
+		testCombiAssociationTest(setup, name, genotypeEncoder, perChromosome, false, true);
 	}
 
 	/**
@@ -256,6 +274,13 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 	public void testCombiAssociationNominalTest() throws Exception {
 
 		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, false);
+	}
+
+	@Test
+//	@org.junit.Ignore
+	public void testCombiPermutationTest() throws Exception {
+
+		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, false, true, false);
 	}
 
 	@org.junit.Ignore

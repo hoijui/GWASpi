@@ -175,11 +175,11 @@ public class GenericReportGenerator {
 		return markerKeyChrPosPVal;
 	}
 
-	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey testOpKey) throws IOException {
+	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey testOpKey, final List<Double> thresholds) throws IOException {
 
 		// PLOT DEFAULTS
 		final Config config = Config.getSingleton();
-		final double threshold = config.getDouble(
+		final double defaultThreshold = config.getDouble(
 				PLOT_MANHATTAN_THRESHOLD_CONFIG,
 				PLOT_MANHATTAN_THRESHOLD_DEFAULT);
 		final Color background = config.getColor(
@@ -221,7 +221,7 @@ public class GenericReportGenerator {
 							// add the last (now compleeted) chromosomes data-set,
 							// before starting the new one
 							currChrSC.addSeries(currChrS);
-							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, threshold, background, backgroundAlternative, main);
+							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, defaultThreshold, background, backgroundAlternative, main);
 						}
 						currChr = data.getChromosome();
 						currChrSC = new XYSeriesCollection();
@@ -236,7 +236,7 @@ public class GenericReportGenerator {
 		if (currChrS != null) {
 			currChrSC.addSeries(currChrS);
 			// ADD LAST CHR TO PLOT
-			appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true, threshold, background, backgroundAlternative, main);
+			appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true, defaultThreshold, background, backgroundAlternative, main);
 		}
 
 		// Remove Legend from the bottom of the chart

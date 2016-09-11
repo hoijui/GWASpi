@@ -18,7 +18,9 @@
 package org.gwaspi.cli;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.MatrixKey;
@@ -120,7 +122,16 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			Integer markersToKeep = fetchInteger(args, "markers-to-keep", null);
 			final Double markersToKeepFraction = fetchDouble(args, "markers-to-keep-fraction", null);
 
-			final Boolean useThresholdCalibration = fetchBoolean(args, "use-threshold-calibration", null);
+			final Boolean thresholdCalibrationAlphasCalculationEnabled = fetchBoolean(args, "threshold-calibration-alphas-calculation-enabled", null);
+			final Double thresholdCalibrationAlphasPValueTarget = fetchDouble(args, "threshold-calibration-alphas-calculation-p-value-target", null);
+			final Integer thresholdCalibrationAlphasCalculationIterations = fetchInteger(args, "threshold-calibration-alphas-calculation-iterations", null);
+
+			final Boolean thresholdCalibrationEnabled = fetchBoolean(args, "threshold-calibration-enabled", null);
+			final Double thresholdCalibrationAlpha = fetchDouble(args, "threshold-calibration-alpha", null);
+			final List<Double> thresholdCalibrationAlphas = (thresholdCalibrationAlpha == null)
+					? null
+					: Collections.nCopies(22, thresholdCalibrationAlpha);
+			final Integer thresholdCalibrationIterations = fetchInteger(args, "threshold-calibration-iterations", null);
 
 			// These might return null, as it is optional,
 			// which will lead to using the default name
@@ -131,10 +142,16 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					qaMarkersOperationKey,
 					genotypeEncoder,
 					genotypeEncodingParams,
-					useThresholdCalibration,
+					thresholdCalibrationAlphasCalculationEnabled,
+					thresholdCalibrationAlphasPValueTarget,
+					thresholdCalibrationAlphasCalculationIterations,
+					thresholdCalibrationEnabled,
+					thresholdCalibrationAlphas,
+					thresholdCalibrationIterations,
 					perChromosome,
 					svmLibrary,
 					new SolverParams(svmEps, svmC),
+					false,
 					resultOperationName);
 			if (resultFilterOperationName == null) {
 				resultFilterOperationName = "Filter on " + paramsTest.getName();

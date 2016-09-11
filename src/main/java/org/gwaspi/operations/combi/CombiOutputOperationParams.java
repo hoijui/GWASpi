@@ -17,6 +17,8 @@
 
 package org.gwaspi.operations.combi;
 
+import java.util.Collections;
+import java.util.List;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -37,11 +39,17 @@ public class CombiOutputOperationParams extends AbstractOperationParams {
 	 * to count them as separate/different towers.
 	 */
 	private Integer minPeakDistance;
+	/**
+	 * The maximum P-value values to consider for output.
+	 * @see org.gwaspi.reports.TestOutputParams#getPValueThreasholds
+	 */
+	private final List<Double> pValueThreasholds;
 
 	public CombiOutputOperationParams(
 			final OperationKey trendTestOperationKey,
 			final OperationKey combiOperationKey,
 			final Integer minPeakDistance,
+			final List<Double> pValueThreasholds,
 			final String name)
 	{
 		super(OPType.COMBI_OUTPUT, new DataSetKey(trendTestOperationKey), name);
@@ -52,12 +60,16 @@ public class CombiOutputOperationParams extends AbstractOperationParams {
 		this.minPeakDistance = (minPeakDistance == null)
 				? getMinPeakDistanceDefault()
 				: minPeakDistance;
+		this.pValueThreasholds = (pValueThreasholds == null)
+				? getPValueThreasholdsDefault()
+				: pValueThreasholds;
 	}
 
 	public CombiOutputOperationParams(final OperationKey trendTestOperationKey) {
 
 		this(
 				trendTestOperationKey,
+				null,
 				null,
 				null,
 				null
@@ -84,6 +96,18 @@ public class CombiOutputOperationParams extends AbstractOperationParams {
 
 	public static Integer getMinPeakDistanceDefault() {
 		return 150; // TODO maybe adjust this?
+	}
+
+	/**
+	 * The maximum P-value values to consider for output.
+	 * @see org.gwaspi.reports.TestOutputParams#getPValueThreasholds
+	 */
+	public List<Double> getPValueThreasholds() {
+		return pValueThreasholds;
+	}
+
+	public static List<Double> getPValueThreasholdsDefault() {
+		return Collections.singletonList(1.0);
 	}
 
 	@Override

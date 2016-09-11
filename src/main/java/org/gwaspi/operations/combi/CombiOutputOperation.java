@@ -119,6 +119,10 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 
 	@Override
 	public ProgressSource getProgressSource() throws IOException {
+		return getProgressHandler();
+	}
+
+	private ProgressHandler getProgressHandler() throws IOException {
 
 		if (operationPH == null) {
 			final ProcessInfo prepareDataPI = new DefaultProcessInfo(
@@ -178,7 +182,8 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 	@Override
 	public Object call() throws IOException {
 
-		operationPH.setNewStatus(ProcessStatus.INITIALIZING);
+		final ProgressHandler progressHandler = getProgressHandler();
+		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
 		final OperationKey parentOpKey = getParams().getParent().getOperationParent();
 		final OperationMetadata parentOpMeta = getOperationService().getOperationMetadata(parentOpKey);
 		final String testName = parentOpMeta.getName();
@@ -190,7 +195,7 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 		final String significantFileName = prefix + ".significant.txt";
 		final String insignificantFileName = prefix + ".insignificant.txt";
 
-		operationPH.setNewStatus(ProcessStatus.RUNNING);
+		progressHandler.setNewStatus(ProcessStatus.RUNNING);
 		prepareDataPH.setNewStatus(ProcessStatus.RUNNING);
 		final OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet
 				= OperationManager.generateOperationDataSet(parentOpKey);
@@ -218,7 +223,17 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 		findTowersPH.setNewStatus(ProcessStatus.RUNNING);
 		final Map<ChromosomeKey, Map<Integer, Double>> chromToPeaks
 				= new LinkedHashMap<ChromosomeKey, Map<Integer, Double>>();
+		final List<Double> pValueThreasholds = getParams().getPValueThreasholds();
+		int ci = 0;
 		for (final ChromosomeKey chromosome : testOperationDataSet.getChromosomesKeysSource()) {
+			final Double pValueThreashold;
+			if (pValueThreasholds.size() > 1) {
+				pValueThreashold = pValueThreasholds.get(ci);
+			} else if (pValueThreasholds.isEmpty()) {
+				pValueThreashold = CombiOutputOperationParams.getPValueThreasholdsDefault().get(0);
+			} else {
+				pValueThreashold = pValueThreasholds.get(0);
+			}
 //			final List<Integer> origIndices = extract(chromTestEntries.getValue(), OperationDataEntry.TO_INDEX);
 			final List<Integer> origPositions = chromToPositions.get(chromosome);
 			final List<Double> pValues = extract(chromToTestEntries.get(chromosome), TrendTestOperationEntry.TO_P);
@@ -228,16 +243,19 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 				indexedPeaksDescending = new LinkedHashMap<Integer, Double>();
 				for (int pvi = 0; pvi < pValues.size(); pvi++) {
 //					indexedPeaksDescending.put(origPositions.get(pvi), pValues.get(pvi));
-					indexedPeaksDescending.put(pvi, pValues.get(pvi));
+					if (pValues.get(pvi) <= pValueThreashold) {
+						indexedPeaksDescending.put(pvi, pValues.get(pvi));
+					}
 				}
 			} else {
 				// find peaks
 				// invert P-Values, because peak-finder looks for max values, and we want min-peaks
 				invertPValues(pValues);
+				final Double invertedPValueThreashold = invertPValue(pValueThreashold);
 				final FindPeaks peakFinder = new FindPeaks(
 						origPositions,
 						pValues,
-						0.0,
+						invertedPValueThreashold,
 						getParams().getMinPeakDistance(),
 						1,
 						false);
@@ -245,6 +263,7 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 				invertPValues(indexedPeaksDescending);
 			}
 			chromToPeaks.put(chromosome, indexedPeaksDescending);
+			ci++;
 		}
 		findTowersPH.setNewStatus(ProcessStatus.COMPLEETED);
 
@@ -291,7 +310,7 @@ public class CombiOutputOperation extends AbstractOutputOperation<CombiOutputOpe
 		significantRW.close();
 		insignificantRW.close();
 		writeToFilesPH.setNewStatus(ProcessStatus.COMPLEETED);
-		operationPH.setNewStatus(ProcessStatus.COMPLEETED);
+		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return null;
 	}

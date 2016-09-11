@@ -45,6 +45,8 @@ import libsvm.svm_problem;
 import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.global.GeneratedList;
+import org.gwaspi.global.Generator;
 import org.gwaspi.global.IndicesSubList;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -94,13 +96,15 @@ public class CombiTestOperation
 
 	public static CombiTestOperationSpy spy = null;
 
+	private static final ProcessInfo PI_CALIBRATION = new DefaultProcessInfo("Parameter Calibrartion", ""); // TODO
 	private static final ProcessInfo combiProcessInfo = new DefaultProcessInfo("COMBI Test", ""); // TODO
 	private static final ProcessInfo PI_SVM_GENOME = new SubProcessInfo(combiProcessInfo, "Train genome-wide SVM", ""); // TODO
 
 	private Boolean valid;
 	private String problemDescription;
-	private ProgressHandler customProgressHandler;
-	private List<SvmProgressHandler> svmPHs;
+	private ProgressHandler calibrartionPH;
+	private ProgressHandler operationPH;
+	private List<SvmProgressHandler> svmPHs; // either one per chromosome or a single one for the whole chromosome
 
 	public CombiTestOperation(CombiTestOperationParams params) {
 		super(params);
@@ -227,10 +231,17 @@ public class CombiTestOperation
 	@Override
 	protected ProgressHandler getProgressHandler() throws IOException {
 
-		if (customProgressHandler == null) {
+		if (operationPH == null) {
 			final DataSetSource parentDataSetSource = getParentDataSetSource();
 			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
 			final int n = parentDataSetSource.getNumSamples();
+
+			if (getParams().isThresholdCalibrationEnabled()) {
+				if (getParams().getThresholdCalibrationAlphasCalculationPValueTarget() != null) {
+					ProgressHandler alphaEvaluationTrendTestsPH;
+				}
+				ProgressHandler thresholdCalibrartionCombiTestsPH;
+			}
 
 			if (getParams().isPerChromosome()) {
 				// run SVM once per chromosome
@@ -260,10 +271,10 @@ public class CombiTestOperation
 				svmPHs = Collections.singletonList(new SvmProgressHandler(PI_SVM_GENOME, n, dEncoded, numChunks));
 			}
 
-			customProgressHandler = new SuperProgressSource(combiProcessInfo, svmPHs);
+			operationPH = new SuperProgressSource(combiProcessInfo, svmPHs);
 		}
 
-		return customProgressHandler;
+		return operationPH;
 	}
 
 	@Override
@@ -332,7 +343,17 @@ public class CombiTestOperation
 					= extractChromToIndicesMap(parentDataSetSource);
 
 			final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
-			final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+			final List<Affection> validSampleAffections;
+			if (getParams().isUsingRandomSampleAffections()) {
+				validSampleAffections = new GeneratedList<Affection>(
+						validSamplesKeys.size(),
+						new Generator.EnumRandomGenerator<Affection>(
+								0L, // HACK introduce an application-wide unique random genereator/seed, for reproducible runs
+								Arrays.asList(new Double[] {0.0, 0.5, 0.5}),
+								Affection.class));
+			} else {
+				validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+			}
 
 			weights = new ArrayList<Double>(Collections.nCopies(parentDataSetSource.getNumMarkers(), -1.0));
 			float[][] recyclableKernelMatrix = null;
@@ -403,7 +424,17 @@ public class CombiTestOperation
 
 			final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
 			final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
-			final List<Affection> validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+			final List<Affection> validSampleAffections;
+			if (getParams().isUsingRandomSampleAffections()) {
+				validSampleAffections = new GeneratedList<Affection>(
+						validSamplesKeys.size(),
+						new Generator.EnumRandomGenerator<Affection>(
+								0L, // HACK introduce an application-wide unique random genereator/seed, for reproducible runs
+								Arrays.asList(new Double[] {0.0, 0.5, 0.5}),
+								Affection.class));
+			} else {
+				validSampleAffections = parentDataSetSource.getSamplesInfosSource().getAffections();
+			}
 
 			LOG.debug("Combi Association Test: #samples: " + n);
 			LOG.debug("Combi Association Test: #markers: " + dSamples);

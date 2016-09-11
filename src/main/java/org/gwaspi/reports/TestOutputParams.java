@@ -18,6 +18,7 @@
 package org.gwaspi.reports;
 
 import java.io.IOException;
+import java.util.List;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.OperationKey;
@@ -31,16 +32,36 @@ public class TestOutputParams extends AbstractOperationParams {
 
 	private final OPType testType;
 	private final OperationKey qaMarkersOpKey;
+	private final List<Double> pValueThreasholds;
 
-	public TestOutputParams(OperationKey testOpKey, OPType testType, OperationKey qaMarkersOpKey) {
-		super(null /* NOTE it is built on testType, but not that! */, new DataSetKey(testOpKey), null);
+	public TestOutputParams(
+			final OperationKey testOpKey,
+			final OPType testType,
+			final OperationKey qaMarkersOpKey,
+			final List<Double> pValueThreasholds)
+	{
+		super(
+				null /* NOTE it is built on testType, but not that! */,
+				new DataSetKey(testOpKey),
+				null);
 
 		this.testType = testType;
 		this.qaMarkersOpKey = qaMarkersOpKey;
+		this.pValueThreasholds = pValueThreasholds;
 	}
 
-	public TestOutputParams(OperationKey testOpKey, OperationKey qaMarkersOpKey) throws IOException {
-		this(testOpKey, OperationsList.getOperationService().getOperationMetadata(testOpKey).getOperationType(), qaMarkersOpKey);
+	public TestOutputParams(
+			final OperationKey testOpKey,
+			final OperationKey qaMarkersOpKey,
+			final List<Double> pValueThreasholds)
+			throws IOException
+	{
+		this(
+				testOpKey,
+				OperationsList.getOperationService()
+						.getOperationMetadata(testOpKey).getOperationType(),
+				qaMarkersOpKey,
+				pValueThreasholds);
 	}
 
 	/** @deprecated */
@@ -54,6 +75,16 @@ public class TestOutputParams extends AbstractOperationParams {
 
 	public OperationKey getQaMarkersOpKey() {
 		return qaMarkersOpKey;
+	}
+
+	/**
+	 * Returns a list of P-Value thresholds.
+	 * @return P-Value thresholds, either one per chromosome,
+	 *   a single one for all chromosomes, or none,
+	 *   for the default one to be used.
+	 */
+	public List<Double> getPValueThreasholds() {
+		return pValueThreasholds;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,11 @@ public class CombiOutputParamsGUI extends JPanel {
 	private final JSpinner minPeakDistanceValue;
 	private final JCheckBox minPeakDistanceDefault;
 
+	private final JLabel pValueThresholdLabel;
+	private final JPanel pValueThresholdPanel;
+	private final JSpinner pValueThresholdValue;
+	private final JCheckBox pValueThresholdDefault;
+
 	public CombiOutputParamsGUI() {
 
 		this.originalParams = null;
@@ -72,12 +78,21 @@ public class CombiOutputParamsGUI extends JPanel {
 		this.minPeakDistanceValue = new JSpinner();
 		this.minPeakDistanceDefault = new JCheckBox();
 
+		this.pValueThresholdLabel = new JLabel();
+		this.pValueThresholdPanel = new JPanel();
+		this.pValueThresholdValue = new JSpinner();
+		this.pValueThresholdDefault = new JCheckBox();
+
 		// pre-configure the GUI components
 		this.minPeakDistancePanel.add(this.minPeakDistanceValue);
 		this.minPeakDistancePanel.add(this.minPeakDistanceDefault);
 
+		this.pValueThresholdPanel.add(this.pValueThresholdValue);
+		this.pValueThresholdPanel.add(this.pValueThresholdDefault);
+
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
 		labelsAndComponents.put(minPeakDistanceLabel, minPeakDistancePanel);
+		labelsAndComponents.put(pValueThresholdLabel, pValueThresholdPanel);
 		GroupLayout layout = new GroupLayout(this);
 		CombiTestParamsGUI.createLayout(layout, labelsAndComponents);
 		this.setLayout(layout);
@@ -91,11 +106,23 @@ public class CombiOutputParamsGUI extends JPanel {
 		this.minPeakDistanceValue.setModel(new SpinnerNumberModel(
 				(int) CombiOutputOperationParams.getMinPeakDistanceDefault(),
 				1, 999999, 1));
-		final String featureScalingPTooltip
+		final String minPeakDistancePTooltip
 				= "Minimum distance between markers for them to be counted as separate peaks";
-		this.minPeakDistanceLabel.setToolTipText(featureScalingPTooltip);
-		this.minPeakDistanceValue.setToolTipText(featureScalingPTooltip);
-		this.minPeakDistancePanel.setToolTipText(featureScalingPTooltip);
+		this.minPeakDistanceLabel.setToolTipText(minPeakDistancePTooltip);
+		this.minPeakDistanceValue.setToolTipText(minPeakDistancePTooltip);
+		this.minPeakDistancePanel.setToolTipText(minPeakDistancePTooltip);
+
+		this.pValueThresholdLabel.setText("P-value threashold");
+		this.pValueThresholdLabel.setLabelFor(this.pValueThresholdValue);
+		this.pValueThresholdPanel.setLayout(contentPanelLayout);
+		this.pValueThresholdValue.setModel(new SpinnerNumberModel(
+				(int) CombiOutputOperationParams.getMinPeakDistanceDefault(),
+				1, 999999, 1));
+		final String pValueThresholdPTooltip
+				= "Maximum P-value above which we do not consider any values as output-worthy";
+		this.pValueThresholdLabel.setToolTipText(pValueThresholdPTooltip);
+		this.pValueThresholdValue.setToolTipText(pValueThresholdPTooltip);
+		this.pValueThresholdPanel.setToolTipText(pValueThresholdPTooltip);
 	}
 
 	public void setParams(final CombiOutputOperationParams params) {
@@ -105,6 +132,10 @@ public class CombiOutputParamsGUI extends JPanel {
 		minPeakDistanceValue.setValue(params.getMinPeakDistance());
 		minPeakDistanceDefault.setAction(new SpinnerDefaultAction(minPeakDistanceValue,
 				CombiOutputOperationParams.getMinPeakDistanceDefault()));
+
+		pValueThresholdValue.setValue(params.getPValueThreasholds().get(0));
+		pValueThresholdDefault.setAction(new SpinnerDefaultAction(pValueThresholdValue,
+				CombiOutputOperationParams.getPValueThreasholdsDefault().get(0)));
 
 		validate();
 		repaint();
@@ -116,6 +147,7 @@ public class CombiOutputParamsGUI extends JPanel {
 				originalParams.getTrendTestOperationKey(),
 				originalParams.getCombiOperationKey(),
 				(Integer) minPeakDistanceValue.getValue(),
+				Collections.singletonList((Double) pValueThresholdValue.getValue()),
 				originalParams.getName()
 				);
 
@@ -194,6 +226,7 @@ public class CombiOutputParamsGUI extends JPanel {
 				parentOperationKeys.get(1),
 				parentOperationKeys.get(0),
 				10,
+				CombiOutputOperationParams.getPValueThreasholdsDefault(),
 				"my name is... my name is... my name is ..");
 		final CombiOutputOperationParams outputParams = chooseParams(null, inputParams);
 	}

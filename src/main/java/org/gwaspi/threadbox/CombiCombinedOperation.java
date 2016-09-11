@@ -18,14 +18,18 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.MatrixOperation;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
@@ -36,6 +40,7 @@ import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
+import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
 import org.gwaspi.progress.DefaultProcessInfo;
 import org.gwaspi.progress.NullProgressHandler;
@@ -87,6 +92,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 	private final ByCombiWeightsFilterOperationParams paramsFilter;
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
+	private OperationKey resultingTrendTestOperationKey;
 
 	public CombiCombinedOperation(
 			final CombiTestOperationParams paramsTest,
@@ -98,6 +104,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 		this.paramsFilter = paramsFilter;
 		this.progressSource = new SuperProgressSource(fullCombiProcessInfo, subProgressSourcesAndWeights);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(paramsTest.getParent());
+		this.resultingTrendTestOperationKey = null;
 	}
 
 	@Override
@@ -118,6 +125,207 @@ public class CombiCombinedOperation extends CommonRunnable {
 	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(CombiCombinedOperation.class);
+	}
+
+	public OperationKey getResultingTrendTestOperationKey() {
+		return resultingTrendTestOperationKey;
+	}
+
+	private void extractSmallestPValues(
+			final CombiTestOperationParams prototypeTestParams,
+			final TrendTestOperationDataSet trendTestDataSet,
+			final int numChromosomes,
+			final List<Double> ps,
+			final List<List<Double>> smallestPs)
+			throws IOException
+	{
+		if (prototypeTestParams.isPerChromosome()) {
+			// NOTE The following code assumes that markers are ordered by chromosome
+			final List<String> markersChromosomes = trendTestDataSet.getMarkersMetadatasSource().getChromosomes();
+			String currentChrom = markersChromosomes.get(0);
+			int ci = 0;
+			for (int mi = 0; mi < ps.size(); mi++) {
+				final List<Double> chromPs = new ArrayList(ps.size() / numChromosomes); // approximate markers per chromosome
+				while ((mi < ps.size()) && currentChrom.equals(markersChromosomes.get(mi))) {
+					chromPs.add(ps.get(mi));
+					mi++;
+				}
+				Collections.sort(chromPs);
+				smallestPs.get(ci).add(chromPs.get(0));
+				ci++;
+				mi--;
+			}
+//				for (int ci = 0; ci < numChromosomes; ci++) {
+//					final List<Double> chromPs = new ArrayList(XXX resultingTrendTestDataSet.getPs(-1, -1));
+//					Collections.sort(ps);
+//					smallestPs.get(ci).add(ps.get(0));
+//				}
+		} else {
+			Collections.sort(ps);
+			smallestPs.get(0).add(ps.get(0));
+		}
+	}
+
+	private List<Double> thresholdCalibration(
+			final CombiTestOperationParams prototypeTestParams,
+			final ByCombiWeightsFilterOperationParams prototypeFilterParams,
+			final List<Double> alphas)
+			throws IOException
+	{
+//		// HACK this is(?):
+		final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(prototypeTestParams.getQAMarkerOperationKey());
+//		final int totalMarkers = toLoadFromDataSet.getNumMarkers();
+
+		final int numChromosomes = prototypeTestParams.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
+		final List<List<Double>> smallestPs = new ArrayList<List<Double>>(
+				numChromosomes);
+		for (int ci = 0; ci < numChromosomes; ci++) {
+			smallestPs.add(new ArrayList<Double>(
+					prototypeTestParams.getThresholdCalibrationIterations()));
+		}
+		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationIterations(); tci++) {
+			final CombiTestOperationParams combiParams
+					= new CombiTestOperationParams(
+							prototypeTestParams.getQAMarkerOperationKey(),
+							prototypeTestParams.getEncoder(),
+							prototypeTestParams.getEncodingParams(),
+							false, // thresholdCalibrationEnabled
+							null, // thresholdCalibrationAlpha
+							null, // thresholdCalibrationIterations
+							false, // thresholdCalibrationAlphasCalculationEnabled
+							null, // thresholdCalibrationAlphasCalculationPValueTarget
+							null, // thresholdCalibrationAlphasCalculationIterations
+							prototypeTestParams.isPerChromosome(),
+							prototypeTestParams.getSolverLibrary(),
+							prototypeTestParams.getSolverParams(),
+							true, //prototypeTestParams.isUsingRandomSampleAffections(),
+							prototypeTestParams.getName() + "_threasholdCalibrationIteration" + tci);
+			final boolean mtkFraction = (prototypeFilterParams.getMarkersToKeep() == -1);
+			final ByCombiWeightsFilterOperationParams combiFilterParams
+					= new ByCombiWeightsFilterOperationParams(
+					prototypeFilterParams.getTotalMarkers(), //totalMarkers,
+					prototypeFilterParams.isPerChromosome(), //perChromosome,
+					prototypeFilterParams.getWeightsFilterWidth(), //weightsFilterWidth,
+//					mtkFraction ? null : prototypeFilterParams.getMarkersToKeep(), //markersToKeep,
+//					mtkFraction ? prototypeFilterParams.getMarkersToKeepFraction() : null, //prototypeFilterParams.getMarkersToKeepFraction(), //markersToKeepFraction
+					null, //markersToKeep,
+					1.0, //markersToKeepFraction
+					prototypeFilterParams.getName() + "_threasholdCalibrationIteration" + tci); //resultFilterOperationName);
+			final CombiCombinedOperation combinedCombi = new CombiCombinedOperation(combiParams, combiFilterParams);
+			combinedCombi.run();
+			final OperationKey resultingPermTrendTestOperationKey = combinedCombi.getResultingTrendTestOperationKey();
+			final TrendTestOperationDataSet resultingTrendTestDataSet = (TrendTestOperationDataSet)
+					OperationManager.generateOperationDataSet(resultingPermTrendTestOperationKey);
+			final List<Double> ps = new ArrayList(resultingTrendTestDataSet.getPs(-1, -1));
+			extractSmallestPValues(prototypeTestParams, resultingTrendTestDataSet, numChromosomes, ps, smallestPs);
+		}
+
+		final List<Double> selectedPs = new ArrayList<Double>(numChromosomes);
+		for (int ci = 0; ci < numChromosomes; ci++) {
+			final List<Double> chromSmallestPs = smallestPs.get(ci);
+			Collections.sort(chromSmallestPs);
+			final Double chromSelectedP = chromSmallestPs.get(
+					(int) Math.round(chromSmallestPs.size() * alphas.get(ci)));
+			selectedPs.add(chromSelectedP);
+
+		}
+		return selectedPs;
+	}
+
+	private static Double evaluateAlpha(final List<Double> smallestPs, final Double pValueTarget) {
+
+		int pi = 0;
+		for (final Double pValue : smallestPs) {
+			if (pValue.compareTo(pValueTarget) >= 0) {
+				break;
+			}
+			pi++;
+		}
+		final Double pValueBefore = (pi > 0) ? smallestPs.get(pi - 1) : 0.0;
+		final Double pValueChosen = smallestPs.get(pi);
+		final Double alpha;
+		if (pValueChosen.equals(pValueTarget)) {
+			// exact match
+			alpha = (double) pi / pValueChosen;
+		} else {
+			// inbetween two indices -> interpolate
+			final Double alphaBefore = (double) ((pi > 0) ? (pi - 1) : pi) / pValueBefore;
+			final Double alphaChosen = (double) pi / pValueChosen;
+
+			final Double betweenValuesInterpolation = (pValueTarget - pValueBefore) / (pValueChosen - pValueBefore);
+			alpha = alphaBefore + ((alphaChosen - alphaBefore) * betweenValuesInterpolation);
+		}
+
+		return alpha;
+	}
+
+	private List<Double> evaluateThresholdCalibrationAlpha(
+			final CombiTestOperationParams prototypeTestParams)
+			throws IOException
+	{
+//		// HACK this is(?):
+		final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(prototypeTestParams.getQAMarkerOperationKey());
+//		final int totalMarkers = toLoadFromDataSet.getNumMarkers();
+
+		final int numChromosomes = prototypeTestParams.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
+		final List<List<Double>> smallestPs = new ArrayList<List<Double>>(
+				numChromosomes);
+		for (int ci = 0; ci < numChromosomes; ci++) {
+			smallestPs.add(new ArrayList<Double>(
+					prototypeTestParams.getThresholdCalibrationAlphasCalculationIterations()));
+		}
+
+		final DataSetKey parentQAMarkers = prototypeTestParams.getParent(); // NOTE As of now, this returns the QA-Markers operation of/below our actual parent
+		final DataSetKey parent = new DataSetKey(parentQAMarkers.getOperationParent().getParentMatrixKey());
+		final List<OPType> necessaryOpTypes = Arrays.asList(OPType.SAMPLE_QA, OPType.MARKER_QA);
+		final List<OperationKey> necessaryOperations = OperationManager.findNecessaryOperations(necessaryOpTypes, parent, true);
+		if (necessaryOperations.size() < necessaryOpTypes.size()) {
+			throw new RuntimeException("Not all necessary operation types ("+necessaryOpTypes+") were found on parent \""+parent+"\""); // TODO FIXME Instead, just run these operations!
+		}
+		final MarkerCensusOperationParams mcVorlageParams = new MarkerCensusOperationParams(
+				parent,
+				necessaryOperations.get(0),
+				necessaryOperations.get(1));
+		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationAlphasCalculationIterations(); tci++) {
+			final MarkerCensusOperationParams markerCensusParams
+					= new MarkerCensusOperationParams(
+							mcVorlageParams.getParent(), // parent
+							prototypeTestParams.getName() + "_threasholdCalibrationAlphaDiscoveryIteration" + tci, // name
+							mcVorlageParams.getSampleQAOpKey(), // qaSamplesOp
+							mcVorlageParams.getSampleMissingRatio(),
+							mcVorlageParams.getSampleHetzygRatio(),
+							mcVorlageParams.getMarkerQAOpKey(), // qaMarkersOp
+							mcVorlageParams.isDiscardMismatches(),
+							mcVorlageParams.getMarkerMissingRatio(),
+							mcVorlageParams.getPhenotypeFile(), // phenotypeFile
+							true); // random samples
+			final MarkerCensusOperation markerCensus = new MarkerCensusOperation(markerCensusParams);
+			final OperationKey markerCensusOpKey = markerCensus.call();
+
+			final TrendTestOperationParams trendTestParams
+					= new TrendTestOperationParams(
+							prototypeTestParams.getParent(),
+							prototypeTestParams.getName() + "_threasholdCalibrationIteration" + tci,
+							markerCensusOpKey);
+			final TrendTestOperation trendTest = new TrendTestOperation(trendTestParams);
+			final OperationKey trendTestOpKey = trendTest.call();
+
+			final TrendTestOperationDataSet resultingTrendTestDataSet = (TrendTestOperationDataSet)
+					OperationManager.generateOperationDataSet(trendTestOpKey);
+			final List<Double> ps = new ArrayList(resultingTrendTestDataSet.getPs(-1, -1));
+			extractSmallestPValues(prototypeTestParams, resultingTrendTestDataSet, numChromosomes, ps, smallestPs);
+		}
+
+		final Double pValueTarget = prototypeTestParams.getThresholdCalibrationAlphasCalculationPValueTarget();
+		final List<Double> alphas = new ArrayList<Double>(numChromosomes);
+		// Find t_star(s, one per chromosome) as alpha-percentile of sorted p-values
+		for (int ci = 0; ci < numChromosomes; ci++) {
+			final List<Double> chromSmallestPs = smallestPs.get(ci);
+			Collections.sort(chromSmallestPs);
+			final Double alpha = evaluateAlpha(chromSmallestPs, pValueTarget);
+			alphas.add(alpha);
+		}
+		return alphas;
 	}
 
 	@Override
@@ -148,6 +356,30 @@ public class CombiCombinedOperation extends CommonRunnable {
 		}
 		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
 
+		// NOTE ABORTION_POINT We could be gracefully aborted here
+
+		final List<Double> pValueThreasholds;
+		if (paramsTest.isThresholdCalibrationEnabled()) {
+			final List<Double> thresholdCalibrationAlphas;
+			if (paramsTest.isThresholdCalibrationAlphasCalculationEnabled()) {
+				// XXX LA_MARKER start 1st permutation test
+				thresholdCalibrationAlphas = evaluateThresholdCalibrationAlpha(paramsTest);
+				// XXX LA_MARKER end 1st permutation test
+			} else {
+				final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(paramsTest.getQAMarkerOperationKey());
+				final int numParts = paramsTest.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
+				thresholdCalibrationAlphas = paramsTest.getThresholdCalibrationAlphas();
+			}
+			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, thresholdCalibrationAlphas);
+			getLog().debug("pValueThreashold: {}", pValueThreasholds);
+		} else {
+			// use default value
+			pValueThreasholds = Collections.EMPTY_LIST;
+			getLog().debug("pValueThreashold (empty): {}", pValueThreasholds);
+		}
+
+		// NOTE ABORTION_POINT We could be gracefully aborted here
+
 		final QACombinedOperation threaded_MatrixQA = new QACombinedOperation(combiFilterDataSetKey, false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
@@ -168,15 +400,18 @@ public class CombiCombinedOperation extends CommonRunnable {
 		final MatrixOperation testOperation = new TrendTestOperation(trendTestParams);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TREND_TEST, testOperation.getProgressSource(), null);
 		final OperationKey trendTestOpKey = OperationManager.performOperationCreatingOperation(testOperation);
+		resultingTrendTestOperationKey = trendTestOpKey;
 
-		if (trendTestOpKey != null) {
-			final TestOutputParams testOutputParams = new TestOutputParams(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey);
+		// Only possibly write to output files if we are the actual COMBI test run,
+		// versus a threshold calibration run (which uses random sample affection).
+		if ((trendTestOpKey != null) && paramsTest.isUsingRandomSampleAffections()) {
+			final TestOutputParams testOutputParams = new TestOutputParams(trendTestOpKey, OPType.TRENDTEST, qaMarkersOpKey, pValueThreasholds);
 			final MatrixOperation testOutputOperation = new OutputTest(testOutputParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_OUTPUT, testOutputOperation.getProgressSource(), null);
 			OperationManager.performOperationCreatingOperation(testOutputOperation);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 
-			final CombiOutputOperationParams combiOutputOperationParams = new CombiOutputOperationParams(trendTestOpKey, combiTestOpKey, null, null);
+			final CombiOutputOperationParams combiOutputOperationParams = new CombiOutputOperationParams(trendTestOpKey, combiTestOpKey, null, pValueThreasholds, null);
 			final MatrixOperation combiOutputOperation = new CombiOutputOperation(combiOutputOperationParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_OUTPUT, combiOutputOperation.getProgressSource(), null);
 			OperationManager.performOperationCreatingOperation(combiOutputOperation);

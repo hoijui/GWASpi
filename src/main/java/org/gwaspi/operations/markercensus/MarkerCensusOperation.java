@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,6 +31,8 @@ import org.gwaspi.constants.ImportConstants;
 import org.gwaspi.constants.ImportConstants.Annotation.GWASpi;
 import org.gwaspi.constants.NetCDFConstants.Defaults.AlleleByte;
 import org.gwaspi.datasource.filter.SampleIndicesFilterDataSetSource;
+import org.gwaspi.global.GeneratedList;
+import org.gwaspi.global.Generator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
@@ -144,8 +147,16 @@ public class MarkerCensusOperation extends AbstractOperationCreatingOperation<Ma
 
 		//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 		final List<Sex> samplesSex = new ArrayList<Sex>(numMySamples);
-		final List<Affection> samplesAffection = new ArrayList<Affection>(numMySamples);
+		List<Affection> samplesAffection = new ArrayList<Affection>(numMySamples);
 		fetchSampleInfo(getParentMatrixKey().getStudyKey(), dataSetSource, filtereSamplesOriginalIndices, getParams().getPhenotypeFile(), samplesSex, samplesAffection);
+		if (getParams().isUsingRandomSampleAffections()) {
+			samplesAffection = new GeneratedList<Affection>(
+					samplesAffection.size(),
+					new Generator.EnumRandomGenerator<Affection>(
+							0L, // HACK introduce an application-wide unique random genereator/seed, for reproducible runs
+							Arrays.asList(new Double[] {0.0, 0.5, 0.5}),
+							Affection.class));
+		}
 
 		log.info("Start Census testing markers");
 

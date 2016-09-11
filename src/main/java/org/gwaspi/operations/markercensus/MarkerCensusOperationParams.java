@@ -44,6 +44,37 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 	private boolean discardMismatches;
 	private double markerMissingRatio;
 	private File phenotypeFile;
+	/**
+	 * Whether to use random sample affections.
+	 * This is used for COMBI threshold calibration.
+	 */
+	private final Boolean usingRandomSampleAffections;
+
+	public MarkerCensusOperationParams(
+			final DataSetKey parent,
+			final String name,
+			final OperationKey sampleQAOpKey,
+			final double sampleMissingRatio,
+			final double sampleHetzygRatio,
+			final OperationKey markerQAOpKey,
+			final boolean discardMismatches,
+			final double markerMissingRatio,
+			final File phenotypeFile,
+			final Boolean usingRandomSampleAffections)
+	{
+		super((phenotypeFile == null) ? OPType.MARKER_CENSUS_BY_AFFECTION : OPType.MARKER_CENSUS_BY_PHENOTYPE, parent, name);
+
+		this.sampleQAOpKey = sampleQAOpKey;
+		this.sampleMissingRatio = sampleMissingRatio;
+		this.sampleHetzygRatio = sampleHetzygRatio;
+		this.markerQAOpKey = markerQAOpKey;
+		this.discardMismatches = discardMismatches;
+		this.markerMissingRatio = markerMissingRatio;
+		this.phenotypeFile = phenotypeFile;
+		this.usingRandomSampleAffections = (usingRandomSampleAffections == null)
+				? isUsingRandomSampleAffectionsDefault()
+				: usingRandomSampleAffections;
+	}
 
 	public MarkerCensusOperationParams(
 			final DataSetKey parent,
@@ -56,15 +87,17 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 			final double markerMissingRatio,
 			final File phenotypeFile)
 	{
-		super((phenotypeFile == null) ? OPType.MARKER_CENSUS_BY_AFFECTION : OPType.MARKER_CENSUS_BY_PHENOTYPE, parent, name);
-
-		this.sampleQAOpKey = sampleQAOpKey;
-		this.sampleMissingRatio = sampleMissingRatio;
-		this.sampleHetzygRatio = sampleHetzygRatio;
-		this.markerQAOpKey = markerQAOpKey;
-		this.discardMismatches = discardMismatches;
-		this.markerMissingRatio = markerMissingRatio;
-		this.phenotypeFile = phenotypeFile;
+		this(
+				parent,
+				name,
+				sampleQAOpKey,
+				sampleMissingRatio,
+				sampleHetzygRatio,
+				markerQAOpKey,
+				discardMismatches,
+				markerMissingRatio,
+				phenotypeFile,
+				false);
 	}
 
 	public MarkerCensusOperationParams(
@@ -81,7 +114,8 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 				markerQAOpKey,
 				DEFAULT_DISCARD_MISMATCHES,
 				DEFAULT_MARKER_MISSING_RATIO,
-				DISABLE_PHENOTYPE_FILE
+				DISABLE_PHENOTYPE_FILE,
+				isUsingRandomSampleAffectionsDefault()
 				);
 	}
 
@@ -149,5 +183,18 @@ public class MarkerCensusOperationParams extends AbstractOperationParams {
 
 	public void setPhenotypeFile(File phenotypeFile) {
 		this.phenotypeFile = phenotypeFile;
+	}
+
+	public boolean isUsingRandomSampleAffections() {
+		return usingRandomSampleAffections;
+	}
+
+	protected static Boolean isUsingRandomSampleAffectionsDefault() {
+		return false;
+	}
+
+	@Override
+	public boolean isHidden() {
+		return isUsingRandomSampleAffections();
 	}
 }

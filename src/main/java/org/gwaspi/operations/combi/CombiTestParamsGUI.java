@@ -24,6 +24,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,26 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JCheckBox useThresholdCalibrationValue;
 	private final JLabel useThresholdCalibrationWarning;
 
+	private final JLabel thresholdCalibrationIterationsLabel;
+	private final JPanel thresholdCalibrationIterationsPanel;
+	private final JSpinner thresholdCalibrationIterationsValue;
+	private final JCheckBox thresholdCalibrationIterationsDefault;
+
+	private final JLabel thresholdCalibrationAlphaLabel;
+	private final JPanel thresholdCalibrationAlphaPanel;
+	private final JSpinner thresholdCalibrationAlphaValue;
+	private final JCheckBox thresholdCalibrationAlphaDefault;
+
+	private final JLabel thresholdCalibrationAlphaPValueTargetLabel;
+	private final JPanel thresholdCalibrationAlphaPValueTargetPanel;
+	private final JSpinner thresholdCalibrationAlphaPValueTargetValue;
+	private final JCheckBox thresholdCalibrationAlphaPValueTargetDefault;
+
+	private final JLabel thresholdCalibrationAlphaPerTargetLabel;
+	private final JPanel thresholdCalibrationAlphaPerTargetPanel;
+	private final JCheckBox thresholdCalibrationAlphaPerTargetValue;
+	private final JCheckBox thresholdCalibrationAlphaPerTargetDefault;
+
 	private final JLabel perChromosomeLabel;
 	private final JPanel perChromosomeP;
 	private final JCheckBox perChromosomeValue;
@@ -151,6 +172,26 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationValue = new JCheckBox();
 		this.useThresholdCalibrationWarning = new JLabel();
 
+		this.thresholdCalibrationIterationsLabel = new JLabel();
+		this.thresholdCalibrationIterationsPanel = new JPanel();
+		this.thresholdCalibrationIterationsValue = new JSpinner();
+		this.thresholdCalibrationIterationsDefault = new JCheckBox();
+
+		this.thresholdCalibrationAlphaLabel = new JLabel();
+		this.thresholdCalibrationAlphaPanel = new JPanel();
+		this.thresholdCalibrationAlphaValue = new JSpinner();
+		this.thresholdCalibrationAlphaDefault = new JCheckBox();
+
+		this.thresholdCalibrationAlphaPValueTargetLabel = new JLabel();
+		this.thresholdCalibrationAlphaPValueTargetPanel = new JPanel();
+		this.thresholdCalibrationAlphaPValueTargetValue = new JSpinner();
+		this.thresholdCalibrationAlphaPValueTargetDefault = new JCheckBox();
+
+		this.thresholdCalibrationAlphaPerTargetLabel = new JLabel();
+		this.thresholdCalibrationAlphaPerTargetPanel = new JPanel();
+		this.thresholdCalibrationAlphaPerTargetValue = new JCheckBox();
+		this.thresholdCalibrationAlphaPerTargetDefault = new JCheckBox();
+
 		this.perChromosomeLabel = new JLabel();
 		this.perChromosomeP = new JPanel();
 		this.perChromosomeValue = new JCheckBox();
@@ -189,6 +230,18 @@ public class CombiTestParamsGUI extends JPanel {
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationValue);
 		this.useThresholdCalibrationP.add(this.useThresholdCalibrationWarning);
 
+		this.thresholdCalibrationIterationsPanel.add(this.thresholdCalibrationIterationsValue);
+		this.thresholdCalibrationIterationsPanel.add(this.thresholdCalibrationIterationsDefault);
+
+		this.thresholdCalibrationAlphaPanel.add(this.thresholdCalibrationAlphaValue);
+		this.thresholdCalibrationAlphaPanel.add(this.thresholdCalibrationAlphaDefault);
+
+		this.thresholdCalibrationAlphaPValueTargetPanel.add(this.thresholdCalibrationAlphaPValueTargetValue);
+		this.thresholdCalibrationAlphaPValueTargetPanel.add(this.thresholdCalibrationAlphaPValueTargetDefault);
+
+		this.thresholdCalibrationAlphaPerTargetPanel.add(this.thresholdCalibrationAlphaPerTargetValue);
+		this.thresholdCalibrationAlphaPerTargetPanel.add(this.thresholdCalibrationAlphaPerTargetDefault);
+
 		this.perChromosomeP.add(this.perChromosomeValue);
 		this.perChromosomeP.add(this.perChromosomeDefault);
 
@@ -211,6 +264,10 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(featureScalingPLabel, featureScalingPPanel);
 		labelsAndComponents.put(weightsDecodingPLabel, weightsDecodingPPanel);
 		labelsAndComponents.put(useThresholdCalibrationLabel, useThresholdCalibrationP);
+		labelsAndComponents.put(thresholdCalibrationIterationsLabel, thresholdCalibrationIterationsPanel);
+		labelsAndComponents.put(thresholdCalibrationAlphaLabel, thresholdCalibrationAlphaPanel);
+		labelsAndComponents.put(thresholdCalibrationAlphaPValueTargetLabel, thresholdCalibrationAlphaPValueTargetPanel);
+		labelsAndComponents.put(thresholdCalibrationAlphaPerTargetLabel, thresholdCalibrationAlphaPerTargetPanel);
 		labelsAndComponents.put(perChromosomeLabel, perChromosomeP);
 		labelsAndComponents.put(svmLibraryLabel, svmLibraryP);
 		labelsAndComponents.put(svmEpsLabel, svmEpsP);
@@ -279,14 +336,64 @@ public class CombiTestParamsGUI extends JPanel {
 				}
 			}
 		});
-		// TODO XXX implement resampling based threshold calibration and remove these lines!
-		final String notYetImplemented = "Not yet implemented!";
-		this.useThresholdCalibrationLabel.setToolTipText(notYetImplemented);
-		this.useThresholdCalibrationValue.setToolTipText(notYetImplemented);
-		this.useThresholdCalibrationP.setToolTipText(notYetImplemented);
-		this.useThresholdCalibrationLabel.setEnabled(false);
-		this.useThresholdCalibrationValue.setEnabled(false);
-		this.useThresholdCalibrationWarning.setEnabled(false);
+		final String useThresholdCalibrationTooltip
+				= "whether to use treshold calibrartion "
+				+ "(enlarges execution time by about #iteration times)";
+		this.useThresholdCalibrationLabel.setToolTipText(useThresholdCalibrationTooltip);
+		this.useThresholdCalibrationValue.setToolTipText(useThresholdCalibrationTooltip);
+		this.useThresholdCalibrationP.setToolTipText(useThresholdCalibrationTooltip);
+//		this.useThresholdCalibrationLabel.setEnabled(false);
+//		this.useThresholdCalibrationValue.setEnabled(false);
+//		this.useThresholdCalibrationWarning.setEnabled(false); // TODO do this with the stuff below, when required!
+
+		this.thresholdCalibrationIterationsLabel.setText("threshold calibration iterations");
+		this.thresholdCalibrationIterationsLabel.setLabelFor(this.thresholdCalibrationIterationsValue);
+		this.thresholdCalibrationIterationsPanel.setLayout(contentPanelLayout);
+		this.thresholdCalibrationIterationsValue.setModel(new SpinnerNumberModel(
+				(int) CombiTestOperationParams.getThresholdCalibrationIterationsDefault(),
+				1, 99999, 1));
+		final String thresholdCalibrationIterationsTooltip
+				= "The COMBI test gets executed this many times with randomized labels, "
+				+ "in order to extract the minimal P-Value each time. "
+				+ "Out of these values, we select one as the threshold (see alpha).";
+		this.thresholdCalibrationIterationsLabel.setToolTipText(thresholdCalibrationIterationsTooltip);
+		this.thresholdCalibrationIterationsValue.setToolTipText(thresholdCalibrationIterationsTooltip);
+		this.thresholdCalibrationIterationsPanel.setToolTipText(thresholdCalibrationIterationsTooltip);
+
+		this.thresholdCalibrationAlphaLabel.setText("threshold calibration alpha");
+		this.thresholdCalibrationAlphaLabel.setLabelFor(this.thresholdCalibrationAlphaValue);
+		this.thresholdCalibrationAlphaPanel.setLayout(contentPanelLayout);
+		this.thresholdCalibrationAlphaValue.setModel(new SpinnerNumberModel(
+				(double) CombiTestOperationParams.getThresholdCalibrationAlphaDefault(),
+				0.001, 1.0, 0.001));
+		final String thresholdCalibrationAlphaTooltip
+				= "alpha value, used to select the treshold out of "
+				+ "the #iteration smallest P-Values";
+		this.thresholdCalibrationAlphaLabel.setToolTipText(thresholdCalibrationAlphaTooltip);
+		this.thresholdCalibrationAlphaValue.setToolTipText(thresholdCalibrationAlphaTooltip);
+		this.thresholdCalibrationAlphaPanel.setToolTipText(thresholdCalibrationAlphaTooltip);
+
+		this.thresholdCalibrationAlphaPValueTargetLabel.setText("threshold calibration target P-Value");
+		this.thresholdCalibrationAlphaPValueTargetLabel.setLabelFor(this.thresholdCalibrationAlphaPValueTargetValue);
+		this.thresholdCalibrationAlphaPValueTargetPanel.setLayout(contentPanelLayout);
+		this.thresholdCalibrationAlphaPValueTargetValue.setModel(new SpinnerNumberModel(
+				(double) CombiTestOperationParams.getThresholdCalibrationAlphasCalculationPValueTargetDefault(),
+				1E-9, 1E-3, 1E-9));
+		final String thresholdCalibrationAlphaPValueTargetTooltip
+				= "target P-Value from which to evaluate an alpha, "
+				+ "by using #iterations many trend-test's minimal P-Values";
+		this.thresholdCalibrationAlphaPValueTargetLabel.setToolTipText(thresholdCalibrationAlphaPValueTargetTooltip);
+		this.thresholdCalibrationAlphaPValueTargetValue.setToolTipText(thresholdCalibrationAlphaPValueTargetTooltip);
+		this.thresholdCalibrationAlphaPValueTargetPanel.setToolTipText(thresholdCalibrationAlphaPValueTargetTooltip);
+
+		this.thresholdCalibrationAlphaPerTargetLabel.setText("alpha per target P-Value");
+		this.thresholdCalibrationAlphaPerTargetLabel.setLabelFor(this.thresholdCalibrationAlphaPerTargetValue);
+		this.thresholdCalibrationAlphaPerTargetPanel.setLayout(contentPanelLayout);
+		this.thresholdCalibrationAlphaPerTargetDefault.setEnabled(false);
+		final String thresholdCalibrationAlphaPerTargetTooltip = "evaluate the alpha per target P-Value (or specify it directly)";
+		this.thresholdCalibrationAlphaPerTargetLabel.setToolTipText(thresholdCalibrationAlphaPerTargetTooltip);
+		this.thresholdCalibrationAlphaPerTargetValue.setToolTipText(thresholdCalibrationAlphaPerTargetTooltip);
+		this.thresholdCalibrationAlphaPerTargetPanel.setToolTipText(thresholdCalibrationAlphaPerTargetTooltip);
 
 		this.perChromosomeLabel.setText("run per chromosome");
 		this.perChromosomeLabel.setLabelFor(this.perChromosomeValue);
@@ -383,7 +490,18 @@ public class CombiTestParamsGUI extends JPanel {
 		weightsDecodingPDefault.setAction(new SpinnerDefaultAction(weightsDecodingPValue,
 				CombiTestOperationParams.getEncodingParamsDefault().getWeightsDecodingP()));
 
-		useThresholdCalibrationValue.setSelected(params.isUseThresholdCalibration());
+		useThresholdCalibrationValue.setSelected(params.isThresholdCalibrationEnabled());
+
+		thresholdCalibrationIterationsValue.setValue(params.getThresholdCalibrationIterations()); // TODO use setEditable(boolean), depending on other threshold related values
+
+		thresholdCalibrationAlphaValue.setValue(params.getThresholdCalibrationAlphas()); // TODO use setEditable(boolean), depending on other threshold related values
+
+		thresholdCalibrationAlphaPValueTargetValue.setValue(params.getThresholdCalibrationAlphasCalculationPValueTarget()); // TODO use setEditable(boolean), depending on other threshold related values
+
+		thresholdCalibrationAlphaPerTargetValue.setSelected(params.isThresholdCalibrationAlphasCalculationEnabled());
+		thresholdCalibrationAlphaPerTargetDefault.setAction(new CheckBoxDefaultAction(thresholdCalibrationAlphaPerTargetValue,
+				CombiTestOperationParams.isThresholdCalibrationAlphasCalculationEnabledDefault()));
+		thresholdCalibrationAlphaPerTargetDefault.setEnabled(false);
 
 		perChromosomeValue.setSelected(params.isPerChromosome());
 		perChromosomeDefault.setAction(new CheckBoxDefaultAction(perChromosomeValue,
@@ -461,18 +579,25 @@ public class CombiTestParamsGUI extends JPanel {
 
 	public CombiTestOperationParams getParams() {
 
+		final boolean perTargetValue = thresholdCalibrationAlphaPerTargetValue.isSelected();
 		CombiTestOperationParams params = new CombiTestOperationParams(
 				(OperationKey) qaMarkersOperationValue.getSelectedItem(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),
 				new GenotypeEncodingParams(
 						(Double) featureScalingPValue.getValue(),
 						(Double) weightsDecodingPValue.getValue()),
+				perTargetValue,
+				perTargetValue ? (Double) thresholdCalibrationAlphaPValueTargetValue.getValue() : null,
+				perTargetValue ? (Integer) thresholdCalibrationIterationsValue.getValue() : null, // HACK Create a new GUI field for this value!
 				useThresholdCalibrationValue.isSelected(),
+				perTargetValue ? null : Collections.nCopies(22, (Double) thresholdCalibrationAlphaValue.getValue()), // TODO Maybe allow to actually set 22 different vlaues (if isPerChromosome())
+				(Integer) thresholdCalibrationIterationsValue.getValue(),
 				perChromosomeValue.isSelected(),
 				(SolverLibrary) svmLibraryValue.getSelectedItem(),
 				new SolverParams(
 						(Double) svmEpsValue.getValue(),
 						(Double) svmCValue.getValue()),
+				false,
 				resultMatrixValue.getText()
 				);
 
@@ -541,10 +666,16 @@ public class CombiTestParamsGUI extends JPanel {
 				parentOperationKey,
 				NominalGenotypeEncoder.SINGLETON,
 				new GenotypeEncodingParams(),
-				Boolean.TRUE, // useThresholdCalibration
+				Boolean.TRUE, // thresholdCalibrationAlphasCalculationEnabled
+				null, // thresholdCalibrationAlphasCalculationPValueTarget
+				1000, // thresholdCalibrationAlphasCalculationIterations
+				Boolean.TRUE, // thresholdCalibrationEnabled
+				Collections.nCopies(22, 0.05), // thresholdCalibrationAlphas
+				100, // thresholdCalibrationIterations
 				Boolean.TRUE, // perChromosome
 				SolverLibrary.LIB_SVM,
 				new SolverParams(),
+				false,
 				"my name is... my name is... my name is ..");
 		CombiTestOperationParams outputParams = chooseParams(null, inputParams, parentCandidates);
 	}

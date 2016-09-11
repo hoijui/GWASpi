@@ -19,6 +19,7 @@ package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -289,6 +290,67 @@ public class OperationManager {
 		}
 
 		return resultOperationKey;
+	}
+
+	public static List<OperationKey> findNecessaryOperations(
+			final List<OPType> necessaryOpTypes,
+			final DataSetKey rootKey,
+			final boolean childrenOnly)
+	{
+		try {
+			final List<OperationMetadata> presentOperations;
+			if (childrenOnly) {
+				presentOperations = getOperationService().getChildrenOperationsMetadata(rootKey);
+			} else {
+				presentOperations = getOperationService().getOffspringOperationsMetadata(rootKey);
+			}
+
+			return findNecessaryOperations(necessaryOpTypes, presentOperations);
+		} catch (final IOException ex) {
+			log.error(null, ex);
+			return null;
+		}
+	}
+
+	public static List<OperationKey> findNecessaryOperations(
+			final List<OPType> necessaryOpTypes,
+			final List<OperationMetadata> operations)
+	{
+		final List<OperationKey> necessaryOperations = new ArrayList<OperationKey>(Collections.nCopies(necessaryOpTypes.size(), (OperationKey) null));
+//		final List<OPType> missingOpTypes = new ArrayList<OPType>(necessaryOpTypes);
+		final List<OPType> missingOpTypes = new ArrayList<OPType>(necessaryOpTypes.size());
+		final List<OperationMetadata> unusedOperations = new ArrayList<OperationMetadata>(operations);
+
+//		for (final OperationMetadata operation : operations) {
+//			// Remove this operations type as a necessity, if it is one
+//			if (missingOpTypes.remove(operation.getOperationType())) {
+//				necessaryOperations.add(operation.getDataSetKey().getOperationParent());
+//			}
+//		}
+		int noti = 0;
+		for (final OPType necessaryOpType : necessaryOpTypes) {
+			for (final OperationMetadata unusedOperation : unusedOperations) {
+				if (unusedOperation.getOperationType() == necessaryOpType) {
+					necessaryOperations.add(noti, unusedOperation.getDataSetKey().getOperationParent());
+					unusedOperations.remove(unusedOperation);
+					break;
+				}
+			}
+			if (necessaryOperations.get(noti) == null) {
+				missingOpTypes.add(necessaryOpType);
+			}
+			noti++;
+		}
+		// remove all remaining null's
+		for (int oi = 0; oi < necessaryOpTypes.size(); oi++) {
+			necessaryOperations.remove(null);
+		}
+
+//		if (missingOpTypes.isEmpty()) {
+			return necessaryOperations;
+//		} else {
+//			return null;
+//		}
 	}
 
 	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOpTypes, DataSetKey rootKey, boolean childrenOnly) {
