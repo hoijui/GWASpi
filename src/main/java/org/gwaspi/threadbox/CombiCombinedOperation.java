@@ -29,6 +29,8 @@ import org.gwaspi.operations.MatrixOperation;
 import org.gwaspi.operations.OperationManager;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperation;
 import org.gwaspi.operations.combi.ByCombiWeightsFilterOperationParams;
+import org.gwaspi.operations.combi.CombiOutputOperation;
+import org.gwaspi.operations.combi.CombiOutputOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperation;
@@ -65,6 +67,8 @@ public class CombiCombinedOperation extends CommonRunnable {
 			new SubProcessInfo(null, "PLACEHOLDER_TREND_TEST", null));
 	private static final ProgressSource PLACEHOLDER_PS_TEST_OUTPUT = new NullProgressHandler(
 			new SubProcessInfo(null, "PLACEHOLDER_TEST_OUTPUT", null));
+	private static final ProgressSource PLACEHOLDER_PS_COMBI_OUTPUT = new NullProgressHandler(
+			new SubProcessInfo(null, "PLACEHOLDER_COMBI_OUTPUT", null));
 	private static final Map<ProgressSource, Double> subProgressSourcesAndWeights;
 	static {
 		final LinkedHashMap<ProgressSource, Double> tmpSubProgressSourcesAndWeights
@@ -74,7 +78,8 @@ public class CombiCombinedOperation extends CommonRunnable {
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_QA, 0.1);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_MARKER_CENSUS, 0.1);
 		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TREND_TEST, 0.1);
-		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TEST_OUTPUT, 0.1);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_TEST_OUTPUT, 0.05);
+		tmpSubProgressSourcesAndWeights.put(PLACEHOLDER_PS_COMBI_OUTPUT, 0.05);
 		subProgressSourcesAndWeights = Collections.unmodifiableMap(tmpSubProgressSourcesAndWeights);
 	}
 
@@ -137,6 +142,10 @@ public class CombiCombinedOperation extends CommonRunnable {
 		final MatrixOperation byCombiWeightsFilterOperation = new ByCombiWeightsFilterOperation(paramsFilter);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_FILTER, byCombiWeightsFilterOperation.getProgressSource(), null);
 		final OperationKey combiFilterOpKey = OperationManager.performOperationCreatingOperation(byCombiWeightsFilterOperation);
+		if (combiFilterOpKey.getId() == OperationKey.NULL_ID) {
+			progressSource.setNewStatus(ProcessStatus.ABORTED);
+			return;
+		}
 		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
 
 		final QACombinedOperation threaded_MatrixQA = new QACombinedOperation(combiFilterDataSetKey, false);
@@ -165,6 +174,12 @@ public class CombiCombinedOperation extends CommonRunnable {
 			final MatrixOperation testOutputOperation = new OutputTest(testOutputParams);
 			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TEST_OUTPUT, testOutputOperation.getProgressSource(), null);
 			OperationManager.performOperationCreatingOperation(testOutputOperation);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
+
+			final CombiOutputOperationParams combiOutputOperationParams = new CombiOutputOperationParams(trendTestOpKey, combiTestOpKey, null, null);
+			final MatrixOperation combiOutputOperation = new CombiOutputOperation(combiOutputOperationParams);
+			progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_OUTPUT, combiOutputOperation.getProgressSource(), null);
+			OperationManager.performOperationCreatingOperation(combiOutputOperation);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 		}
 		progressSource.setNewStatus(ProcessStatus.COMPLEETED);

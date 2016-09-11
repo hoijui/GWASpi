@@ -200,9 +200,4 @@ public class CombiTestOperationParams extends AbstractOperationParams {
 	protected String getNameDefault() {
 		return "Combi-Test for matrix " + getParent().getOrigin().toString(); // TODO use nicer matrix name!
 	}
-
-	@Override
-	public boolean isHidden() {
-		return isUsingRandomSampleAffections();
-	}
 }
