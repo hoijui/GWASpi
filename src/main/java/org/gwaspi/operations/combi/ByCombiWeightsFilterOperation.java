@@ -175,6 +175,8 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 			throws IOException
 	{
 		final int markersToKeep = getParams().getMarkersToKeep(parentMarkersOrigIndicesAndKeys.size());
+		LOG.debug("total-markers: {}", parentMarkersOrigIndicesAndKeys.size());
+		LOG.debug("markersToKeep: {}", markersToKeep);
 
 		LOG.info("apply moving average filter (p-norm filter) on the weights");
 		List<Double> weightsFiltered = applyMovingAverageFilter(rawWeights, getParams().getWeightsFilterWidth());
@@ -182,7 +184,7 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		if (CombiTestOperation.spy != null) {
 			CombiTestOperation.spy.smoothedWeightsCalculated(weightsFiltered);
 		}
-//		LOG.debug("filtered weights: " + weightsFiltered); // this is way too verbose
+//		LOG.debug("filtered weights: {}", weightsFiltered); // this is way too verbose
 
 		List<Double> weightsAbsolute = new ArrayList<Double>(weightsFiltered.size());
 		for (Double wFiltered : weightsFiltered) {
@@ -194,6 +196,10 @@ public class ByCombiWeightsFilterOperation extends AbstractFilterOperation<ByCom
 		Collections.sort(combiWeightsSorted);
 		// use the n'th biggest value as threshold
 		final double thresholdWeight = combiWeightsSorted.get(Math.max(0, combiWeightsSorted.size() - markersToKeep - 1));
+//		LOG.debug("thresholdWeight: {}", thresholdWeight);
+//		LOG.debug("rawWeights: {}", rawWeights);
+//		LOG.debug("weightsFiltered: {}", weightsFiltered);
+//		LOG.debug("combiWeightsSorted: {}", combiWeightsSorted);
 
 		Iterator<Double> combiWeightsIt = weightsAbsolute.iterator();
 		if (!getParams().isPerChromosome()) {

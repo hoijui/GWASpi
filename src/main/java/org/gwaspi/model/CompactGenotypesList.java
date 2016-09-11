@@ -175,7 +175,7 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 			int gtHashCode = Genotype.hashCode(originalGenotype);
 			compactForm = this.encodingTable.get(gtHashCode);
 //			{
-//				System.err.println(gti + "\t" + byteToBitString(compactForm) + " " + firstBitIndex);
+//				LOG.debug("{}\t{} {}", gti, byteToBitString(compactForm), firstBitIndex);
 //				final byte[] decoded = this.decodingTable[compactForm];
 //				if (originalGenotype[0] != decoded[0] || originalGenotype[1] != decoded[1]) {
 //					throw new RuntimeException("");
@@ -305,21 +305,20 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 			compactValue += (storedByte & 0xFF) << (8 - firstBitLocalIndex);
 		}
 		compactValue &= compactGenotypeMask;
-//		System.err.println(index + "\t" + byteToBitString(compactValue) + " " + firstBitLocalIndex);
+//		LOG.debug("{}\t{} {}", index, byteToBitString(compactValue), firstBitLocalIndex);
 
 		return Arrays.copyOf(decodingTable[compactValue], 2);
 //} catch (Exception ex) {
-//	System.err.println("XXX failed to get element " + index + " from list of size " + size);
-//	System.err.println("XXX firstBitIndex " + firstBitIndex);
-//	System.err.println("XXX firstByteIndex " + firstByteIndex);
-//	System.err.println("XXX firstBitLocalIndex " + firstBitLocalIndex);
-//	System.err.println("XXX storedByte " + byteToBitString(storedByte) + " (" + storedByte + ")");
-//	System.err.println("XXX compactGenotypes " + compactGenotypes.capacity());
-//	System.err.println("XXX decodingTable " + decodingTable.length);
-//	System.err.println("XXX compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
-//	System.err.println("XXX genotypeSize " + genotypeSize);
-//	System.err.println("XXX compactGenotypeMask " + byteToBitString(compactGenotypeMask) + " (" + compactGenotypeMask + ")");
-//	ex.printStackTrace();
+//	LOG.error("failed to get element {} from list of size {}", index, size);
+//	LOG.debug("firstBitIndex {}", firstBitIndex);
+//	LOG.debug("firstByteIndex {}", firstByteIndex);
+//	LOG.debug("firstBitLocalIndex {}", firstBitLocalIndex);
+//	LOG.debug("storedByte {} ({})", byteToBitString(storedByte), storedByte);
+//	LOG.debug("compactGenotypes {}", compactGenotypes.capacity());
+//	LOG.debug("decodingTable {}", decodingTable.length);
+//	LOG.debug("compactValue {} ({})", byteToBitString(compactValue), compactValue);
+//	LOG.debug("genotypeSize {}", genotypeSize);
+//	LOG.debug("compactGenotypeMask {} ({})", byteToBitString(compactGenotypeMask), compactGenotypeMask);
 //	throw new RuntimeException(ex);
 //}
 	}
