@@ -98,6 +98,7 @@ public class MarkerGenotypesEncoder extends AbstractList<Float[][]> {
 		final String humanReadableFeaturesChunkMemorySize = Util.bytes2humanReadable(featureChunkBytes);
 		LOG.debug("allocating memory for features chunk: {}",
 				humanReadableFeaturesChunkMemorySize);
+		LOG.debug(CombiTestOperation.fetchSystemState());
 
 		try {
 			// NOTE This may allocate a LOT of memory!

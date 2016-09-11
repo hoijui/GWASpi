@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
@@ -524,6 +525,34 @@ public class CombiTestOperation
 		encodingMarkersChunkProgressSource.setNewStatus(ProcessStatus.COMPLEETED);
 	}
 
+	public static String fetchSystemState() {
+
+		final StringBuilder sysState = new StringBuilder();
+
+		// Total amount of free memory available to the JVM
+		sysState
+				.append("Free memory (bytes): ")
+				.append(Util.bytes2humanReadable(Runtime.getRuntime().freeMemory()));
+
+		// This will return Long.MAX_VALUE if there is no preset limit
+		long maxMemory = Runtime.getRuntime().maxMemory();
+		// Maximum amount of memory the JVM will attempt to use
+		sysState
+				.append("\nMaximum memory (bytes): ")
+				.append(maxMemory == Long.MAX_VALUE ? "no limit" : Util.bytes2humanReadable(maxMemory));
+
+		// Total memory currently in use by the JVM
+		sysState.append("\nTotal memory (bytes): ")
+				.append(Util.bytes2humanReadable(Runtime.getRuntime().totalMemory()));
+
+		// Total number of processors or cores available to the JVM
+		sysState
+				.append("\nAvailable processors (cores): ")
+				.append(Runtime.getRuntime().availableProcessors());
+
+		return sysState.toString();
+	}
+
 	static float[][] encodeFeaturesAndCalculateKernel(
 			final MarkerGenotypesEncoder markerGenotypesEncoder,
 			final float[][] recyclableKernelMatrix,
@@ -542,6 +571,7 @@ public class CombiTestOperation
 				//   this might be subject to change, as in:
 				//   change to use double.
 				LOG.info("allocating kernel-matrix memory: {}", Util.bytes2humanReadable(4L * n * n));
+				LOG.debug(fetchSystemState());
 				kernelMatrix = new float[n][n];
 			} catch (final OutOfMemoryError er) {
 				throw new IOException(er);
