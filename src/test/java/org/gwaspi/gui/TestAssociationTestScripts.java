@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.global.RuntimeAnalyzer;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -242,6 +243,10 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + (permutation ? "_permutations" : "") + ".txt");
 
+		if (RuntimeAnalyzer.getInstance() == null) {
+			RuntimeAnalyzer.createSingleton();
+		}
+		RuntimeAnalyzer.getInstance().setDescriptor(name + (permutation ? "_permutation" : ""));
 		startGWASpi(scriptFile, logFile, useSpy);
 
 		log.info("Run Combi Association Test ({}, {}) DONE.", mapFileName, pedFileName);

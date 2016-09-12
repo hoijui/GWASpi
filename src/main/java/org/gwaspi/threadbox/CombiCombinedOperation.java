@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.global.RuntimeAnalyzer;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
@@ -340,6 +341,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		RuntimeAnalyzer.getInstance().log("COMBI-combined-SVM", true);
 		final MatrixOperation combiTestOperation = new CombiTestOperation(paramsTest);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, combiTestOperation.getProgressSource(), null);
 		final OperationKey combiTestOpKey = OperationManager.performOperationCreatingOperation(combiTestOperation);
@@ -355,6 +357,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 			return;
 		}
 		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
+		RuntimeAnalyzer.getInstance().log("COMBI-combined-SVM", false);
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
@@ -362,15 +365,21 @@ public class CombiCombinedOperation extends CommonRunnable {
 		if (paramsTest.isThresholdCalibrationEnabled()) {
 			final List<Double> thresholdCalibrationAlphas;
 			if (paramsTest.isThresholdCalibrationAlphasCalculationEnabled()) {
-				// XXX LA_MARKER start 1st permutation test
+				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", true);
+				RuntimeAnalyzer.getInstance().setDiscard(true);
 				thresholdCalibrationAlphas = evaluateThresholdCalibrationAlpha(paramsTest);
-				// XXX LA_MARKER end 1st permutation test
+				RuntimeAnalyzer.getInstance().setDiscard(false);
+				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", false);
 			} else {
 				final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(paramsTest.getQAMarkerOperationKey());
 				final int numParts = paramsTest.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
 				thresholdCalibrationAlphas = paramsTest.getThresholdCalibrationAlphas();
 			}
+			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", true);
+			RuntimeAnalyzer.getInstance().setDiscard(true);
 			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, thresholdCalibrationAlphas);
+			RuntimeAnalyzer.getInstance().setDiscard(false);
+			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", false);
 			getLog().debug("pValueThreashold: {}", pValueThreasholds);
 		} else {
 			// use default value
@@ -380,6 +389,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
+		RuntimeAnalyzer.getInstance().log("COMBI-onlyPValueCalculation", true);
 		final QACombinedOperation threaded_MatrixQA = new QACombinedOperation(combiFilterDataSetKey, false);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_QA, threaded_MatrixQA.getProgressSource(), null);
 		// run within this thread
@@ -401,6 +411,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_TREND_TEST, testOperation.getProgressSource(), null);
 		final OperationKey trendTestOpKey = OperationManager.performOperationCreatingOperation(testOperation);
 		resultingTrendTestOperationKey = trendTestOpKey;
+		RuntimeAnalyzer.getInstance().log("COMBI-onlyPValueCalculation", false);
 
 		// Only possibly write to output files if we are the actual COMBI test run,
 		// versus a threshold calibration run (which uses random sample affection).

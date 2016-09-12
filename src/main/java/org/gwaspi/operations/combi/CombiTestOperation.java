@@ -48,6 +48,7 @@ import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.GeneratedList;
 import org.gwaspi.global.Generator;
 import org.gwaspi.global.IndicesSubList;
+import org.gwaspi.global.RuntimeAnalyzer;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -329,6 +330,7 @@ public class CombiTestOperation
 
 		final ProgressHandler progressHandler = getProgressHandler();
 		progressHandler.setNewStatus(ProcessStatus.INITIALIZING);
+		RuntimeAnalyzer.getInstance().log("SVM-training-wide", true);
 
 		DataSetSource parentDataSetSource = getParentDataSetSource();
 		QAMarkersOperationDataSet parentQAMarkersOperationDataSet
@@ -389,6 +391,7 @@ public class CombiTestOperation
 				final List<GenotypesList> markersGenotypesSource = new IndicesSubList<GenotypesList>(parentDataSetSource.getMarkersGenotypesSource(), markerIndices);
 
 				phSvmChromosome.setNewStatus(ProcessStatus.RUNNING);
+				RuntimeAnalyzer.getInstance().log("SVM-training-narrow-perChromosome", true);
 				final RunSVMResults svmResults = runEncodingAndSVM(
 						markerKeys,
 						majorAlleles,
@@ -405,6 +408,7 @@ public class CombiTestOperation
 						recyclableProblem,
 						recyclableProblemLinear,
 						phSvmChromosome);
+				RuntimeAnalyzer.getInstance().log("SVM-training-narrow-perChromosome", false);
 				phSvmChromosome.setNewStatus(ProcessStatus.FINALIZING);
 				final List<Double> chromosomeWeights = svmResults.getWeights();
 				recyclableKernelMatrix = svmResults.getRecyclableKernelMatrix();
@@ -452,6 +456,7 @@ public class CombiTestOperation
 
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 
+			RuntimeAnalyzer.getInstance().log("SVM-training-narrow-genomeWide", true);
 			final RunSVMResults svmResults = runEncodingAndSVM(
 					markerKeys,
 					majorAlleles,
@@ -468,6 +473,7 @@ public class CombiTestOperation
 					null,
 					null,
 					svmPHs.get(0));
+			RuntimeAnalyzer.getInstance().log("SVM-training-narrow-genomeWide", false);
 			weights = svmResults.getWeights();
 
 			// TODO sort the weights (should already be absolute? .. hopefully not!)
@@ -482,6 +488,7 @@ public class CombiTestOperation
 
 		dataSet.finnishWriting();
 
+		RuntimeAnalyzer.getInstance().log("SVM-training-wide", false);
 		progressHandler.setNewStatus(ProcessStatus.COMPLEETED);
 
 		return dataSet.getOperationKey();
