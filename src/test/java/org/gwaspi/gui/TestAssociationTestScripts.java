@@ -283,9 +283,16 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 	@Test
 //	@org.junit.Ignore
-	public void testCombiPermutationTest() throws Exception {
+	public void testCombiPermutationGenomeWideTest() throws Exception {
 
 		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, false, true, false);
+	}
+
+	@Test
+//	@org.junit.Ignore
+	public void testCombiPermutationTest() throws Exception {
+
+		testCombiAssociationTest(getSetup(), "extra", NominalGenotypeEncoder.SINGLETON, true, true, false);
 	}
 
 	@Test
