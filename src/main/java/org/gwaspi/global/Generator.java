@@ -74,8 +74,9 @@ public interface Generator<O> {
 			final double randomVar = random.nextDouble();
 			O value = values.get(values.size() - 1);
 			for (int i = 0; i < valuesProbLimits.size(); i++) {
-				if (valuesProbLimits.get(i) < randomVar) {
+				if (randomVar < valuesProbLimits.get(i)) {
 					value = values.get(i);
+					break;
 				}
 			}
 			return value;
