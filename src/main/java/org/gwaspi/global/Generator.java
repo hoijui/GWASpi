@@ -28,14 +28,6 @@ import java.util.Random;
  * @param <O> output/generated value type
  */
 public interface Generator<O> {
-//
-//	class RandomRangeGenerator implements Generator<Integer> {
-//
-//		@Override
-//		public String extract(I object) {
-//			return object.toString();
-//		}
-//	}
 
 	public static class ListRandomGenerator<O> implements Generator<O> {
 
@@ -66,7 +58,7 @@ public interface Generator<O> {
 			// convert probabilities to probability limits
 			for (int i = 1; i < valuesProbabilities.size(); i++) {
 				this.valuesProbLimits.set(i, this.valuesProbLimits.get(i - 1)
-								+ this.valuesProbLimits.get(i));
+						+ this.valuesProbLimits.get(i));
 			}
 		}
 
