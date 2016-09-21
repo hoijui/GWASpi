@@ -549,7 +549,39 @@ public class Utils {
 	}
 
 	public static String toHumanReadableTime(final long milliseconds) {
-		return milliseconds + "ms"; // XXX make nicer (days, hours, minutes, seconds, millieconds)
+
+		final StringBuilder humanReadableTime = new StringBuilder();
+		long leftover = milliseconds;
+
+		humanReadableTime.insert(0, "ms").insert(0, leftover % 1000);
+		leftover = leftover / 1000;
+
+		if (leftover > 0) {
+			humanReadableTime.insert(0, "s ").insert(0, leftover % 60);
+			leftover = leftover / 60;
+		}
+
+		if (leftover > 0) {
+			humanReadableTime.insert(0, "min ").insert(0, leftover % 60);
+			leftover = leftover / 60;
+		}
+
+		if (leftover > 0) {
+			humanReadableTime.insert(0, "h ").insert(0, leftover % 24);
+			leftover = leftover / 24;
+		}
+
+		if (leftover > 0) {
+			humanReadableTime.insert(0, "d ").insert(0, leftover % 365);
+			leftover = leftover / 365;
+		}
+
+		if (leftover > 0) {
+			humanReadableTime.insert(0, "y ").insert(0, leftover);
+			leftover = 0;
+		}
+
+		return humanReadableTime.toString();
 	}
 
 	public static Date stringToDate(String txtDate, String format) {
