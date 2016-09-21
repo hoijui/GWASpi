@@ -17,6 +17,7 @@
 
 package org.gwaspi.global;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +50,9 @@ public interface Generator<O> {
 				final List<Double> valuesProbabilities)
 		{
 			this.baseRandomSeed = randomSeed;
-			this.random = new Random(0); // seed will be overridden later
+			// java.util.Random gives nearly same values as the first value
+			// for consecutive seeds, which is not ok for us.
+			this.random = new SecureRandom(); // seed will be overridden later
 			if (values.size() < 2) {
 				throw new IllegalArgumentException(
 						"We need at least two distinct values");
