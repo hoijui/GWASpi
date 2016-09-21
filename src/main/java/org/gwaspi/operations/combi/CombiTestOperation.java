@@ -104,7 +104,11 @@ public class CombiTestOperation
 	private String problemDescription;
 	private ProgressHandler calibrartionPH;
 	private ProgressHandler operationPH;
-	private List<SvmProgressHandler> svmPHs; // either one per chromosome or a single one for the whole chromosome
+	/**
+	 * SVM training progress handlers.
+	 * Contains either one per chromosome, or a single one for the whole genome.
+	 */
+	private List<SvmProgressHandler> svmPHs;
 
 	public CombiTestOperation(CombiTestOperationParams params) {
 		super(params);
