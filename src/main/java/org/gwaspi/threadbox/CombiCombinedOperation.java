@@ -93,11 +93,13 @@ public class CombiCombinedOperation extends CommonRunnable {
 	private final ByCombiWeightsFilterOperationParams paramsFilter;
 	private final SuperProgressSource progressSource;
 	private final TaskLockProperties taskLockProperties;
+	private final List<CombiTestOperation.Kernel> recyclableKernel;
 	private OperationKey resultingTrendTestOperationKey;
 
 	public CombiCombinedOperation(
 			final CombiTestOperationParams paramsTest,
-			final ByCombiWeightsFilterOperationParams paramsFilter)
+			final ByCombiWeightsFilterOperationParams paramsFilter,
+			final List<CombiTestOperation.Kernel> recyclableKernel)
 	{
 		super("Combi Association Test", "on " + paramsTest.getParent().toString());
 
@@ -105,7 +107,15 @@ public class CombiCombinedOperation extends CommonRunnable {
 		this.paramsFilter = paramsFilter;
 		this.progressSource = new SuperProgressSource(PROCESS_INFO, SUB_PROGRESS_SOURCESS_AND_WEIGHTS);
 		this.taskLockProperties = MultiOperations.createTaskLockProperties(paramsTest.getParent());
+		this.recyclableKernel = recyclableKernel;
 		this.resultingTrendTestOperationKey = null;
+	}
+
+	public CombiCombinedOperation(
+			final CombiTestOperationParams paramsTest,
+			final ByCombiWeightsFilterOperationParams paramsFilter)
+	{
+		this(paramsTest, paramsFilter, null);
 	}
 
 	@Override
@@ -170,6 +180,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 	private List<Double> thresholdCalibration(
 			final CombiTestOperationParams prototypeTestParams,
 			final ByCombiWeightsFilterOperationParams prototypeFilterParams,
+			final List<CombiTestOperation.Kernel> kernel,
 			final List<Double> alphas)
 			throws IOException
 	{
@@ -212,7 +223,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 					null, //markersToKeep,
 					1.0, //markersToKeepFraction
 					prototypeFilterParams.getName() + "_threasholdCalibrationIteration" + tci); //resultFilterOperationName);
-			final CombiCombinedOperation combinedCombi = new CombiCombinedOperation(combiParams, combiFilterParams);
+			final CombiCombinedOperation combinedCombi = new CombiCombinedOperation(combiParams, combiFilterParams, kernel);
 			combinedCombi.run();
 			final OperationKey resultingPermTrendTestOperationKey = combinedCombi.getResultingTrendTestOperationKey();
 			final TrendTestOperationDataSet resultingTrendTestDataSet = (TrendTestOperationDataSet)
@@ -341,8 +352,37 @@ public class CombiCombinedOperation extends CommonRunnable {
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 
 		progressSource.setNewStatus(ProcessStatus.RUNNING);
+		final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(paramsTest.getQAMarkerOperationKey());
+		final int numParts = paramsTest.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
+		final List<CombiTestOperation.Kernel> kernel = new ArrayList<CombiTestOperation.Kernel>(Collections.nCopies(numParts, (CombiTestOperation.Kernel) null));
+		final List<Double> pValueThreasholds;
+		if (paramsTest.isThresholdCalibrationEnabled()) {
+			final List<Double> thresholdCalibrationAlphas;
+			if (paramsTest.isThresholdCalibrationAlphasCalculationEnabled()) {
+				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", true);
+				RuntimeAnalyzer.getInstance().setDiscard(true);
+				thresholdCalibrationAlphas = evaluateThresholdCalibrationAlpha(paramsTest);
+				RuntimeAnalyzer.getInstance().setDiscard(false);
+				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", false);
+			} else {
+				thresholdCalibrationAlphas = paramsTest.getThresholdCalibrationAlphas();
+			}
+			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", true);
+			RuntimeAnalyzer.getInstance().setDiscard(true);
+			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, kernel, thresholdCalibrationAlphas);
+			RuntimeAnalyzer.getInstance().setDiscard(false);
+			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", false);
+			getLog().debug("pValueThreashold: {}", pValueThreasholds);
+		} else {
+			// use default value
+			pValueThreasholds = Collections.EMPTY_LIST;
+			getLog().debug("pValueThreashold (empty): {}", pValueThreasholds);
+		}
+
+		// NOTE ABORTION_POINT We could be gracefully aborted here
+
 		RuntimeAnalyzer.getInstance().log("COMBI-combined-SVM", true);
-		final MatrixOperation combiTestOperation = new CombiTestOperation(paramsTest);
+		final MatrixOperation combiTestOperation = new CombiTestOperation(paramsTest, recyclableKernel);
 		progressSource.replaceSubProgressSource(PLACEHOLDER_PS_COMBI_TEST, combiTestOperation.getProgressSource(), null);
 		final OperationKey combiTestOpKey = OperationManager.performOperationCreatingOperation(combiTestOperation);
 
@@ -358,34 +398,6 @@ public class CombiCombinedOperation extends CommonRunnable {
 		}
 		final DataSetKey combiFilterDataSetKey = new DataSetKey(combiFilterOpKey);
 		RuntimeAnalyzer.getInstance().log("COMBI-combined-SVM", false);
-
-		// NOTE ABORTION_POINT We could be gracefully aborted here
-
-		final List<Double> pValueThreasholds;
-		if (paramsTest.isThresholdCalibrationEnabled()) {
-			final List<Double> thresholdCalibrationAlphas;
-			if (paramsTest.isThresholdCalibrationAlphasCalculationEnabled()) {
-				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", true);
-				RuntimeAnalyzer.getInstance().setDiscard(true);
-				thresholdCalibrationAlphas = evaluateThresholdCalibrationAlpha(paramsTest);
-				RuntimeAnalyzer.getInstance().setDiscard(false);
-				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", false);
-			} else {
-				final OperationDataSet toLoadFromDataSet = OperationManager.generateOperationDataSet(paramsTest.getQAMarkerOperationKey());
-				final int numParts = paramsTest.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
-				thresholdCalibrationAlphas = paramsTest.getThresholdCalibrationAlphas();
-			}
-			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", true);
-			RuntimeAnalyzer.getInstance().setDiscard(true);
-			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, thresholdCalibrationAlphas);
-			RuntimeAnalyzer.getInstance().setDiscard(false);
-			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", false);
-			getLog().debug("pValueThreashold: {}", pValueThreasholds);
-		} else {
-			// use default value
-			pValueThreasholds = Collections.EMPTY_LIST;
-			getLog().debug("pValueThreashold (empty): {}", pValueThreasholds);
-		}
 
 		// NOTE ABORTION_POINT We could be gracefully aborted here
 

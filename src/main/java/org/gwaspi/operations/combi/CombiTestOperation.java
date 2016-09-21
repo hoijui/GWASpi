@@ -110,12 +110,52 @@ public class CombiTestOperation
 	 * Contains either one per chromosome, or a single one for the whole genome.
 	 */
 	private List<SvmProgressHandler> svmPHs;
+	/**
+	 * SVM kernels.
+	 * These might be computed while running this operation,
+	 * or might be pre-computed, and already given at the beginning.
+	 * Contains either one per chromosome, or a single one for the whole genome.
+	 */
+	private List<Kernel> kernel;
 
-	public CombiTestOperation(CombiTestOperationParams params) {
+	public static class Kernel {
+
+		private final float[][] recyclableKernelMatrix;
+		private final svm_problem recyclableProblem;
+		private final Problem recyclableProblemLinear;
+
+		public Kernel(
+			final float[][] recyclableKernelMatrix,
+			final svm_problem recyclableProblem,
+			final Problem recyclableProblemLinear)
+		{
+			this.recyclableKernelMatrix = recyclableKernelMatrix;
+			this.recyclableProblem = recyclableProblem;
+			this.recyclableProblemLinear = recyclableProblemLinear;
+		}
+
+		public float[][] getRecyclableKernelMatrix() {
+			return recyclableKernelMatrix;
+		}
+
+		public svm_problem getRecyclableProblem() {
+			return recyclableProblem;
+		}
+
+		public Problem getRecyclableProblemLinear() {
+			return recyclableProblemLinear;
+		}
+	}
+
+	public CombiTestOperation(
+			final CombiTestOperationParams params,
+			final List<Kernel> kernel)
+	{
 		super(params);
 
 		this.valid = null;
 		this.problemDescription = null;
+		this.kernel = kernel;
 	}
 
 	private OperationService getOperationService() {
@@ -362,9 +402,9 @@ public class CombiTestOperation
 			}
 
 			weights = new ArrayList<Double>(Collections.nCopies(parentDataSetSource.getNumMarkers(), -1.0));
-			float[][] recyclableKernelMatrix = null;
-			svm_problem recyclableProblem = null;
-			Problem recyclableProblemLinear = null;
+//			float[][] recyclableKernelMatrix = null;
+//			svm_problem recyclableProblem = null;
+//			Problem recyclableProblemLinear = null;
 			progressHandler.setNewStatus(ProcessStatus.RUNNING);
 			int chromoIndex = 0;
 			for (final Map.Entry<String, List<Integer>> markerChromosomeIndices : markersChromosomeToIndices.entrySet()) {
@@ -404,16 +444,14 @@ public class CombiTestOperation
 						getParams().getEncodingParams(),
 						getParams().getSolverLibrary(),
 						getParams().getSolverParams(),
-						recyclableKernelMatrix,
-						recyclableProblem,
-						recyclableProblemLinear,
+						kernel == null ? null : kernel.get(chromoIndex),
 						phSvmChromosome);
+				if (kernel != null) {
+					kernel.set(chromoIndex, svmResults.getRecyclableKernel());
+				}
 				RuntimeAnalyzer.getInstance().log("SVM-training-narrow-perChromosome", false);
 				phSvmChromosome.setNewStatus(ProcessStatus.FINALIZING);
 				final List<Double> chromosomeWeights = svmResults.getWeights();
-				recyclableKernelMatrix = svmResults.getRecyclableKernelMatrix();
-				recyclableProblem = svmResults.getRecyclableProblem();
-				recyclableProblemLinear = svmResults.getRecyclableProblemLinear();
 
 				int chromosomeMarkerIndex = 0;
 				for (final Integer genomeMarkerIndex : markerIndices) {
@@ -429,6 +467,7 @@ public class CombiTestOperation
 			final int dSamples = parentDataSetSource.getNumMarkers();
 			final int dEncoded = dSamples * getParams().getEncoder().getEncodingFactor();
 			final int n = parentDataSetSource.getNumSamples();
+			final int partIndex = 0;
 
 			final List<MarkerKey> markerKeys = parentDataSetSource.getMarkersKeysSource();
 			final List<SampleKey> validSamplesKeys = parentDataSetSource.getSamplesKeysSource();
@@ -469,10 +508,11 @@ public class CombiTestOperation
 					getParams().getEncodingParams(),
 					getParams().getSolverLibrary(),
 					getParams().getSolverParams(),
-					null,
-					null,
-					null,
-					svmPHs.get(0));
+					kernel == null ? null : kernel.get(partIndex),
+					svmPHs.get(partIndex));
+				if (kernel != null) {
+					kernel.set(partIndex, svmResults.getRecyclableKernel());
+				}
 			RuntimeAnalyzer.getInstance().log("SVM-training-narrow-genomeWide", false);
 			weights = svmResults.getWeights();
 
@@ -482,7 +522,6 @@ public class CombiTestOperation
 
 			progressHandler.setNewStatus(ProcessStatus.FINALIZING);
 		}
-
 
 		dataSet.setWeights(weights);
 
@@ -604,9 +643,12 @@ public class CombiTestOperation
 		final int n = markerGenotypesEncoder.getNumSamples();
 
 		final float[][] kernelMatrix;
+		final boolean recycleKernel;
 		if (recyclableKernelMatrix != null && (recyclableKernelMatrix.length >= n)) {
 			kernelMatrix = recyclableKernelMatrix;
+			recycleKernel = true;
 		} else {
+			recycleKernel = false;
 			try {
 				// NOTE This allocates quite some memory!
 				//   We use float instead of double to half the memory,
@@ -620,10 +662,12 @@ public class CombiTestOperation
 			}
 		}
 
-		encodeFeaturesAndCreateKernelMatrix(
-				markerGenotypesEncoder,
-				kernelMatrix,
-				creatingKernelMatrixPH);
+		if (!recycleKernel) {
+			encodeFeaturesAndCreateKernelMatrix(
+					markerGenotypesEncoder,
+					kernelMatrix,
+					creatingKernelMatrixPH);
+		}
 
 		return kernelMatrix;
 	}
@@ -631,36 +675,22 @@ public class CombiTestOperation
 	static class RunSVMResults {
 
 		private final List<Double> weights;
-		private final float[][] recyclableKernelMatrix;
-		private final svm_problem recyclableProblem;
-		private final Problem recyclableProblemLinear;
+		private final Kernel recyclableKernel;
 
 		RunSVMResults(
 				final List<Double> weights,
-				final float[][] recyclableKernelMatrix,
-				final svm_problem recyclableProblem,
-				final Problem recyclableProblemLinear)
+				final Kernel recyclableKernel)
 		{
 			this.weights = weights;
-			this.recyclableKernelMatrix = recyclableKernelMatrix;
-			this.recyclableProblem = recyclableProblem;
-			this.recyclableProblemLinear = recyclableProblemLinear;
+			this.recyclableKernel = recyclableKernel;
 		}
 
 		public List<Double> getWeights() {
 			return weights;
 		}
 
-		public float[][] getRecyclableKernelMatrix() {
-			return recyclableKernelMatrix;
-		}
-
-		public svm_problem getRecyclableProblem() {
-			return recyclableProblem;
-		}
-
-		public Problem getRecyclableProblemLinear() {
-			return recyclableProblemLinear;
+		public Kernel getRecyclableKernel() {
+			return recyclableKernel;
 		}
 	}
 
@@ -691,9 +721,7 @@ public class CombiTestOperation
 			final GenotypeEncodingParams genotypeEncodingParams,
 			final SolverLibrary solverLibrary,
 			final SolverParams solverParams,
-			final float[][] recyclableKernelMatrix,
-			final svm_problem recyclableProblem,
-			final Problem recyclableProblemLinear,
+			final Kernel recyclableKernel,
 			final SvmProgressHandler svmPH)
 			throws IOException
 	{
@@ -707,7 +735,7 @@ public class CombiTestOperation
 			// We have only 1 class, so we can not learn anything usefull
 			// TODO Check if this makes sense:
 			final List<Double> weights = Collections.nCopies(dSamples, 1.0 / dSamples);
-			return new RunSVMResults(weights, null, null, null);
+			return new RunSVMResults(weights, null);
 		}
 
 		LOG.debug("creating solver parameters ...");
@@ -749,7 +777,7 @@ public class CombiTestOperation
 
 		final float[][] kernelMatrix;
 		if (useLibSvm) {
-			kernelMatrix = encodeFeaturesAndCalculateKernel(markerGenotypesEncoder, recyclableKernelMatrix, svmPH.getCreatingKernelMatrixPH());
+			kernelMatrix = encodeFeaturesAndCalculateKernel(markerGenotypesEncoder, recyclableKernel == null ? null : recyclableKernel.getRecyclableKernelMatrix(), svmPH.getCreatingKernelMatrixPH());
 
 			if (spy != null) {
 				spy.kernelCalculated(kernelMatrix);
@@ -764,8 +792,8 @@ public class CombiTestOperation
 					encodedAffectionStates.values(),
 					libSvmParameters,
 					libLinearParameters,
-					recyclableProblem,
-					recyclableProblemLinear,
+					recyclableKernel == null ? null : recyclableKernel.getRecyclableProblem(),
+					recyclableKernel == null ? null : recyclableKernel.getRecyclableProblemLinear(),
 					svmPH.getTranscribeKernelMatrixPH(),
 					useLibSvm);
 		final svm_problem libSvmProblem;
@@ -788,7 +816,7 @@ public class CombiTestOperation
 				genotypeEncodingParams,
 				svmPH);
 
-		return new RunSVMResults(weights, kernelMatrix, libSvmProblem, libLinearProblem);
+		return new RunSVMResults(weights, new Kernel(kernelMatrix, libSvmProblem, libLinearProblem));
 	}
 
 	/**
@@ -1051,11 +1079,14 @@ public class CombiTestOperation
 		final String humanReadableLibSvmProblemMemory = Util.bytes2humanReadable(libSvmProblemBytes);
 		LOG.debug("lib{SVM, Linear} preparation: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
+		final boolean recycleKernel;
 		if (useLibSvm) {
 			if ((probSvm.x != null) && (probSvm.x.length >= n) && (probSvm.x[0].length >= (1 + n))) {
 				LOG.debug("libSVM preparation: recycle kernel memory");
+				recycleKernel = true;
 			} else {
 				LOG.debug("libSVM preparation: allocate kernel memory");
+				recycleKernel = false;
 				try {
 					probSvm.x = new svm_node[n][1 + n];
 				} catch (final OutOfMemoryError er) {
@@ -1066,8 +1097,10 @@ public class CombiTestOperation
 			final int numFeatures = markerGenotypesEncoder.getNumFeatures();
 			if ((probLinear.x != null) && (probLinear.x.length >= n) && (probLinear.x[0].length >= numFeatures)) {
 				LOG.debug("libLinear preparation: recycle features memory");
+				recycleKernel = true;
 			} else {
 				LOG.debug("libLinear preparation: allocate features memory");
+				recycleKernel = false;
 				try {
 					probLinear.x = new Feature[n][numFeatures];
 				} catch (final OutOfMemoryError er) {
@@ -1078,37 +1111,41 @@ public class CombiTestOperation
 
 		LOG.debug("lib{SVM, Linear} preparation: store the kernel elements");
 		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.INITIALIZING);
-		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.RUNNING);
-		for (int si = 0; si < n; si++) {
-			if (useLibSvm) {
-				// This is required by the libSVM standard for a PRECOMPUTED kernel, not for libLinear
-				createAndAddKernelNode(probSvm, probLinear, si, 0, si + 1, useLibSvm);
+		if (recycleKernel) {
+			LOG.debug("lib{SVM, Linear} preparation: reusing previous kernel");
+		} else {
+			transcribeKernelMatrixPH.setNewStatus(ProcessStatus.RUNNING);
+			for (int si = 0; si < n; si++) {
+				if (useLibSvm) {
+					// This is required by the libSVM standard for a PRECOMPUTED kernel, not for libLinear
+					createAndAddKernelNode(probSvm, probLinear, si, 0, si + 1, useLibSvm);
 
-				for (int s2i = si; s2i < n; s2i++) {
-					final double kernelValue = kernelMatrix[s2i][si]; // XXX or indices other way around?
+					for (int s2i = si; s2i < n; s2i++) {
+						final double kernelValue = kernelMatrix[s2i][si]; // XXX or indices other way around?
 
-					createAndAddKernelNode(probSvm, probLinear, si, 1 + s2i, kernelValue, useLibSvm);
-					if (si != s2i) {
-						// because the matrix is symmetric
-						createAndAddKernelNode(probSvm, probLinear, s2i, 1 + si, kernelValue, useLibSvm);
+						createAndAddKernelNode(probSvm, probLinear, si, 1 + s2i, kernelValue, useLibSvm);
+						if (si != s2i) {
+							// because the matrix is symmetric
+							createAndAddKernelNode(probSvm, probLinear, s2i, 1 + si, kernelValue, useLibSvm);
+						}
 					}
-				}
-			} else {
-				for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
-					final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
-					final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
+				} else {
+					for (int fci = 0; fci < markerGenotypesEncoder.size(); fci++) {
+						final Float[][] featuresChunk = markerGenotypesEncoder.get(fci);
+						final int numFeaturesInChunk = markerGenotypesEncoder.getChunkSize(fci);
 
-					final int featuresOffset = fci * markerGenotypesEncoder.getMaxChunkSize();
-					for (int sampleIndex = 0; sampleIndex < n; sampleIndex++) {
-						for (int localFeatureIndex = 0; localFeatureIndex < numFeaturesInChunk; localFeatureIndex++) {
-							probLinear.x[sampleIndex][featuresOffset + localFeatureIndex]
-									= new FeatureNode(1 + featuresOffset + localFeatureIndex, featuresChunk[sampleIndex][localFeatureIndex]);
+						final int featuresOffset = fci * markerGenotypesEncoder.getMaxChunkSize();
+						for (int sampleIndex = 0; sampleIndex < n; sampleIndex++) {
+							for (int localFeatureIndex = 0; localFeatureIndex < numFeaturesInChunk; localFeatureIndex++) {
+								probLinear.x[sampleIndex][featuresOffset + localFeatureIndex]
+										= new FeatureNode(1 + featuresOffset + localFeatureIndex, featuresChunk[sampleIndex][localFeatureIndex]);
+							}
 						}
 					}
 				}
-			}
 
-			transcribeKernelMatrixPH.setProgress(si + 1);
+				transcribeKernelMatrixPH.setProgress(si + 1);
+			}
 		}
 		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.FINALIZING);
 		transcribeKernelMatrixPH.setNewStatus(ProcessStatus.COMPLEETED);

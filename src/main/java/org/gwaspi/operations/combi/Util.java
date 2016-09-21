@@ -496,8 +496,6 @@ public class Util {
 					solverLibrary,
 					solverParams,
 					null,
-					null,
-					null,
 					new CombiTestOperation.SvmProgressHandler());
 		} catch (Exception ex) {
 			ex.printStackTrace();
