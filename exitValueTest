@@ -1,0 +1,6 @@
+#!/bin/bash
+# Checks the current results of the remote run of GWASpi and gives an OS indication
+# NOTE This requries other scripts by hoijui
+
+( runResult=$(ssh master.ml.tu-berlin.de "( tail -f -n0 \${HOME}/Projects/GWASpi/repos/GWASpi/z & ) | grep -m 1 \" BUILD \" | sed -r \"s/.* BUILD ([A-Z]+).*/\1/g\""); eventOccurred info "Remote GWASpi run: ${runResult}" ) &
+

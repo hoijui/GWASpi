@@ -1,0 +1,19 @@
+#!/bin/bash
+# Runs a lot of tests, each on a set of different data-sets
+
+#ssh master.ml.tu-berlin.de 'grep "RuntimeAnalyzer" "${HOME}/Projects/GWASpi/repos/GWASpi/z"' > zRA
+
+DATA_SETS="extra Small_Tutorial_Matrix IBD_study_05.chromosome_18"
+PARTS="COMBI-onlyPValueCalulation COMBI-combined-SVM SVM-training-wide SVM-training-narrow-perChromosome COMBI-permutation-part1 COMBI-permutation-part2"
+
+for dataSet in ${DATA_SETS}; do
+	for part in ${PARTS}; do
+		timeStrs=$(cat zRA | grep "${dataSet}_permutation" | grep "${part}" | grep " false " | sed -e 's/.*= /\t/g')
+		echo "${dataSet} ${part}"
+		echo "${timeStrs}"
+	done
+done
+
+#dataSet=IBD_study_05.chromosome_18
+#cat zRA | grep "${dataSet}_permutation" | grep " false " | sed -e "s/.*main//g" | sed -e "s/org.gwaspi.global.//g"
+

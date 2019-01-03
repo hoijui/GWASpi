@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fetch remote GWASpi run stdout (or stderr)
+
+ssh master.ml.tu-berlin.de 'tail --lines=30 -f "${HOME}/Projects/GWASpi/repos/GWASpi/z'${1}'"'
+

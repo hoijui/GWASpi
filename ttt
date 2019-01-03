@@ -1,0 +1,23 @@
+#!/bin/bash
+# Used by hoijui at the end of the working day
+
+# Put all local changes into a commit and push them to the remote repo
+# (no problem if this fails)
+git add --update 
+git commit -m "TMP TMP"
+
+# Tell the cluster to fetch the latest changes,
+# apply them and run unit tests
+git push bitbucket develop \
+	&& ssh master.ml.tu-berlin.de 'screen -S GwaspiTesting -d -m "${HOME}/gwaspiUpdateAndTestRun.sh"' \
+	&& eventOccurred info "GWASpi test run: started" \
+	|| eventOccurred warning "GWASpi test run: failed to submit!"
+
+# Monitor the stdout file of the remote GWASpi run
+# and print out success or failure
+( runResult=$(ssh master.ml.tu-berlin.de "( tail -f -n0 \${HOME}/Projects/GWASpi/repos/GWASpi/z & ) | grep -m 1 \" BUILD \" | sed -r \"s/.* BUILD ([A-Z]+).*/\1/g\""); eventOccurred info "Remote GWASpi run: ${runResult}" ) &
+
+
+# How to delete a qlogin session == job:
+#qdel <job-id>
+
