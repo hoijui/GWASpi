@@ -295,7 +295,7 @@ public abstract class Report_Analysis extends JPanel {
 		tbl_ReportTable.setDefaultRenderer(Object.class, createRowRenderer());
 		tbl_ReportTable.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent evt) {
+			public void mouseClicked(final MouseEvent evt) {
 				try {
 					int rowIndex = tbl_ReportTable.getSelectedRow();
 					int colIndex = tbl_ReportTable.getSelectedColumn();
@@ -305,16 +305,16 @@ public abstract class Report_Analysis extends JPanel {
 
 					if (colIndex == getZoomColumnIndex()) { // Zoom
 						setCursor(CursorUtils.WAIT_CURSOR);
-						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); // marker physical position in chromosome
-						MarkerKey markerKey = (MarkerKey) tbl_ReportTable.getValueAt(rowIndex, 0);
-						ChromosomeKey chr = (ChromosomeKey) tbl_ReportTable.getValueAt(rowIndex, 2);
+						final long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); // marker physical position in chromosome
+						final MarkerKey markerKey = (MarkerKey) tbl_ReportTable.getValueAt(rowIndex, 0);
+						final ChromosomeKey chr = (ChromosomeKey) tbl_ReportTable.getValueAt(rowIndex, 2);
 
-						ChromosomeInfo chrInfo = chrSetInfoMap.get(chr);
-						int nbMarkers = chrInfo.getMarkerCount();
-						int startPhysPos = chrInfo.getFirstPos();
-						int maxPhysPos = chrInfo.getPos();
-						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
-						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
+						final ChromosomeInfo chrInfo = chrSetInfoMap.get(chr);
+						final int nbMarkers = chrInfo.getMarkerCount();
+						final int startPhysPos = chrInfo.getFirstPos();
+						final int maxPhysPos = chrInfo.getPos();
+						final double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
+						final int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
 						GWASpiExplorerPanel.getSingleton().setPnlContent(new ManhattanPlotZoom(
 								operationKey,
@@ -333,7 +333,7 @@ public abstract class Report_Analysis extends JPanel {
 								(Long) tbl_ReportTable.getValueAt(rowIndex, 3)) // pos
 								);
 					}
-				} catch (IOException ex) {
+				} catch (final IOException ex) {
 					log.error(null, ex);
 				}
 			}
@@ -387,8 +387,9 @@ public abstract class Report_Analysis extends JPanel {
 			this.reportTable = reportTable;
 			this.nRows = nRows;
 			// we do not want the last trailingColsNotToSave number of columns
-			this.colIndToSave = new ArrayList<Integer>(reportTable.getColumnCount() - trailingColsNotToSave);
-			for (int columnI = 0; columnI < reportTable.getColumnCount() - trailingColsNotToSave; columnI++) {
+			final int numColsToSave = Math.max(0, reportTable.getColumnCount() - trailingColsNotToSave);
+			this.colIndToSave = new ArrayList<Integer>(numColsToSave);
+			for (int columnI = 0; columnI < numColsToSave; columnI++) {
 				colIndToSave.add(columnI);
 			}
 			putValue(NAME, Text.All.save);
@@ -486,7 +487,7 @@ public abstract class Report_Analysis extends JPanel {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent evt) {
+		public void actionPerformed(final ActionEvent evt) {
 			int decision = Dialogs.showOptionDialogue(Text.All.save, Text.Reports.selectSaveMode, Text.Reports.currentReportView, Text.Reports.completeReport, Text.All.cancel);
 
 			switch (decision) {

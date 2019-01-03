@@ -156,7 +156,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 			String currentChrom = markersChromosomes.get(0);
 			int ci = 0;
 			for (int mi = 0; mi < ps.size(); mi++) {
-				final List<Double> chromPs = new ArrayList(ps.size() / numChromosomes); // approximate markers per chromosome
+				final List<Double> chromPs = new ArrayList<Double>(ps.size() / numChromosomes); // approximate markers per chromosome
 				while ((mi < ps.size()) && currentChrom.equals(markersChromosomes.get(mi))) {
 					chromPs.add(ps.get(mi));
 					mi++;

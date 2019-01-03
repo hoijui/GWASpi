@@ -345,7 +345,7 @@ public class LoadDataPanel extends JPanel {
 
 			switch ((ImportFormat) cmb_Format.getSelectedItem()) {
 				case Affymetrix_GenomeWide6:
-					fieldObligatoryState = new boolean[]{true, true, false};
+					fieldObligatoryState = new boolean[] {true, true, false};
 					flt_File1 = ""; // TODO
 					flt_File2 = ""; // TODO
 					flt_FileSampleInfo = ""; // TODO
@@ -364,7 +364,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case PLINK:
-					fieldObligatoryState = new boolean[]{true, true, false};
+					fieldObligatoryState = new boolean[] {true, true, false};
 					flt_File1 = ".map";
 					flt_File2 = ".ped";
 					flt_FileSampleInfo = ""; // XXX or ".txt"?
@@ -383,7 +383,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case PLINK_Binary:
-					fieldObligatoryState = new boolean[]{true, true, true};
+					fieldObligatoryState = new boolean[] {true, true, true};
 					flt_File1 = ".bed";
 					flt_File2 = ".bim";
 					flt_FileSampleInfo = ".fam"; // XXX and ".txt"?
@@ -401,7 +401,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case HAPMAP:
-					fieldObligatoryState = new boolean[]{true, false, false};
+					fieldObligatoryState = new boolean[] {true, false, false};
 					flt_File1 = ""; // TODO
 					flt_File2 = "";
 					flt_FileSampleInfo = ""; // TODO
@@ -421,7 +421,7 @@ public class LoadDataPanel extends JPanel {
 					btn_File2.setEnabled(false);
 					break;
 				case BEAGLE:
-					fieldObligatoryState = new boolean[]{true, true, false};
+					fieldObligatoryState = new boolean[] {true, true, false};
 					flt_File1 = ".markers";
 					flt_File2 = ".beagle"; // TODO check whether this is correct, or has to be swapped with with flt_FileSampleInfo
 					flt_FileSampleInfo = ""; // TODO check whether this is correct, or has to be swapped with with flt_File2
@@ -440,7 +440,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case HGDP1:
-					fieldObligatoryState = new boolean[]{true, true, false};
+					fieldObligatoryState = new boolean[] {true, true, false};
 					flt_File1 = ".markers.txt";
 					flt_File2 = ".samples.txt";
 					flt_FileSampleInfo = ""; // TODO
@@ -459,7 +459,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case GWASpi:
-					fieldObligatoryState = new boolean[]{true, false, true};
+					fieldObligatoryState = new boolean[] {true, false, true};
 					flt_File1 = ".nc";
 					flt_File2 = "";
 					flt_FileSampleInfo = ".txt";
@@ -479,7 +479,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case Illumina_LGEN:
-					fieldObligatoryState = new boolean[]{true, true, false};
+					fieldObligatoryState = new boolean[] {true, true, false};
 					flt_File1 = ""; // TODO
 					flt_File2 = ""; // TODO
 					flt_FileSampleInfo = ""; // TODO
@@ -499,7 +499,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				case Sequenom:
-					fieldObligatoryState = new boolean[]{true, true, true};
+					fieldObligatoryState = new boolean[] {true, true, true};
 					flt_File1 = ""; // TODO
 					flt_File2 = ""; // TODO
 					flt_FileSampleInfo = ""; // TODO
@@ -517,7 +517,7 @@ public class LoadDataPanel extends JPanel {
 					browseSampleInfoAction.setEnabled(true);
 					break;
 				default:
-					fieldObligatoryState = new boolean[]{false, false, false};
+					fieldObligatoryState = new boolean[] {false, false, false};
 					flt_File1 = "";
 					flt_File2 = "";
 					flt_FileSampleInfo = "";
