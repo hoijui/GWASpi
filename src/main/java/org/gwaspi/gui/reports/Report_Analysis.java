@@ -167,6 +167,7 @@ public abstract class Report_Analysis extends JPanel {
 		txt_PvalThreshold.setEnabled(false);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT SUMMARY">
+		// TODO change this and the following layouts to something more compact, modular, and more easily non-gui-wise editable
 		GroupLayout pnl_SearchDBLayout = new GroupLayout(pnl_SearchDB);
 		pnl_SearchDB.setLayout(pnl_SearchDBLayout);
 		pnl_SearchDBLayout.setHorizontalGroup(
