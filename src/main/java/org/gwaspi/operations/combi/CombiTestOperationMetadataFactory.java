@@ -54,6 +54,7 @@ public class CombiTestOperationMetadataFactory
 				markersOriented ? numMarkers : numSamples,
 				markersOriented ? numSamples : numMarkers,
 				operationDataSet.getNumChromosomes(),
-				markersOriented);
+				markersOriented,
+				params.isHidden());
 	}
 }

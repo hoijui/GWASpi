@@ -494,7 +494,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		thresholdCalibrationIterationsValue.setValue(params.getThresholdCalibrationIterations()); // TODO use setEditable(boolean), depending on other threshold related values
 
-		thresholdCalibrationAlphaValue.setValue(params.getThresholdCalibrationAlphas()); // TODO use setEditable(boolean), depending on other threshold related values
+		thresholdCalibrationAlphaValue.setValue(params.getThresholdCalibrationAlphas().get(0)); // TODO use setEditable(boolean), depending on other threshold related values
 
 		thresholdCalibrationAlphaPValueTargetValue.setValue(params.getThresholdCalibrationAlphasCalculationPValueTarget()); // TODO use setEditable(boolean), depending on other threshold related values
 

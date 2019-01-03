@@ -396,6 +396,9 @@ public class LoadDataPanel extends JPanel {
 					txt_File1.setEnabled(true);
 					txt_File2.setEnabled(true);
 					txt_FileSampleInfo.setEnabled(true);
+					if (txt_FileSampleInfo.getText().equals(Text.All.optional)) {
+						txt_FileSampleInfo.setText("");
+					}
 					btn_File1.setEnabled(true);
 					btn_File2.setEnabled(true);
 					browseSampleInfoAction.setEnabled(true);
@@ -473,7 +476,9 @@ public class LoadDataPanel extends JPanel {
 					txt_File2.setEnabled(false);
 					txt_FileSampleInfo.setEnabled(true);
 					txt_File2.setText("");
-					txt_FileSampleInfo.setText("");
+					if (txt_FileSampleInfo.getText().equals(Text.All.optional)) {
+						txt_FileSampleInfo.setText("");
+					}
 					btn_File1.setEnabled(true);
 					btn_File2.setEnabled(false);
 					browseSampleInfoAction.setEnabled(true);
@@ -512,6 +517,9 @@ public class LoadDataPanel extends JPanel {
 					txt_File1.setEnabled(true);
 					txt_File2.setEnabled(true);
 					txt_FileSampleInfo.setEnabled(true);
+					if (txt_FileSampleInfo.getText().equals(Text.All.optional)) {
+						txt_FileSampleInfo.setText("");
+					}
 					btn_File1.setEnabled(true);
 					btn_File2.setEnabled(true);
 					browseSampleInfoAction.setEnabled(true);
@@ -530,6 +538,9 @@ public class LoadDataPanel extends JPanel {
 					txt_File1.setEnabled(false);
 					txt_File2.setEnabled(false);
 					txt_FileSampleInfo.setEnabled(false);
+					if (txt_FileSampleInfo.getText().equals(Text.All.optional)) {
+						txt_FileSampleInfo.setText("");
+					}
 					btn_File1.setEnabled(false);
 					btn_File2.setEnabled(false);
 					btn_FileSampleInfo.setEnabled(false);
@@ -830,7 +841,7 @@ public class LoadDataPanel extends JPanel {
 			if (file3.exists()) {
 				buttonsOK[2] = true;
 			} else if (!fieldObligatoryState[2]) {
-				if (txt_FileSampleInfo.getText().contains(Text.All.optional)
+				if (txt_FileSampleInfo.getText().equals(Text.All.optional)
 						|| txt_FileSampleInfo.getText().isEmpty())
 				{
 					buttonsOK[2] = true;

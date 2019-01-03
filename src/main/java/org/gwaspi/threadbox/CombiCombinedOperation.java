@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.NetCDFConstants.Defaults.OPType;
+import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.RuntimeAnalyzer;
 import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -38,8 +39,16 @@ import org.gwaspi.operations.combi.CombiOutputOperation;
 import org.gwaspi.operations.combi.CombiOutputOperationParams;
 import org.gwaspi.operations.combi.CombiTestOperation;
 import org.gwaspi.operations.combi.CombiTestOperationParams;
+import org.gwaspi.operations.filter.ByValidAffectionFilterOperation;
+import org.gwaspi.operations.filter.ByValidAffectionFilterOperationParams;
+import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperation;
+import org.gwaspi.operations.hardyweinberg.ByHardyWeinbergThresholdFilterOperationParams;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperation;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationParams;
 import org.gwaspi.operations.markercensus.MarkerCensusOperation;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationParams;
+import org.gwaspi.operations.qamarkers.QAMarkersOperation;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationParams;
 import org.gwaspi.operations.trendtest.TrendTestOperation;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationParams;
@@ -181,7 +190,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 			final CombiTestOperationParams prototypeTestParams,
 			final ByCombiWeightsFilterOperationParams prototypeFilterParams,
 			final List<CombiTestOperation.Kernel> kernel,
-			final List<Double> alphas)
+			final List<Double> thresholdCalibrationPValueTargets)
 			throws IOException
 	{
 //		// HACK this is(?):
@@ -193,9 +202,9 @@ public class CombiCombinedOperation extends CommonRunnable {
 				numChromosomes);
 		for (int ci = 0; ci < numChromosomes; ci++) {
 			smallestPs.add(new ArrayList<Double>(
-					prototypeTestParams.getThresholdCalibrationIterations()));
+					prototypeTestParams.getThresholdCalibrationPermutation2Iterations()));
 		}
-		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationIterations(); tci++) {
+		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationPermutation2Iterations(); tci++) {
 			final CombiTestOperationParams combiParams
 					= new CombiTestOperationParams(
 							prototypeTestParams.getQAMarkerOperationKey(),
@@ -228,20 +237,21 @@ public class CombiCombinedOperation extends CommonRunnable {
 			final OperationKey resultingPermTrendTestOperationKey = combinedCombi.getResultingTrendTestOperationKey();
 			final TrendTestOperationDataSet resultingTrendTestDataSet = (TrendTestOperationDataSet)
 					OperationManager.generateOperationDataSet(resultingPermTrendTestOperationKey);
-			final List<Double> ps = new ArrayList(resultingTrendTestDataSet.getPs(-1, -1));
+			final List<Double> ps = new ArrayList<Double>(resultingTrendTestDataSet.getPs(-1, -1));
 			extractSmallestPValues(prototypeTestParams, resultingTrendTestDataSet, numChromosomes, ps, smallestPs);
 		}
 
-		final List<Double> selectedPs = new ArrayList<Double>(numChromosomes);
+		final List<Double> pValueThreasholds = new ArrayList<Double>(numChromosomes);
+		// Find t_star(s, one per chromosome) as alpha-percentile of sorted p-values
 		for (int ci = 0; ci < numChromosomes; ci++) {
+			final Double pValueTarget = prototypeTestParams.getThresholdCalibrationPValueTargets().get(ci); // XXX; now has to be an array-type param!
 			final List<Double> chromSmallestPs = smallestPs.get(ci);
 			Collections.sort(chromSmallestPs);
-			final Double chromSelectedP = chromSmallestPs.get(
-					(int) Math.round(chromSmallestPs.size() * alphas.get(ci)));
-			selectedPs.add(chromSelectedP);
-
+			final Double pValueThreashold = evaluateAlpha(chromSmallestPs, pValueTarget);
+			pValueThreasholds.add(pValueThreashold);
 		}
-		return selectedPs;
+
+		return pValueThreasholds;
 	}
 
 	private static Double evaluateAlpha(final List<Double> smallestPs, final Double pValueTarget) {
@@ -271,7 +281,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 		return alpha;
 	}
 
-	private List<Double> evaluateThresholdCalibrationAlpha(
+	private List<Double> evaluateThresholdCalibrationPValueTargets(
 			final CombiTestOperationParams prototypeTestParams)
 			throws IOException
 	{
@@ -284,7 +294,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 				numChromosomes);
 		for (int ci = 0; ci < numChromosomes; ci++) {
 			smallestPs.add(new ArrayList<Double>(
-					prototypeTestParams.getThresholdCalibrationAlphasCalculationIterations()));
+					prototypeTestParams.getThresholdCalibrationPermutation1Iterations()));
 		}
 
 		final DataSetKey parentQAMarkers = prototypeTestParams.getParent(); // NOTE As of now, this returns the QA-Markers operation of/below our actual parent
@@ -298,7 +308,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 				parent,
 				necessaryOperations.get(0),
 				necessaryOperations.get(1));
-		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationAlphasCalculationIterations(); tci++) {
+		for (int tci = 0; tci < prototypeTestParams.getThresholdCalibrationPermutation1Iterations(); tci++) {
 			final MarkerCensusOperationParams markerCensusParams
 					= new MarkerCensusOperationParams(
 							mcVorlageParams.getParent(), // parent
@@ -312,7 +322,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 							mcVorlageParams.getPhenotypeFile(), // phenotypeFile
 							true); // random samples
 			final MarkerCensusOperation markerCensus = new MarkerCensusOperation(markerCensusParams);
-			final OperationKey markerCensusOpKey = markerCensus.call();
+			final OperationKey markerCensusOpKey = OperationManager.performOperationCreatingOperation(markerCensus);
 
 			final TrendTestOperationParams trendTestParams
 					= new TrendTestOperationParams(
@@ -320,7 +330,7 @@ public class CombiCombinedOperation extends CommonRunnable {
 							prototypeTestParams.getName() + "_threasholdCalibrationIteration" + tci,
 							markerCensusOpKey);
 			final TrendTestOperation trendTest = new TrendTestOperation(trendTestParams);
-			final OperationKey trendTestOpKey = trendTest.call();
+			final OperationKey trendTestOpKey = OperationManager.performOperationCreatingOperation(trendTest);
 
 			final TrendTestOperationDataSet resultingTrendTestDataSet = (TrendTestOperationDataSet)
 					OperationManager.generateOperationDataSet(trendTestOpKey);
@@ -328,16 +338,52 @@ public class CombiCombinedOperation extends CommonRunnable {
 			extractSmallestPValues(prototypeTestParams, resultingTrendTestDataSet, numChromosomes, ps, smallestPs);
 		}
 
-		final Double pValueTarget = prototypeTestParams.getThresholdCalibrationAlphasCalculationPValueTarget();
-		final List<Double> alphas = new ArrayList<Double>(numChromosomes);
-		// Find t_star(s, one per chromosome) as alpha-percentile of sorted p-values
+		final List<Double> pValueTargets = new ArrayList<Double>(numChromosomes);
 		for (int ci = 0; ci < numChromosomes; ci++) {
 			final List<Double> chromSmallestPs = smallestPs.get(ci);
 			Collections.sort(chromSmallestPs);
-			final Double alpha = evaluateAlpha(chromSmallestPs, pValueTarget);
-			alphas.add(alpha);
+			final Double chromSelectedP = chromSmallestPs.get(
+					(int) Math.round(chromSmallestPs.size() * alpha));
+			pValueTargets.add(chromSelectedP);
+
 		}
-		return alphas;
+
+		return pValueTargets;
+	}
+
+	public static OperationKey runPreFilters(
+			final OperationService operationService,
+			final DataSetKey parent,
+			final OperationKey parentSampleQA,
+			final OperationKey parentMarkersQA)
+			throws IOException
+	{
+		final OperationKey parentSampleQANonNull = (parentSampleQA == null)
+				? OperationKey.valueOf(operationService.getChildrenOperationsMetadata(parent, OPType.SAMPLE_QA).get(0))
+				: parentSampleQA;
+		final OperationKey matrixMarkersQAOpKey = (parentMarkersQA == null)
+				? OperationKey.valueOf(operationService.getChildrenOperationsMetadata(parent, OPType.MARKER_QA).get(0))
+				: parentMarkersQA;
+
+		final MarkerCensusOperationParams markerCensusOperationParams = new MarkerCensusOperationParams(parent, parentSampleQANonNull, matrixMarkersQAOpKey);
+		final MarkerCensusOperation markerCensusOperation = new MarkerCensusOperation(markerCensusOperationParams);
+		final OperationKey gtFreqOpKey = OperationManager.censusCleanMatrixMarkers(markerCensusOperation);
+
+		final HardyWeinbergOperationParams hardyWeinbergOperationParams = new HardyWeinbergOperationParams(gtFreqOpKey, "COMBI-pre-filter", matrixMarkersQAOpKey);
+		final MatrixOperation<?, OperationKey> operation = new HardyWeinbergOperation(hardyWeinbergOperationParams);
+		final OperationKey hwOpKey = OperationManager.performOperationCreatingOperation(operation);
+
+		final ByHardyWeinbergThresholdFilterOperationParams byHardyWeinbergThresholdFilterOperationParams = new ByHardyWeinbergThresholdFilterOperationParams(hwOpKey, null, hwOpKey, 0.0000005);
+		final ByHardyWeinbergThresholdFilterOperation byHardyWeinbergThresholdFilterOperation = new ByHardyWeinbergThresholdFilterOperation(byHardyWeinbergThresholdFilterOperationParams);
+		final OperationKey byHwThresholFilterOpKey = OperationManager.performOperationCreatingOperation(byHardyWeinbergThresholdFilterOperation);
+
+		final ByValidAffectionFilterOperationParams byValidAffectionFilterOperationParams = new ByValidAffectionFilterOperationParams(new DataSetKey(byHwThresholFilterOpKey), null);
+		final ByValidAffectionFilterOperation byValidAffectionFilterOperation = new ByValidAffectionFilterOperation(byValidAffectionFilterOperationParams);
+		final OperationKey byValidAffectionFilterOpKey = OperationManager.performOperationCreatingOperation(byValidAffectionFilterOperation);
+
+		final QAMarkersOperationParams markersQAOperationParams = new QAMarkersOperationParams(new DataSetKey(byValidAffectionFilterOpKey));
+		final QAMarkersOperation qaMarkersOperation = new QAMarkersOperation(markersQAOperationParams);
+		return OperationManager.performOperationCreatingOperation(qaMarkersOperation); // we do not need the QA Marker reports here!
 	}
 
 	@Override
@@ -356,20 +402,20 @@ public class CombiCombinedOperation extends CommonRunnable {
 		final int numParts = paramsTest.isPerChromosome() ? toLoadFromDataSet.getNumChromosomes() : 1;
 		final List<CombiTestOperation.Kernel> kernel = new ArrayList<CombiTestOperation.Kernel>(Collections.nCopies(numParts, (CombiTestOperation.Kernel) null));
 		final List<Double> pValueThreasholds;
-		if (paramsTest.isThresholdCalibrationEnabled()) {
-			final List<Double> thresholdCalibrationAlphas;
-			if (paramsTest.isThresholdCalibrationAlphasCalculationEnabled()) {
+		if (paramsTest.isThresholdCalibrationPermutation1Enabled()) {
+			final List<Double> thresholdCalibrationPValueTargets;
+			if (paramsTest.isThresholdCalibrationPermutation2Enabled()) {
 				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", true);
 				RuntimeAnalyzer.getInstance().setDiscard(true);
-				thresholdCalibrationAlphas = evaluateThresholdCalibrationAlpha(paramsTest);
+				thresholdCalibrationPValueTargets = evaluateThresholdCalibrationPValueTargets(paramsTest);
 				RuntimeAnalyzer.getInstance().setDiscard(false);
 				RuntimeAnalyzer.getInstance().log("COMBI-permutation-part1", false);
 			} else {
-				thresholdCalibrationAlphas = paramsTest.getThresholdCalibrationAlphas();
+				thresholdCalibrationPValueTargets = paramsTest.getThresholdCalibrationPValueTargets();
 			}
 			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", true);
 			RuntimeAnalyzer.getInstance().setDiscard(true);
-			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, kernel, thresholdCalibrationAlphas);
+			pValueThreasholds = thresholdCalibration(paramsTest, paramsFilter, kernel, thresholdCalibrationPValueTargets);
 			RuntimeAnalyzer.getInstance().setDiscard(false);
 			RuntimeAnalyzer.getInstance().log("COMBI-permutation-part2", false);
 			getLog().debug("pValueThreashold: {}", pValueThreasholds);

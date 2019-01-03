@@ -156,8 +156,10 @@ public class GWASpiExplorerTree {
 
 		List<OperationMetadata> childrenOps = getChildrenOperations(allOperations, operationKey);
 		for (OperationMetadata subOP : childrenOps) {
-			OperationKey subOPKey = OperationKey.valueOf(subOP);
-			addOperationToTree(operationItem, allOperations, subOPKey);
+			if (!subOP.isHidden()) {
+				OperationKey subOPKey = OperationKey.valueOf(subOP);
+				addOperationToTree(operationItem, allOperations, subOPKey);
+			}
 		}
 
 		List<Report> reports = getReportService().getReports(new DataSetKey(operationKey));

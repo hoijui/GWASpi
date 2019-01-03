@@ -281,13 +281,6 @@ public class CombiTestOperation
 			final GenotypeEncoder genotypeEncoder = getParams().getEncoder();
 			final int n = parentDataSetSource.getNumSamples();
 
-			if (getParams().isThresholdCalibrationEnabled()) {
-				if (getParams().getThresholdCalibrationAlphasCalculationPValueTarget() != null) {
-					ProgressHandler alphaEvaluationTrendTestsPH;
-				}
-				ProgressHandler thresholdCalibrartionCombiTestsPH;
-			}
-
 			if (getParams().isPerChromosome()) {
 				// run SVM once per chromosome
 				final Map<String, List<Integer>> markersChromosomeToIndices

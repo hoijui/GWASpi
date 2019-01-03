@@ -134,7 +134,8 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 			int opSetSize,
 			int implicitSetSize,
 			int numChromosomes,
-			boolean opSetMarkers
+			boolean opSetMarkers,
+			boolean hidden
 			)
 	{
 		final MatrixKey origin = parent.isMatrix() ? parent.getMatrixParent() : parent.getOperationParent().getParentMatrixKey();
@@ -149,6 +150,21 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		this.opSetMarkers = opSetMarkers;
 		this.creationDate = new Date();
 		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
+		this.hidden = hidden;
+	}
+
+	public OperationMetadata(
+			DataSetKey parent,
+			String name,
+			String description,
+			OPType gtCode,
+			int opSetSize,
+			int implicitSetSize,
+			int numChromosomes,
+			boolean opSetMarkers
+			)
+	{
+		this(parent, name, description, gtCode, opSetSize, implicitSetSize, numChromosomes, opSetMarkers, false);
 	}
 
 //	/**
@@ -515,7 +531,13 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	 * cluttering a view, which are basically uninteresting for the user,
 	 * like in the case of COMBI threshold calibration iterations.
 	 */
-	@Transient
+	@Column(
+		name       = "hidden",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
 	public boolean isHidden() {
 		return hidden;
 	}

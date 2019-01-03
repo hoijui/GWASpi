@@ -234,7 +234,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{SVM_EPS\\}", String.valueOf(1E-7));
 		substitutions.put("\\$\\{SVM_C\\}", String.valueOf(1E-0));
 		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_ENABLED\\}", String.valueOf(permutation ? 1 : 0));
-		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_P_VALUE_TARGET\\}", String.valueOf(CombiTestOperationParams.getThresholdCalibrationAlphasCalculationPValueTargetDefault()));
+		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_P_VALUE_TARGET\\}", String.valueOf(CombiTestOperationParams.getThresholdCalibrationPValueTargetsDefault().get(0)));
 		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHAS_CALCULATION_ITERATIONS\\}", String.valueOf(permutation ? 10 : -1));
 		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ENABLED\\}", String.valueOf(permutation ? 1 : 0));
 //		substitutions.put("\\$\\{THRESHOLD_CALIBRATION_ALPHA\\}", String.valueOf(CombiTestOperationParams.getThresholdCalibrationAlphaDefault()));

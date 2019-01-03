@@ -44,6 +44,11 @@ public class RuntimeAnalyzer {
 	}
 
 	public static RuntimeAnalyzer getInstance() {
+
+		if (SINGLETON == null) {
+			createSingleton();
+		}
+
 		return getSingleton();
 	}
 

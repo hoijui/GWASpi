@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.gwaspi.constants.GlobalConstants;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -123,14 +125,14 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 			final Double markersToKeepFraction = fetchDouble(args, "markers-to-keep-fraction", null);
 
 			final Boolean thresholdCalibrationAlphasCalculationEnabled = fetchBoolean(args, "threshold-calibration-alphas-calculation-enabled", null);
-			final Double thresholdCalibrationAlphasPValueTarget = fetchDouble(args, "threshold-calibration-alphas-calculation-p-value-target", null);
+			final Double thresholdCalibrationAlpha = fetchDouble(args, "threshold-calibration-alpha", null);
 			final Integer thresholdCalibrationAlphasCalculationIterations = fetchInteger(args, "threshold-calibration-alphas-calculation-iterations", null);
 
 			final Boolean thresholdCalibrationEnabled = fetchBoolean(args, "threshold-calibration-enabled", null);
-			final Double thresholdCalibrationAlpha = fetchDouble(args, "threshold-calibration-alpha", null);
-			final List<Double> thresholdCalibrationAlphas = (thresholdCalibrationAlpha == null)
+			final Double thresholdCalibrationPValueTarget = fetchDouble(args, "threshold-calibration-p-value-target", null);
+			final List<Double> thresholdCalibrationPValueTargets = (thresholdCalibrationPValueTarget == null)
 					? null
-					: Collections.nCopies(22, thresholdCalibrationAlpha);
+					: Collections.nCopies(GlobalConstants.NUM_CHROMOSOMES, thresholdCalibrationPValueTarget);
 			final Integer thresholdCalibrationIterations = fetchInteger(args, "threshold-calibration-iterations", null);
 
 			// These might return null, as it is optional,
@@ -143,10 +145,10 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 					genotypeEncoder,
 					genotypeEncodingParams,
 					thresholdCalibrationAlphasCalculationEnabled,
-					thresholdCalibrationAlphasPValueTarget,
+					thresholdCalibrationAlpha,
 					thresholdCalibrationAlphasCalculationIterations,
 					thresholdCalibrationEnabled,
-					thresholdCalibrationAlphas,
+					thresholdCalibrationPValueTargets,
 					thresholdCalibrationIterations,
 					perChromosome,
 					svmLibrary,
